@@ -1,0 +1,72 @@
+{
+  "name": "electron-starter",
+  "version": "0.0.0",
+  "description": "electron-starter",
+  "license": "MIT",
+  "build": {
+    "appId": "com.cutonce.starter",
+    "productName": "electron-starter",
+    "mac": {
+      "category": "public.app-category.tools"
+    }
+  },
+  "scripts": {
+    "dev": "electron-webpack dev",
+    "compile": "electron-webpack",
+    "test": "yarn compile && jest",
+    "test:e2e": "yarn test --config jest.config.e2e.js",
+    "dist": "yarn compile && electron-builder",
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+  },
+  "dependencies": {
+    "blinq": "^2.0.0",
+    "connected-react-router": "^5.0.1",
+    "electron-devtools-installer": "^2.2.4",
+    "electron-json-storage": "^4.1.4",
+    "history": "^4.7.2",
+    "pify": "^4.0.1",
+    "react": "^16.6.3",
+    "react-dom": "^16.6.3",
+    "react-redux": "^5.1.1",
+    "react-router": "^4.3.1",
+    "react-router-dom": "^4.3.1",
+    "redbox-react": "^1.6.0",
+    "redux": "^4.0.1",
+    "redux-devtools-extension": "^2.13.7",
+    "redux-localstorage": "^1.0.0-rc5",
+    "redux-observable": "^1.0.0",
+    "redux-saga": "^0.16.2",
+    "rxjs": "^6.3.3",
+    "source-map-support": "^0.5.9",
+    "tslib": "^1.9.3",
+    "typesafe-actions": "^2.0.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.6",
+    "@babel/preset-react": "^7.0.0",
+    "@types/electron-devtools-installer": "^2.2.0",
+    "@types/electron-json-storage": "^4.0.0",
+    "@types/es6-promise": "^3.3.0",
+    "@types/history": "^4.7.2",
+    "@types/jest": "^23.3.10",
+    "@types/pify": "^3.0.2",
+    "@types/react": "^16.7.9",
+    "@types/react-dom": "^16.0.11",
+    "@types/react-redux": "^6.0.10",
+    "@types/react-router": "^4.4.1",
+    "@types/react-router-dom": "^4.3.1",
+    "@types/webdriverio": "^4.13.0",
+    "electron": "3.0.10",
+    "electron-builder": "^20.36.2",
+    "electron-webpack": "^2.6.1",
+    "electron-webpack-ts": "^3.1.0",
+    "jest": "^23.6.0",
+    "spectron": "^5.0.0",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.11.0",
+    "typescript": "^3.2.1",
+    "webdriverio": "^4.14.1",
+    "webpack": "^4.26.0",
+    "xvfb-maybe": "^0.2.1"
+  }
+}
