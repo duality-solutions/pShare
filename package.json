@@ -1,11 +1,11 @@
 {
-  "name": "electron-starter",
+  "name": "pshare",
   "version": "0.0.0",
-  "description": "electron-starter",
+  "description": "duality pshare",
   "license": "MIT",
   "build": {
-    "appId": "com.cutonce.starter",
-    "productName": "electron-starter",
+    "appId": "solutions.duality.pshare",
+    "productName": "pshare",
     "mac": {
       "category": "public.app-category.tools"
     }
