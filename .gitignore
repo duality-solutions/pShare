@@ -4,7 +4,7 @@
 **/.npmrc
 .tags*
 .vs/
-.vscode/
+# .vscode/
 *.log
 *.pyc
 *.sln
@@ -20,3 +20,8 @@
 # npm package
 /npm/dist
 /npm/path.txt
+
+dist/
+node_modules/
+thumbs.db
+yarn-error.log
