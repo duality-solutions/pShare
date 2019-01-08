@@ -2,7 +2,7 @@
   "name": "pshare",
   "version": "0.0.0",
   "description": "duality pshare",
-  "license": "closed",
+  "license": "UNLICENSED",
   "build": {
     "appId": "solutions.duality.pshare",
     "productName": "pshare",
