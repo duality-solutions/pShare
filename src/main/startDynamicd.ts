@@ -16,7 +16,7 @@ interface DynamicdProcessInfo {
 }
 export default async function (): Promise<DynamicdProcessInfo> {
 
-    const isDevelopment = false;//process.env.NODE_ENV === 'development'
+    const isDevelopment = process.env.NODE_ENV === 'development'
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return { dispose: () => console.log("dispose does nothing in development"), rpcUser: "CWIXE4bsgA", rpcPassword: "KT7xrPgVWWvakblJApSh8" }

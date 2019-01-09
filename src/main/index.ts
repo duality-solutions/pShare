@@ -4,7 +4,7 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
 import installExtensionsAsync from './installExtensionsAsync';
-import startDynamicd from './startDynamicd'
+import { getBitcoinClient } from './getBitcoinClient';
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -14,17 +14,13 @@ declare module 'electron' {
     popup(window: BrowserWindow): void
   }
 }
+
+
 //console.log(process.env)
-startDynamicd()
-  .then(({ dispose, rpcUser, rpcPassword }) => {
-    console.log("rpc details : user:%s password:%s", rpcUser, rpcPassword)
-    return app.on('before-quit', async () => {
-      console.log("before quit");
-      dispose();
-      console.log("proc disposed");
-    });
-  })
-  .catch(err => console.error(err));
+getBitcoinClient().then(async client => {
+  console.log("got client")
+  console.log(await client.command("dnsync", "status"))
+})
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
 
