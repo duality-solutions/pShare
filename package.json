@@ -3,11 +3,22 @@
   "version": "0.0.0",
   "description": "duality pshare",
   "license": "UNLICENSED",
+  "author": {
+    "name": "duality",
+    "email": "b@rubble.com",
+    "url": "https://duality.solutions/"
+  },
   "build": {
     "appId": "solutions.duality.pshare",
     "productName": "pshare",
     "mac": {
       "category": "public.app-category.tools"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ]
     }
   },
   "scripts": {

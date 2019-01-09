@@ -10,6 +10,7 @@ const exists = util.promisify(fs.exists)
 const copyFile = util.promisify(fs.copyFile)
 
 declare global {
+    //comes from electron. the location of the /static directory
     const __static: string
 }
 export default async function () {
