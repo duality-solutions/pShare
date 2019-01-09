@@ -4,6 +4,7 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
 import installExtensionsAsync from './installExtensionsAsync';
+import startDynamicd from './startDynamicd'
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -14,7 +15,13 @@ declare module 'electron' {
   }
 }
 //console.log(process.env)
-
+startDynamicd()
+  .then(proc => app.on('before-quit', async () => {
+    console.log("before quit")
+    proc.dispose()
+    console.log("proc disposed")
+  }))
+  .catch(err => console.error(err));
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
 
@@ -76,6 +83,8 @@ app.on('window-all-closed', () => {
     app.quit()
   }
 })
+
+
 
 app.on('activate', () => {
   // on macOS it is common to re-create a window even after all windows have been closed
