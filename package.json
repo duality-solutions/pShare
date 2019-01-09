@@ -30,6 +30,7 @@
     "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
   },
   "dependencies": {
+    "bitcoin-core": "^2.0.0",
     "blinq": "^2.0.0",
     "connected-react-router": "^5.0.1",
     "electron-devtools-installer": "^2.2.4",

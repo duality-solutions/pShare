@@ -1,0 +1,150 @@
+export = index;
+declare class index {
+  constructor({
+    agentOptions,
+    headers,
+    host,
+    logger,
+    network,
+    password,
+    port,
+    ssl,
+    timeout,
+    username,
+    version
+  }: any);
+  agentOptions: any;
+  auth: any;
+  hasNamedParametersSupport: any;
+  headers: any;
+  host: any;
+  password: any;
+  port: any;
+  timeout: any;
+  ssl: any;
+  request: any;
+  requester: any;
+  parser: any;
+  abandonTransaction(...args: any[]): any;
+  abortRescan(...args: any[]): any;
+  addMultiSigAddress(...args: any[]): any;
+  addNode(...args: any[]): any;
+  addWitnessAddress(...args: any[]): any;
+  backupWallet(...args: any[]): any;
+  bumpFee(...args: any[]): any;
+  clearBanned(...args: any[]): any;
+  combineRawTransaction(...args: any[]): any;
+  command(...args: any[]): any;
+  createMultiSig(...args: any[]): any;
+  createRawTransaction(...args: any[]): any;
+  createWitnessAddress(...args: any[]): any;
+  decodeRawTransaction(...args: any[]): any;
+  decodeScript(...args: any[]): any;
+  disconnectNode(...args: any[]): any;
+  dumpPrivKey(...args: any[]): any;
+  dumpWallet(...args: any[]): any;
+  encryptWallet(...args: any[]): any;
+  estimateFee(...args: any[]): any;
+  estimatePriority(...args: any[]): any;
+  estimateSmartFee(...args: any[]): any;
+  estimateSmartPriority(...args: any[]): any;
+  fundRawTransaction(...args: any[]): any;
+  generate(...args: any[]): any;
+  generateToAddress(...args: any[]): any;
+  getAccount(...args: any[]): any;
+  getAccountAddress(...args: any[]): any;
+  getAddedNodeInfo(...args: any[]): any;
+  getAddressesByAccount(...args: any[]): any;
+  getBalance(...args: any[]): any;
+  getBestBlockHash(...args: any[]): any;
+  getBlock(...args: any[]): any;
+  getBlockByHash(args: any): any;
+  getBlockCount(...args: any[]): any;
+  getBlockHash(...args: any[]): any;
+  getBlockHeader(...args: any[]): any;
+  getBlockHeadersByHash(args: any): any;
+  getBlockTemplate(...args: any[]): any;
+  getBlockchainInfo(...args: any[]): any;
+  getBlockchainInformation(args: any): any;
+  getChainTips(...args: any[]): any;
+  getChainTxStats(...args: any[]): any;
+  getConnectionCount(...args: any[]): any;
+  getDifficulty(...args: any[]): any;
+  getGenerate(...args: any[]): any;
+  getHashesPerSec(...args: any[]): any;
+  getInfo(...args: any[]): any;
+  getMemoryInfo(...args: any[]): any;
+  getMemoryPoolContent(args: any): any;
+  getMemoryPoolInformation(args: any): any;
+  getMempoolAncestors(...args: any[]): any;
+  getMempoolDescendants(...args: any[]): any;
+  getMempoolEntry(...args: any[]): any;
+  getMempoolInfo(...args: any[]): any;
+  getMiningInfo(...args: any[]): any;
+  getNetTotals(...args: any[]): any;
+  getNetworkHashPs(...args: any[]): any;
+  getNetworkInfo(...args: any[]): any;
+  getNewAddress(...args: any[]): any;
+  getPeerInfo(...args: any[]): any;
+  getRawChangeAddress(...args: any[]): any;
+  getRawMempool(...args: any[]): any;
+  getRawTransaction(...args: any[]): any;
+  getReceivedByAccount(...args: any[]): any;
+  getReceivedByAddress(...args: any[]): any;
+  getTransaction(...args: any[]): any;
+  getTransactionByHash(args: any): any;
+  getTxOut(...args: any[]): any;
+  getTxOutProof(...args: any[]): any;
+  getTxOutSetInfo(...args: any[]): any;
+  getUnconfirmedBalance(...args: any[]): any;
+  getUnspentTransactionOutputs(args: any): any;
+  getWalletInfo(...args: any[]): any;
+  getWork(...args: any[]): any;
+  help(...args: any[]): any;
+  importAddress(...args: any[]): any;
+  importMulti(...args: any[]): any;
+  importPrivKey(...args: any[]): any;
+  importPrunedFunds(...args: any[]): any;
+  importPubKey(...args: any[]): any;
+  importWallet(...args: any[]): any;
+  keypoolRefill(...args: any[]): any;
+  listAccounts(...args: any[]): any;
+  listAddressGroupings(...args: any[]): any;
+  listBanned(...args: any[]): any;
+  listLockUnspent(...args: any[]): any;
+  listReceivedByAccount(...args: any[]): any;
+  listReceivedByAddress(...args: any[]): any;
+  listSinceBlock(...args: any[]): any;
+  listTransactions(...args: any[]): any;
+  listUnspent(...args: any[]): any;
+  listWallets(...args: any[]): any;
+  lockUnspent(...args: any[]): any;
+  move(...args: any[]): any;
+  ping(...args: any[]): any;
+  preciousBlock(...args: any[]): any;
+  prioritiseTransaction(...args: any[]): any;
+  pruneBlockchain(...args: any[]): any;
+  removePrunedFunds(...args: any[]): any;
+  sendFrom(...args: any[]): any;
+  sendMany(...args: any[]): any;
+  sendRawTransaction(...args: any[]): any;
+  sendToAddress(...args: any[]): any;
+  setAccount(...args: any[]): any;
+  setBan(...args: any[]): any;
+  setGenerate(...args: any[]): any;
+  setNetworkActive(...args: any[]): any;
+  setTxFee(...args: any[]): any;
+  signMessage(...args: any[]): any;
+  signMessageWithPrivKey(...args: any[]): any;
+  signRawTransaction(...args: any[]): any;
+  stop(...args: any[]): any;
+  submitBlock(...args: any[]): any;
+  upTime(...args: any[]): any;
+  validateAddress(...args: any[]): any;
+  verifyChain(...args: any[]): any;
+  verifyMessage(...args: any[]): any;
+  verifyTxOutProof(...args: any[]): any;
+  walletLock(...args: any[]): any;
+  walletPassphrase(...args: any[]): any;
+  walletPassphraseChange(...args: any[]): any;
+}
