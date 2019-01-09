@@ -3,25 +3,28 @@ import fs from 'fs'
 import fsExtra from 'fs-extra'
 import crypto from 'crypto'
 import DynamicConfigOptions from './DynamicConfigOptions';
+import { getKeyValuePairsFromConfFile } from './getKeyValuePairsFromConf';
+import { blinq } from 'blinq'
 
 const exists = util.promisify(fs.exists)
 const randomBytes = util.promisify(crypto.randomBytes)
 
-export default async function ensureConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
+export default async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
     var hasConfig = await exists(pathToDynamicConf);
     if (!hasConfig) {
         await fsExtra.mkdirp(pathToDataDir);
-        const conf = await fsExtra.readFile(pathToDynamicdDefaultConf, "utf8");
+
         const rpcUser = await getRandomToken(16);
-        const rpcPass = await getRandomToken(64);
-        const confData = [...getKeyValuePairsFromConf(conf)];
-        const rewrittenConfFileLines = confData
+        const rpcPassword = await getRandomToken(64);
+        const defaultConfDataIterator = await getKeyValuePairsFromConfFile(pathToDynamicdDefaultConf);
+        const defaultConfData = [...defaultConfDataIterator];
+        const rewrittenConfFileLines = defaultConfData
             .map(({ key, value }) => ({
                 key,
                 value: key === "rpcuser" ?
                     rpcUser :
                     key === "rpcpassword" ?
-                        rpcPass :
+                        rpcPassword :
                         value
             }))
             .map(({ key, value }) => `${key}=${value}`);
@@ -29,16 +32,15 @@ export default async function ensureConfig({ pathToDynamicdDefaultConf, pathToDy
         const rewrittenConf = [...rewrittenConfFileLines, ""].join("\n");
         await fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" });
     }
+    const confDataIterator = await getKeyValuePairsFromConfFile(pathToDynamicConf)
+    const confData = [...confDataIterator]
+    const blConfData = blinq(confData)
+    const rpcUser = blConfData.single(x => x.key === "rpcuser").value;
+    const rpcPassword = blConfData.single(x => x.key === "rpcpassword").value;
+    return { rpcUser, rpcPassword };
+
 }
 
-function* getKeyValuePairsFromConf(conf: string) {
-    const regex = /^(?!\#)([^\=]*)\=(.*)$/gm
-    let result: RegExpExecArray | null
-    while ((result = regex.exec(conf)) !== null) {
-        const [, key, value] = result;
-        yield { key, value }
-    }
-}
 async function getRandomToken(tokenLength: number) {
     const buf = await randomBytes(tokenLength);
     return buf.toString("hex")

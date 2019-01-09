@@ -16,11 +16,14 @@ declare module 'electron' {
 }
 //console.log(process.env)
 startDynamicd()
-  .then(proc => app.on('before-quit', async () => {
-    console.log("before quit")
-    proc.dispose()
-    console.log("proc disposed")
-  }))
+  .then(({ dispose, rpcUser, rpcPassword }) => {
+    console.log("rpc details : user:%s password:%s", rpcUser, rpcPassword)
+    return app.on('before-quit', async () => {
+      console.log("before quit");
+      dispose();
+      console.log("proc disposed");
+    });
+  })
   .catch(err => console.error(err));
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
