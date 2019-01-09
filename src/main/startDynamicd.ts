@@ -8,7 +8,6 @@ import fsExtra from 'fs-extra'
 
 const exists = util.promisify(fs.exists)
 const copyFile = util.promisify(fs.copyFile)
-const spawn = util.promisify(childProcess.spawn)
 
 declare global {
     const __static: string
@@ -25,22 +24,12 @@ export default async function () {
     const sharedParameters = [`-conf=${pathToDynamicConf}`, `-datadir=${pathToDataDir}`]
 
     var hasConfig = await exists(pathToDynamicConf);
-    console.log("has config", hasConfig)
     if (!hasConfig) {
         await fsExtra.mkdirp(pathToDataDir)
         await copyFile(pathToDynamicdDefaultConf, pathToDynamicConf);
     }
-
-    //const params = [...sharedParameters]
-    //console.log(pathToDynamicd, params)
-
-    const dynamicdProcess = childProcess.execFile(pathToDynamicd, sharedParameters)
-
-
-
-    console.log("started dynamicd",dynamicdProcess.pid)
-
-    //really we should issue an RPC stop here, but this will do FTTB
+    childProcess.execFile(pathToDynamicd, sharedParameters)
+    //we could issue an RPC stop here, but spinning off to a process is more robust
     return { dispose: () => childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"]) }
 
     
