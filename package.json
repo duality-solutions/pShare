@@ -17,7 +17,8 @@
     "linux": {
       "target": [
         "AppImage",
-        "deb"
+        "deb",
+        "tar.gz"
       ]
     }
   },
