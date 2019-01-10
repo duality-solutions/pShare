@@ -28,7 +28,8 @@
     "test": "yarn compile && jest",
     "test:e2e": "yarn test --config jest.config.e2e.js",
     "dist": "yarn compile && electron-builder",
-    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null"
+    "dist:dir": "yarn dist --dir -c.compression=store -c.mac.identity=null",
+    "dist-linux": "yarn compile && electron-builder --linux"
   },
   "dependencies": {
     "bitcoin-core": "^2.0.0",
