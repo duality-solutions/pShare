@@ -28,13 +28,12 @@ yarn dist:dir
 
 New binaries can be created by following https://github.com/HiddenField/dynamic-vagrant/blob/master/docker.md#extracting-the-binary-build-artefacts-from-the-docker-image
 
-### Installing Running Electron App on Linux
+### Installing and Running Electron App on Linux
 
 * Run a distribution build as mentioned above
-* Use your preffered distributable from within the `dist` folder. Currently available: `deb`, `tar.gz`, and `AppImage`. We test with AppImage
+* Use your preferred distributable from within the `dist` folder. Currently available: `deb`, `tar.gz`, and `AppImage`. We test with AppImage
 * Copy `pshare-0.X.X-x86_64.AppImage` onto your system (Currently tested on Ubuntu 18.04 Desktop)
-* Run the pShare electron app by double clicking on the AppImage file
-* Electron app should launch
+* Run the pShare electron app by double clicking on the AppImage file - App should launch
 
 ### Configuring pShare on Linux
 
@@ -43,7 +42,7 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 
 ### Stopping pShare
 
-Quiting the pShare app also terminates the bundled pShare Dynamicd daemon.
+* Quiting the pShare Electron App will also terminate the bundled pShare Dynamicd daemon.
 
 
 
