@@ -2,7 +2,7 @@ import { ActionsObservable, StateObservable, combineEpics } from 'redux-observab
 import { filter, flatMap, withLatestFrom, tap } from 'rxjs/operators'
 
 import CounterActions from '../actions/counter'
-import { RootState } from '../reducers'
+import { MainRootState } from '../reducers'
 import { isActionOf } from 'typesafe-actions';
 import RootActions from '../actions';
 
@@ -12,7 +12,7 @@ const incrementIfOddEpic = (
     // provide all our Actions type that can flow through the stream
     // everything else is gonna be handled by TypeScript so we don't have to provide any explicit type annotations. Behold... top notch DX 👌❤️🦖
     action$: ActionsObservable<RootActions>,
-    state$: StateObservable<RootState>
+    state$: StateObservable<MainRootState>
 ) =>
     action$.pipe(
         filter(isActionOf(CounterActions.incrementIfOdd)),

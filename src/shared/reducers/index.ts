@@ -8,10 +8,22 @@ import RootActions from '../actions';
 import getInitialReducerState from '../system/getInitialReducerState';
 
 
-export type RootState = ReturnType<ReturnType<typeof getRootReducer>>
-export const getRootReducer = (history: History) => {
+export type MainRootState = ReturnType<ReturnType<typeof getMainRootReducer>>
+export const getMainRootReducer = () => {
+    const r = combineReducers({ counter });
+    return (state: ReturnType<typeof r>, action: RootActions): ReturnType<typeof r> => {
+        switch (action.type) {
+            case getType(StoreActions.reset):
+                return getInitialReducerState(r);
+            default:
+                return r(state, action);
+        }
+    }
+}
+export type RendererRootState = ReturnType<ReturnType<typeof getRendererRootReducer>>
+export const getRendererRootReducer = (history: History) => {
     const r = combineReducers({ counter, router: connectRouter(history) });
-    return (state: ReturnType<typeof r>, action: RootActions):ReturnType<typeof r> => {
+    return (state: ReturnType<typeof r>, action: RootActions): ReturnType<typeof r> => {
         switch (action.type) {
             case getType(StoreActions.reset):
                 return getInitialReducerState(r);

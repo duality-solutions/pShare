@@ -10,6 +10,7 @@ export const getRootSaga = () => {
 
 
 function* loggingSaga() {
+    console.log("starting saga")
     for (; ;) {
         const action: AnyAction = yield take("*");
         console.log("saga action : ", action.type);

@@ -5,6 +5,7 @@ import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
 import installExtensionsAsync from './installExtensionsAsync';
 import { getBitcoinClient } from './getBitcoinClient';
+import { configureStore } from '../shared/store';
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -15,6 +16,7 @@ declare module 'electron' {
   }
 }
 
+const store = configureStore("main")
 
 //console.log(process.env)
 getBitcoinClient().then(async client => {

@@ -8,7 +8,7 @@ import { App } from './components/App';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
-const store = configureStore(history)
+const store = configureStore("renderer", history)
 
 let render = () => ReactDOM.render(
     <Provider store={store}>
