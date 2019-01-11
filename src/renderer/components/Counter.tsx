@@ -21,12 +21,12 @@ export const Counter: React.FunctionComponent<CounterProps> = ({ counter, decrem
     </div>
     <div>
       <h4>normal reducer</h4>
-      <button id="increment-button" onClick={increment}>Increment</button>
-      <button onClick={decrement}>Decrement</button>
+      <button id="increment-button" onClick={_ => increment()}>Increment</button>
+      <button onClick={_ => decrement()}>Decrement</button>
     </div>
     <div>
       <h4>via epic</h4>
-      <button onClick={incrementIfOdd} id="increment-if-odd-button">Increment by 2 if Odd (with 1 sec delay)</button>
+      <button onClick={_ => incrementIfOdd()} id="increment-if-odd-button">Increment by 2 if Odd (with 1 sec delay)</button>
     </div>
     <div>
       <h4>routing</h4>

@@ -1,11 +1,12 @@
-import { Middleware, Action, compose, createStore, applyMiddleware, Reducer, ActionCreator } from "redux";
-import { getRendererRootReducer, RendererRootState, getMainRootReducer, MainRootState } from "../../reducers";
+import { Middleware, Action,  createStore, applyMiddleware, ActionCreator } from "redux";
+import { getRendererRootReducer,  getMainRootReducer } from "../../reducers";
 import { composeEnhancers } from "../../system/reduxDevToolsCompose";
-import createReduxLocalStorageAdapter from "../../system/createReduxLocalStorageAdapter";
+//import createReduxLocalStorageAdapter from "../../system/createReduxLocalStorageAdapter";
 import { History } from "history";
-import persistState, { mergePersistedState } from 'redux-localstorage';
+//import persistState, { mergePersistedState } from 'redux-localstorage';
 import StoreActions from '../../actions/store'
-import RootActions from "../../actions";
+//import getInitialReducerState from "../../../shared/system/getInitialReducerState";
+//import RootActions from "../../actions";
 
 declare global {
     interface Window {
@@ -16,15 +17,17 @@ declare global {
 
 export function createRendererStoreWithHotReload(history: History<any>, middlewares: Middleware<Action<any>>[]) {
     const rootReducer = getRendererRootReducer(history);
-    const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    //if(rootReducer===undefined)throw Error();
+    //const r: Reducer<RendererRootState, RootActions> =rootReducer
+    //const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState())(rootReducer);
     //const storageAdapter = createReduxLocalStorageAdapter();
     const enhancers = composeEnhancers(applyMiddleware(...middlewares));
-    const store = createStore(reducer, enhancers);
-    if (module.hot) {
+    const store = createStore(rootReducer, enhancers);
+    if (!process.env.NODE_ENV && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
-            const newReducer = compose(mergePersistedState())(getRendererRootReducer(history));
-            store.replaceReducer(newReducer);
+            //const newReducer = compose(mergePersistedState())(getRendererRootReducer(history));
+            store.replaceReducer(getRendererRootReducer(history));
             console.warn("reducers reloaded");
         });
     }
@@ -33,15 +36,15 @@ export function createRendererStoreWithHotReload(history: History<any>, middlewa
 }
 export function createMainStoreWithHotReload(middlewares: Middleware<Action<any>>[]) {
     const rootReducer = getMainRootReducer();
-    const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    //const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState())(rootReducer);
     //const storageAdapter = createReduxLocalStorageAdapter();
-    const enhancers = composeEnhancers(applyMiddleware(...middlewares));
-    const store = createStore(reducer, enhancers);
-    if (module.hot) {
+    const enhancers = applyMiddleware(...middlewares);
+    const store = createStore(rootReducer, enhancers);
+    if (!process.env.NODE_ENV && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
-            const newReducer = compose(mergePersistedState())(getMainRootReducer());
-            store.replaceReducer(newReducer);
+            //const newReducer = compose(mergePersistedState())(getMainRootReducer());
+            store.replaceReducer(getMainRootReducer());
             console.warn("reducers reloaded");
         });
     }

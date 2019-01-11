@@ -15,7 +15,7 @@ export default function runRootEpicWithHotReload(epicMw: EpicMiddleware<RootActi
                 switchMap(epic => epic(a$, s$, deps))
             );
 
-        if (module.hot) {
+        if (!process.env.NODE_ENV && module.hot) {
             module.hot.accept('../../epics', () => {
                 console.info("hot-reloading epics")
                 epic$.next(getRootEpic());

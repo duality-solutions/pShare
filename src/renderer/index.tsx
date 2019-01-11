@@ -18,7 +18,7 @@ let render = () => ReactDOM.render(
     </Provider>,
     rootEl);
 
-if (module.hot) {
+if (!process.env.NODE_ENV && module.hot) {
     module.hot.accept("./components/App", () => {
         console.info("hot-reloading react components")
         render();

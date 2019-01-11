@@ -3,9 +3,8 @@ import { createEpicMiddleware } from 'redux-observable'
 import createSagaMiddleware from 'redux-saga'
 import createRouterMiddleware from '../system/createRouterMiddleware';
 import { createRendererStoreWithHotReload, createMainStoreWithHotReload } from './hot-reload/createStoreWithHotReload';
-import runRootEpicWithHotReload from './hot-reload/runRootEpicWithHotReload';
+//import runRootEpicWithHotReload from './hot-reload/runRootEpicWithHotReload';
 import runRootSagaWithHotReload from './hot-reload/runRootSagaWithHotReload';
-import { Middleware, Dispatch, AnyAction } from 'redux';
 import {
     forwardToMain,
     forwardToRenderer,
@@ -15,12 +14,14 @@ import {
 } from 'electron-redux';
 import { StoreScope } from './StoreScope';
 export function configureStore(scope: StoreScope, history: History | null = null) {
-    const middlewares: Middleware<{}, any, Dispatch<AnyAction>>[] = [];
+
     if (scope === "main") {
         const epicMiddleware = createEpicMiddleware()
         const sagaMiddleware = createSagaMiddleware();
-        middlewares.push(...[triggerAlias, epicMiddleware, sagaMiddleware, forwardToRenderer])
+        const middlewares = [triggerAlias, epicMiddleware, sagaMiddleware, forwardToRenderer];
         const store = createMainStoreWithHotReload(middlewares);
+        //store.subscribe(() => console.log("main store!!!"))
+
         //runRootEpicWithHotReload(epicMiddleware);
         runRootSagaWithHotReload(sagaMiddleware, store);
         replayActionMain(store);
@@ -30,8 +31,9 @@ export function configureStore(scope: StoreScope, history: History | null = null
             throw Error("history must be supplied for renderer store")
         }
         const routerMiddleware = createRouterMiddleware(history);
-        middlewares.push(...[forwardToMain, routerMiddleware])
+        const middlewares = [forwardToMain, routerMiddleware];
         const store = createRendererStoreWithHotReload(history, middlewares);
+        //store.subscribe(() => console.log("renderer store!!!"))
         replayActionRenderer(store);
         return store
     } else {

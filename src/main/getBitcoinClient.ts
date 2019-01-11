@@ -26,6 +26,7 @@ export async function getBitcoinClient() {
 const isDevelopment = process.env.NODE_ENV === 'development'
 async function createBitcoinClient(opts: BitcoinClientOptions) {
     const client = new BitcoinClient(opts);
+    let errorMessageShown = false;
     //try every 2s until we get a non-error
     for (; ;) {
         try {
@@ -34,13 +35,17 @@ async function createBitcoinClient(opts: BitcoinClientOptions) {
         }
         catch (err) {
             //console.error(err);
-            console.error(isDevelopment ?
-                "error when attempting rpc call, trying again in 2s. did you start dynamicd in docker?" :
-                "error when attempting rpc call, trying again in 2s")
+            if (!errorMessageShown) {
+                console.error(isDevelopment ?
+                    "error when attempting rpc call, will try again every 2s until success. did you start dynamicd in docker?" :
+                    "error when attempting rpc call, will try again every 2s until success.")
+                errorMessageShown = true;
+            }
             await delay(2000);
             continue;
         }
     }
+    console.log("rpc call successful. client is ready")
     //client is ready to be used
     return client;
 }

@@ -17,7 +17,7 @@ export default function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>,stor
         }
     });
     let sagaTask = getSagaTask();
-    if (module.hot) {
+    if (!process.env.NODE_ENV && module.hot) {
         module.hot.accept('../../sagas', () => {
             console.info("hot-reloading sagas");
             sagaTask.cancel();

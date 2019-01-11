@@ -6,6 +6,7 @@ import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devt
 import installExtensionsAsync from './installExtensionsAsync';
 import { getBitcoinClient } from './getBitcoinClient';
 import { configureStore } from '../shared/store';
+import { install as installDevtron } from 'devtron'
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -17,6 +18,9 @@ declare module 'electron' {
 }
 
 const store = configureStore("main")
+store.getState();
+
+//setTimeout(() => store.dispatch({ type: "counter/INCREMENT" }), 10000)
 
 //console.log(process.env)
 getBitcoinClient().then(async client => {
@@ -96,7 +100,11 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', async () => {
-  isDevelopment && await installExtensionsAsync(devToolsExtensions);
+  if (isDevelopment) {
+    const installPromise = installExtensionsAsync(devToolsExtensions);
+    installDevtron();
+    await installPromise;
+  }
   mainWindow = createMainWindow()
   setAppMenu(mainWindow);
   // if (menu) {
