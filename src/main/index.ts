@@ -1,5 +1,11 @@
+// sometimes node and rxjs6 don't play well together,
+// so we ensure that symbolObservable is defined from the
+// very outset, so that all observables use this symbol,
+// not their own definition of it.
+// See https://github.com/ReactiveX/rxjs/issues/3828
 import symbolObservable from 'symbol-observable'
 console.log(symbolObservable);
+
 import './setAppName'
 import { app, BrowserWindow, Menu, shell } from 'electron'
 import * as path from 'path'
