@@ -28,9 +28,6 @@ declare module 'electron' {
 const store = configureStore("main")
 store.getState();
 
-//setTimeout(() => store.dispatch({ type: "counter/INCREMENT" }), 10000)
-
-//console.log(process.env)
 getBitcoinClient().then(async client => {
   console.log("got client")
   console.log(await client.command("dnsync", "status"))
@@ -49,11 +46,6 @@ let mainWindow: BrowserWindow | null
 
 function createMainWindow() {
   const window = new BrowserWindow()
-
-  // if (isDevelopment) {
-  //   window.webContents.openDevTools()
-  // }
-
 
   const templateUrl =
     isSpectron
@@ -115,16 +107,8 @@ app.on('ready', async () => {
   }
   mainWindow = createMainWindow()
   setAppMenu(mainWindow);
-  // if (menu) {
-  //   menu.insert(10000,new MenuItem({submenu:new Menu()}))
-  //   Menu.setApplicationMenu(menu);
-  //   //var fileMenuItem=blinq(menu.items).single(item=>item.label==="File");
-  //   //console.log(fileMenuItem)
-  // }
-  if (isDevelopment) {
-    // auto-open dev tools
-    // mainWindow.webContents.openDevTools();
 
+  if (isDevelopment) {
     // add inspect element on right click menu
     mainWindow.webContents.on('context-menu', (e, props) => {
       mainWindow && Menu.buildFromTemplate([
