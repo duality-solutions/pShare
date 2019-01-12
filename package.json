@@ -55,6 +55,7 @@
     "redux-saga": "^0.16.2",
     "rxjs": "^6.3.3",
     "source-map-support": "^0.5.9",
+    "symbol-observable": "^1.2.0",
     "tslib": "^1.9.3",
     "typesafe-actions": "^2.0.4"
   },

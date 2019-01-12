@@ -1,3 +1,5 @@
+import symbolObservable from 'symbol-observable'
+console.log(symbolObservable);
 import './setAppName'
 import { app, BrowserWindow, Menu, shell } from 'electron'
 import * as path from 'path'

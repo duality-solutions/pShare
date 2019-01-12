@@ -13,6 +13,7 @@ import {
     replayActionRenderer,
 } from 'electron-redux';
 import { StoreScope } from './StoreScope';
+import runRootEpicWithHotReload from './hot-reload/runRootEpicWithHotReload';
 export function configureStore(scope: StoreScope, history: History | null = null) {
 
     if (scope === "main") {
@@ -22,7 +23,7 @@ export function configureStore(scope: StoreScope, history: History | null = null
         const store = createMainStoreWithHotReload(middlewares);
         //store.subscribe(() => console.log("main store!!!"))
 
-        //runRootEpicWithHotReload(epicMiddleware);
+        runRootEpicWithHotReload(epicMiddleware);
         runRootSagaWithHotReload(sagaMiddleware, store);
         replayActionMain(store);
         return store;
