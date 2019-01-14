@@ -1,19 +1,15 @@
 import { SagaMiddleware } from "redux-saga";
-
 import { fork } from "redux-saga/effects";
-
-import { getRootSaga } from "../../sagas";
+import { getRendererRootSaga } from "../../sagas";
 import { Store } from "redux";
-import { MainRootState } from "../../reducers";
+import { RendererRootState } from "../../reducers";
 import RootActions from "../../actions";
-
-export default function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>,store:Store<MainRootState,RootActions>) {
-    
+export default function runRendererRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, store: Store<RendererRootState, RootActions>) {
     const getSagaTask = () => sagaMw.run(function* () {
-        const sagas = getRootSaga();
-        for(let s of sagas){
-            yield fork(s)
-            console.log("forked")
+        const sagas = getRendererRootSaga();
+        for (let s of sagas) {
+            yield fork(s);
+            console.log("forked");
         }
     });
     let sagaTask = getSagaTask();

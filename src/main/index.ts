@@ -12,7 +12,6 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
 import installExtensionsAsync from './installExtensionsAsync';
-import { getBitcoinClient } from './getBitcoinClient';
 import { configureStore } from '../shared/store';
 import { install as installDevtron } from 'devtron'
 
@@ -28,10 +27,7 @@ declare module 'electron' {
 const store = configureStore("main")
 store.getState();
 
-getBitcoinClient().then(async client => {
-  console.log("got client")
-  console.log(await client.command("dnsync", "status"))
-})
+
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
 

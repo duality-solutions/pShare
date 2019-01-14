@@ -6,11 +6,14 @@ import { getType } from 'typesafe-actions';
 import StoreActions from '../actions/store';
 import RootActions from '../actions';
 import getInitialReducerState from '../system/getInitialReducerState';
+import user from './user';
+import sync from './sync';
 
+const appModelReducers = { counter, user, sync }
 
 export type MainRootState = ReturnType<ReturnType<typeof getMainRootReducer>>
 export const getMainRootReducer = () => {
-    const r = combineReducers({ counter });
+    const r = combineReducers({ ...appModelReducers });
     return (state: ReturnType<typeof r> | undefined, action: RootActions): ReturnType<typeof r> => {
         switch (action.type) {
             case getType(StoreActions.reset):
@@ -22,7 +25,7 @@ export const getMainRootReducer = () => {
 }
 export type RendererRootState = ReturnType<ReturnType<typeof getRendererRootReducer>>
 export const getRendererRootReducer = (history: History) => {
-    const r = combineReducers({ counter, router: connectRouter(history) });
+    const r = combineReducers({ ...appModelReducers, router: connectRouter(history) });
     return (state: ReturnType<typeof r> | undefined, action: RootActions): ReturnType<typeof r> => {
         switch (action.type) {
             case getType(StoreActions.reset):

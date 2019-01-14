@@ -5,10 +5,13 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
+import RootActions from '../shared/actions';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
 const store = configureStore("renderer", history)
+//store.subscribe(() => console.log("renderer store changed : ", store.getState()))
+store.dispatch(RootActions.initializeApp())
 
 let render = () => ReactDOM.render(
     <Provider store={store}>
