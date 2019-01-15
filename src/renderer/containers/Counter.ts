@@ -3,7 +3,7 @@ import CounterActions from "../../shared/actions/counter";
 import { RendererRootState } from '../reducers'
 import { Counter, CounterDispatchProps, CounterStateProps } from '../components/Counter';
 import { push } from 'connected-react-router';
-import { MapPropsToDispatchObj } from '../../shared/system/MapPropsToDispatchObj';
+import { MapPropsToDispatchObj } from '../system/MapPropsToDispatchObj';
 
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): CounterStateProps => {

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import { RendererRootState } from '../reducers'
 import { Sync, SyncDispatchProps, SyncStateProps } from '../components/Sync';
-import { MapPropsToDispatchObj } from '../../shared/system/MapPropsToDispatchObj';
+import { MapPropsToDispatchObj } from '../system/MapPropsToDispatchObj';
 
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SyncStateProps => {

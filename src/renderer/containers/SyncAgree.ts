@@ -2,7 +2,7 @@ import { connect } from 'react-redux'
 import UserActions from "../../shared/actions/user";
 import { RendererRootState } from '../reducers'
 import { SyncAgree, SyncAgreeDispatchProps, SyncAgreeStateProps } from '../components/SyncAgree';
-import { MapPropsToDispatchObj } from '../../shared/system/MapPropsToDispatchObj';
+import { MapPropsToDispatchObj } from '../system/MapPropsToDispatchObj';
 
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SyncAgreeStateProps => {
