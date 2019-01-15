@@ -1,5 +1,5 @@
 import { connect } from 'react-redux'
-import { RendererRootState } from '../../shared/reducers/index'
+import { RendererRootState } from '../reducers'
 import { Sync, SyncDispatchProps, SyncStateProps } from '../components/Sync';
 import { MapPropsToDispatchObj } from '../../shared/system/MapPropsToDispatchObj';
 

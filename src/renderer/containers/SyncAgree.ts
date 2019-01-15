@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import UserActions from "../../shared/actions/user";
-import { RendererRootState } from '../../shared/reducers/index'
+import { RendererRootState } from '../reducers'
 import { SyncAgree, SyncAgreeDispatchProps, SyncAgreeStateProps } from '../components/SyncAgree';
 import { MapPropsToDispatchObj } from '../../shared/system/MapPropsToDispatchObj';
 

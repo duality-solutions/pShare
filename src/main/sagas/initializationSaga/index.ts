@@ -1,7 +1,7 @@
 import { take, call, put, select } from "redux-saga/effects";
 import { getBitcoinClient } from "../../../main/getBitcoinClient";
 import BitcoinClient from 'bitcoin-core';
-import RootActions from "../../actions";
+import RootActions from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { DynodeSyncState } from "./DynodeSyncState";
 import { ExpectedMonitoringState } from "./ExpectedMonitoringState";

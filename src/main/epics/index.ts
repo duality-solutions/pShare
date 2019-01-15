@@ -1,10 +1,10 @@
 import { ActionsObservable, StateObservable, combineEpics } from 'redux-observable'
 import { filter, flatMap, withLatestFrom, tap } from 'rxjs/operators'
 
-import CounterActions from '../actions/counter'
+import CounterActions from '../../shared/actions/counter'
 import { MainRootState } from '../reducers'
 import { isActionOf } from 'typesafe-actions';
-import RootActions from '../actions';
+import RootActions from '../../shared/actions';
 
 const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time))
 

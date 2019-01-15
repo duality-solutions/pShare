@@ -12,7 +12,7 @@ import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
 import installExtensionsAsync from './installExtensionsAsync';
-import { configureStore } from '../shared/store';
+import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
 
 declare module 'electron' {
@@ -24,7 +24,7 @@ declare module 'electron' {
   }
 }
 
-const store = configureStore("main")
+const store = configureStore()
 store.getState();
 
 

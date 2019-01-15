@@ -1,5 +1,5 @@
 import { getType } from "typesafe-actions";
-import RootActions from "../actions";
+import RootActions from "./../../shared/actions";
 import { take, put, select } from "redux-saga/effects";
 import { push } from "connected-react-router";
 import { RendererRootState } from "../reducers";
