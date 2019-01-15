@@ -1,6 +1,6 @@
 import { Middleware, Action,  createStore, applyMiddleware, ActionCreator } from "redux";
 import { getRootReducer } from "../../reducers";
-import { composeEnhancers } from "../../../shared/system/reduxDevToolsCompose";
+import { composeEnhancers } from "../../system/reduxDevToolsCompose";
 import { History } from "history";
 import StoreActions from '../../../shared/actions/store'
 
