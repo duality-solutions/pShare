@@ -34,14 +34,26 @@ function getStageIndex(currentState: DynodeSyncState, expectedMonitoringStates: 
 
 export function* initializationSaga() {
     const initializeAppAction = getType(RootActions.initializeApp);
+    // wait for "app/INITIALIZE"
     yield take(initializeAppAction);
+    // grab the current application state
     const state: MainRootState = yield select();
+    // this property will eventually be persisted
     if (!state.user.syncAgreed) {
+        // announce we're waiting for user to agree to sync
+        // this will be picked up by the navSaga attached to the
+        // renderer store, navigating UI to correct page
         yield put(RootActions.waitingForUserSyncAgreement());
         const userSyncAgreedAction = getType(RootActions.userAgreeSync)
+        // wait for the user to agree (posted from the renderer)
         yield take(userSyncAgreedAction)
     }
+    // announce we're waiting for dnsync
+    // this will be picked up by the navSaga attached to the
+    // renderer store, navigating UI to correct page
     yield put(RootActions.waitingForSync());
+    // call getBitcoinClient... it's an async function (returns a Promise) so 
+    // in a saga, we await for it as follows
     const client: BitcoinClient = yield call(getBitcoinClient);
     let stageIndex: number = -1000;
     for (; ;) {
@@ -58,12 +70,17 @@ export function* initializationSaga() {
             // try again
             continue;
         }
+        // currentStageIndex indicates how far we've progressed
         const currentStageIndex = getStageIndex(syncState, expectedMonitoringStates);
+        // if anything has changed, we need to dispatch an action, announcing
+        // the change
         if (currentStageIndex !== stageIndex) {
+            // we can use currentStageIndex to calculate a percentatge
             const completionPercent: number = 100 * currentStageIndex / maximumStageIndex;
+            // dispatch a "sync/PROGRESS" action
             yield put(RootActions.syncProgress({ completionPercent }));
             stageIndex = currentStageIndex;
-            // if we've hit the final stage
+            // if we've hit the final stage, we're done
             if (stageIndex === maximumStageIndex) {
                 // complete
                 yield put(RootActions.syncComplete());

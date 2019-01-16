@@ -7,4 +7,5 @@ const UserActions = {
 
 type UserActions = ActionType<typeof UserActions>;
 
+// ensure this is added to ./index.ts RootActions
 export default UserActions

@@ -7,4 +7,5 @@ const StoreActions = {
 
 type StoreActions = ActionType<typeof StoreActions>;
 
+// ensure this is added to ./index.ts RootActions
 export default StoreActions

@@ -1,4 +1,4 @@
-import AppActions from '../actions/app'
+import SyncActions from '../actions/sync'
 import { getType } from 'typesafe-actions';
 
 interface SyncState {
@@ -7,11 +7,11 @@ interface SyncState {
     syncStarted: boolean
 }
 
-export default (state: SyncState = { progressPercent: 0, isComplete: false, syncStarted: false }, action: AppActions): SyncState => {
+export default (state: SyncState = { progressPercent: 0, isComplete: false, syncStarted: false }, action: SyncActions): SyncState => {
     switch (action.type) {
-        case getType(AppActions.syncProgress):
+        case getType(SyncActions.syncProgress):
             return { ...state, progressPercent: action.payload.completionPercent, syncStarted: true }
-        case getType(AppActions.syncComplete):
+        case getType(SyncActions.syncComplete):
             return { ...state, isComplete: true }
         default:
             return state;
