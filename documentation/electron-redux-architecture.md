@@ -94,4 +94,4 @@ To add reducers, start at [`src/shared/reducers/index.ts`](../src/shared/reducer
 
 ### Navigation
 
-TBD. For the time-being, navigation is orchestrated by a managing saga that is attached only to the renderer store. The saga is [`src/renderer/sagas/navSaga.ts`](src/renderer/sagas/navSaga.ts) and, in response to actions such as `sync/WAITING_FOR_SYNC`, navigates to pages that have been set up in [`src/renderer/routes/index.tsx`](src/renderer/routes/index.tsx). We will likely need to revisit this when we start the on-boarding epic.
+TBD. For the time-being, navigation is orchestrated by a managing saga that is attached only to the renderer store. The saga is [`src/renderer/sagas/navSaga.ts`](../src/renderer/sagas/navSaga.ts) and, in response to actions such as `sync/WAITING_FOR_SYNC`, navigates to pages that have been set up in [`src/renderer/routes/index.tsx`](../src/renderer/routes/index.tsx). We will likely need to revisit this when we start the on-boarding epic.
