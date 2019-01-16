@@ -16,7 +16,7 @@ The **main process** is responsible for spawning the **renderer process** and is
 
 The only means of communication between **main process** and **renderer process** is via IPC with ***serialized*** messages (this is important to remember, as it means that all messages that cross this boundary must be serializable).
 
-## Client/Server architectures
+## Client/Server architectures == distributed application == (bad?)
 
 One way to give the renderer process access to the network calls is to set up the main process as a (kind-of) "service-provider" server with one channel with which renderer can request data from the main, and another channel in the other direction for event data pushed from the main process. This would provide complete separation of renderer and main processes, distributing application logic between two distinct, autonomous parts. Further work would be required to maintain proper synchronization of these parts.
 
