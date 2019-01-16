@@ -26,11 +26,11 @@ By using electron-redux, we can make much of this inter-application boundary dis
 
 ### electron-redux is really simple
 
-The core concept of electron-redux is very straightforward. Any actions dispatched to any store will be diverted first into the redux store of the main process, then echoed into the store of the renderer process.
+The core concept of electron-redux is very straightforward. Any actions dispatched to any store will be diverted first into the redux store of the main process, then echoed into the store of the renderer process. Along the way, sagas can be attached to either store to perform aynchronous stuff or run side-effects.
 
 ### The stores are running the same reducers
 
-The stores themselves are running reducers that are shared between main and renderer processes, meaning that they each hold a copy of the current application state (with the renderer process store becoming *eventually* consistent with the main process store... but this is instant!), constructed from the determistic flow of actions from main store --> renderer store.
+The stores themselves are running reducers that are shared between main and renderer processes, meaning that they each hold a copy of the current application state constructed from the determistic flow of actions from main store --> renderer store. In reality, the renderer process store becomes *eventually* consistent with the main process store... but this is instantaneous and we no longer need to think about this "disconnect".
 
 ### How actions flow
 
