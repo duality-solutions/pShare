@@ -44,5 +44,7 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 
 * Quiting the pShare Electron App will also terminate the bundled pShare Dynamicd daemon.
 
+### Application architecture
 
+Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
 
