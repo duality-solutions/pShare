@@ -60,7 +60,7 @@ There are a few gotchas when dealing with electron-redux
        <button onClick={() => userAgreeSync()}>Agree to sync?</button>
        //definitely no payload
 
-   Watch out!
+   Watch out! Falling into this trap means that the serializer gets stuck in a loop and freezes the application.
 
 3. For unknown reasons, electron-redux filters out action-types which start with the characters `@@` (for instance `@@app/SOMETHING`) and these are not forwarded to the main store. We should not be using the `@@` prefix for our actions, despite earlier versions of the app using this convention. Similarly, it is possible to bypass electron-redux by adding the following metadata to the action:
 
