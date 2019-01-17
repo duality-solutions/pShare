@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 const StyledCard = styled('div')`
-    display: flex;
+    /* display: block; */
+    /* direction: column; */
     min-width: 2em;
     width: ${(props: { width?: string }) => props.width ? props.width : '500px' };
     min-height: 2em;

@@ -20,7 +20,7 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
     <>
       <Container>
       <Box direction="column" width="600px">
-      <H2 align="center">Welcome</H2>
+      <H2 align="center" colored>Welcome</H2>
         <Card width="550px">
         <Text>
         Before you begin, we need to get a whole bunch of data that we'll 
@@ -28,7 +28,10 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
         can take a bit of time (like an hour or two). It will end, all things do.
         So, sit back, chill out, go get the kids from school; make a cuppa;
         go organise that drawer you've been meaning to. If you can,
-        turn the console on and have a bash. We'll see you soon.
+        turn the console on and have a bash. 
+        </Text>
+        <Text>
+        We'll see you soon......
         </Text>
         </Card>
         <Button primary align="flex-end" onClick={() => userAgreeSync()}>Agree to sync</Button>

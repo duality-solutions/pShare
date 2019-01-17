@@ -18,9 +18,10 @@ export const Sync: React.FunctionComponent<SyncProps> =
     <>
       <Container>
       <Box direction="column" >
-      <H2 align="center">Sync Progress</H2>
+      <H2 align="center" colored>Sync Progress</H2>
       <Box direction="row" width="100%">
-      {
+      {console.log('isComplete: ',isComplete, 'syncStarted',syncStarted)}
+      { 
         syncStarted ?
         !isComplete ?
         <ProgressBar level={progressPercent} status="Syncing blocks" /> :
