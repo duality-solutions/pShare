@@ -1,8 +1,12 @@
 import * as React from 'react'
 import Container from './ui-elements/Container';
-import { H2, Text } from './ui-elements/Text';
+import { H1, Text } from './ui-elements/Text';
 import ProgressBar from './ui-elements/ProgressBar';
 import Box from './ui-elements/Box';
+import { AppLogo }from './ui-elements/Image';
+import logo from "../assets/logowt.svg"
+
+
 export interface SyncStateProps {
   syncStarted: boolean
   progressPercent: number
@@ -16,9 +20,12 @@ type SyncProps = SyncStateProps & SyncDispatchProps
 export const Sync: React.FunctionComponent<SyncProps> =
   ({ progressPercent, isComplete, syncStarted }) =>
     <>
-      <Container>
+      <Box width="96%">
+      <AppLogo src={logo} width="100px" height="120px" />
+      </Box>
+      <Container height="50vh">
       <Box direction="column" >
-      <H2 align="center" colored>Sync Progress</H2>
+      <H1 align="center" colored>Sync Progress</H1>
       <Box direction="row" width="100%">
       {console.log('isComplete: ',isComplete, 'syncStarted',syncStarted)}
       { 

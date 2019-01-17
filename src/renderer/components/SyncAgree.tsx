@@ -1,9 +1,11 @@
 import * as React from 'react'
 import Container from './ui-elements/Container';
-import { H2, Text } from './ui-elements/Text';
+import { H1, Text } from './ui-elements/Text';
 import Button from "./ui-elements/Button"
-import { Card } from './ui-elements/Card';
 import Box from "./ui-elements/Box"
+import logo from "../assets/logowt.svg"
+import { AppLogo } from './ui-elements/Image';
+import Card from './ui-elements/Card';
 
 export interface SyncAgreeStateProps {
 
@@ -18,11 +20,14 @@ type SyncAgreeProps = SyncAgreeStateProps & SyncAgreeDispatchProps
 export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
   ({ userAgreeSync }) =>
     <>
-      <Container>
-      <Box direction="column" width="600px">
-      <H2 align="center" colored>Welcome</H2>
-        <Card width="550px">
-        <Text>
+      <Box width="100%" margin="5em 0 0 0">
+      <AppLogo src={logo} width="100px" height="120px" />
+      </Box>
+      <H1 align="center" colored>Welcome</H1>
+      <Container height="50vh">
+      <Box direction="column" width="100%" alignItems="center">
+      <Card width="50%"> 
+      <Text>
         Before you begin, we need to get a whole bunch of data that we'll 
         need to run and communicate with other blockchain nodes. This process
         can take a bit of time (like an hour or two). It will end, all things do.
@@ -33,8 +38,10 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
         <Text>
         We'll see you soon......
         </Text>
-        </Card>
-        <Button primary align="flex-end" onClick={() => userAgreeSync()}>Agree to sync</Button>
-        </Box>
+        </Card>      
+        {/* <Box width="100%" direction="row" > */}
+        <Button primary align="flex-end" onClick={() => userAgreeSync()} style={{margin:'0 20% 0 0'}}>Agree to sync</Button></Box>
+        {/* </Box> */}
+
       </Container>
     </>

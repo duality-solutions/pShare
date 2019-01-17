@@ -5,8 +5,13 @@ const StyledBox = styled('div')`
     flex-direction: ${(props: { direction?: string, align?:string, width?:string }) => props.direction ? props.direction : 'row'};
     align-self: ${(props: { direction?: string, align?:string, width?:string }) => props.align ? props.align : 'center'};
     width: ${(props: { direction?: string, align?:string, width?:string }) => props.width ? props.width: '500px'};
-    padding: 1em;
-    margin: 1em ;
+    justify-content: center;
+    align-items: ${(props: {direction? : string, align?:string, width?:string, alignItems?:string}) => 
+                    props.alignItems ? props.alignItems : "center"};
+    margin: ${(props: { margin?: string, direction? : string, align?:string, width?:string, alignItems?:string })  => 
+                props.margin ? props.margin : '0 0 0 0' };
+    /* padding: 1em;
+    margin: 1em ; */
 
 `
 
