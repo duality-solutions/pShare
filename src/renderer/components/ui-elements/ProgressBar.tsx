@@ -1,6 +1,7 @@
 import * as React from 'react'
 import styled from 'styled-components'
-
+import { H1, Text } from './Text'
+// import Box from "./Box"
 interface ProgressBarProps {
     status: string,
     level: number
@@ -10,29 +11,15 @@ const StyledProgress = styled.div`
   display: flex;
   flex-direction:column;
   align-items: center;
-  /* justify-content: space-around; */
   background: #2e77d0;
-  border-radius: 3px;
-  border: 2px solid #2e77d0;
+  box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
+    border: solid 2px #f7f6f6;
+    border-radius: 4px;
   min-height: 10em;
   max-width: 750px;
   width:100%;
   height: 200px;
-  /* margin: 40vh 15em; */
   padding: 0.25em 1em;
-`
-const StyledHeader = styled('h1')`
-    text-align: ${(props: { align?: string }) => props.align || 'start'};
-    color: white;
-    margin: .5em 0 0.5em 0;
-`
-
-const StyledText = styled('p')`
-    text-align: ${(props: { align?: string }) => props.align || 'start'};
-    color: white;
-    margin: 0 0 1em 0;
-    /* -webkit-margin: 0 0 0.5em 0 ; */
-    line-height: 1.2em;
 `
 
 const StyledBarContainer = styled('div')`
@@ -56,12 +43,12 @@ const StyledBarProgress = styled('span')`
 
 const ProgressBar:React.FunctionComponent<ProgressBarProps> = ({ status , level }) =>
     <StyledProgress>
-        <StyledHeader align="center">
+        <H1 align="center" color="white" margin="0.5em 0 0.4em 0">
             {level}%
-        </StyledHeader>
-        <StyledText align="center">
+        </H1>
+        <Text align="center" color="white" margin="0.2em 0 1.2em 0">
             {status}
-        </StyledText>
+        </Text>
         <StyledBarContainer >
             <StyledBarProgress level={level}/>
         </StyledBarContainer>

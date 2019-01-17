@@ -1,5 +1,4 @@
 import React from "react";
-// import Container from "./ui-elements/Container"
 import Box from "./ui-elements/Box"
 import { H1 } from "./ui-elements/Text"
 import { AppLogo }from './ui-elements/Image';
