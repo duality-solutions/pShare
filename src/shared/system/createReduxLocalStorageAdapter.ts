@@ -1,6 +1,11 @@
 import pify from 'pify';
 import jsonStorage from 'electron-json-storage';
+import * as path from 'path'
+import { app } from 'electron'
+
 const storage = pify(jsonStorage);
+const pathToDataDir = path.join(app.getPath("home"), ".pshare")
+jsonStorage.setDataPath(pathToDataDir)
 
 async function storageImpl(operationAsync: () => Promise<any>, callback: (error: Error | null, v?: any) => void): Promise<void> {
   let v: any;

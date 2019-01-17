@@ -2,6 +2,7 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 
 const AppActions = {
     initializeApp: createStandardAction('app/INITIALIZE')<void>(),
+    appInitialized: createStandardAction('app/INITIALIZED')<void>(),
 }
 
 type AppActions = ActionType<typeof AppActions>;

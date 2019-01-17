@@ -1,8 +1,10 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
+//import { MainRootState } from '../../main/reducers';
 
 
 const StoreActions = {
-    reset: createStandardAction('store/RESET')<void>()
+    reset: createStandardAction('store/RESET')<void>(),
+    hydratePersistedData: createStandardAction('store/HYDRATE')<void>()
 }
 
 type StoreActions = ActionType<typeof StoreActions>;

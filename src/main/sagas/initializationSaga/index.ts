@@ -36,6 +36,10 @@ export function* initializationSaga() {
     const initializeAppAction = getType(RootActions.initializeApp);
     // wait for "app/INITIALIZE"
     yield take(initializeAppAction);
+    // synchronize renderer state with our state
+    yield put(RootActions.hydratePersistedData())
+    //...and wait for complete initialization
+    yield take(getType(RootActions.appInitialized))
     // grab the current application state
     const state: MainRootState = yield select();
     // this property will eventually be persisted

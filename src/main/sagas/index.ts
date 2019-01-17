@@ -1,22 +1,7 @@
-import { AnyAction, } from "redux";
-import { take } from "redux-saga/effects";
 import { initializationSaga } from "./initializationSaga";
-
-
-
+import { loggingSaga } from "./loggingSaga";
+import storeHydrationSaga from "./storeHydrationSaga";
 
 export const getRootSaga = () => {
-    return [loggingSaga, initializationSaga]
-}
-
-
-
-
-function* loggingSaga() {
-    console.log("starting saga")
-    for (; ;) {
-        const action: AnyAction = yield take("*");
-        console.log("saga action : ", action);
-    }
-
+    return [loggingSaga, initializationSaga, storeHydrationSaga]
 }

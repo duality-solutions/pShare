@@ -15,10 +15,10 @@ declare global {
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
-    const storageAdapter = createReduxLocalStorageAdapter();
-    const storage = persistencePaths ? compose(filter(persistencePaths))(storageAdapter) : storageAdapter;
+    const persistenceKey = ".pshare.settings";
+    const persistenceEnhancer = getPersistenceEnhancer(persistencePaths, persistenceKey);
+    const enhancers = compose(applyMiddleware(...middlewares), persistenceEnhancer)
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
-    const enhancers = compose(applyMiddleware(...middlewares), persistState(storage))
     const store = createStore(reducer, enhancers);
     if (!process.env.NODE_ENV && module.hot) {
         module.hot.accept("../../reducers", () => {
@@ -29,6 +29,13 @@ export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[],
         });
     }
     return store;
+}
+
+function getPersistenceEnhancer(persistencePaths: string[] | undefined, persistenceKey: string) {
+    const storageAdapter = createReduxLocalStorageAdapter();
+    const storage = persistencePaths ? compose(filter(persistencePaths))(storageAdapter) : storageAdapter;
+    const persistenceEnhancer = persistState(storage, persistenceKey);
+    return persistenceEnhancer;
 }
 
 function getPersistingReducer() {
