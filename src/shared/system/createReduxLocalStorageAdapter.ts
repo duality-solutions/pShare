@@ -26,4 +26,10 @@ class ReduxLocalStorageAdapter {
   }
 }
 
-export default () => new ReduxLocalStorageAdapter();
+const adapter = new ReduxLocalStorageAdapter()
+
+export default () => ({
+  put: <T>(key: string, value: T, callback: (error: Error | null, v?: T) => void) => adapter.put(key, value, callback),
+  get: <T>(key: string, callback: (error: Error | null, v?: T) => void) => adapter.get(key, callback),
+  del: <T>(key: string, callback: (error: Error | null, v?: T) => void) => adapter.del(key, callback)
+});

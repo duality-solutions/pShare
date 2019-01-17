@@ -4,6 +4,8 @@ import StoreActions from '../../../shared/actions/store'
 import createReduxLocalStorageAdapter from '../../../shared/system/createReduxLocalStorageAdapter'
 import persistState, { mergePersistedState } from 'redux-localstorage';
 import RootActions from "../../../shared/actions";
+import filter from 'redux-localstorage-filter';
+
 declare global {
     interface Window {
         resetStore: ActionCreator<StoreActions>
@@ -13,9 +15,11 @@ declare global {
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[]) {
+    const persistencePaths = ['user'];
     const storageAdapter = createReduxLocalStorageAdapter();
+    const storage = compose(filter(persistencePaths))(storageAdapter)
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
-    const enhancers = compose(applyMiddleware(...middlewares), persistState(storageAdapter))
+    const enhancers = compose(applyMiddleware(...middlewares), persistState(storage))
     const store = createStore(reducer, enhancers);
     if (!process.env.NODE_ENV && module.hot) {
         module.hot.accept("../../reducers", () => {
