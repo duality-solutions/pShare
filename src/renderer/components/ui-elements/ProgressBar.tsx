@@ -3,7 +3,7 @@ import styled from 'styled-components'
 
 interface ProgressBarProps {
     status: string,
-    level: string
+    level: number
 }
 
 const StyledProgress = styled.div`
@@ -16,8 +16,9 @@ const StyledProgress = styled.div`
   border: 2px solid #2e77d0;
   min-height: 10em;
   max-width: 750px;
+  width:100%;
   height: 200px;
-  margin: 40vh 15em;
+  /* margin: 40vh 15em; */
   padding: 0.25em 1em;
 `
 const StyledHeader = styled('h1')`
@@ -50,13 +51,13 @@ const StyledBarProgress = styled('span')`
     border: 0px solid white;
     border-radius: 8px;
     overflow: hidden;
-    width: ${(props: { level: string }) => props.level };
+    width: ${(props: { level: number }) => `${props.level}%`};
 `
 
 const ProgressBar:React.FunctionComponent<ProgressBarProps> = ({ status , level }) =>
     <StyledProgress>
-        <StyledHeader align ="center">
-            {level}
+        <StyledHeader align="center">
+            {level}%
         </StyledHeader>
         <StyledText align="center">
             {status}
