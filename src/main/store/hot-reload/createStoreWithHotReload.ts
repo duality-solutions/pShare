@@ -14,10 +14,9 @@ declare global {
 
 
 
-export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[]) {
-    const persistencePaths = ['user'];
+export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
     const storageAdapter = createReduxLocalStorageAdapter();
-    const storage = compose(filter(persistencePaths))(storageAdapter)
+    const storage = persistencePaths ? compose(filter(persistencePaths))(storageAdapter) : storageAdapter;
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
     const enhancers = compose(applyMiddleware(...middlewares), persistState(storage))
     const store = createStore(reducer, enhancers);

@@ -8,12 +8,12 @@ import {
     replayActionMain,
 } from 'electron-redux';
 // import runEpicWithHotReload from './hot-reload/runEpicWithHotReload';
-export function configureStore() {
+export function configureStore(persistencePaths:string[]|undefined=undefined) {
 
     const epicMiddleware = createEpicMiddleware()
     const sagaMiddleware = createSagaMiddleware();
     const middlewares = [triggerAlias, epicMiddleware, sagaMiddleware, forwardToRenderer];
-    const store = createStoreWithHotReload(middlewares);
+    const store = createStoreWithHotReload(middlewares,persistencePaths);
     //runEpicWithHotReload(epicMiddleware);
     runRootSagaWithHotReload(sagaMiddleware);
     replayActionMain(store);

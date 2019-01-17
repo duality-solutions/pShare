@@ -24,7 +24,10 @@ declare module 'electron' {
   }
 }
 
-const store = configureStore()
+//defines paths into the store that will be persisted
+const persistencePaths = ['user'];
+
+const store = configureStore(persistencePaths)
 store.getState();
 
 
