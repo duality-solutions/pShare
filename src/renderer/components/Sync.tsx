@@ -20,20 +20,19 @@ type SyncProps = SyncStateProps & SyncDispatchProps
 export const Sync: React.FunctionComponent<SyncProps> =
   ({ progressPercent, isComplete, syncStarted }) =>
     <>
-      <Box width="96%">
+      <Box width="100%" margin="5em 0 0 0">
       <AppLogo src={logo} width="100px" height="120px" />
       </Box>
-      <Container height="50vh">
-      <Box direction="column" >
       <H1 align="center" colored>Sync Progress</H1>
+      <Container height="50vh">
+      <Box direction="column" width="100%" >
       <Box direction="row" width="100%">
-      {console.log('isComplete: ',isComplete, 'syncStarted',syncStarted)}
       { 
         syncStarted ?
-        !isComplete ?
+        // !isComplete ?
         <ProgressBar level={progressPercent} status="Syncing blocks" /> :
-        <Text>Sync is complete</Text> :
-        <Text>Waiting for sync to start</Text>
+        // <Text>Sync is complete</Text> :
+        <Text >Waiting for sync to start...</Text>
       }  
       </Box>
       </Box>

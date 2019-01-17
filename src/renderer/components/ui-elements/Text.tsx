@@ -11,6 +11,7 @@ const StyledText = styled('p')`
     text-align: ${(props: { align?: string }) => props.align || 'start'};
     margin: 0 0 1em 0;
     line-height: 1.2em;
+    color: ${(props: { align?:string, colored?: boolean, theme: { blue: string } }) => props.colored ? props.theme.blue : 'black' };
 `
 
 export default StyledText 
