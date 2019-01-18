@@ -62,11 +62,12 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
               We'll see you soon...
             </Text>
           </Card>      
-          {/* <Box width="100%" direction="row" > */}
-          <Button primary onClick={() => userAgreeSync()} style={{margin:'0 0 0 0'}}>Proceed</Button>
+          <Button primary onClick={() => userAgreeSync()} direction="row-reverse" align="flex-end" >
+          Proceed
+          </Button>
         </Box>
       </Box>
-      {/* </Box> */}
+
       </Container>
       </CSSTransitionGroup>
     </>
