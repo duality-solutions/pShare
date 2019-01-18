@@ -1,16 +1,16 @@
 {
   "name": "pshare",
-  "version": "0.0.0",
-  "description": "duality pshare",
+  "version": "0.1.0",
+  "description": "Secure and private peer to peer file sharing",
   "license": "UNLICENSED",
   "author": {
-    "name": "duality",
-    "email": "b@rubble.com",
-    "url": "https://duality.solutions/"
+    "name": "HiddenField",
+    "email": "info@hiddenfield.com",
+    "url": "https://duality.solutions"
   },
   "build": {
     "appId": "solutions.duality.pshare",
-    "productName": "pshare",
+    "productName": "pShare",
     "mac": {
       "category": "public.app-category.tools"
     },
