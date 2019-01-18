@@ -3,8 +3,6 @@ import styled from 'styled-components'
 
 
  const StyledButton = styled.button`
-  display: flex;
-  flex-direction: row;
   align-self: ${(props: {align?:string, primary?: boolean, theme: { blue: string }}) => props.align ? props.align : 'center'};
   justify-content: center;
   min-width:218px;

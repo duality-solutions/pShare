@@ -6,8 +6,8 @@ import logo from "../assets/logowt.svg"
 
 export const Main:React.FunctionComponent = ()=>
     <>
-    <Box width="100%" margin="5em 0 0 0">
-    <AppLogo src={logo} width="100px" height="120px" />
+    <Box width="100%" margin="2em 0 -1.5em 0" align="center">
+        <AppLogo src={logo} width="100px" height="120px" />
     </Box>
     <H1 align="center" colored>Sync is Complete</H1>
     </> 

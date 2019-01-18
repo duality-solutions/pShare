@@ -14,12 +14,13 @@ const StyledProgress = styled.div`
   background: #2e77d0;
   box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
     border: solid 2px #f7f6f6;
-    border-radius: 4px;
+    border-radius: 6px;
   min-height: 10em;
   max-width: 750px;
   width:100%;
   height: 200px;
   padding: 0.25em 1em;
+  margin: auto;
 `
 
 const StyledBarContainer = styled('div')`

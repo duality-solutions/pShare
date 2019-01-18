@@ -5,12 +5,12 @@ const StyledCard = styled('div')`
     width: ${(props: { width?: string }) => props.width ? props.width : '500px' };
     min-height: 2em;
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
-    border: solid 2px #f7f6f6;
+    border: solid 1px #f1f1f1;
     border-radius: 4px;
     background-color: #ffffff;
     padding: 2em 4em;
     margin: 1em 0 ;
-    flex-wrap: wrap;
+    box-sizing: border-box;
 `
 
 export default StyledCard
