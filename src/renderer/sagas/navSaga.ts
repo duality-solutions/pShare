@@ -1,10 +1,10 @@
 import { getType } from "typesafe-actions";
 import RootActions from "./../../shared/actions";
-import { take, put, select, call } from "redux-saga/effects";
+import { take, put, select } from "redux-saga/effects";
 import { push } from "connected-react-router";
 import { RendererRootState } from "../reducers";
 
-const delay = (time: number) => new Promise(r => setTimeout(r, time));
+//const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
 
 export function* navSaga() {
