@@ -6,7 +6,6 @@ import { RendererRootState } from "../reducers";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
-
 export function* navSaga() {
     console.log("nav saga started")
     const appInitializedAction = getType(RootActions.appInitialized);
@@ -33,7 +32,7 @@ export function* navSaga() {
     console.log("nav saga waiting for syncCompleteAction")
 
     yield take(syncCompleteAction)
-    console.log("nav saga navigating to /Main")
+    console.log("nav saga navigating to /onboarding")
 
     // const syncPageEndTime = performance.now()
     // const timeOnSyncPage = syncPageEndTime - syncPageStartTime;
@@ -43,5 +42,5 @@ export function* navSaga() {
     // if (remainingTime > 0) {
     //     yield call(delay, remainingTime)
     // }
-    yield put(push("/Main"))
+    yield put(push("/onboarding"))
 }

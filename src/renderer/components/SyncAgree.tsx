@@ -3,7 +3,7 @@ import Container from './ui-elements/Container';
 import { H1, Text } from './ui-elements/Text';
 import Button from "./ui-elements/Button"
 import Box from "./ui-elements/Box"
-import logo from "../assets/logowt.svg"
+import logo from "../assets/svgs/logowt.svg";
 import { AppLogo } from './ui-elements/Image';
 import Card from './ui-elements/Card';
 import { CSSTransitionGroup } from 'react-transition-group'

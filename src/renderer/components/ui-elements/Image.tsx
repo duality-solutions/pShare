@@ -1,9 +1,15 @@
 import styled from "styled-components"
 
-const AppLogo = styled('img')`
-    src: ${(props: { src : string }) => props.src };
-    width: ${(props: { width?: string, src?: string }) => props.width ? props.width : '100%'};
-    height: ${(props: { height?: string, width?: string, src?: string }) => props.height ? props.height : '100px'};    
+interface ImageProps {
+    src? : string,
+    width?: string,
+    height?: string
+}
+
+const AppLogo = styled('img')<ImageProps>`
+    src: ${props => props.src };
+    width: ${props => props.width ? props.width : '100%'};
+    height: ${props=> props.height ? props.height : '100px'};    
 `
 
 export {

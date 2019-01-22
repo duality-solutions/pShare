@@ -1,8 +1,12 @@
 import styled from 'styled-components';
 
-const StyledCard = styled('div')`
+interface CardProps {
+    width? :string
+}
+
+const StyledCard = styled('div')<CardProps>`
     min-width: 2em;
-    width: ${(props: { width?: string }) => props.width ? props.width : '500px' };
+    width: ${props => props.width || '500px' };
     min-height: 2em;
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
     border: solid 1px #f1f1f1;
@@ -13,10 +17,28 @@ const StyledCard = styled('div')`
     box-sizing: border-box;
 `
 
+const SquareCard = styled('div')<{}>`
+    display: flex;
+    flex-direction:column;
+    align-items: center;
+    color: white;
+    background: #2e77d0;
+    box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
+        border: solid 2px #f7f6f6;
+        border-radius: 6px;
+    min-height: 10em;
+    max-width: 750px;
+    width: 250px;
+    height: 200px;
+    padding: 0.25em 1em;
+    margin: auto;
+`
+
 export default StyledCard
 
 export { 
-    StyledCard as Card 
+    StyledCard as Card,
+    SquareCard as SCard
 }
 
 

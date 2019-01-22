@@ -2,8 +2,11 @@ import * as React from 'react'
 import styled from 'styled-components'
 import Container from './Container';
 
+interface DropdownProps {
 
-const StyledDropdown = styled.div`
+}
+
+const StyledDropdown = styled('div')<DropdownProps>`
   background: transparent;
   border-radius: 3px;
   border: 2px solid palevioletred;

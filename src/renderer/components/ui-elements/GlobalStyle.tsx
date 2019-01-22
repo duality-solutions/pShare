@@ -8,6 +8,7 @@ import { createGlobalStyle } from 'styled-components'
     background: white;
     opacity:0.8;
   }
+  
   .fadeContainerIn-appear {
     opacity: 0.01;
   }

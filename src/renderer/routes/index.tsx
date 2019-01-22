@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Route, Switch } from 'react-router'
 import Sync from "../containers/Sync";
-import { Main } from "../components/Main";
+import { CreateAccount } from "../components/CreateAccount";
 import SyncAgree from "../containers/SyncAgree";
 import { ThemeProvider } from "styled-components";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
@@ -15,9 +15,9 @@ export default
     <GlobalStyle />
     <ThemeProvider theme={appTheme}>
     <Switch>
-        <Route exact path="/Sync" component={Sync} />
         <Route exact path="/SyncAgree" component={SyncAgree} />
-        <Route exact path="/Main" component={Main} />
+        <Route exact path="/Sync" component={Sync} />
+        <Route exact path="/onboarding" component={CreateAccount} />
     </Switch>
     </ThemeProvider>
     </>

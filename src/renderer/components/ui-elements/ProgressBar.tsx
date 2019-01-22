@@ -34,12 +34,12 @@ const StyledBarContainer = styled('div')`
     width: 66%;
 
 `
-const StyledBarProgress = styled('span')`
+const StyledBarProgress = styled('span')<{level:number}>`
     background: white;
     border: 0px solid white;
     border-radius: 8px;
     overflow: hidden;
-    width: ${(props: { level: number }) => `${props.level}%`};
+    width: ${props => `${props.level}%`};
 `
 
 const ProgressBar:React.FunctionComponent<ProgressBarProps> = ({ status , level }) =>

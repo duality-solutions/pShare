@@ -4,7 +4,7 @@ import { H1, Text } from './ui-elements/Text';
 import ProgressBar from './ui-elements/ProgressBar';
 import Box from './ui-elements/Box';
 import { AppLogo }from './ui-elements/Image';
-import logo from "../assets/logowt.svg";
+import logo from "../assets/svgs/logowt.svg";
 import { CSSTransitionGroup } from 'react-transition-group';
 
 
