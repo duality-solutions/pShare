@@ -28,6 +28,10 @@ pShare establishes a direct WebRTC connections with peers in order to share data
 
 pShare is built using the Electron framework.
 
+##### End-to-End Encryption
+
+Needs content.
+
 ##### Additional Libraries
 
 Needs content.
