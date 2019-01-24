@@ -14,6 +14,8 @@ Needs content.
 
 ### Architecture
 
+Needs content.
+
 ##### RPC
 
 All system level communication apart from file sharing is handled by the local dynamicd instance of the user. Communication between the pShare desktop application and the dynamicd are controlled via RPC. The  base RPC library to fork from is [here](https://github.com/ruimarinho/bitcoin-core).
