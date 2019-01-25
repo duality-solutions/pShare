@@ -5,6 +5,7 @@ import { History } from "history";
 import StoreActions from '../../../shared/actions/store'
 import RootActions from "../../../shared/actions";
 import { mergePersistedState } from 'redux-localstorage';
+import { deepMerge } from "../../../shared/system/deepMerge";
 
 declare global {
     interface Window {
@@ -32,6 +33,6 @@ export function createStoreWithHotReload(history: History<any>, middlewares: Mid
 
 function getPersistingReducer(history: History<any>) {
     const rootReducer = getRootReducer(history);
-    const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState(deepMerge))(rootReducer);
     return reducer;
 }

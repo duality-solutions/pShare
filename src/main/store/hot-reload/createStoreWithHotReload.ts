@@ -4,6 +4,7 @@ import createReduxLocalStorageAdapter from '../../../shared/system/createReduxLo
 import persistState, { mergePersistedState } from 'redux-localstorage';
 import RootActions from "../../../shared/actions";
 import filter from 'redux-localstorage-filter';
+import { deepMerge } from "../../../shared/system/deepMerge";
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
@@ -33,6 +34,6 @@ function getPersistenceEnhancer(persistencePaths: string[] | undefined, persiste
 
 function getPersistingReducer() {
     const rootReducer = getRootReducer();
-    const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState(deepMerge))(rootReducer);
     return reducer;
 }
