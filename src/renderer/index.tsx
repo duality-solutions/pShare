@@ -22,8 +22,7 @@ let render = () => ReactDOM.render(
     rootEl);
 
 const isDevelopment = process.env.NODE_ENV === 'development'
-const isRenderer = process.type === "renderer";
-if (isRenderer && isDevelopment && module.hot) {
+if (isDevelopment && module.hot) {
     module.hot.accept("./components/App", () => {
         console.info("hot-reloading react components")
         render();

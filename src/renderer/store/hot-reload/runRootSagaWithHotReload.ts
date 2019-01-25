@@ -12,8 +12,7 @@ export default function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>) {
     let sagaTask = getSagaTask();
 
     const isDevelopment = process.env.NODE_ENV === 'development'
-    const isRenderer = process.type === "renderer";
-    if (isRenderer && isDevelopment && module.hot) {
+    if (isDevelopment && module.hot) {
         module.hot.accept('../../sagas', () => {
             console.info("hot-reloading sagas");
             sagaTask.cancel();

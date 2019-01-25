@@ -1,17 +1,9 @@
-import { Middleware, Action, createStore, compose, applyMiddleware, ActionCreator, Reducer } from "redux";
+import { Middleware, Action, createStore, compose, applyMiddleware, Reducer } from "redux";
 import { getRootReducer, MainRootState } from "../../reducers";
-import StoreActions from '../../../shared/actions/store'
 import createReduxLocalStorageAdapter from '../../../shared/system/createReduxLocalStorageAdapter'
 import persistState, { mergePersistedState } from 'redux-localstorage';
 import RootActions from "../../../shared/actions";
 import filter from 'redux-localstorage-filter';
-
-declare global {
-    interface Window {
-        resetStore: ActionCreator<StoreActions>
-    }
-}
-
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
@@ -21,8 +13,7 @@ export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[],
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
     const store = createStore(reducer, enhancers);
     const isDevelopment = process.env.NODE_ENV === 'development'
-    const isRenderer = process.type === "renderer";
-    if (isRenderer && isDevelopment && module.hot) {
+    if (isDevelopment && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
             const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
