@@ -17,7 +17,10 @@ export function createStoreWithHotReload(history: History<any>, middlewares: Mid
     const rootReducer = getPersistingReducer(history);
     const enhancers = composeEnhancers(applyMiddleware(...middlewares));
     const store = createStore(rootReducer, enhancers);
-    if (!process.env.NODE_ENV && module.hot) {
+
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isRenderer = process.type === "renderer";
+    if (isRenderer && isDevelopment && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
             store.replaceReducer(getPersistingReducer(history));

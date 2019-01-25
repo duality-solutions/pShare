@@ -5,16 +5,18 @@ import { fork } from "redux-saga/effects";
 import { getRootSaga } from "../../sagas";
 
 export default function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>) {
-    
+
     const getSagaTask = () => sagaMw.run(function* () {
         const sagas = getRootSaga();
-        for(let s of sagas){
+        for (let s of sagas) {
             yield fork(s)
             console.log("forked")
         }
     });
     let sagaTask = getSagaTask();
-    if (!process.env.NODE_ENV && module.hot) {
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isRenderer = process.type === "renderer";
+    if (isRenderer && isDevelopment && module.hot) {
         module.hot.accept('../../sagas', () => {
             console.info("hot-reloading sagas");
             sagaTask.cancel();
