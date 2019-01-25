@@ -2,8 +2,6 @@
 
 ## Abstract
 
-Privately and securely share data with friends, family, and business associates.
-
 pShare is a privacy oriented p2p (peer to peer), file-and-folder sharing application, allowing creation of public and private groups to manage your links and file sharing.
 
 With pShare it is easy to share data with friends, family and business associates securely, without centralized administrators and prying eyes monitoring your activity.
@@ -28,7 +26,7 @@ pShare establishes a direct WebRTC connections with peers in order to share data
 
 pShare is built using the Electron framework.
 
-##### End-to-End Encryption
+##### Encryption
 
 Needs content.
 
