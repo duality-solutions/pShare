@@ -1,12 +1,12 @@
-import * as React from 'react'
-import Container from './ui-elements/Container';
-import { H1, Text } from './ui-elements/Text';
-import Button from "./ui-elements/Button"
-import Box from "./ui-elements/Box"
-import logo from "../assets/svgs/logowt.svg";
-import { AppLogo } from './ui-elements/Image';
+import * as React from 'react';
+import { CSSTransitionGroup } from 'react-transition-group';
+import logo from "../assets/svgs/logo_without_text.svg";
+import Box from "./ui-elements/Box";
+import { ArrowButton } from "./ui-elements/Button";
 import Card from './ui-elements/Card';
-import { CSSTransitionGroup } from 'react-transition-group'
+import Container from './ui-elements/Container';
+import { AppLogo } from './ui-elements/Image';
+import { H1, Text } from './ui-elements/Text';
 
 export interface SyncAgreeStateProps {
 
@@ -41,7 +41,7 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
       transitionLeave={true}
       transitionLeaveTimeout={500}>
 
-      <H1 align="center" colored>Welcome</H1>
+      <H1 align="center" colored fontWeight="600">Welcome</H1>
       <Container height="50vh">
       <Box direction="column" width="100%" align="center">
         <Box direction="column" width="50%" align="right" margin="0 auto 0 auto">
@@ -62,9 +62,7 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
               We'll see you soon...
             </Text>
           </Card>      
-          <Button primary onClick={() => userAgreeSync()} direction="row-reverse" align="flex-end" >
-          Proceed
-          </Button>
+          <ArrowButton onClick={() => userAgreeSync()} label="Proceed" />
         </Box>
       </Box>
 

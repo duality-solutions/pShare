@@ -1,12 +1,12 @@
-import { combineReducers } from 'redux';
-import { connectRouter } from 'connected-react-router'
+import { connectRouter } from 'connected-react-router';
 import { History } from 'history';
+import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
-import StoreActions from '../../shared/actions/store';
 import RootActions from '../../shared/actions';
+import StoreActions from '../../shared/actions/store';
+import * as appModelReducers from '../../shared/reducers';
 import getInitialReducerState from '../../shared/system/getInitialReducerState';
 
-import * as appModelReducers from '../../shared/reducers'
 
 
 export type RendererRootState = ReturnType<ReturnType<typeof getRootReducer>>
@@ -21,3 +21,4 @@ export const getRootReducer = (history: History) => {
         }
     }
 }
+ 

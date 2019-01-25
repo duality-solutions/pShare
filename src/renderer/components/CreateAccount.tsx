@@ -1,18 +1,26 @@
 import React from "react";
-import Box from "./ui-elements/Box";
-import { Text, H1 } from "./ui-elements/Text";
-import { AppLogo }from './ui-elements/Image';
-import logo from "../assets/svgs/logowt.svg";
-import addIcon from "../assets/svgs/p-share-add.svg"
 import { CSSTransitionGroup } from 'react-transition-group';
-import Container from "./ui-elements/Container";
+import logo from "../assets/svgs/logo_with_text.svg";
+import addIcon from "../assets/svgs/p-share-add.svg";
+import Box from "./ui-elements/Box";
 import { SCard } from "./ui-elements/Card";
+import Container from "./ui-elements/Container";
+import { AppLogo } from './ui-elements/Image';
+import { H1, Text } from "./ui-elements/Text";
 
+export interface CreateAccountStateProps {
 
-export const CreateAccount:React.FunctionComponent = ()=>
+}
+export interface CreateAccountDispatchProps {
+    createAccount : () => void 
+}
+type CreateAccountProps = CreateAccountDispatchProps & CreateAccountStateProps
+
+export const CreateAccount:React.FunctionComponent<CreateAccountProps> = 
+    ({ createAccount}) =>
     <>
-    <Box width="100%" margin="2em 0 -1.5em 0" align="center">
-        <AppLogo src={logo} width="100px" height="120px" />
+    <Box width="100%" margin="4em 0 8em 0" align="center" >
+        <AppLogo src={logo} width="180px" height="150" />
     </Box>
 
     <CSSTransitionGroup
@@ -24,12 +32,17 @@ export const CreateAccount:React.FunctionComponent = ()=>
 
     <Container height="50vh">
     <Box direction="column" align="center" width="100%">
-    <Box direction="row" align="center" width="100%">
-        <SCard>
+    <Box display="flex" direction="row" align="center" width="100%">
+        <SCard onClick={()=> createAccount()}>
             <img src={addIcon} height="80px" width="80px"/>
             <H1 align="center" color="white">Create Account</H1>
             <Text color="white">Create a brand new account</Text>
         </SCard>
+        {/* <SCard onClick={()=> createAccount()}>
+            <img src={addIcon} height="80px" width="80px"/>
+            <H1 align="center" color="white">Restore Account</H1>
+            <Text color="white">Create a brand new account</Text>
+        </SCard> */}
     </Box>
     </Box>
     </Container>

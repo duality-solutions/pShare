@@ -1,13 +1,17 @@
-
-import styled from 'styled-components'
+import * as React from 'react';
+import styled from 'styled-components';
 
 interface ButtonProps {
   align?: string, 
   primary?: boolean, 
   theme?: { blue: string }, 
-  direction?: string 
+  direction?: string,
 }
 
+interface ArrowButtonProps{
+  label: string,
+  onClick?: () => void
+}
  const StyledButton = styled('button')<ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
   justify-content: center;
@@ -24,4 +28,14 @@ interface ButtonProps {
   cursor: pointer;
 `
 
+
 export default StyledButton
+
+const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick }) => (
+  <StyledButton onClick={onClick} primary direction="row-reverse" align="flex-end">
+      {label} <span style={{float:"right"}}>&#8594;</span>
+  </StyledButton>
+)
+
+export { ArrowButton };
+

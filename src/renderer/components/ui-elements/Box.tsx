@@ -5,9 +5,12 @@ interface BoxProps {
     margin? : string,
     width? : string,
     direction?: string,
+    display?: string,
 }
 
 const StyledBox = styled('div')<BoxProps>`
+    display: ${props => props.display || 'block'};
+    justify-content:center;
     text-align: ${props => props.align || 'start'}; 
     width: ${props => props.width ? props.width: '500px'};    
     margin: ${props  =>  props.margin ? props.margin : '0 0 0 0' };

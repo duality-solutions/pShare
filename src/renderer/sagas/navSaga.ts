@@ -1,8 +1,8 @@
-import { getType } from "typesafe-actions";
-import RootActions from "./../../shared/actions";
-import { take, put, select } from "redux-saga/effects";
 import { push } from "connected-react-router";
+import { put, select, take } from "redux-saga/effects";
+import { getType } from "typesafe-actions";
 import { RendererRootState } from "../reducers";
+import RootActions from "./../../shared/actions";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -42,5 +42,10 @@ export function* navSaga() {
     // if (remainingTime > 0) {
     //     yield call(delay, remainingTime)
     // }
-    yield put(push("/onboarding"))
+    yield put(push("/Onboarding"))
+
+    const createAccountAction = getType(RootActions.createAccount)
+    yield take(createAccountAction)
+    yield put(push("/CreateAccount"))
+
 }
