@@ -23,13 +23,7 @@ export const deepMerge =
             throw Error("cannot merge a mixed collection of mergeable and non-mergable items")
         }
         if (!areMergable) {
-            try {
-                return itms.last()
-            } catch{
-                console.log([...itms])
-                debugger;
-                throw Error("woo");
-            }
+            return itms.last()
         }
         switch (numItms) {
             case 0:
