@@ -1,12 +1,12 @@
 import React from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
-import logo from "../assets/svgs/logo_with_text.svg";
-import addIcon from "../assets/svgs/p-share-add.svg";
-import Box from "./ui-elements/Box";
-import { SCard } from "./ui-elements/Card";
-import Container from "./ui-elements/Container";
-import { AppLogo } from './ui-elements/Image';
-import { H1, Text } from "./ui-elements/Text";
+import logo from "../../assets/svgs/logo_with_text.svg";
+import addIcon from "../../assets/svgs/p-share-add.svg";
+import Box from "../ui-elements/Box";
+import { SCard } from "../ui-elements/Card";
+import Container from "../ui-elements/Container";
+import { AppLogo } from '../ui-elements/Image';
+import { H1, Text } from "../ui-elements/Text";
 
 export interface CreateAccountStateProps {
 

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
-import logo from "../assets/svgs/logo_without_text.svg";
-import Box from "./ui-elements/Box";
-import { ArrowButton } from "./ui-elements/Button";
-import Card from './ui-elements/Card';
-import Container from './ui-elements/Container';
-import { AppLogo } from './ui-elements/Image';
-import { H1, Text } from './ui-elements/Text';
+import logo from "../../assets/svgs/logo_without_text.svg";
+import Box from "../ui-elements/Box";
+import { ArrowButton } from "../ui-elements/Button";
+import Card from '../ui-elements/Card';
+import Container from '../ui-elements/Container';
+import { AppLogo } from '../ui-elements/Image';
+import { H1, Text } from '../ui-elements/Text';
 
 export interface SyncAgreeStateProps {
 

@@ -3,11 +3,11 @@ import { Route, Switch } from 'react-router';
 import { ThemeProvider } from "styled-components";
 import { Main } from "../components/Main";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
-import CreateAccount from "../containers/CreateAccount";
-import EnterDisplayName from "../containers/EnterDisplayName";
-import EnterUsername from "../containers/EnterUsername";
-import Sync from "../containers/Sync";
-import SyncAgree from "../containers/SyncAgree";
+import CreateAccount from "../containers/onboarding/CreateAccount";
+import EnterDisplayName from "../containers/onboarding/EnterDisplayName";
+import EnterUsername from "../containers/onboarding/EnterUsername";
+import Sync from "../containers/syncing/Sync";
+import SyncAgree from "../containers/syncing/SyncAgree";
 
 const appTheme = {
     blue : '#2e77d0'

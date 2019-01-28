@@ -1,11 +1,11 @@
-import * as React from 'react'
-import Container from './ui-elements/Container';
-import { H1, Text } from './ui-elements/Text';
-import ProgressBar from './ui-elements/ProgressBar';
-import Box from './ui-elements/Box';
-import { AppLogo }from './ui-elements/Image';
-import logo from "../assets/svgs/logo_without_text.svg";
+import * as React from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
+import logo from "../../assets/svgs/logo_without_text.svg";
+import Box from '../ui-elements/Box';
+import Container from '../ui-elements/Container';
+import { AppLogo } from '../ui-elements/Image';
+import ProgressBar from '../ui-elements/ProgressBar';
+import { H1, Text } from '../ui-elements/Text';
 
 
 export interface SyncStateProps {

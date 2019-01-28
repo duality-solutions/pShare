@@ -52,7 +52,6 @@ export function* navSaga() {
         yield put(push("/CreateAccount"))
         console.log("nav saga navigating to /CreateAccount")
     
-    
         const createAccountAction = getType(RootActions.createAccount)
         yield take(createAccountAction)
         yield put(push("/EnterUsername"))
@@ -65,7 +64,9 @@ export function* navSaga() {
     
         const enterDisplaynameAction = getType(RootActions.enterDisplayname)
         yield take(enterDisplaynameAction)
-    
+        console.log("nav saga: user is onboarded, navigating to /Main")
+        yield put(push("/Main"))
+
     }
 
 }
