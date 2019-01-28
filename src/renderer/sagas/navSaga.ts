@@ -32,7 +32,6 @@ export function* navSaga() {
     console.log("nav saga waiting for syncCompleteAction")
 
     yield take(syncCompleteAction)
-    console.log("nav saga navigating to /CreateAccount")
 
     // const syncPageEndTime = performance.now()
     // const timeOnSyncPage = syncPageEndTime - syncPageStartTime;
@@ -42,19 +41,31 @@ export function* navSaga() {
     // if (remainingTime > 0) {
     //     yield call(delay, remainingTime)
     // }
-    yield put(push("/CreateAccount"))
 
+    const newState: RendererRootState = yield select()
+    if(newState.user.isOnboarded) {
+        console.log("nav saga: user is onboarded, navigating to /Main")
+        yield put(push("/Main"))
+    }
+    else {
+        console.log("nav saga: navigating to Onboarding -- /CreateAccount")
+        yield put(push("/CreateAccount"))
+        console.log("nav saga navigating to /CreateAccount")
+    
+    
+        const createAccountAction = getType(RootActions.createAccount)
+        yield take(createAccountAction)
+        yield put(push("/EnterUsername"))
+        console.log('navigating to enter username page')
+    
+        const enterUsernameAction = getType(RootActions.enterUsername)
+        yield take(enterUsernameAction)
+        yield put(push("/EnterDisplayname"))
+        console.log('navigating to enter display name page')
+    
+        const enterDisplaynameAction = getType(RootActions.enterDisplayname)
+        yield take(enterDisplaynameAction)
+    
+    }
 
-    const createAccountAction = getType(RootActions.createAccount)
-    yield take(createAccountAction)
-    yield put(push("/EnterUsername"))
-    console.log('navigating to enter username page')
-
-    const enterUsernameAction = getType(RootActions.enterUsername)
-    yield take(enterUsernameAction)
-    yield put(push("/EnterDisplayname"))
-    console.log('navigating to enter display name page')
-
-    const enterDisplaynameAction = getType(RootActions.enterDisplayname)
-    yield take(enterDisplaynameAction)
 }

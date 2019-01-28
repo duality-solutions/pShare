@@ -1647,10 +1647,10 @@ bl@^1.0.0:
     readable-stream "^2.3.5"
     safe-buffer "^5.1.1"
 
-blinq@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/blinq/-/blinq-2.0.0.tgz#64a180858b6923de1afe6056752cd575378c7360"
-  integrity sha512-Arj1d4kGB4utJdaPzfK3pE0RBVUQaihi7NeFvbcGwLQke2KloF09D7eYVtWKqIuxzooPo5/+hUPM2j276UYc9A==
+blinq@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/blinq/-/blinq-2.0.2.tgz#cff478fa6fd1120a598b9d7770c4ed8ad4c79951"
+  integrity sha512-+kDz9l/y1JNTybdhwXTSJ2QxdErRj+Jvop7snULe9LEBumfGJglqZcTrDUQF71Ue9Mzh4tq806jzwT+GDm/z7Q==
 
 bluebird-lst@^1.0.6:
   version "1.0.6"
