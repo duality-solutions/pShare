@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Route, Switch } from 'react-router'
-import Sync from "../containers/Sync";
-import CreateAccount from "../containers/CreateAccount";
-import SyncAgree from "../containers/SyncAgree";
+import { Route, Switch } from 'react-router';
 import { ThemeProvider } from "styled-components";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
-import { EnterUsername } from "../components/EnterUsername"
+import CreateAccount from "../containers/CreateAccount";
+import EnterDisplayName from "../containers/EnterDisplayName";
+import EnterUsername from "../containers/EnterUsername";
+import Sync from "../containers/Sync";
+import SyncAgree from "../containers/SyncAgree";
 
 const appTheme = {
     blue : '#2e77d0'
@@ -18,8 +19,9 @@ export default
     <Switch>
         <Route exact path="/SyncAgree" component={SyncAgree} />
         <Route exact path="/Sync" component={Sync} />
-        <Route exact path="/Onboarding" component={CreateAccount} />
-        <Route exact path="/CreateAccount" component={EnterUsername} />
+        <Route exact path="/CreateAccount" component={CreateAccount} />
+        <Route exact path="/EnterUsername" component={EnterUsername} />
+        <Route exact path="/EnterDisplayname" component={EnterDisplayName} />
     </Switch>
     </ThemeProvider>
     </>
