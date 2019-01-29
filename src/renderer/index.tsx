@@ -18,9 +18,12 @@ store.dispatch(RootActions.initializeApp())
 const validator = getProxyForChannel<ValidationApi>("validationApi");
 
 (async () => {
-    const isValid = await validator.validate("foo")
-    console.log(`validator.validate returned ${isValid}`)
-
+    try {
+        const isValid = await validator.validate("foo")
+        console.log(`validator.validate returned ${isValid}`)
+    } catch (err) {
+        console.log("oh no ", err)
+    }
 })()
 
 
