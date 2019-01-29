@@ -14,6 +14,10 @@ import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devt
 import installExtensionsAsync from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
+import proxyObjectToIpcChannel from '../shared/proxy/proxyObjectToIpcChannel';
+import { ValidationApi } from '../shared/validation/ValidationApi';
+import getValidationApi from './validation/getValidationApi';
+
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -26,6 +30,8 @@ declare module 'electron' {
 
 //defines paths into the store that will be persisted
 const persistencePaths = ['user.syncAgreed'];
+
+proxyObjectToIpcChannel<ValidationApi>("validationApi", getValidationApi())
 
 const store = configureStore(persistencePaths)
 store.getState();
