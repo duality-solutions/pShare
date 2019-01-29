@@ -16,7 +16,7 @@ const getProxyForChannel = <T extends object>(channel: string): T => {
             });
         }
     };
-    ipcRenderer.on(channel, (event: IpcMessageEvent, { callId, result, error }: ProxyResult<any>) => {
+    ipcRenderer.on(channel, (_: IpcMessageEvent, { callId, result, error }: ProxyResult<any>) => {
         if (!returnMap.has(callId)) {
             throw Error(`could not find callId ${callId} in returnMap`);
         }
