@@ -2,13 +2,13 @@ import { ipcRenderer, IpcMessageEvent } from "electron";
 import ProxyResult from "./ProxyResult";
 const getProxyForChannel = <T extends object>(channel: string): T => {
     let callId = 0;
-    interface ReturnMapResolver {
+    interface PromiseResolver {
         resolve: Function;
         reject: Function;
     }
-    let returnMap: Map<number, ReturnMapResolver> = new Map<number, ReturnMapResolver>();
+    let returnMap: Map<number, PromiseResolver> = new Map<number, PromiseResolver>();
     const handler: ProxyHandler<T> = {
-        get: (target, propKey, receiver) => (...args: any[]) => {
+        get: (_, propKey) => (...args: any[]) => {
             const thisCallId = callId++;
             ipcRenderer.send(channel, thisCallId, propKey, ...args);
             return new Promise((resolve, reject) => {
