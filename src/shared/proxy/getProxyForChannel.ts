@@ -1,15 +1,32 @@
 import { ipcRenderer, IpcMessageEvent } from "electron";
 import ProxyResult from "./ProxyResult";
+import { v4 as uuid } from 'uuid';
+
+interface PromiseResolver {
+    resolve: Function;
+    reject: Function;
+}
+
+const proxyMap = new Map<string, any>()
+
 const getProxyForChannel = <T extends object>(channel: string): T => {
-    let callId = 0;
-    interface PromiseResolver {
-        resolve: Function;
-        reject: Function;
+    const proxy = proxyMap.get(channel)
+    if (proxy) {
+        return proxy;
     }
-    let returnMap: Map<number, PromiseResolver> = new Map<number, PromiseResolver>();
+    const newProxy = getProxyForChannelInternal<T>(channel)
+    proxyMap.set(channel, newProxy)
+    return newProxy
+}
+
+const getProxyForChannelInternal = <T extends object>(channel: string): T => {
+    let callId = 0;
+    const returnMap = new Map<string, PromiseResolver>();
+
+    const uniqueKey = uuid()
     const handler: ProxyHandler<T> = {
         get: (_, propKey) => (...args: any[]) => {
-            const thisCallId = callId++;
+            const thisCallId = `${uniqueKey} : ${callId++}`;
             ipcRenderer.send(channel, thisCallId, propKey, ...args);
             return new Promise((resolve, reject) => {
                 returnMap.set(thisCallId, { resolve, reject });
@@ -17,10 +34,9 @@ const getProxyForChannel = <T extends object>(channel: string): T => {
         }
     };
     ipcRenderer.on(channel, (_: IpcMessageEvent, { callId, result, error }: ProxyResult<any>) => {
-        if (!returnMap.has(callId)) {
-            throw Error(`could not find callId ${callId} in returnMap`);
-        }
+
         const resolver = returnMap.get(callId);
+
         if (resolver) {
             if (error) {
                 resolver.reject(error);
@@ -28,10 +44,14 @@ const getProxyForChannel = <T extends object>(channel: string): T => {
             else {
                 resolver.resolve(result);
             }
+            returnMap.delete(callId);
+        } else {
+            console.log(`could not find callId ${callId} in returnMap`);
+            return
         }
-        returnMap.delete(callId);
     });
     const proxy = new Proxy<T>({} as T, handler);
     return proxy;
 };
+
 export default getProxyForChannel

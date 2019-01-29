@@ -16,7 +16,7 @@ import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
 import proxyObjectToIpcChannel from '../shared/proxy/proxyObjectToIpcChannel';
 import { ValidationApi } from '../shared/validation/ValidationApi';
-import getValidationApi from './validation/getValidationApi';
+import getValidationApiMain from './validation/getValidationApiMain';
 
 
 declare module 'electron' {
@@ -31,7 +31,7 @@ declare module 'electron' {
 //defines paths into the store that will be persisted
 const persistencePaths = ['user.syncAgreed'];
 
-proxyObjectToIpcChannel<ValidationApi>("validationApi", getValidationApi())
+proxyObjectToIpcChannel<ValidationApi>("validationApi", getValidationApiMain())
 
 const store = configureStore(persistencePaths)
 store.getState();

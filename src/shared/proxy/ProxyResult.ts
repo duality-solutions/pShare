@@ -1,6 +1,6 @@
 interface ProxyResult<T> {
     result?: T;
-    callId: number;
+    callId: string;
     error?: any;
 }
 export default ProxyResult

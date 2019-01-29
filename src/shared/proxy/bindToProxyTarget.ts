@@ -7,7 +7,7 @@ const bindToProxyTarget =
     <T>(target: T, channel: string) =>
         async (
             event: IpcMessageEvent,
-            callId: number,
+            callId: string,
             propKey: FunctionPropertyNames<T>,
             ...remainingArgs: ArgumentsType<T[FunctionPropertyNames<T>]>
         ) => {
