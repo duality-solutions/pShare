@@ -1,5 +1,6 @@
 import * as React from 'react';
 import styled from 'styled-components';
+import back_arrow_svg from '../../assets/svgs/back-nav-arrow.svg';
 
 interface ButtonProps {
   align?: string, 
@@ -10,7 +11,7 @@ interface ButtonProps {
 
 interface ArrowButtonProps{
   label: string,
-  onClick?: () => void
+  onClick: () => void
 }
  const StyledButton = styled('button')<ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
@@ -28,14 +29,25 @@ interface ArrowButtonProps{
   cursor: pointer;
 `
 
+const StyledBackArrowButton = styled('div')`
+  display: block;
+  margin: 6% 0 0 20%;
+  cursor: pointer;
+  float: left;
+`
 
-export default StyledButton
-
+const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onClick }) => (
+  <StyledBackArrowButton onClick={() => onClick()}>
+    <img src={back_arrow_svg} />
+  </StyledBackArrowButton>
+)
 const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick }) => (
   <StyledButton onClick={onClick} primary direction="row-reverse" align="flex-end">
       {label} <span style={{float:"right"}}>&#8594;</span>
   </StyledButton>
 )
 
-export { ArrowButton };
+export default StyledButton
+
+export { ArrowButton, BackArrowButton };
 

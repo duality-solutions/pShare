@@ -5,6 +5,7 @@ import { Main } from "../components/Main";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
 import CreateAccount from "../containers/onboarding/CreateAccount";
 import EnterDisplayName from "../containers/onboarding/EnterDisplayName";
+import EnterPhoneNumber from "../containers/onboarding/EnterPhoneNumber";
 import EnterUsername from "../containers/onboarding/EnterUsername";
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
@@ -23,6 +24,7 @@ export default
         <Route exact path="/CreateAccount" component={CreateAccount} />
         <Route exact path="/EnterUsername" component={EnterUsername} />
         <Route exact path="/EnterDisplayname" component={EnterDisplayName} />
+        <Route exact path="/EnterPhonenumber" component={EnterPhoneNumber} />
         <Route exact path="/Main" component={Main} />
     </Switch>
     </ThemeProvider>
