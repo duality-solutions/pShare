@@ -19,7 +19,7 @@ type CreateAccountProps = CreateAccountDispatchProps & CreateAccountStateProps
 export const CreateAccount:React.FunctionComponent<CreateAccountProps> = 
     ({ createAccount}) =>
     <>
-    <Box width="100%" margin="4em 0 8em 0" align="center" >
+    <Box width="100%" margin="4em 0 10% 0" align="center" >
         <AppLogo src={logo} width="180px" height="150" />
     </Box>
 

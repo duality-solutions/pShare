@@ -1,4 +1,4 @@
-import styled from "styled-components"
+import styled from "styled-components";
 
 interface BoxProps {
     align? : string,
@@ -6,6 +6,7 @@ interface BoxProps {
     width? : string,
     direction?: string,
     display?: string,
+    minWidth?: string,
 }
 
 const StyledBox = styled('div')<BoxProps>`
@@ -15,11 +16,10 @@ const StyledBox = styled('div')<BoxProps>`
     width: ${props => props.width ? props.width: '500px'};    
     margin: ${props  =>  props.margin ? props.margin : '0 0 0 0' };
     box-sizing: border-box;  
+    min-width: ${props => props.minWidth || '10px'};
 `
 
 export default StyledBox
 
-export {
-    StyledBox as Box
-}
+export { StyledBox as Box };
 

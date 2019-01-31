@@ -6,6 +6,15 @@ import { ValidationResult } from '../system/validator/ValidationResult';
 
 
 
+const handleUsername = createStandardAction('onboarding/HANDLE_USERNAME').map( (username:string | undefined) => ({
+    payload: username,
+    meta: { scope: 'local' }
+}))
+
+const handleDisplayname = createStandardAction('onboarding/HANDLE_DISPLAYNAME').map((displayname: string|undefined) => ({
+    payload: displayname,
+    meta: { scope: 'local' }
+}))
 
 const OnboardingActions = {
     validateUsername: createStandardAction('validate/request/USERNAME')<string>(),
@@ -20,7 +29,8 @@ const OnboardingActions = {
     commitDisplayname: createStandardAction('onboarding/COMMIT_DISPLAYNAME')<string>(),
     enterUsername: createStandardAction('onboarding/CREATE_USERNAME')<void>(),
     enterDisplayname: createStandardAction('onboarding/CREATE_DISPLAYNAME')<void>(),
-    createPassword: createStandardAction('onboarding/CREATE_PASSWORD')<void>()
+    createPassword: createStandardAction('onboarding/CREATE_PASSWORD')<void>(),
+    enterToken: createStandardAction('onboarding/CREATE_TOKEN')<void>()
 }
 
 type OnboardingActions = ActionType<typeof OnboardingActions>;
