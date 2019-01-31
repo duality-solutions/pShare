@@ -1,5 +1,5 @@
 import { getType } from 'typesafe-actions';
-import { ValidationResult } from "../../shared/system/ValidationResult";
+import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import OnboardingActions from '../../shared/actions/onboarding';
 
 interface Validatable<T> {

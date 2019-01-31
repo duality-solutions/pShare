@@ -1,5 +1,5 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { ValidationResult } from '../system/ValidationResult';
+import { ValidationResult } from '../system/validator/ValidationResult';
 // import { ValidationResult } from './validation';
 //import { createLocalStandardAction } from '../system/createLocalStandardAction';
 
