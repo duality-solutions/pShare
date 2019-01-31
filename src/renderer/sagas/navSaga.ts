@@ -64,7 +64,7 @@ export function* navSaga() {
     
         const enterDisplaynameAction = getType(RootActions.enterDisplayname)
         yield take(enterDisplaynameAction)
-        console.log("nav saga: user is onboarded, navigating to /EnterPhoneNumber")
+        console.log("nav saga: user is onboarded, navigating to /EnterToken")
         yield put(push("/EnterToken"))
 
         const enterTokenAction = getType(RootActions.enterToken)

@@ -3,19 +3,6 @@ import { ValidationResult } from '../system/validator/ValidationResult';
 // import { ValidationResult } from './validation';
 //import { createLocalStandardAction } from '../system/createLocalStandardAction';
 
-
-
-
-const handleUsername = createStandardAction('onboarding/HANDLE_USERNAME').map( (username:string | undefined) => ({
-    payload: username,
-    meta: { scope: 'local' }
-}))
-
-const handleDisplayname = createStandardAction('onboarding/HANDLE_DISPLAYNAME').map((displayname: string|undefined) => ({
-    payload: displayname,
-    meta: { scope: 'local' }
-}))
-
 const OnboardingActions = {
     validateUsername: createStandardAction('validate/request/USERNAME')<string>(),
     validateDisplayname: createStandardAction('validate/request/DISPLAYNAME')<string>(),
