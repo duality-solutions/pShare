@@ -1,16 +1,12 @@
 import { blinq } from 'blinq';
 import { isPromise } from "../isPromise";
+import { ValidationTest } from './ValidationTest';
 
 export const validate =
     <T>(rules: ValidationTest<T>[]) =>
         async (value: T) =>
             blinq(await runTests(rules)(value)).where(r => !r.result).select(r => r.message).toArray();
 
-export interface ValidationTest<T> {
-    test: (value: T) => boolean | Promise<boolean>;
-    message: string;
-    testsOnSuccess?: ValidationTest<T>[];
-}
 interface ValidationTestResult {
     result: boolean;
     message: string;
