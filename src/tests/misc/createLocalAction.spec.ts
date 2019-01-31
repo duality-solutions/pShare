@@ -1,4 +1,5 @@
 import { createLocalStandardAction } from "../../shared/system/createLocalStandardAction";
+import { getType, createStandardAction } from "typesafe-actions";
 
 test("createLocalAction", () => {
     const ac1 = createLocalStandardAction("actionname")<void>();
@@ -17,5 +18,14 @@ test("createLocalAction", () => {
     expect(a2.meta.scope).toBe("local")
     expect(a2.payload).toBe("monkey")
 
+
+    expect(getType(createStandardAction("foo")<void>())).toBe("foo")
+
+    const ac1Type = getType(ac1);
+    console.log(ac1Type)
+    expect(ac1Type).toBe("actionname")
+    const ac2Type = getType(ac2);
+    console.log(ac2Type)
+    expect(ac2Type).toBe("actionname2")
 
 })
