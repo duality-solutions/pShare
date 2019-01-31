@@ -1,4 +1,3 @@
-//import delay from "../../shared/system/delay";
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 import { getBitcoinClient } from "../getBitcoinClient";
 
@@ -11,11 +10,14 @@ const usernameDoesNotExist = async (value: string) => {
 
     } catch (err) {
         console.log(err)
-        const re = /^BDAP_SELECT_PUBLIC_USER_RPC_ERROR: ERRCODE: 3600/
-        if (re.test(err.message)) {
+
+        if (/^BDAP_SELECT_PUBLIC_USER_RPC_ERROR: ERRCODE: 3600/.test(err.message)) {
             return true;
         }
-        throw Error("could not communicate with dynamicd, try again")
+        if (/^connect ECONNREFUSED/.test(err.message)) {
+            throw Error("Could not connect, try again")
+        }
+        throw err
     }
     if (typeof userInfo === 'undefined') {
         return true
