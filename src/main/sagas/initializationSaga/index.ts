@@ -8,7 +8,10 @@ import { ExpectedMonitoringState } from "./ExpectedMonitoringState";
 import { getExpectedMonitoringStates } from "./getExpectedMonitoringStates";
 import { MainRootState } from "../../reducers";
 import delay from "../../../shared/system/delay";
+import { BlockChainInfo } from "./BlockchainInfo";
+import { round } from "./round";
 
+const round0 = round(0)
 const expectedMonitoringStates = getExpectedMonitoringStates()
 const maximumStageIndex = Math.max(...expectedMonitoringStates.map(ms => ms.stageIndex));
 // 1 level deep object comparison
@@ -62,9 +65,11 @@ export function* initializationSaga() {
     let stageIndex: number = -1000;
     for (; ;) {
         let syncState: DynodeSyncState;
+        let blockchainInfo: BlockChainInfo;
         try {
             // fetch the state from dynamicd
             syncState = yield call(() => client.command("dnsync", "status"));
+            blockchainInfo = yield call(() => client.command("getblockchaininfo"));
         }
         catch (e) {
             // oh no, something bad
@@ -74,24 +79,25 @@ export function* initializationSaga() {
             // try again
             continue;
         }
-        // currentStageIndex indicates how far we've progressed
         const currentStageIndex = getStageIndex(syncState, expectedMonitoringStates);
-        // if anything has changed, we need to dispatch an action, announcing
-        // the change
-        if (currentStageIndex !== stageIndex) {
-            // we can use currentStageIndex to calculate a percentatge
-            const completionPercent: number = 100 * currentStageIndex / maximumStageIndex;
-            // dispatch a "sync/PROGRESS" action
-            yield put(RootActions.syncProgress({ completionPercent }));
-            stageIndex = currentStageIndex;
-            // if we've hit the final stage, we're done
-            if (stageIndex === maximumStageIndex) {
-                // complete
-                yield put(RootActions.syncComplete());
-                break;
-            }
+        // verification progress indicates our progress as a fractional percentile.
+        // Multiply by 100 and round off to 2 decimal places
+        const currentVerificationProgress = round0(parseFloat(blockchainInfo.verificationprogress) * 100)
+        const completionPercent: number = currentVerificationProgress;
+        // dispatch a "sync/PROGRESS" action
+        yield put(RootActions.syncProgress({ completionPercent }));
+
+        stageIndex = currentStageIndex;
+        // if we've hit the final stage, we're done
+        if (stageIndex === maximumStageIndex) {
+            // complete
+            yield put(RootActions.syncComplete());
+            break;
         }
+
         //wait, then go again
         yield call(delay, 1000);
     }
 }
+
+
