@@ -8,7 +8,9 @@ import { ExpectedMonitoringState } from "./ExpectedMonitoringState";
 import { getExpectedMonitoringStates } from "./getExpectedMonitoringStates";
 import { MainRootState } from "../../reducers";
 import { BlockChainInfo } from "./BlockchainInfo";
+import { round } from "./round";
 
+const round0 = round(0)
 const delay = (time: number) => new Promise(r => setTimeout(r, time));
 const expectedMonitoringStates = getExpectedMonitoringStates()
 const maximumStageIndex = Math.max(...expectedMonitoringStates.map(ms => ms.stageIndex));
@@ -80,7 +82,7 @@ export function* initializationSaga() {
         const currentStageIndex = getStageIndex(syncState, expectedMonitoringStates);
         // verification progress indicates our progress as a fractional percentile.
         // Multiply by 100 and round off to 2 decimal places
-        const currentVerificationProgress = Number(((parseFloat(blockchainInfo.verificationprogress) * 100).toFixed(2)));
+        const currentVerificationProgress = round0(parseFloat(blockchainInfo.verificationprogress) * 100)
         const completionPercent: number = currentVerificationProgress;
         // dispatch a "sync/PROGRESS" action
         yield put(RootActions.syncProgress({ completionPercent }));
@@ -97,3 +99,5 @@ export function* initializationSaga() {
         yield call(delay, 1000);
     }
 }
+
+
