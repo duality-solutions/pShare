@@ -3,12 +3,12 @@ import { getBitcoinClient } from "../../../main/getBitcoinClient";
 import BitcoinClient from 'bitcoin-core';
 import RootActions from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
-import { DynodeSyncState } from "./DynodeSyncState";
+import { DynodeSyncState } from "../../../dynamicdInterfaces/DynodeSyncState";
 import { ExpectedMonitoringState } from "./ExpectedMonitoringState";
 import { getExpectedMonitoringStates } from "./getExpectedMonitoringStates";
 import { MainRootState } from "../../reducers";
 import delay from "../../../shared/system/delay";
-import { BlockChainInfo } from "./BlockchainInfo";
+import { BlockChainInfo } from "../../../dynamicdInterfaces/BlockchainInfo";
 import { round } from "./round";
 
 const round0 = round(0)
