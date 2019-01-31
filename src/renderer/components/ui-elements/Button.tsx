@@ -2,18 +2,19 @@ import * as React from 'react';
 import styled from 'styled-components';
 
 interface ButtonProps {
-  align?: string, 
-  primary?: boolean, 
-  theme?: { blue: string }, 
+  align?: string,
+  primary?: boolean,
+  theme?: { blue: string },
   direction?: string,
 }
 
-interface ArrowButtonProps{
+interface ArrowButtonProps {
   label: string,
   onClick?: () => void,
-  type?: string
+  type?: string,
+  disabled?: boolean
 }
- const StyledButton = styled('button')<ButtonProps>`
+const StyledButton = styled('button') <ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
   justify-content: center;
   min-width:218px;
@@ -32,9 +33,9 @@ interface ArrowButtonProps{
 
 export default StyledButton
 
-const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick }) => (
-  <StyledButton onClick={onClick} primary direction="row-reverse" align="flex-end">
-      {label} <span style={{float:"right"}}>&#8594;</span>
+const ArrowButton: React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled }) => (
+  <StyledButton onClick={onClick} primary direction="row-reverse" align="flex-end" type={type} disabled={disabled}>
+    {label} <span style={{ float: "right" }}>&#8594;</span>
   </StyledButton>
 )
 

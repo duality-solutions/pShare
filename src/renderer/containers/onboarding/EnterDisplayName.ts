@@ -7,7 +7,9 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterDisplaynameStateProps => {
     return {
-        
+        displayname: state.onboarding.displayname.value,
+        isValidating: state.onboarding.displayname.isValidating,
+        validationResult: state.onboarding.displayname.validationResult
     };
 };
 

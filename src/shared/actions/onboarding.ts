@@ -9,9 +9,12 @@ import { ValidationResult } from '../system/validator/ValidationResult';
 
 const OnboardingActions = {
     validateUsername: createStandardAction('validate/request/USERNAME')<string>(),
+    validateDisplayname: createStandardAction('validate/request/DISPLAYNAME')<string>(),
     usernameValidated: createStandardAction('validate/result/USERNAME')<ValidationResult<string>>(),
+    displaynameValidated: createStandardAction('validate/result/DISPLAYNAME')<ValidationResult<string>>(),
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
     submitUsername: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
+    submitDisplayname: createStandardAction('onboarding/DISPLAYNAME_SUBMIT')<string>(),
     //usernameValidationFailed: createStandardAction('onboarding/USERNAME_VALIDATION_FAILED')<ValidationResult<string>>(),
     commitUsername: createStandardAction('onboarding/COMMIT_USERNAME')<string>(),
     commitDisplayname: createStandardAction('onboarding/COMMIT_DISPLAYNAME')<string>(),

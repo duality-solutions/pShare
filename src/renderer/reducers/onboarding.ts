@@ -10,7 +10,7 @@ interface Validatable<T> {
 
 interface OnboardingUsernameCommonnameValidationState {
     username: Validatable<string>,
-    commonname: Validatable<string>,
+    displayname: Validatable<string>,
     isValid: boolean
 }
 
@@ -20,7 +20,7 @@ const defaultState: OnboardingUsernameCommonnameValidationState = {
         isValidating: false
 
     },
-    commonname: {
+    displayname: {
         value: "",
         isValidating: false
 
@@ -30,7 +30,7 @@ const defaultState: OnboardingUsernameCommonnameValidationState = {
 
 export default (state: OnboardingUsernameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUsernameCommonnameValidationState => {
     switch (action.type) {
-        case getType(OnboardingActions.usernameValidated):
+        case getType(OnboardingActions.usernameValidated): {
             const validationResult = action.payload;
             return {
                 ...state,
@@ -39,13 +39,34 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                     validationResult,
                     isValidating: false
                 },
-                isValid: action.payload.success && state.commonname.validationResult ? state.commonname.validationResult.success : false
+                isValid: action.payload.success && state.displayname.validationResult ? state.displayname.validationResult.success : false
             }
+        }
+        case getType(OnboardingActions.displaynameValidated): {
+            const validationResult = action.payload;
+            return {
+                ...state,
+                displayname: {
+                    value: action.payload.value,
+                    validationResult,
+                    isValidating: false
+                },
+                isValid: action.payload.success && state.username.validationResult ? state.username.validationResult.success : false
+            }
+        }
         case getType(OnboardingActions.validateUsername):
             return {
                 ...state,
                 username: {
                     ...state.username,
+                    isValidating: true
+                }
+            }
+        case getType(OnboardingActions.validateDisplayname):
+            return {
+                ...state,
+                displayname: {
+                    ...state.displayname,
                     isValidating: true
                 }
             }

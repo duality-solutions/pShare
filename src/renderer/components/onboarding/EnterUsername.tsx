@@ -8,9 +8,12 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
+import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 
 export interface EnterUsernameStateProps {
-    username:string
+    username: string,
+    isValidating: boolean,
+    validationResult?: ValidationResult<string>
 }
 export interface EnterUsernameDispatchProps {
     submitUsername: (username: string) => void
@@ -36,7 +39,8 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
         e.preventDefault()
     }
     render() {
-        //const { submitUsername } = this.props
+        const { isValidating, validationResult } = this.props
+        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
         return <>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
                 <AppLogo src={logo} width="100px" height="120px" />
@@ -55,11 +59,18 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
                                     <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
-
+                                    {
+                                        validationFailed
+                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map(e => <div>{e}</div>)
+                                            : <></>
+                                    }
                                 </Card>
                             </Box>
                             <Box direction="column" width="50%" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" />
+                                <ArrowButton label="Continue" type="submit" disabled={isValidating} />
+                                {
+                                    isValidating ? <div>show spinner</div> : <></>
+                                }
                             </Box>
                         </Box>
                     </form>

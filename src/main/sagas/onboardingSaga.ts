@@ -11,4 +11,13 @@ export function* onboardingSaga() {
             yield put(OnboardingActions.enterUsername())
         }
     });
+    yield takeEvery(getType(OnboardingActions.submitDisplayname), function* (action: ReturnType<typeof OnboardingActions.submitDisplayname>) {
+        yield put(OnboardingActions.validateDisplayname(action.payload));
+        //I'm sure there's a better way to get this type than using returntype
+        const { payload: validationResult }: ReturnType<typeof OnboardingActions.displaynameValidated> = yield take(getType(OnboardingActions.displaynameValidated));
+        console.log("validation result is ", validationResult);
+        if (validationResult.success) {
+            yield put(OnboardingActions.enterDisplayname())
+        }
+    });
 }
