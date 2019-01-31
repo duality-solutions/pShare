@@ -1,16 +1,16 @@
 import delay from "../../shared/system/delay";
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 
-const isAlphaNumeric = (value: string) => /^[A-Za-z0-9]+$/.test(value);
-const failsAfterThreeSeconds = (value: string) => delay(3000).then(() => false);
+const isValidUsername = (value: string) => /^[A-Za-z0-9]+$/.test(value);
+const mockDynamicdCall = (value: string) => delay(5000).then(() => value !== "fail");
 
 const usernameValidationRules: ValidationTest<string>[] = [
     {
-        test: isAlphaNumeric,
+        test: isValidUsername,
         message: "value should be at least 1 alphanumeric",
         testsOnSuccess: [{
-            test: failsAfterThreeSeconds,
-            message: "oh no. 3s failure"
+            test: mockDynamicdCall,
+            message: "oh no. something bad."
         }]
     }
 ];

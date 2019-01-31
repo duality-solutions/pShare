@@ -16,7 +16,7 @@ interface OnboardingUsernameCommonnameValidationState {
 
 const defaultState: OnboardingUsernameCommonnameValidationState = {
     username: {
-        value: "df",
+        value: "",
         isValidating: false
 
     },
