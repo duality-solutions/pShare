@@ -1,5 +1,6 @@
-import React, { ChangeEvent, ClipboardEvent, Component } from "react";
+import React, { ChangeEvent, ClipboardEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
+import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
 import { ArrowButton } from "../ui-elements/Button";
@@ -10,10 +11,12 @@ import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 
 export interface EnterTokenStateProps {
-
+    token: string,
+    isValidating: boolean,
+    validationResult?: ValidationResult<string>
 }
 export interface EnterTokenDispatchProps {
-    enterToken : () => void 
+    submitToken: (token: string) => void 
 }
 type EnterTokenProps = EnterTokenDispatchProps & EnterTokenStateProps
 
@@ -26,6 +29,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         super(props)
         this.state = {
             token: ['','','','','','']
+            //  this.state = { displayname: props.displayname }
         }
     }
     
@@ -48,14 +52,19 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         this.setState({ token })
     }
 
-    handleSubmit = () => {
-        console.log(this.state.token.join(""))
+    handleSubmit = (e: FormEvent) => {
+        console.log('submit token: ',this.state.token.join(""))
+        this.props.submitToken(this.state.token.join(""))
+        e.preventDefault()
     }
     render() {
+        const { isValidating, validationResult } = this.props
+        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
+
         return(
             <>
             <div onPaste={this.handlePaste}>
-            <form onSubmit={()=>{}}>
+            <form onSubmit={this.handleSubmit}>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
                 <AppLogo src={logo} width="100px" height="120px"/>
             </Box>
@@ -83,10 +92,15 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                             name="4" value={this.state.token[4]} onChange={this.handleChange} />
                     <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
                             name="5" value={this.state.token[5]} onChange={this.handleChange} />
+                    {
+                        validationFailed
+                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e,i) => <div key={i}>{e}</div>)
+                            : <></>
+                    }
                 </Card>
             </Box>  
             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-            <ArrowButton label="Continue" onClick={()=>{this.props.enterToken()}}/>
+            <ArrowButton label="Continue" type="submit"  disabled={isValidating}/>
             </Box>
             </Box>
             </Container>
@@ -98,74 +112,3 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     }
 }
 
-
-/**
- * 
- * 
-
-export interface EnterDisplaynameStateProps {
-    displayname: string
-    isValidating: boolean,
-    validationResult?: ValidationResult<string>
-
-}
-export interface EnterDisplaynameDispatchProps {
-    submitDisplayname: (displayname: string) => void
-}
-type EnterDisplayNameProps = EnterDisplaynameDispatchProps & EnterDisplaynameStateProps
-
-interface EnterDisplayNameComponentState {
-    displayname: string
-}
-
-export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisplayNameComponentState>{
-    constructor(props: EnterDisplayNameProps) {
-        super(props)
-        this.state = { displayname: props.displayname }
-    }
-    handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ displayname: e.target.value })
-    }
-    handleSubmit = (e: FormEvent) => {
-        console.log("submit", this.state)
-        this.props.submitDisplayname(this.state.displayname)
-        //if we don't prevent form submission, causes a browser reload
-        e.preventDefault()
-    }
-
-    render() {
-        const { isValidating, validationResult } = this.props
-        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
-
-   
-        <H1 align="center" colored fontWeight="600">Create Account</H1>
-                <Container height="50vh" margin="10% 0 0 0">
-                    <form onSubmit={this.handleSubmit}>
-                        <Box direction="column" align="center" width="100%">
-                            <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                                <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
-                                    <Text fontSize="14px">Enter a display name</Text>
-                                    <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
-                                    {
-                                        validationFailed
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e,i) => <div key={i}>{e}</div>)
-                                            : <></>
-                                    }
-                                </Card>
-                            </Box>
-                            <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit"  disabled={isValidating}/>
-                                {
-                                    isValidating ? <div>show spinner</div> : <></>
-                                }
-                            </Box>
-                        </Box>
-                    </form>
-                </Container>
-        </>
-    }
-}
-
-
-
- */

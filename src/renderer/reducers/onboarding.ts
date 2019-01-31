@@ -1,6 +1,6 @@
 import { getType } from 'typesafe-actions';
-import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import OnboardingActions from '../../shared/actions/onboarding';
+import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 
 interface Validatable<T> {
     value: T,
@@ -11,6 +11,7 @@ interface Validatable<T> {
 interface OnboardingUsernameCommonnameValidationState {
     username: Validatable<string>,
     displayname: Validatable<string>,
+    token: Validatable<string>,
     isValid: boolean
 }
 
@@ -21,6 +22,11 @@ const defaultState: OnboardingUsernameCommonnameValidationState = {
 
     },
     displayname: {
+        value: "",
+        isValidating: false
+
+    },
+    token: {
         value: "",
         isValidating: false
 
@@ -54,6 +60,18 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                 isValid: action.payload.success && state.username.validationResult ? state.username.validationResult.success : false
             }
         }
+        case getType(OnboardingActions.tokenValidated): {
+            const validationResult = action.payload
+            return {
+                ...state,
+                token: {
+                    value: action.payload.value,
+                    validationResult,
+                    isValidating: false
+                },
+                // isValid: action.payload.success 
+            }
+        }
         case getType(OnboardingActions.validateUsername):
             return {
                 ...state,
@@ -67,6 +85,14 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                 ...state,
                 displayname: {
                     ...state.displayname,
+                    isValidating: true
+                }
+            }
+        case getType(OnboardingActions.validateToken):
+            return {
+                ...state,
+                token: {
+                    ...state.token,
                     isValidating: true
                 }
             }
