@@ -1,4 +1,4 @@
-import { StringType, FsaBuilder, B, ActionCreator, MapBuilder } from 'typesafe-actions/dist/types';
+import { StringType,  FsaBuilder, B,  ActionCreator, MapBuilder } from 'typesafe-actions/dist/types';
 import { CreateStandardAction } from 'typesafe-actions/dist/create-standard-action';
 
 
@@ -25,7 +25,7 @@ export function createLocalStandardAction<T extends StringType>(
 
     return Object.assign(constructor, { map });
 }
-export function validateActionType(arg: any, idx: number = 1): void {
+function validateActionType(arg: any, idx: number = 1): void {
     if (arg == null) {
         throw new Error(`Argument (#${idx}) is missing`);
     } else {
@@ -35,7 +35,7 @@ export function validateActionType(arg: any, idx: number = 1): void {
     }
 }
 
-export function withType<T extends StringType, AC extends ActionCreator<T>>(
+function withType<T extends StringType, AC extends ActionCreator<T>>(
     type: T,
     constructorFunction?: (type: T) => AC
 ): AC {
