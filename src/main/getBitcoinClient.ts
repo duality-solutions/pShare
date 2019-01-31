@@ -2,13 +2,20 @@ import { app } from 'electron';
 import startDynamicd from './startDynamicd';
 import BitcoinClient from 'bitcoin-core';
 import delay from '../shared/system/delay';
+import { lazy } from './lazy';
 interface BitcoinClientOptions {
     host: string,
     port: string,
     username: string,
     password: string
 }
-export async function getBitcoinClient() {
+const bitcoinClientLazy = lazy(() => getBitcoinClient_Impl())
+
+export function getBitcoinClient() {
+    return bitcoinClientLazy.get()
+}
+
+async function getBitcoinClient_Impl() {
     const processInfo = await startDynamicd();
     app.on('before-quit', async () => {
         //console.log("before quit");
@@ -49,3 +56,4 @@ async function createBitcoinClient(opts: BitcoinClientOptions) {
     //client is ready to be used
     return client;
 }
+
