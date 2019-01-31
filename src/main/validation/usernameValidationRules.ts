@@ -3,8 +3,7 @@ import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 import { getBitcoinClient } from "../getBitcoinClient";
 
 const isValidUsername = (value: string) => /^[A-Za-z0-9]+$/.test(value);
-//const mockDynamicdCall = (value: string) => delay(5000).then(() => value !== "fail");
-const checkUsernameDoesNotExist = async (value: string) => {
+const usernameDoesNotExist = async (value: string) => {
     const client = await getBitcoinClient()
     let userInfo: GetUserInfo;
     try {
@@ -29,7 +28,7 @@ const usernameValidationRules: ValidationTest<string>[] = [
         test: isValidUsername,
         message: "value should be at least 1 alphanumeric",
         testsOnSuccess: [{
-            test: checkUsernameDoesNotExist,
+            test: usernameDoesNotExist,
             message: "username is already taken"
         }]
     }
