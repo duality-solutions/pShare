@@ -5,13 +5,18 @@ const handleUsername = createStandardAction('onboarding/HANDLE_USERNAME').map( (
     meta: { scope: 'local' }
 }))
 
+const handleDisplayname = createStandardAction('onboarding/HANDLE_DISPLAYNAME').map((displayname: string|undefined) => ({
+    payload: displayname,
+    meta: { scope: 'local' }
+}))
+
 const OnboardingActions = {
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
-    enterUsername: createStandardAction('onboarding/CREATE_USERNAME')<void>(),
-    enterDisplayname: createStandardAction('onboarding/CREATE_DISPLAYNAME')<void>(),
-    enterPhonenumber: createStandardAction('onboarding/CREATE_PHONENUMBER')<void>(),
-    createPassword: createStandardAction('onboarding/CREATE_PASSWORD')<void>(),
-    handleUsername,
+    enterUsername: createStandardAction('onboarding/ENTER_USERNAME')<void>(),
+    enterDisplayname: createStandardAction('onboarding/ENTER_DISPLAYNAME')<void>(),
+    enterToken: createStandardAction('onboarding/ENTER_TOKEN')<void>(),
+    createPassword: createStandardAction('onboarding/ENTER_PASSWORD')<void>(),
+    handleUsername, handleDisplayname
 
 }
 

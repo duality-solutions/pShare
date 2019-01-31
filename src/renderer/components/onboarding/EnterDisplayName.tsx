@@ -10,14 +10,15 @@ import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 
 export interface EnterDisplaynameStateProps {
-
+    displayname: string | undefined,
 }
 export interface EnterDisplaynameDispatchProps {
-    enterDisplayname : () => void 
+    enterDisplayname : () => void,
+    handleDisplayname: (displayname: string) => void,
 }
 type EnterDisplayName = EnterDisplaynameDispatchProps & EnterDisplaynameStateProps
 
-export const EnterDisplayName:React.FunctionComponent<EnterDisplayName> = ({ enterDisplayname })=>
+export const EnterDisplayname:React.FunctionComponent<EnterDisplayName> = ({ enterDisplayname, displayname, handleDisplayname })=>
     <>
     <Box width="100%" margin="2em 0 -1.5em 0" align="center">
         <AppLogo src={logo} width="100px" height="120px" />
@@ -32,13 +33,14 @@ export const EnterDisplayName:React.FunctionComponent<EnterDisplayName> = ({ ent
     <Container height="50vh" margin="10% 0 0 0">
     <Box direction="column" align="center" width="100%">
     <BackArrowButton onClick={()=> {}}/>
-    <Box direction="column" width="50%" align="start" margin="0 auto 0 auto" minWidth="700px">
+    <Box direction="column" width="700px" align="start" margin="0 auto 0 auto" minWidth="700px">
     <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
         <Text fontSize="14px">Enter a display name</Text>
-        <Input placeholder="User name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
+        <Input placeholder="User name" margin="1em 0 1em 0" padding="0 1em 0 1em" value={displayname} 
+                onChange={(e)=>handleDisplayname(e.target.value)} />
     </Card>
     </Box>  
-    <Box direction="column" width="50%" align="right" margin="0 auto 0 auto">
+    <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
     <ArrowButton label="Continue" onClick={()=>{enterDisplayname()}}/>
     </Box>
     </Box>
