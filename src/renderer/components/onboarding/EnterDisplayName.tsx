@@ -63,7 +63,7 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
                                     <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
                                     {
                                         validationFailed
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map(e => <div>{e}</div>)
+                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e,i) => <div key={i}>{e}</div>)
                                             : <></>
                                     }
                                 </Card>
