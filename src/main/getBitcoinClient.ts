@@ -1,7 +1,7 @@
 import { app } from 'electron';
 import startDynamicd from './startDynamicd';
 import BitcoinClient from 'bitcoin-core';
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time))
+import delay from '../shared/system/delay';
 interface BitcoinClientOptions {
     host: string,
     port: string,

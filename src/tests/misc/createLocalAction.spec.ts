@@ -1,8 +1,8 @@
-import { createLocalAction } from "../../shared/system/createLocalAction";
+import { createLocalStandardAction } from "../../shared/system/createLocalStandardAction";
 
 test("createLocalAction", () => {
-    const ac1 = createLocalAction("actionname")<void>();
-    const ac2 = createLocalAction("actionname2")<string>();
+    const ac1 = createLocalStandardAction("actionname")<void>();
+    const ac2 = createLocalStandardAction("actionname2")<string>();
 
     const a1 = ac1() as any;
     const a2 = ac2("monkey") as any;

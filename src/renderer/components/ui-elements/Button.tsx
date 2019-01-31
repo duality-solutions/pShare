@@ -10,7 +10,8 @@ interface ButtonProps {
 
 interface ArrowButtonProps{
   label: string,
-  onClick?: () => void
+  onClick?: () => void,
+  type?: string
 }
  const StyledButton = styled('button')<ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};

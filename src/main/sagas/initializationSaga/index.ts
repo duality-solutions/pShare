@@ -7,8 +7,8 @@ import { DynodeSyncState } from "./DynodeSyncState";
 import { ExpectedMonitoringState } from "./ExpectedMonitoringState";
 import { getExpectedMonitoringStates } from "./getExpectedMonitoringStates";
 import { MainRootState } from "../../reducers";
+import delay from "../../../shared/system/delay";
 
-const delay = (time: number) => new Promise(r => setTimeout(r, time));
 const expectedMonitoringStates = getExpectedMonitoringStates()
 const maximumStageIndex = Math.max(...expectedMonitoringStates.map(ms => ms.stageIndex));
 // 1 level deep object comparison

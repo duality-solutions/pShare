@@ -3,7 +3,7 @@ import { StringType, PayloadCreator, FsaBuilder, B, NoArgCreator } from 'typesaf
 interface LocalMeta {
     scope: string;
 }
-export const createLocalAction = <T extends StringType>(actionName: T) => {
+export const createLocalStandardAction = <T extends StringType>(actionName: T) => {
     const builder = createStandardAction(actionName);
     return <TP extends any = void, TR=TP extends void ? NoArgCreator<T> : PayloadCreator<T, TP>>(): TR => {
         const ac: FsaBuilder<T, B<TP>, B<LocalMeta>> = builder<TP, LocalMeta>();

@@ -6,12 +6,14 @@ import RootActions from '../../shared/actions';
 import StoreActions from '../../shared/actions/store';
 import * as appModelReducers from '../../shared/reducers';
 import getInitialReducerState from '../../shared/system/getInitialReducerState';
+import * as localReducers from './localReducers'
 
 
 
 export type RendererRootState = ReturnType<ReturnType<typeof getRootReducer>>
 export const getRootReducer = (history: History) => {
-    const r = combineReducers({ ...appModelReducers, router: connectRouter(history) });
+
+    const r = combineReducers({ ...appModelReducers, ...localReducers, router: connectRouter(history) });
     return (state: ReturnType<typeof r> | undefined, action: RootActions): ReturnType<typeof r> => {
         switch (action.type) {
             case getType(StoreActions.reset):
@@ -21,4 +23,3 @@ export const getRootReducer = (history: History) => {
         }
     }
 }
- 
