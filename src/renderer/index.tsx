@@ -6,25 +6,12 @@ import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
 import RootActions from '../shared/actions';
-import getProxyForChannel from '../shared/proxy/getProxyForChannel';
-import { ValidationApi } from '../shared/validation/ValidationApi';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
 const store = configureStore(history)
 //store.subscribe(() => console.log("renderer store changed : ", store.getState()))
 store.dispatch(RootActions.initializeApp())
-
-const validator = getProxyForChannel<ValidationApi>("validationApi");
-
-(async () => {
-    try {
-        const isValid = await validator.validate("foo")
-        console.log(`validator.validate returned ${isValid}`)
-    } catch (err) {
-        console.log("oh no ", err)
-    }
-})()
 
 
 
