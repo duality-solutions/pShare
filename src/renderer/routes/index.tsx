@@ -4,7 +4,7 @@ import { ThemeProvider } from "styled-components";
 import { Main } from "../components/Main";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
 import CreateAccount from "../containers/onboarding/CreateAccount";
-import EnterDisplayName from "../containers/onboarding/EnterDisplayname";
+import EnterDisplayName from "../containers/onboarding/EnterDisplayName";
 import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUsername from "../containers/onboarding/EnterUsername";
 import Sync from "../containers/syncing/Sync";
@@ -23,7 +23,7 @@ export default
         <Route exact path="/Sync" component={Sync} />
         <Route exact path="/CreateAccount" component={CreateAccount} />
         <Route exact path="/EnterUsername" component={EnterUsername} />
-        <Route exact path="/EnterDisplayname" component={EnterDisplayName} />
+        <Route exact path="/EnterDisplaynName" component={EnterDisplayName} />
         <Route exact path="/EnterToken" component={EnterToken} />
         <Route exact path="/Main" component={Main} />
     </Switch>

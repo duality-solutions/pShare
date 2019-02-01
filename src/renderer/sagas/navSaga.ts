@@ -59,7 +59,7 @@ export function* navSaga() {
     
         const enterUsernameAction = getType(RootActions.enterUsername)
         yield take(enterUsernameAction)
-        yield put(push("/EnterDisplayname"))
+        yield put(push("/EnterDisplayName"))
         console.log('navigating to enter display name page')
     
         const enterDisplaynameAction = getType(RootActions.enterDisplayname)

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import OnboardingActions from "../../../shared/actions/onboarding";
-import { EnterDisplayName, EnterDisplaynameDispatchProps, EnterDisplaynameStateProps } from '../../components/onboarding/EnterDisplayname';
+import { EnterDisplayName, EnterDisplaynameDispatchProps, EnterDisplaynameStateProps } from '../../components/onboarding/EnterDisplayName';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
