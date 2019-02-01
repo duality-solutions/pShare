@@ -80,18 +80,18 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                 <Card width="100%" align="center" minHeight="225px" padding="2em 8em 2em 8em">
                     <Text fontSize="14px">Enter Token</Text>
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="0" value={this.state.token[0]} onChange={this.handleChange} />
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="1" value={this.state.token[1]} onChange={this.handleChange} />
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="2" value={this.state.token[2]} onChange={this.handleChange} />
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="3" value={this.state.token[3]} onChange={this.handleChange} />
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="4" value={this.state.token[4]} onChange={this.handleChange} />
-                    <Input type="text" width="8%" margin="1em 0.5em 1em 0" padding="0 1em 0 1em" 
-                            name="5" value={this.state.token[5]} onChange={this.handleChange} />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" 
+                            name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%"
+                            name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%"
+                            name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" 
+                            name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%"
+                            name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" />
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%"
+                            name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" />
                     {
                         validationFailed
                             ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e,i) => <div key={i}>{e}</div>)

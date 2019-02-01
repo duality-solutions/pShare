@@ -7,7 +7,7 @@ const mockDynamicdCall = (value: string) => delay(5000).then(() => value !== "fa
 const tokenValidationRules: ValidationTest<string>[] = [
     {
         test: isValidToken,
-        message: "you need to fill all the 6 characters",
+        message: "all 6 alphanumeric characters are required to be filled for the token",
         testsOnSuccess: [{
             test: mockDynamicdCall,
             message: "oh no. something bad."

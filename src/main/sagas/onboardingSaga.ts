@@ -25,7 +25,7 @@ export function* onboardingSaga() {
         yield put(OnboardingActions.validateToken(action.payload))
         //I'm sure there's a better way to get this type than using returntype
         const { payload: validationResult }: ReturnType<typeof OnboardingActions.tokenValidated> = yield take(getType(OnboardingActions.tokenValidated))
-        console.log("validation result is ", )
+        console.log("validation result is ", validationResult)
         if(validationResult.success) {
             yield put(OnboardingActions.enterToken())
         }

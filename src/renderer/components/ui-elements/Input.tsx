@@ -10,15 +10,16 @@ interface InputProps {
 }
 
 const Input = styled('input')<InputProps>`
+    display: inline-block;
     width: ${props => props.width || '100%'};
-    // align: ${props=> props.align || 'start'};
-    height: 5em;
+    text-align: ${props=> props.align || 'start'};
+    font-size:${props=> props.fontSize || 'normal'} ;
+    height: 50px;
     border: solid 1px #b9b9b9;
     border-radius: 4px;
     background-color: #fafafa;
     margin: ${props => props.margin || '0 0 0 0'} ;
     padding: ${props => props.padding || '0 0 0 0'};
-    font-size: ${props => props.fontSize || '0.8em'};
 
 `
 
