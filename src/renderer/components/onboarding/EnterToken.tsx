@@ -21,7 +21,7 @@ export interface EnterTokenDispatchProps {
 type EnterTokenProps = EnterTokenDispatchProps & EnterTokenStateProps
 
 interface EnterTokenComponentStateProps {
-    token: Array<any>
+    token: Array<any> 
 }
 
 export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentStateProps> {
@@ -101,6 +101,10 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
             </Box>  
             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
             <ArrowButton label="Continue" type="submit"  disabled={isValidating}/>
+            {
+                    isValidating ? <div>show spinner</div> : <></>
+            }
+
             </Box>
             </Box>
             </Container>

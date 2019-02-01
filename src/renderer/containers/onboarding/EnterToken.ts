@@ -7,7 +7,9 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterTokenStateProps => {
     return {
-        
+        token: state.onboarding.token.value,
+        isValidating: state.onboarding.token.isValidating,
+        validationResult: state.onboarding.token.validationResult
     };
 };
 
