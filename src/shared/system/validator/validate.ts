@@ -8,14 +8,16 @@ export const validate =
             blinq(await runTests(rules, value)).where(r => !r.result).select(r => r.message).toArray();
 
 interface ValidationTestResult {
-    result: boolean;
-    message: string;
+    result: boolean
+    message: string
+    isError: boolean
 }
 const runTests = async <T>(rules: ValidationTest<T>[], value: T): Promise<ValidationTestResult[]> => {
     const results = await Promise.all(blinq(rules).select(async (rule) => {
         const testResult = rule.test(value);
         let result: boolean
         let message: string;
+        let isError: boolean = false;
         try {
             result = (isPromise(testResult) ? await testResult : testResult) as boolean;
             message = rule.message
@@ -23,11 +25,12 @@ const runTests = async <T>(rules: ValidationTest<T>[], value: T): Promise<Valida
         catch (err) {
             result = false;
             message = err.message
+            isError = true
         }
         if (result && typeof rule.testsOnSuccess !== 'undefined') {
             return await runTests(rule.testsOnSuccess, value);
         }
-        return [{ result, message: message }];
+        return [{ result, message: message, isError }];
     }));
     return blinq(results).selectMany(x => x).toArray();
 };
