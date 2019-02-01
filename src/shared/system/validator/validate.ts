@@ -14,11 +14,20 @@ interface ValidationTestResult {
 const runTests = async <T>(rules: ValidationTest<T>[], value: T): Promise<ValidationTestResult[]> => {
     const results = await Promise.all(blinq(rules).select(async (rule) => {
         const testResult = rule.test(value);
-        const result = (isPromise(testResult) ? await testResult : testResult) as boolean;
+        let result: boolean
+        let message: string;
+        try {
+            result = (isPromise(testResult) ? await testResult : testResult) as boolean;
+            message = rule.message
+        }
+        catch (err) {
+            result = false;
+            message = err.message
+        }
         if (result && typeof rule.testsOnSuccess !== 'undefined') {
             return await runTests(rule.testsOnSuccess, value);
         }
-        return [{ result, message: rule.message }];
+        return [{ result, message: message }];
     }));
     return blinq(results).selectMany(x => x).toArray();
 };
