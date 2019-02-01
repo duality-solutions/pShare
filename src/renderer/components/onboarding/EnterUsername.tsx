@@ -61,7 +61,7 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
                                     <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
                                     {
                                         validationFailed
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e, i) => <div key={i}>{e}</div>)
+                                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }
                                 </Card>
