@@ -23,7 +23,7 @@ export default
         <Route exact path="/Sync" component={Sync} />
         <Route exact path="/CreateAccount" component={CreateAccount} />
         <Route exact path="/EnterUsername" component={EnterUsername} />
-        <Route exact path="/EnterDisplaynName" component={EnterDisplayName} />
+        <Route exact path="/EnterDisplayName" component={EnterDisplayName} />
         <Route exact path="/EnterToken" component={EnterToken} />
         <Route exact path="/Main" component={Main} />
     </Switch>
