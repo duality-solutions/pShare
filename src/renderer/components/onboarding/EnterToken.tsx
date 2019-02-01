@@ -94,7 +94,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                             name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" />
                     {
                         validationFailed
-                            ? (typeof validationResult !== 'undefined' ? validationResult.errors : []).map((e,i) => <Text align="center" color="#e30429"  key={i}>{e}</Text>)
+                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e,i) => <Text align="center" color="#e30429"  key={i}>{e}</Text>)
                             : <></>
                     }
                 </Card>
