@@ -14,7 +14,9 @@ import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devt
 import installExtensionsAsync from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
+import OnboardingActions from '../shared/actions/onboarding';
 
+import { v4 as uuid } from 'uuid';
 
 
 declare module 'electron' {
@@ -33,6 +35,7 @@ const persistencePaths = ['user.syncAgreed'];
 const store = configureStore(persistencePaths)
 store.getState();
 
+store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
 
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
