@@ -7,6 +7,7 @@ interface InputProps {
     padding?: string,
     margin?: string,
     fontSize? : string,
+    error? : boolean,
 }
 
 const Input = styled('input')<InputProps>`
@@ -15,9 +16,9 @@ const Input = styled('input')<InputProps>`
     text-align: ${props=> props.align || 'start'};
     font-size:${props=> props.fontSize || 'normal'} ;
     height: 50px;
-    border: solid 1px #b9b9b9;
+    border: ${props => props.error ? "solid 1px #e30429" : "solid 1px #b9b9b9"} ;
     border-radius: 4px;
-    background-color: #fafafa;
+    background-color: ${props => props.error ? '#f9cdd4' : '#fafafa'};
     margin: ${props => props.margin || '0 0 0 0'} ;
     padding: ${props => props.padding || '0 0 0 0'};
 

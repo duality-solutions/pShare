@@ -21,26 +21,45 @@ export interface EnterUsernameDispatchProps {
 type EnterUsernameProps = EnterUsernameDispatchProps & EnterUsernameStateProps
 
 interface EnterUsernameComponentState {
-    username: string
+    username: string,
+    inputError: boolean,
+    check: boolean,
 }
 
 export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameComponentState>{
     constructor(props: EnterUsernameProps) {
         super(props)
-        this.state = { username: props.username }
+        this.state = { username: props.username, inputError: false, check:false }
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ username: e.target.value })
+        this.setState({ username: e.target.value, check: false, inputError: false })
     }
     handleSubmit = (e: FormEvent) => {
-        console.log("submit", this.state)
+        this.setState({ check: true })
         this.props.submitUsername(this.state.username)
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
     }
+
+    static getDerivedStateFromProps (props:EnterUsernameProps, state:EnterUsernameComponentState) {
+        if ( !props.isValidating && !state.inputError && state.check ){
+        let validationResult = props.validationResult
+        console.log(state)
+        console.log("Validation Result Props: ", validationResult)
+        let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
+        console.log("Validation Failed: " + validationFailed)
+        if (validationFailed) {
+            return { inputError: true }
+        }
+        }
+        return null 
+    }
+
     render() {
         const { isValidating, validationResult } = this.props
-        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
+        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
+        const networkFailure = typeof validationResult !== 'undefined' && !validationResult.success && validationResult.isError
+
         return <>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
                 <AppLogo src={logo} width="100px" height="120px" />
@@ -58,9 +77,15 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
-                                    <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
+                                    <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" 
+                                        margin="1em 0 1em 0" padding="0 1em 0 1em" error={this.state.inputError} />
                                     {
-                                        validationFailed
+                                        validationFailed && this.state.inputError
+                                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
+                                            : <></>
+                                    }
+                                    {
+                                        networkFailure
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }
