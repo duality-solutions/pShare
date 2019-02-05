@@ -35,7 +35,7 @@ const persistencePaths = ['user.syncAgreed'];
 const store = configureStore(persistencePaths)
 store.getState();
 
-store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
+//store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
 
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
