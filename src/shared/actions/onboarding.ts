@@ -3,8 +3,11 @@ import { ValidationResult } from '../system/validator/ValidationResult';
 import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccountConfig';
 const OnboardingActions = {
     validateUsername: createStandardAction('validate/request/USERNAME')<string>(),
+    resetValidationResultUsername: createStandardAction('reset/validation/USERNAME')<void>(),
     validateDisplayname: createStandardAction('validate/request/DISPLAYNAME')<string>(),
+    resetValidationResultDisplayname: createStandardAction('reset/validation/DISPLAYNAME')<void>(),
     validateToken: createStandardAction('validate/request/TOKEN')<string>(),
+    resetValidationResultToken: createStandardAction('reset/validation/TOKEN')<void>(),
     usernameValidated: createStandardAction('validate/result/USERNAME')<ValidationResult<string>>(),
     displaynameValidated: createStandardAction('validate/result/DISPLAYNAME')<ValidationResult<string>>(),
     tokenValidated: createStandardAction('validate/result/TOKEN')<ValidationResult<string>>(),

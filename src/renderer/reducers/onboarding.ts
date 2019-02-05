@@ -96,6 +96,33 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                     isValidating: true
                 }
             }
+        case getType(OnboardingActions.resetValidationResultUsername):
+            return {
+                ...state,
+                username: {
+                    ...state.username,
+                    isValidating: false,
+                    validationResult: undefined
+                }
+            }
+        case getType(OnboardingActions.resetValidationResultDisplayname):
+            return {
+                ...state,
+                displayname: {
+                    ...state.displayname,
+                    isValidating: false,
+                    validationResult: undefined
+                }
+            }
+        case getType(OnboardingActions.resetValidationResultToken):
+            return {
+                ...state,
+                token: {
+                    ...state.token,
+                    isValidating: false,
+                    validationResult: undefined
+                }
+            }
         default:
             return state;
 
