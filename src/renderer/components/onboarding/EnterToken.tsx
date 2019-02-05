@@ -9,7 +9,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { ValidationPayload } from "../../../shared/actions/onboarding";
+import { ValidationPayload } from "../../../shared/system/validator/ValueValidationPayload";
 
 export interface EnterTokenStateProps {
     token: string,

@@ -7,9 +7,9 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterCommonNameStateProps => {
     return {
-        commonName: state.onboarding.commonName.value,
-        isValidating: state.onboarding.commonName.isValidating,
-        validationResult: state.onboarding.commonName.validationResult
+        commonName: state.onboarding.fields.commonName.value,
+        isValidating: state.onboarding.fields.commonName.isValidating,
+        validationResult: state.onboarding.fields.commonName.validationResult
     };
 };
 

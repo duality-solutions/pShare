@@ -2,6 +2,7 @@ import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { blinq } from 'blinq';
+import { keys } from '../../shared/system/entries';
 
 interface Validatable<T> {
     value: T,
@@ -9,72 +10,97 @@ interface Validatable<T> {
     isValidating: boolean
 }
 
-interface OnboardingUserNameCommonnameValidationState {
+interface OnboardingBdapAccountOptionsValidatedFields {
     userName: Validatable<string>,
     commonName: Validatable<string>,
-    token: Validatable<string>,
+    token: Validatable<string>
+}
+interface OnboardingBdapAccountOptionsValidationState {
+    fields: OnboardingBdapAccountOptionsValidatedFields,
     isValid: boolean
 }
 
-const defaultState: OnboardingUserNameCommonnameValidationState = {
-    userName: {
-        value: "",
-        isValidating: false
+const defaultState: OnboardingBdapAccountOptionsValidationState = {
+    fields: {
+        userName: {
+            value: "",
+            isValidating: false
 
-    },
-    commonName: {
-        value: "",
-        isValidating: false
+        },
+        commonName: {
+            value: "",
+            isValidating: false
 
-    },
-    token: {
-        value: "",
-        isValidating: false
+        },
+        token: {
+            value: "",
+            isValidating: false
 
+        }
     },
     isValid: false
 }
-const fieldNamesUnderValidation: Array<keyof OnboardingUserNameCommonnameValidationState> = ["userName", "commonName", "token"]
 
-export default (state: OnboardingUserNameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUserNameCommonnameValidationState => {
+export default (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
         case getType(OnboardingActions.validated): {
-            const { value: validationResult } = action.payload;
+            const { value: validationResult, fieldName } = action.payload;
             return {
                 ...state,
-                [action.payload.fieldName]: {
-                    value: action.payload.value.value,
-                    validationResult,
-                    isValidating: false
+                fields: {
+                    ...state.fields,
+                    [fieldName]: {
+                        value: validationResult.value,
+                        validationResult,
+                        isValidating: false
+                    }
                 },
                 isValid:
                     validationResult.success
-                    && blinq(fieldNamesUnderValidation)
-                        .where(f => action.payload.fieldName !== f)
-                        .all(f =>
-                            typeof (state[f] as any).validationResult !== 'undefined'
-                            && (state[f] as any).validationResult.success)
+                    && blinq(keys(state.fields))
+                        .where(f => fieldName !== f)
+                        .all(f => {
+                            const vr = state.fields[f].validationResult;
+                            return typeof vr !== 'undefined' && vr.success;
+                        })
             }
         }
 
         case getType(OnboardingActions.validate):
-            return {
-                ...state,
-                [action.payload.fieldName]: {
-                    ...(state as any)[action.payload.fieldName],
-                    isValidating: true
+            {
+                const { fieldName } = <{ fieldName: keyof OnboardingBdapAccountOptionsValidatedFields }>action.payload;
+                return {
+                    ...state,
+                    fields: {
+                        ...state.fields,
+                        [fieldName]: {
+                            ...state.fields[fieldName],
+                            isValidating: true
+                        }
+                    }
                 }
             }
 
         case getType(OnboardingActions.resetValidation):
-            return {
-                ...state,
-                [action.payload.fieldName]: {
-                    ...(state as any)[action.payload.fieldName],
-                    isValidating: false,
-                    validationResult: undefined
-                },
-                isValid: false
+            {
+                const { fieldName } = <{ fieldName: keyof OnboardingBdapAccountOptionsValidatedFields }>action.payload;
+                const requiresReset = typeof (state as any).fields[fieldName].validationResult !== 'undefined' || state.isValid;
+                return requiresReset
+                    ? {
+                        ...state,
+                        fields: typeof state.fields[fieldName].validationResult !== 'undefined'
+                            ? {
+                                ...state.fields,
+                                [fieldName]: {
+                                    ...(state.fields)[fieldName],
+                                    isValidating: false,
+                                    validationResult: undefined
+                                }
+                            }
+                            : state.fields,
+                        isValid: false
+                    }
+                    : state
             }
 
         default:
