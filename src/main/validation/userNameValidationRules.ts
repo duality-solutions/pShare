@@ -1,8 +1,8 @@
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 import { getBitcoinClient } from "../getBitcoinClient";
 
-const isValidUsername = (value: string) => /^[A-Za-z0-9]+$/.test(value);
-const usernameDoesNotExist = async (value: string) => {
+const isValidUserName = (value: string) => /^[A-Za-z0-9]+$/.test(value);
+const userNameDoesNotExist = async (value: string) => {
     const client = await getBitcoinClient()
     let userInfo: GetUserInfo;
     try {
@@ -25,15 +25,15 @@ const usernameDoesNotExist = async (value: string) => {
     return false
 }
 
-const usernameValidationRules: ValidationTest<string>[] = [
+const userNameValidationRules: ValidationTest<string>[] = [
     {
-        test: isValidUsername,
+        test: isValidUserName,
         message: "Value may only contain letters and numbers",
         testsOnSuccess: [{
-            test: usernameDoesNotExist,
+            test: userNameDoesNotExist,
             message: "User name is already taken"
         }]
     }
 ];
 
-export default usernameValidationRules
+export default userNameValidationRules

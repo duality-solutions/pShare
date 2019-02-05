@@ -1,15 +1,15 @@
 import { call, put, takeEvery } from "redux-saga/effects";
-import { getType, ActionType } from "typesafe-actions";
-import OnboardingActions from "../../shared/actions/onboarding";
-import { validateDisplayname } from "../validation/validateDisplayname";
-import { validateToken } from "../validation/validateToken";
-import { validateUsername } from "../validation/validateUsername";
-import { ValidationResult } from "../../shared/system/validator/ValidationResult";
+import { ActionType, getType } from "typesafe-actions";
 import { PayloadCreator } from "typesafe-actions/dist/types";
+import OnboardingActions from "../../shared/actions/onboarding";
+import { ValidationResult } from "../../shared/system/validator/ValidationResult";
+import { validateCommonName } from "../validation/validateCommonName";
+import { validateToken } from "../validation/validateToken";
+import { validateUserName } from "../validation/validateUserName";
 
 export function* validationSaga() {
-    yield takeEveryValidationAction(OnboardingActions.validateUsername, validateUsername, OnboardingActions.usernameValidated)
-    yield takeEveryValidationAction(OnboardingActions.validateDisplayname, validateDisplayname, OnboardingActions.displaynameValidated)
+    yield takeEveryValidationAction(OnboardingActions.validateUserName, validateUserName, OnboardingActions.userNameValidated)
+    yield takeEveryValidationAction(OnboardingActions.validateCommonName, validateCommonName, OnboardingActions.commonNameValidated)
     yield takeEveryValidationAction(OnboardingActions.validateToken, validateToken, OnboardingActions.tokenValidated)
 }
 

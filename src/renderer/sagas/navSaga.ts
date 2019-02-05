@@ -54,17 +54,22 @@ export function* navSaga() {
     
         const createAccountAction = getType(RootActions.createAccount)
         yield take(createAccountAction)
-        yield put(push("/EnterUsername"))
-        console.log('navigating to enter username page')
+        yield put(push("/EnterUserName"))
+        console.log('nav saga navigating to /EnterUserName')
     
-        const enterUsernameAction = getType(RootActions.enterUsername)
+        // const goBackToCreateAccount = getType(RootActions.backToCreateAccount)
+        // yield(take(goBackToCreateAccount))
+        // yield put(push("/CreateAccount"))
+        // console.log("navigating backwards to Create Account")
+
+        const enterUsernameAction = getType(RootActions.enterUserName)
         yield take(enterUsernameAction)
-        yield put(push("/EnterDisplayName"))
-        console.log('navigating to enter display name page')
+        yield put(push("/enterCommonName"))
+        console.log('nav saga navigating to /EnterCommonName')
     
-        const enterDisplaynameAction = getType(RootActions.enterDisplayname)
-        yield take(enterDisplaynameAction)
-        console.log("nav saga: user is onboarded, navigating to /EnterToken")
+        const enterCommonNameAction = getType(RootActions.enterCommonName)
+        yield take(enterCommonNameAction)
+        console.log("nav saga navigating to /EnterToken")
         yield put(push("/EnterToken"))
 
         const enterTokenAction = getType(RootActions.enterToken)

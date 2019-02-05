@@ -8,20 +8,20 @@ interface Validatable<T> {
     isValidating: boolean
 }
 
-interface OnboardingUsernameCommonnameValidationState {
-    username: Validatable<string>,
-    displayname: Validatable<string>,
+interface OnboardingUserNameCommonnameValidationState {
+    userName: Validatable<string>,
+    commonName: Validatable<string>,
     token: Validatable<string>,
     isValid: boolean
 }
 
-const defaultState: OnboardingUsernameCommonnameValidationState = {
-    username: {
+const defaultState: OnboardingUserNameCommonnameValidationState = {
+    userName: {
         value: "",
         isValidating: false
 
     },
-    displayname: {
+    commonName: {
         value: "",
         isValidating: false
 
@@ -34,30 +34,30 @@ const defaultState: OnboardingUsernameCommonnameValidationState = {
     isValid: false
 }
 
-export default (state: OnboardingUsernameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUsernameCommonnameValidationState => {
+export default (state: OnboardingUserNameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUserNameCommonnameValidationState => {
     switch (action.type) {
-        case getType(OnboardingActions.usernameValidated): {
+        case getType(OnboardingActions.userNameValidated): {
             const validationResult = action.payload;
             return {
                 ...state,
-                username: {
+                userName: {
                     value: action.payload.value,
                     validationResult,
                     isValidating: false
                 },
-                isValid: action.payload.success && state.displayname.validationResult ? state.displayname.validationResult.success : false
+                isValid: action.payload.success && state.commonName.validationResult ? state.commonName.validationResult.success : false
             }
         }
-        case getType(OnboardingActions.displaynameValidated): {
+        case getType(OnboardingActions.commonNameValidated): {
             const validationResult = action.payload;
             return {
                 ...state,
-                displayname: {
+                commonName: {
                     value: action.payload.value,
                     validationResult,
                     isValidating: false
                 },
-                isValid: action.payload.success && state.username.validationResult ? state.username.validationResult.success : false
+                isValid: action.payload.success && state.userName.validationResult ? state.userName.validationResult.success : false
             }
         }
         case getType(OnboardingActions.tokenValidated): {
@@ -72,19 +72,19 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                 // isValid: action.payload.success 
             }
         }
-        case getType(OnboardingActions.validateUsername):
+        case getType(OnboardingActions.validateUserName):
             return {
                 ...state,
-                username: {
-                    ...state.username,
+                userName: {
+                    ...state.userName,
                     isValidating: true
                 }
             }
-        case getType(OnboardingActions.validateDisplayname):
+        case getType(OnboardingActions.validateCommonName):
             return {
                 ...state,
-                displayname: {
-                    ...state.displayname,
+                commonName: {
+                    ...state.commonName,
                     isValidating: true
                 }
             }
@@ -96,20 +96,20 @@ export default (state: OnboardingUsernameCommonnameValidationState = defaultStat
                     isValidating: true
                 }
             }
-        case getType(OnboardingActions.resetValidationResultUsername):
+        case getType(OnboardingActions.resetValidationResultUserName):
             return {
                 ...state,
-                username: {
-                    ...state.username,
+                userName: {
+                    ...state.userName,
                     isValidating: false,
                     validationResult: undefined
                 }
             }
-        case getType(OnboardingActions.resetValidationResultDisplayname):
+        case getType(OnboardingActions.resetValidationResultCommonName):
             return {
                 ...state,
-                displayname: {
-                    ...state.displayname,
+                commonName: {
+                    ...state.commonName,
                     isValidating: false,
                     validationResult: undefined
                 }

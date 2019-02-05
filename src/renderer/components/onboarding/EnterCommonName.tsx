@@ -10,33 +10,33 @@ import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 
-export interface EnterDisplaynameStateProps {
-    displayname: string
+export interface EnterCommonNameStateProps {
+    commonName: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 
 }
-export interface EnterDisplaynameDispatchProps {
-    submitDisplayname: (displayname: string) => void,
-    resetValidationResultDisplayname: () => void
+export interface EnterCommonNameDispatchProps {
+    submitCommonName: (commonName: string) => void,
+    resetValidationResultCommonName: () => void
 }
-type EnterDisplayNameProps = EnterDisplaynameDispatchProps & EnterDisplaynameStateProps
+type EnterCommonNameProps = EnterCommonNameDispatchProps & EnterCommonNameStateProps
 
-interface EnterDisplayNameComponentState {
-    displayname: string,
+interface EnterCommonNameComponentState {
+    commonName: string,
 }
-export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisplayNameComponentState>{
-    constructor(props: EnterDisplayNameProps) {
+export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommonNameComponentState>{
+    constructor(props: EnterCommonNameProps) {
         super(props)
-        this.state = { displayname: props.displayname }
+        this.state = { commonName: props.commonName }
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ displayname: e.target.value })
-        this.props.resetValidationResultDisplayname()
+        this.setState({ commonName: e.target.value })
+        this.props.resetValidationResultCommonName()
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
-        this.props.submitDisplayname(this.state.displayname)
+        this.props.submitCommonName(this.state.commonName)
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
     }
@@ -62,8 +62,8 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a display name</Text>
-                                    <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" 
-                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
+                                    <Input value={this.state.commonName} onChange={this.handleChange} placeholder="Display name" 
+                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
                                          validationFailed 
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
