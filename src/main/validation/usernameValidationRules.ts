@@ -31,7 +31,7 @@ const usernameValidationRules: ValidationTest<string>[] = [
         message: "Value may only contain letters and numbers",
         testsOnSuccess: [{
             test: usernameDoesNotExist,
-            message: "username is already taken"
+            message: "User name is already taken"
         }]
     }
 ];
