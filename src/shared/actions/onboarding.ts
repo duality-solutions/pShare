@@ -3,16 +3,36 @@ import { ValidationResult } from '../system/validator/ValidationResult';
 // import { ValidationResult } from './validation';
 //import { createLocalStandardAction } from '../system/createLocalStandardAction';
 
+interface ValueValidationPayload<T> extends NoValueValidationPayload {
+    value: T
+}
+interface NoValueValidationPayload{
+    fieldName:string
+}
+
+export type ValidationPayload<T> = T extends void?NoValueValidationPayload:ValueValidationPayload<T>
+
 const OnboardingActions = {
-    validateUserName: createStandardAction('validate/request/USERNAME')<string>(),
-    validateCommonName: createStandardAction('validate/request/COMMONNAME')<string>(),
-    validateToken : createStandardAction('validate/request/TOKEN')<string>(),
-    userNameValidated: createStandardAction('validate/result/USERNAME')<ValidationResult<string>>(),
-    commonNameValidated: createStandardAction('validate/result/COMMONNAME')<ValidationResult<string>>(),
-    tokenValidated: createStandardAction('validate/result/TOKEN')<ValidationResult<string>>(),
-    resetValidationResultUserName: createStandardAction('reset/validation/USERNAME')<void>(),
-    resetValidationResultCommonName: createStandardAction('reset/validation/COMMONNAME')<void>(),
-    resetValidationResultToken: createStandardAction('reset/validation/TOKEN')<void>(),
+
+    validate: createStandardAction('validate/request')<ValidationPayload<string>>(),
+
+
+    // validateUserName: createStandardAction('validate/request/USERNAME')<string>(),
+    // validateCommonName: createStandardAction('validate/request/COMMONNAME')<string>(),
+    // validateToken : createStandardAction('validate/request/TOKEN')<string>(),
+
+    validated: createStandardAction('validate/result')<ValidationPayload<ValidationResult<string>>>(),
+
+    // userNameValidated: createStandardAction('validate/result/USERNAME')<ValidationResult<string>>(),
+    // commonNameValidated: createStandardAction('validate/result/COMMONNAME')<ValidationResult<string>>(),
+    // tokenValidated: createStandardAction('validate/result/TOKEN')<ValidationResult<string>>(),
+
+    resetValidation: createStandardAction('reset/validation')<ValidationPayload<void>>(),
+
+    // resetValidationResultUserName: createStandardAction('reset/validation/USERNAME')<void>(),
+    // resetValidationResultCommonName: createStandardAction('reset/validation/COMMONNAME')<void>(),
+    // resetValidationResultToken: createStandardAction('reset/validation/TOKEN')<void>(),
+
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
     submitUserName: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
     submitCommonName: createStandardAction('onboarding/COMMONNAME_SUBMIT')<string>(),

@@ -36,93 +36,38 @@ const defaultState: OnboardingUserNameCommonnameValidationState = {
 
 export default (state: OnboardingUserNameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUserNameCommonnameValidationState => {
     switch (action.type) {
-        case getType(OnboardingActions.userNameValidated): {
-            const validationResult = action.payload;
+        case getType(OnboardingActions.validated): {
+            const { value: validationResult } = action.payload;
             return {
                 ...state,
-                userName: {
-                    value: action.payload.value,
+                [action.payload.fieldName]: {
+                    value: action.payload.value.value,
                     validationResult,
                     isValidating: false
                 },
-                isValid: action.payload.success && state.commonName.validationResult ? state.commonName.validationResult.success : false
+                isValid: validationResult.success && state.commonName.validationResult ? state.commonName.validationResult.success : false
             }
         }
-        case getType(OnboardingActions.commonNameValidated): {
-            const validationResult = action.payload;
+
+        case getType(OnboardingActions.validate):
             return {
                 ...state,
-                commonName: {
-                    value: action.payload.value,
-                    validationResult,
-                    isValidating: false
-                },
-                isValid: action.payload.success && state.userName.validationResult ? state.userName.validationResult.success : false
-            }
-        }
-        case getType(OnboardingActions.tokenValidated): {
-            const validationResult = action.payload
-            return {
-                ...state,
-                token: {
-                    value: action.payload.value,
-                    validationResult,
-                    isValidating: false
-                },
-                // isValid: action.payload.success 
-            }
-        }
-        case getType(OnboardingActions.validateUserName):
-            return {
-                ...state,
-                userName: {
-                    ...state.userName,
+                [action.payload.fieldName]: {
+                    ...(state as any)[action.payload.fieldName],
                     isValidating: true
                 }
             }
-        case getType(OnboardingActions.validateCommonName):
+
+        case getType(OnboardingActions.resetValidation):
             return {
                 ...state,
-                commonName: {
-                    ...state.commonName,
-                    isValidating: true
-                }
-            }
-        case getType(OnboardingActions.validateToken):
-            return {
-                ...state,
-                token: {
-                    ...state.token,
-                    isValidating: true
-                }
-            }
-        case getType(OnboardingActions.resetValidationResultUserName):
-            return {
-                ...state,
-                userName: {
-                    ...state.userName,
+                [action.payload.fieldName]: {
+                    ...(state as any)[action.payload.fieldName],
                     isValidating: false,
                     validationResult: undefined
                 }
             }
-        case getType(OnboardingActions.resetValidationResultCommonName):
-            return {
-                ...state,
-                commonName: {
-                    ...state.commonName,
-                    isValidating: false,
-                    validationResult: undefined
-                }
-            }
-        case getType(OnboardingActions.resetValidationResultToken):
-            return {
-                ...state,
-                token: {
-                    ...state.token,
-                    isValidating: false,
-                    validationResult: undefined
-                }
-            }
+
         default:
             return state;
 

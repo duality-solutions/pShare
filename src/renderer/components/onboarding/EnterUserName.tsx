@@ -9,6 +9,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
+import { ValidationPayload } from "../../../shared/actions/onboarding";
 
 export interface EnterUserNameStateProps {
     userName: string,
@@ -17,7 +18,7 @@ export interface EnterUserNameStateProps {
 }
 export interface EnterUserNameDispatchProps {
     submitUserName: (userName: string) => void
-    resetValidationResultUserName: () => void,
+    resetValidation: (validationPayload: ValidationPayload<void>) => void,
     // backToCreateAccount: () => void 
 }
 type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
@@ -33,7 +34,7 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ userName: e.target.value })
-        this.props.resetValidationResultUserName()
+        this.props.resetValidation({ fieldName: "userName" })
     }
     handleSubmit = (e: FormEvent) => {
         this.props.submitUserName(this.state.userName)
@@ -60,20 +61,20 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
-                        {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
+                            {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
 
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
-                                    <Input value={this.state.userName} onChange={this.handleChange} placeholder="User name" 
+                                    <Input value={this.state.userName} onChange={this.handleChange} placeholder="User name"
                                         margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
-                                         validationFailed 
+                                        validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }
                                     {
-                                         networkFailure
+                                        networkFailure
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }

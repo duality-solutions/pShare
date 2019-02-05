@@ -1,26 +1,29 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
-import { PayloadCreator } from "typesafe-actions/dist/types";
+//import { PayloadCreator } from "typesafe-actions/dist/types";
 import OnboardingActions from "../../shared/actions/onboarding";
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { validateCommonName } from "../validation/validateCommonName";
 import { validateToken } from "../validation/validateToken";
 import { validateUserName } from "../validation/validateUserName";
+//import { Predicate } from "redux-saga";
 
 export function* validationSaga() {
-    yield takeEveryValidationAction(OnboardingActions.validateUserName, validateUserName, OnboardingActions.userNameValidated)
-    yield takeEveryValidationAction(OnboardingActions.validateCommonName, validateCommonName, OnboardingActions.commonNameValidated)
-    yield takeEveryValidationAction(OnboardingActions.validateToken, validateToken, OnboardingActions.tokenValidated)
+    yield takeEveryValidationAction<string>("userName", validateUserName)
+    yield takeEveryValidationAction<string>("commonName", validateCommonName)
+    yield takeEveryValidationAction<string>("token", validateToken)
 }
 
-function takeEveryValidationAction<TAction extends string, TValidatedValue>(
-    validateAction: PayloadCreator<TAction, TValidatedValue>,
-    validationFunc: (value: TValidatedValue) => Promise<ValidationResult<TValidatedValue>>,
-    validatedAction: PayloadCreator<TAction, ValidationResult<TValidatedValue>>
+function takeEveryValidationAction<TValidatedValue>(
+    fieldName: string,
+    validationFunc: (value: TValidatedValue) => Promise<ValidationResult<TValidatedValue>>
 ) {
-    return takeEvery(getType(validateAction), function* (action: ActionType<typeof validateAction>) {
-        const valueToValidate = action.payload;
-        const validationResult: ValidationResult<TValidatedValue> = yield call(validationFunc, valueToValidate);
-        yield put(validatedAction(validationResult));
+    const predicate = (action: OnboardingActions) => action.type === getType(OnboardingActions.validate)
+        && action.payload.fieldName === fieldName;
+    return takeEvery(predicate, function* (action: ActionType<typeof OnboardingActions.validate>) {
+        const valueToValidate = action.payload.value as any;
+        const validationResult: ValidationResult<TValidatedValue> = yield call(() => validationFunc(valueToValidate));
+        const act = OnboardingActions.validated({ fieldName, value: validationResult as any });
+        yield put(act);
     });
 }
