@@ -63,7 +63,7 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a display name</Text>
                                     <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" 
-                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
+                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
                                          validationFailed 
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)

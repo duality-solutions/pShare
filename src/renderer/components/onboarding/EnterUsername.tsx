@@ -17,7 +17,8 @@ export interface EnterUsernameStateProps {
 }
 export interface EnterUsernameDispatchProps {
     submitUsername: (username: string) => void
-    resetValidationResultUsername: () => void 
+    resetValidationResultUsername: () => void,
+    // backToCreateAccount: () => void 
 }
 type EnterUsernameProps = EnterUsernameDispatchProps & EnterUsernameStateProps
 
@@ -36,25 +37,9 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
     }
     handleSubmit = (e: FormEvent) => {
         this.props.submitUsername(this.state.username)
-        // this.setState({ check: true })
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
     }
-
-    // static getDerivedStateFromProps (props:EnterUsernameProps, state:EnterUsernameComponentState) {
-    //     if ( !props.isValidating && !state.inputError && state.check ){
-    //     let validationResult = props.validationResult
-    //     console.log(state)
-    //     console.log("Validation Result Props: ", validationResult)
-    //     let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
-    //     console.log("Validation Failed: " + validationFailed)
-    //     if (validationFailed) {
-    //         return { inputError: true }
-    //     }
-    //     return null
-    //     }
-    //     return null 
-    // }
 
     render() {
         const { isValidating, validationResult } = this.props
@@ -75,11 +60,13 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
+                        {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
+
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
                                     <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" 
-                                        margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
+                                        margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
                                          validationFailed 
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
