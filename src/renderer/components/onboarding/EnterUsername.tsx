@@ -10,33 +10,33 @@ import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 
-export interface EnterUsernameStateProps {
-    username: string,
+export interface EnterUserNameStateProps {
+    userName: string,
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export interface EnterUsernameDispatchProps {
-    submitUsername: (username: string) => void
-    resetValidationResultUsername: () => void,
+export interface EnterUserNameDispatchProps {
+    submitUserName: (userName: string) => void
+    resetValidationResultUserName: () => void,
     // backToCreateAccount: () => void 
 }
-type EnterUsernameProps = EnterUsernameDispatchProps & EnterUsernameStateProps
+type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
 
-interface EnterUsernameComponentState {
-    username: string,
+interface EnterUserNameComponentState {
+    userName: string,
 }
 
-export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameComponentState>{
-    constructor(props: EnterUsernameProps) {
+export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameComponentState>{
+    constructor(props: EnterUserNameProps) {
         super(props)
-        this.state = { username: props.username }
+        this.state = { userName: props.userName }
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.setState({ username: e.target.value })
-        this.props.resetValidationResultUsername()
+        this.setState({ userName: e.target.value })
+        this.props.resetValidationResultUserName()
     }
     handleSubmit = (e: FormEvent) => {
-        this.props.submitUsername(this.state.username)
+        this.props.submitUserName(this.state.userName)
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
     }
@@ -65,7 +65,7 @@ export class EnterUsername extends Component<EnterUsernameProps, EnterUsernameCo
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
-                                    <Input value={this.state.username} onChange={this.handleChange} placeholder="User name" 
+                                    <Input value={this.state.userName} onChange={this.handleChange} placeholder="User name" 
                                         margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
                                          validationFailed 

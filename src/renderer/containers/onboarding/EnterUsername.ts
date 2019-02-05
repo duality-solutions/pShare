@@ -1,21 +1,21 @@
 import { connect } from 'react-redux';
 import OnboardingActions from "../../../shared/actions/onboarding";
-import { EnterUsername, EnterUsernameDispatchProps, EnterUsernameStateProps } from '../../components/onboarding/EnterUsername';
+import { EnterUserName, EnterUserNameDispatchProps, EnterUserNameStateProps } from '../../components/onboarding/EnterUserName';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 
-const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterUsernameStateProps => {
+const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterUserNameStateProps => {
    
     return {
-        username:state.onboarding.username.value,
-        isValidating:state.onboarding.username.isValidating,
-        validationResult:state.onboarding.username.validationResult
+        userName:state.onboarding.userName.value,
+        isValidating:state.onboarding.userName.isValidating,
+        validationResult:state.onboarding.userName.validationResult
     };
 };
 
 
-const mapDispatchToProps: MapPropsToDispatchObj<EnterUsernameDispatchProps> = { ...OnboardingActions };
-// const mapDispatchToProps:EnterUsernameDispatchProps = { ...OnboardingActions };
+const mapDispatchToProps: MapPropsToDispatchObj<EnterUserNameDispatchProps> = { ...OnboardingActions };
+// const mapDispatchToProps:EnterUserNameDispatchProps = { ...OnboardingActions };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EnterUsername)
+export default connect(mapStateToProps, mapDispatchToProps)(EnterUserName)
