@@ -24,7 +24,7 @@ const StyledCard = styled('div')<CardProps>`
 `
 
 const SquareCard = styled('div')<{}>`
-    display: flex;
+    display: flex;  
     flex-direction:column;
     align-items: center;
     color: white;

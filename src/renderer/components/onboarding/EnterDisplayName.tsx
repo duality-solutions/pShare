@@ -17,12 +17,13 @@ export interface EnterDisplaynameStateProps {
 
 }
 export interface EnterDisplaynameDispatchProps {
-    submitDisplayname: (displayname: string) => void
+    submitDisplayname: (displayname: string) => void,
+    resetValidationResultDisplayname: () => void
 }
 type EnterDisplayNameProps = EnterDisplaynameDispatchProps & EnterDisplaynameStateProps
 
 interface EnterDisplayNameComponentState {
-    displayname: string
+    displayname: string,
 }
 export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisplayNameComponentState>{
     constructor(props: EnterDisplayNameProps) {
@@ -31,6 +32,7 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ displayname: e.target.value })
+        this.props.resetValidationResultDisplayname()
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
@@ -41,7 +43,7 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
 
     render() {
         const { isValidating, validationResult } = this.props
-        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
+        let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
 
         return <>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
@@ -60,10 +62,11 @@ export class EnterDisplayName extends Component<EnterDisplayNameProps, EnterDisp
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a display name</Text>
-                                    <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" margin="1em 0 1em 0" padding="0 1em 0 1em" />
+                                    <Input value={this.state.displayname} onChange={this.handleChange} placeholder="Display name" 
+                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
                                     {
-                                        validationFailed
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e,i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
+                                         validationFailed 
+                                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }
                                 </Card>
