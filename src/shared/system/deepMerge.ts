@@ -1,5 +1,6 @@
 import { blinq } from "blinq";
 import { Enumerable } from "blinq/dist/types/src/Enumerable";
+import { entriesToObject, entries } from "./entries";
 
 /**
  * Merges n objects into a single (new) object, or if all objects are equal (===) 
@@ -40,12 +41,6 @@ export const deepMerge =
 const isObject = (item: any): boolean => item !== null && typeof item === 'object'
 
 const isMergeableObject = (item: any): boolean => isObject(item) && !Array.isArray(item)
-
-const entries = <T, TK extends keyof T, TV extends T[TK], TEntry extends [TK, TV]>(o: T): Enumerable<TEntry> => blinq(Object.entries(o) as TEntry[])
-
-const entriesToObject =
-    <T>(entries: Enumerable<[keyof T, T[keyof T]]>): T =>
-        entries.aggregate({} as T, (prev, [k, v]) => { prev[k] = v; return prev })
 
 const getLatestEntries = <T, TK extends keyof T, TV extends T[TK], TEntry extends [TK, TV]>(items: Enumerable<T>): Enumerable<TEntry> =>
     //first() is cheap, but last() is expensive

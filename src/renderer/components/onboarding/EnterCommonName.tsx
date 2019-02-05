@@ -9,6 +9,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
+import { ValidationPayload } from "../../../shared/system/validator/ValueValidationPayload";
 
 export interface EnterCommonNameStateProps {
     commonName: string
@@ -18,7 +19,7 @@ export interface EnterCommonNameStateProps {
 }
 export interface EnterCommonNameDispatchProps {
     submitCommonName: (commonName: string) => void,
-    resetValidationResultCommonName: () => void
+    resetValidation: (validationPayload: ValidationPayload<void>) => void
 }
 type EnterCommonNameProps = EnterCommonNameDispatchProps & EnterCommonNameStateProps
 
@@ -32,7 +33,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ commonName: e.target.value })
-        this.props.resetValidationResultCommonName()
+        this.props.resetValidation({ fieldName: "commonName" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
@@ -62,17 +63,17 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a display name</Text>
-                                    <Input value={this.state.commonName} onChange={this.handleChange} placeholder="Display name" 
-                                                margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
+                                    <Input value={this.state.commonName} onChange={this.handleChange} placeholder="Display name"
+                                        margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
                                     {
-                                         validationFailed 
+                                        validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
                                     }
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit"  disabled={isValidating}/>
+                                <ArrowButton label="Continue" type="submit" disabled={isValidating} />
                                 {
                                     isValidating ? <div>show spinner</div> : <></>
                                 }

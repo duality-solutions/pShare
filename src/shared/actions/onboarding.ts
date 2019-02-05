@@ -1,16 +1,15 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
 import { ValidationResult } from '../system/validator/ValidationResult';
 import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccountConfig';
+import { ValidationPayload } from '../system/validator/ValueValidationPayload';
 const OnboardingActions = {
-    validateUserName: createStandardAction('validate/request/USERNAME')<string>(),
-    validateCommonName: createStandardAction('validate/request/COMMONNAME')<string>(),
-    validateToken: createStandardAction('validate/request/TOKEN')<string>(),
-    userNameValidated: createStandardAction('validate/result/USERNAME')<ValidationResult<string>>(),
-    commonNameValidated: createStandardAction('validate/result/COMMONNAME')<ValidationResult<string>>(),
-    tokenValidated: createStandardAction('validate/result/TOKEN')<ValidationResult<string>>(),
-    resetValidationResultUserName: createStandardAction('reset/validation/USERNAME')<void>(),
-    resetValidationResultCommonName: createStandardAction('reset/validation/COMMONNAME')<void>(),
-    resetValidationResultToken: createStandardAction('reset/validation/TOKEN')<void>(),
+
+    validate: createStandardAction('validate/request')<ValidationPayload<string>>(),
+
+    validated: createStandardAction('validate/result')<ValidationPayload<ValidationResult<string>>>(),
+
+    resetValidation: createStandardAction('reset/validation')<ValidationPayload<void>>(),
+
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
     submitUserName: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
     submitCommonName: createStandardAction('onboarding/COMMONNAME_SUBMIT')<string>(),

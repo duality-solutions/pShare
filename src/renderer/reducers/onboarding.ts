@@ -1,6 +1,8 @@
 import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
+import { blinq } from 'blinq';
+import { keys } from '../../shared/system/entries';
 
 interface Validatable<T> {
     value: T,
@@ -8,121 +10,103 @@ interface Validatable<T> {
     isValidating: boolean
 }
 
-interface OnboardingUserNameCommonnameValidationState {
+interface OnboardingBdapAccountOptionsValidatedFields {
     userName: Validatable<string>,
     commonName: Validatable<string>,
-    token: Validatable<string>,
+    token: Validatable<string>
+}
+interface OnboardingBdapAccountOptionsValidationState {
+    fields: OnboardingBdapAccountOptionsValidatedFields,
     isValid: boolean
 }
 
-const defaultState: OnboardingUserNameCommonnameValidationState = {
-    userName: {
-        value: "",
-        isValidating: false
+interface OnboardingBdapAccountOptionsFieldNameInfo {
+    fieldName: keyof OnboardingBdapAccountOptionsValidatedFields
+}
 
-    },
-    commonName: {
-        value: "",
-        isValidating: false
+const defaultState: OnboardingBdapAccountOptionsValidationState = {
+    fields: {
+        userName: {
+            value: "",
+            isValidating: false
 
-    },
-    token: {
-        value: "",
-        isValidating: false
+        },
+        commonName: {
+            value: "",
+            isValidating: false
 
+        },
+        token: {
+            value: "",
+            isValidating: false
+
+        }
     },
     isValid: false
 }
 
-export default (state: OnboardingUserNameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUserNameCommonnameValidationState => {
+export default (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
-        case getType(OnboardingActions.userNameValidated): {
-            const validationResult = action.payload;
+        case getType(OnboardingActions.validated): {
+            const { value: validationResult, fieldName } = action.payload;
             return {
                 ...state,
-                userName: {
-                    value: action.payload.value,
-                    validationResult,
-                    isValidating: false
+                fields: {
+                    ...state.fields,
+                    [fieldName]: {
+                        value: validationResult.value,
+                        validationResult,
+                        isValidating: false
+                    }
                 },
-                isValid: action.payload.success && state.commonName.validationResult ? state.commonName.validationResult.success : false
+                isValid:
+                    validationResult.success
+                    && blinq(keys(state.fields))
+                        .where(f => fieldName !== f)
+                        .all(f => {
+                            const vr = state.fields[f].validationResult;
+                            return typeof vr !== 'undefined' && vr.success;
+                        })
             }
         }
-        case getType(OnboardingActions.commonNameValidated): {
-            const validationResult = action.payload;
-            return {
-                ...state,
-                commonName: {
-                    value: action.payload.value,
-                    validationResult,
-                    isValidating: false
-                },
-                isValid: action.payload.success && state.userName.validationResult ? state.userName.validationResult.success : false
-            }
-        }
-        case getType(OnboardingActions.tokenValidated): {
-            const validationResult = action.payload
-            return {
-                ...state,
-                token: {
-                    value: action.payload.value,
-                    validationResult,
-                    isValidating: false
-                },
-                // isValid: action.payload.success 
-            }
-        }
-        case getType(OnboardingActions.validateUserName):
-            return {
-                ...state,
-                userName: {
-                    ...state.userName,
-                    isValidating: true
+
+        case getType(OnboardingActions.validate):
+            {
+                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
+                return {
+                    ...state,
+                    fields: {
+                        ...state.fields,
+                        [fieldName]: {
+                            ...state.fields[fieldName],
+                            isValidating: true
+                        }
+                    }
                 }
             }
-        case getType(OnboardingActions.validateCommonName):
-            return {
-                ...state,
-                commonName: {
-                    ...state.commonName,
-                    isValidating: true
-                }
+
+        case getType(OnboardingActions.resetValidation):
+            {
+                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
+                const requiresReset = typeof state.fields[fieldName].validationResult !== 'undefined' || state.isValid;
+                return requiresReset
+                    ? {
+                        ...state,
+                        fields: typeof state.fields[fieldName].validationResult !== 'undefined'
+                            ? {
+                                ...state.fields,
+                                [fieldName]: {
+                                    ...(state.fields)[fieldName],
+                                    isValidating: false,
+                                    validationResult: undefined
+                                }
+                            }
+                            : state.fields,
+                        isValid: false
+                    }
+                    : state
             }
-        case getType(OnboardingActions.validateToken):
-            return {
-                ...state,
-                token: {
-                    ...state.token,
-                    isValidating: true
-                }
-            }
-        case getType(OnboardingActions.resetValidationResultUserName):
-            return {
-                ...state,
-                userName: {
-                    ...state.userName,
-                    isValidating: false,
-                    validationResult: undefined
-                }
-            }
-        case getType(OnboardingActions.resetValidationResultCommonName):
-            return {
-                ...state,
-                commonName: {
-                    ...state.commonName,
-                    isValidating: false,
-                    validationResult: undefined
-                }
-            }
-        case getType(OnboardingActions.resetValidationResultToken):
-            return {
-                ...state,
-                token: {
-                    ...state.token,
-                    isValidating: false,
-                    validationResult: undefined
-                }
-            }
+
         default:
             return state;
 
