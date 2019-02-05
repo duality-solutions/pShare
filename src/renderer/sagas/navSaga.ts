@@ -57,6 +57,11 @@ export function* navSaga() {
         yield put(push("/EnterUsername"))
         console.log('navigating to enter username page')
     
+        // const goBackToCreateAccount = getType(RootActions.backToCreateAccount)
+        // yield(take(goBackToCreateAccount))
+        // yield put(push("/CreateAccount"))
+        // console.log("navigating backwards to Create Account")
+
         const enterUsernameAction = getType(RootActions.enterUsername)
         yield take(enterUsernameAction)
         yield put(push("/EnterDisplayName"))
