@@ -28,7 +28,7 @@ const usernameDoesNotExist = async (value: string) => {
 const usernameValidationRules: ValidationTest<string>[] = [
     {
         test: isValidUsername,
-        message: "value should be at least 1 alphanumeric",
+        message: "Value may only contain letters and numbers",
         testsOnSuccess: [{
             test: usernameDoesNotExist,
             message: "username is already taken"
