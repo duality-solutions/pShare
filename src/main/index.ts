@@ -14,9 +14,9 @@ import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devt
 import installExtensionsAsync from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
-import OnboardingActions from '../shared/actions/onboarding';
+//import OnboardingActions from '../shared/actions/onboarding';
 
-import { v4 as uuid } from 'uuid';
+//import { v4 as uuid } from 'uuid';
 
 
 declare module 'electron' {
