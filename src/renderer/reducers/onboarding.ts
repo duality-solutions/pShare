@@ -1,6 +1,7 @@
 import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
+import { blinq } from 'blinq';
 
 interface Validatable<T> {
     value: T,
@@ -33,6 +34,7 @@ const defaultState: OnboardingUserNameCommonnameValidationState = {
     },
     isValid: false
 }
+const fieldNamesUnderValidation: Array<keyof OnboardingUserNameCommonnameValidationState> = ["userName", "commonName", "token"]
 
 export default (state: OnboardingUserNameCommonnameValidationState = defaultState, action: OnboardingActions): OnboardingUserNameCommonnameValidationState => {
     switch (action.type) {
@@ -45,7 +47,13 @@ export default (state: OnboardingUserNameCommonnameValidationState = defaultStat
                     validationResult,
                     isValidating: false
                 },
-                isValid: validationResult.success && state.commonName.validationResult ? state.commonName.validationResult.success : false
+                isValid:
+                    validationResult.success
+                    && blinq(fieldNamesUnderValidation)
+                        .where(f => action.payload.fieldName !== f)
+                        .all(f =>
+                            typeof (state[f] as any).validationResult !== 'undefined'
+                            && (state[f] as any).validationResult.success)
             }
         }
 
@@ -65,7 +73,8 @@ export default (state: OnboardingUserNameCommonnameValidationState = defaultStat
                     ...(state as any)[action.payload.fieldName],
                     isValidating: false,
                     validationResult: undefined
-                }
+                },
+                isValid: false
             }
 
         default:
