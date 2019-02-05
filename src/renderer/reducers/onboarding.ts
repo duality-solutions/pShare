@@ -3,6 +3,7 @@ import OnboardingActions from '../../shared/actions/onboarding';
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { blinq } from 'blinq';
 import { keys } from '../../shared/system/entries';
+import { FieldNameInfo } from '../system/FieldNameInfo';
 
 interface Validatable<T> {
     value: T,
@@ -18,10 +19,6 @@ interface OnboardingBdapAccountOptionsValidatedFields {
 interface OnboardingBdapAccountOptionsValidationState {
     fields: OnboardingBdapAccountOptionsValidatedFields,
     isValid: boolean
-}
-
-interface OnboardingBdapAccountOptionsFieldNameInfo {
-    fieldName: keyof OnboardingBdapAccountOptionsValidatedFields
 }
 
 const defaultState: OnboardingBdapAccountOptionsValidationState = {
@@ -72,7 +69,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.validate):
             {
-                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
+                const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 return {
                     ...state,
                     fields: {
@@ -87,7 +84,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.resetValidation):
             {
-                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
+                const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 const requiresReset = typeof state.fields[fieldName].validationResult !== 'undefined' || state.isValid;
                 return requiresReset
                     ? {
