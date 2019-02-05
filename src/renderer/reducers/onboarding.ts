@@ -20,6 +20,10 @@ interface OnboardingBdapAccountOptionsValidationState {
     isValid: boolean
 }
 
+interface OnboardingBdapAccountOptionsFieldNameInfo {
+    fieldName: keyof OnboardingBdapAccountOptionsValidatedFields
+}
+
 const defaultState: OnboardingBdapAccountOptionsValidationState = {
     fields: {
         userName: {
@@ -68,7 +72,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.validate):
             {
-                const { fieldName } = <{ fieldName: keyof OnboardingBdapAccountOptionsValidatedFields }>action.payload;
+                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
                 return {
                     ...state,
                     fields: {
@@ -83,8 +87,8 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.resetValidation):
             {
-                const { fieldName } = <{ fieldName: keyof OnboardingBdapAccountOptionsValidatedFields }>action.payload;
-                const requiresReset = typeof (state as any).fields[fieldName].validationResult !== 'undefined' || state.isValid;
+                const { fieldName } = <OnboardingBdapAccountOptionsFieldNameInfo>action.payload;
+                const requiresReset = typeof state.fields[fieldName].validationResult !== 'undefined' || state.isValid;
                 return requiresReset
                     ? {
                         ...state,
