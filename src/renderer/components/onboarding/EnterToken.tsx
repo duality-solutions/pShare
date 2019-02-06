@@ -1,4 +1,4 @@
-import React, { ChangeEvent, ClipboardEvent, Component, FormEvent } from "react";
+import React, { ChangeEvent, ClipboardEvent, Component, createRef, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
@@ -31,9 +31,15 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         super(props)
         this.state = {
             token: [...props.token]
-            //  this.state = { displayname: props.displayname }
         }
     }
+
+    private ref1 = createRef<HTMLInputElement>()
+    private ref2 = createRef<HTMLInputElement>()
+    private ref3 = createRef<HTMLInputElement>()
+    private ref4 = createRef<HTMLInputElement>()
+    private ref5 = createRef<HTMLInputElement>()
+    private ref6 = createRef<HTMLInputElement>()
 
     handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         console.log('paste is observed: ', e.clipboardData.getData('Text'))
@@ -50,10 +56,20 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         let token = this.state.token
         let index: number = parseInt(e.target.name) // parsed out of index name
         let value: string = e.target.value.slice(-1)
-        console.log('index:', index, 'value:', value)
+        // console.log('index:',index, 'value:',value)
         token[index] = value
-        console.log(token)
+        // console.log(token)
         this.setState({ token })
+        if(this.ref2.current && index===0)
+            this.ref2.current.focus()
+        else if (this.ref3.current && index===1)
+            this.ref3.current.focus()
+        else if (this.ref4.current && index===2)
+            this.ref4.current.focus()
+        else if (this.ref5.current && index===3)
+            this.ref5.current.focus()
+        else if (this.ref6.current && index===4)
+            this.ref6.current.focus()
     }
 
     handleSubmit = (e: FormEvent) => {
@@ -84,17 +100,17 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                     <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                         <Card width="100%" align="center" minHeight="225px" padding="2em 8em 2em 8em">
                                             <Text fontSize="14px">Enter Token</Text>
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref1} autoFocus
                                                 name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref2}
                                                 name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref3}
                                                 name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref4}
                                                 name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref5}
                                                 name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%"
+                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref6}
                                                 name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" error={validationFailed} />
                                             {
                                                 validationFailed

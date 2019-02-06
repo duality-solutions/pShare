@@ -50,7 +50,7 @@ isSpectron && app.commandLine.appendSwitch('disable-gpu')
 let mainWindow: BrowserWindow | null
 
 function createMainWindow() {
-  const window = new BrowserWindow()
+  const window = new BrowserWindow({ width: 1024, height: 768 })
 
   const templateUrl =
     isSpectron
