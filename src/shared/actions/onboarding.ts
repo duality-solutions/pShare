@@ -2,13 +2,14 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 import { ValidationResult } from '../system/validator/ValidationResult';
 import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccountConfig';
 import { ValidationPayload } from '../system/validator/ValueValidationPayload';
+import { createLocalStandardAction } from '../system/createLocalStandardAction';
 const OnboardingActions = {
 
     validate: createStandardAction('validate/request')<ValidationPayload<string>>(),
 
     validated: createStandardAction('validate/result')<ValidationPayload<ValidationResult<string>>>(),
 
-    resetValidation: createStandardAction('reset/validation')<ValidationPayload<void>>(),
+    resetValidation: createLocalStandardAction('reset/validation')<ValidationPayload<void>>(),
 
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
     submitUserName: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
@@ -20,8 +21,9 @@ const OnboardingActions = {
     enterUserName: createStandardAction('onboarding/CREATE_USERNAME')<void>(),
     enterCommonName: createStandardAction('onboarding/CREATE_COMMONNAME')<void>(),
     enterToken: createStandardAction('onboarding/CREATE_TOKEN')<void>(),
-    createBdapAccount: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT')<CreateBdapAccountConfig>(),
     backToCreateAccount: createStandardAction('go_back_to/CREATE_TOKEN')<void>(),
+    beginCreateBdapAccount:createStandardAction('onboarding/BEGIN_CREATE_BDAP_ACCOUNT')<void>(),
+    createBdapAccount: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT')<CreateBdapAccountConfig>(),
     bdapAccountCreated: createStandardAction('onboarding/BDAP_ACCOUNT_CREATED')<GetUserInfo>(),
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>()
 }

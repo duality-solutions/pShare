@@ -6,7 +6,7 @@ import delay from "../../shared/system/delay";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {
-        const { payload: { username, displayname, token } } = action
+        const { payload: { userName: username, commonName: displayname, token } } = action
         if (mock) {
             yield* mockSaga(username === "failcreatebdap")
             return;

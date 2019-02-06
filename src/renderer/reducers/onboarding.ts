@@ -16,7 +16,7 @@ interface OnboardingBdapAccountOptionsValidatedFields {
     commonName: Validatable<string>,
     token: Validatable<string>
 }
-interface OnboardingBdapAccountOptionsValidationState {
+export interface OnboardingBdapAccountOptionsValidationState {
     fields: OnboardingBdapAccountOptionsValidatedFields,
     isValid: boolean
 }

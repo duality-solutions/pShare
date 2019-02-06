@@ -29,7 +29,7 @@ describe("createBdapAccountSaga", function () {
         wallet_address: "k"
     }
     const createdAction = OnboardingActions.bdapAccountCreated(userInfo)
-    const createBdapAccount = OnboardingActions.createBdapAccount({ displayname: "d", token: "t", username: "u" })
+    const createBdapAccount = OnboardingActions.createBdapAccount({ commonName: "d", token: "t", userName: "u" })
 
     it("happy path", async () => {
         await expectSaga(createBdapAccountSaga, false)
