@@ -16,43 +16,18 @@ export interface RouteInfo {
     component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
 }
 
+const route = (path: string, component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>): RouteInfo => ({ path, component })
+
 const routingTable = {
-    syncAgree: {
-        path: "/SyncAgree",
-        component: SyncAgree
-    } as RouteInfo,
-    sync: {
-        path: "/Sync",
-        component: Sync
-    } as RouteInfo,
-    createAccount: {
-        path: "/CreateAccount",
-        component: CreateAccount
-    } as RouteInfo,
-    enterUserName: {
-        path: "/EnterUserName",
-        component: EnterUserName
-    } as RouteInfo,
-    enterCommonName: {
-        path: "/EnterCommonName",
-        component: EnterCommonName
-    } as RouteInfo,
-    enterToken: {
-        path: "/EnterToken",
-        component: EnterToken
-    } as RouteInfo,
-    creatingBdapAccount: {
-        path: "/CreatingBdapAccount",
-        component: CreatingBdapAccount
-    } as RouteInfo,
-    passwordCreate: {
-        path: "/PasswordCreate",
-        component: PasswordCreate
-    } as RouteInfo,
-    main: {
-        path: "/Main",
-        component: Main
-    } as RouteInfo
+    syncAgree: route("/SyncAgree", SyncAgree),
+    sync: route("/Sync", Sync),
+    createAccount: route("/CreateAccount", CreateAccount),
+    enterUserName: route("/EnterUserName", EnterUserName),
+    enterCommonName: route("/EnterCommonName", EnterCommonName),
+    enterToken: route("/EnterToken", EnterToken),
+    creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
+    passwordCreate: route("/PasswordCreate", PasswordCreate),
+    main: route("/Main", Main)
 };
 export const pushRoute = (route: RouteInfo) => push(route.path)
 
