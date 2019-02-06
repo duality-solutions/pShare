@@ -23,14 +23,14 @@ export interface EnterTokenDispatchProps {
 type EnterTokenProps = EnterTokenDispatchProps & EnterTokenStateProps
 
 interface EnterTokenComponentStateProps {
-    token: Array<any>
+    token: Array<string>
 }
 
 export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentStateProps> {
     constructor(props: EnterTokenProps) {
         super(props)
         this.state = {
-            token: ['', '', '', '', '', '']
+            token: [...props.token]
             //  this.state = { displayname: props.displayname }
         }
     }
