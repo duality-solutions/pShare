@@ -9,6 +9,7 @@ import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUserName from "../containers/onboarding/EnterUserName";
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
+import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 
 const appTheme = {
     blue : '#2e77d0'
@@ -25,6 +26,7 @@ export default
         <Route exact path="/EnterUserName" component={EnterUserName} />
         <Route exact path="/EnterCommonName" component={EnterCommonName} />
         <Route exact path="/EnterToken" component={EnterToken} />
+        <Route exact path="/CreatingBdapAccount" component={CreatingBdapAccount} />
         <Route exact path="/Main" component={Main} />
     </Switch>
     </ThemeProvider>

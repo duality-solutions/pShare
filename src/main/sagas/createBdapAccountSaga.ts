@@ -104,5 +104,5 @@ function* mockSaga(fail = false) {
         wallet_address: "testValue"
     });
     yield call(delay, 5000)
-    yield put(fail ? OnboardingActions.resetOnboarding() : accountCreatedAction)
+    yield put(fail ? OnboardingActions.createBdapAccountFailed() : accountCreatedAction)
 }

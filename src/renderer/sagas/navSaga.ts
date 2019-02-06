@@ -1,8 +1,9 @@
 import { push } from "connected-react-router";
-import { put, select, take } from "redux-saga/effects";
+import { put, select, take, takeLatest } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RendererRootState } from "../reducers";
 import RootActions from "./../../shared/actions";
+import { ActionCreator } from "typesafe-actions/dist/types";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -33,17 +34,9 @@ export function* navSaga() {
 
     yield take(syncCompleteAction)
 
-    // const syncPageEndTime = performance.now()
-    // const timeOnSyncPage = syncPageEndTime - syncPageStartTime;
-    // // let's stay at least 2s on sync page, otherwise we
-    // // get an unnatural flash of the sync screen
-    // const remainingTime = 2000 - timeOnSyncPage;
-    // if (remainingTime > 0) {
-    //     yield call(delay, remainingTime)
-    // }
 
     const newState: RendererRootState = yield select()
-    if(newState.user.isOnboarded) {
+    if (newState.user.isOnboarded) {
         console.log("nav saga: user is onboarded, navigating to /Main")
         yield put(push("/Main"))
     }
@@ -51,32 +44,22 @@ export function* navSaga() {
         console.log("nav saga: navigating to Onboarding -- /CreateAccount")
         yield put(push("/CreateAccount"))
         console.log("nav saga navigating to /CreateAccount")
-    
-        const createAccountAction = getType(RootActions.createAccount)
-        yield take(createAccountAction)
-        yield put(push("/EnterUserName"))
-        console.log('nav saga navigating to /EnterUserName')
-    
-        // const goBackToCreateAccount = getType(RootActions.backToCreateAccount)
-        // yield(take(goBackToCreateAccount))
-        // yield put(push("/CreateAccount"))
-        // console.log("navigating backwards to Create Account")
-
-        const enterUsernameAction = getType(RootActions.enterUserName)
-        yield take(enterUsernameAction)
-        yield put(push("/enterCommonName"))
-        console.log('nav saga navigating to /EnterCommonName')
-    
-        const enterCommonNameAction = getType(RootActions.enterCommonName)
-        yield take(enterCommonNameAction)
-        console.log("nav saga navigating to /EnterToken")
-        yield put(push("/EnterToken"))
-
-        const enterTokenAction = getType(RootActions.enterToken)
-        yield take(enterTokenAction)
-        console.log("nav saga: user is onboarded, navigating to /Main")
-        yield(put(push("/Main")))
-
     }
+
+    const navMap = new Map<string, string>()
+    const registerNavAction = <T extends string>(action: ActionCreator<T>, route: string) => navMap.set(getType(action), route)
+    registerNavAction(RootActions.createAccount, "/EnterUserName")
+    registerNavAction(RootActions.enterUserName, "/EnterCommonName")
+    registerNavAction(RootActions.enterCommonName, "/EnterToken")
+    registerNavAction(RootActions.enterToken, "/CreatingBdapAccount")
+    registerNavAction(RootActions.enterCreatingBdapAccount, "/Main")
+    registerNavAction(RootActions.resetOnboarding, "/EnterUserName")
+
+    yield takeLatest((action: RootActions) => navMap.has(action.type), function* (action: RootActions) {
+        const navTarget = navMap.get(action.type)
+        if (typeof navTarget !== 'undefined') {
+            yield put(push(navTarget))
+        }
+    })
 
 }

@@ -44,6 +44,26 @@ const defaultState: OnboardingBdapAccountOptionsValidationState = {
 
 export default (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
+        case getType(OnboardingActions.resetOnboarding): {
+            return {
+                ...state,
+                fields: {
+                    ...state.fields,
+                    userName: {
+                        ...state.fields.userName,
+                        validationResult: {
+                            isError: false,
+                            success: false,
+                            validationMessages: ["BDAP account creation failed", "Try a different user name"],
+                            value: state.fields.userName.value
+                        },
+                        isValidating: false
+                    }
+                },
+                isValid: false
+            }
+            break;
+        }
         case getType(OnboardingActions.validated): {
             const { value: validationResult, fieldName } = action.payload;
             return {
