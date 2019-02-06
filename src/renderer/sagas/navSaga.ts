@@ -55,11 +55,11 @@ export function* navSaga() {
             navMap.set(getType(action), [route, shouldCancel])
 
         registerNavAction(RootActions.createAccount, "/EnterUserName")
-        registerNavAction(RootActions.enterUserName, "/EnterCommonName")
-        registerNavAction(RootActions.enterCommonName, "/EnterToken")
-        registerNavAction(RootActions.enterToken, "/CreatingBdapAccount")
+        registerNavAction(RootActions.userNameCaptured, "/EnterCommonName")
+        registerNavAction(RootActions.commonNameCaptured, "/EnterToken")
+        registerNavAction(RootActions.tokenCaptured, "/CreatingBdapAccount")
         registerNavAction(RootActions.resetOnboarding, "/EnterUserName")
-        registerNavAction(RootActions.enterCreatingBdapAccount, "/Main", true)
+        registerNavAction(RootActions.createBdapAccountComplete, "/Main", true)
 
 
         const bdapAccountTask: Task =

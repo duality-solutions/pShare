@@ -5,10 +5,10 @@ export function* onboardingSaga() {
 
 
     yield takeEvery(getType(OnboardingActions.submitUserName), function* (action: ActionType<typeof OnboardingActions.submitUserName>) {
-        yield* runForField("userName", action.payload, OnboardingActions.enterUserName())
+        yield* runForField("userName", action.payload, OnboardingActions.userNameCaptured())
     });
     yield takeEvery(getType(OnboardingActions.submitCommonName), function* (action: ActionType<typeof OnboardingActions.submitCommonName>) {
-        yield* runForField("commonName", action.payload, OnboardingActions.enterCommonName())
+        yield* runForField("commonName", action.payload, OnboardingActions.commonNameCaptured())
     });
 
     yield takeEvery(getType(OnboardingActions.submitToken), function* (action: ActionType<typeof OnboardingActions.submitToken>) {
