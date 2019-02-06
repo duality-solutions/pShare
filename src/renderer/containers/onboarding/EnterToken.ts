@@ -7,9 +7,9 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): EnterTokenStateProps => {
     return {
-        token: state.onboarding.fields.token.value,
-        isValidating: state.onboarding.fields.token.isValidating,
-        validationResult: state.onboarding.fields.token.validationResult
+        token: state.bdapAccountFormValues.fields.token.value,
+        isValidating: state.bdapAccountFormValues.fields.token.isValidating,
+        validationResult: state.bdapAccountFormValues.fields.token.validationResult
     };
 };
 
