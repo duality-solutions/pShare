@@ -59,7 +59,7 @@ export function* navSaga() {
         registerNavAction(RootActions.commonNameCaptured, "/EnterToken")
         registerNavAction(RootActions.tokenCaptured, "/CreatingBdapAccount")
         registerNavAction(RootActions.resetOnboarding, "/EnterUserName")
-        registerNavAction(RootActions.createBdapAccountComplete, "/Main", true)
+        registerNavAction(RootActions.createBdapAccountComplete, "/OnboardingPassword", true)
 
 
         const bdapAccountTask: Task =
