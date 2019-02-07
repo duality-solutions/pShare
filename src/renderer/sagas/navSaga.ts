@@ -5,6 +5,7 @@ import { RendererRootState } from "../reducers";
 import RootActions from "./../../shared/actions";
 import { ActionCreator } from "typesafe-actions/dist/types";
 import { Task } from "redux-saga";
+import { pushRoute, appRoutes, RouteInfo } from "../routes/appRoutes";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -18,7 +19,7 @@ export function* navSaga() {
     if (!state.user.syncAgreed) {
         console.log("nav saga navigating to /SyncAgree")
 
-        yield put(push("/SyncAgree"))
+        yield put(pushRoute(appRoutes.syncAgree))
         const userSyncAgreedAction = getType(RootActions.userAgreeSync)
         console.log("nav saga waiting for userSyncAgreedAction")
 
@@ -28,7 +29,7 @@ export function* navSaga() {
     }
     console.log("nav saga navigating to /Sync")
 
-    yield put(push("/Sync"))
+    yield put(pushRoute(appRoutes.sync))
     // const syncPageStartTime = performance.now();
     const syncCompleteAction = getType(RootActions.syncComplete)
     console.log("nav saga waiting for syncCompleteAction")
@@ -39,27 +40,27 @@ export function* navSaga() {
     const newState: RendererRootState = yield select()
     if (newState.user.isOnboarded) {
         console.log("nav saga: user is onboarded, navigating to /Main")
-        yield put(push("/Main"))
+        yield put(pushRoute(appRoutes.main))
     }
     else {
         console.log("nav saga: navigating to Onboarding -- /CreateAccount")
-        yield put(push("/CreateAccount"))
+        yield put(pushRoute(appRoutes.createAccount))
         console.log("nav saga navigating to /CreateAccount")
 
         const navMap = new Map<string, [string, boolean]>()
         const registerNavAction = <T extends string>(
             action: ActionCreator<T>,
-            route: string,
+            route: RouteInfo,
             shouldCancel: boolean = false
         ) =>
-            navMap.set(getType(action), [route, shouldCancel])
+            navMap.set(getType(action), [route.path, shouldCancel])
 
-        registerNavAction(RootActions.createAccount, "/EnterUserName")
-        registerNavAction(RootActions.enterUserName, "/EnterCommonName")
-        registerNavAction(RootActions.enterCommonName, "/EnterToken")
-        registerNavAction(RootActions.enterToken, "/CreatingBdapAccount")
-        registerNavAction(RootActions.resetOnboarding, "/EnterUserName")
-        registerNavAction(RootActions.enterCreatingBdapAccount, "/Main", true)
+        registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
+        registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
+        registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
+        registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
+        registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
+        registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true)
 
 
         const bdapAccountTask: Task =

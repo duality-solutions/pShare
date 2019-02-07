@@ -19,10 +19,10 @@ const OnboardingActions = {
     commitCommonName: createStandardAction('onboarding/COMMIT_COMMONNAME')<string>(),
     commitToken: createStandardAction('onboarding/COMMIT_TOKEN')<string>(),
 
-    enterUserName: createStandardAction('onboarding/CREATE_USERNAME')<void>(),
-    enterCommonName: createStandardAction('onboarding/CREATE_COMMONNAME')<void>(),
-    enterToken: createStandardAction('onboarding/CREATE_TOKEN')<void>(),
-    enterCreatingBdapAccount: createStandardAction('onboarding/ENTER_CREATING_BDAP_ACCOUNT')<void>(),
+    userNameCaptured: createStandardAction('onboarding/USER_NAME_CAPTURED')<void>(),
+    commonNameCaptured: createStandardAction('onboarding/COMMON_NAME_CAPTURED')<void>(),
+    tokenCaptured: createStandardAction('onboarding/TOKEN_CAPTURED')<void>(),
+    createBdapAccountComplete: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_COMPLETE')<void>(),
 
     backToCreateAccount: createStandardAction('go_back_to/CREATE_TOKEN')<void>(),
     beginCreateBdapAccount:createStandardAction('onboarding/BEGIN_CREATE_BDAP_ACCOUNT')<void>(),

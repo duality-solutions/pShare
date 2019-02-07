@@ -22,14 +22,14 @@ export function* beginCreateBdapAccountSaga() {
                 value: token
             },
         } = onboardingValidationState.fields
-        yield put(OnboardingActions.enterToken())
+        yield put(OnboardingActions.tokenCaptured())
         yield put(OnboardingActions.createBdapAccount({ commonName, userName, token }))
         const val = yield race({
             success: take(getType(OnboardingActions.bdapAccountCreated)),
             failure: take(getType(OnboardingActions.createBdapAccountFailed))
         })
         if (typeof val.success !== 'undefined') {
-            yield put(OnboardingActions.enterCreatingBdapAccount())
+            yield put(OnboardingActions.createBdapAccountComplete())
             
         } else {
             yield put(OnboardingActions.resetOnboarding())
