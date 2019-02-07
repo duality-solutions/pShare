@@ -58,7 +58,7 @@ export function* navSaga() {
         bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
         bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
         //this will block until the navMap is complete
-        yield* bdapAccountConfigNavMap.runNav()
+        yield bdapAccountConfigNavMap.runNav()
 
     }
 
@@ -67,6 +67,6 @@ export function* navSaga() {
 
     // const someNavMap = getNavMap();
     // someNavMap.registerNavAction(RootActions.passwordCaptured, appRoutes.theNextPage, true)
-    // yield * someNavMap.runNav();
+    // yield someNavMap.runNav();
 
 }
