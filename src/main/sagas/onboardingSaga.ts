@@ -1,5 +1,5 @@
 import { put, take, takeEvery } from "redux-saga/effects";
-import { getType, ActionType } from "typesafe-actions";
+import { ActionType, getType } from "typesafe-actions";
 import OnboardingActions from "../../shared/actions/onboarding";
 export function* onboardingSaga() {
 
@@ -13,6 +13,10 @@ export function* onboardingSaga() {
 
     yield takeEvery(getType(OnboardingActions.submitToken), function* (action: ActionType<typeof OnboardingActions.submitToken>) {
         yield* runForField("token", action.payload, OnboardingActions.beginCreateBdapAccount())
+    })
+
+    yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>){
+        yield put(OnboardingActions.passwordCaptured())
     })
 }
 

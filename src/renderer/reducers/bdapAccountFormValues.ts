@@ -1,8 +1,8 @@
+import { blinq } from 'blinq';
 import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
-import { ValidationResult } from "../../shared/system/validator/ValidationResult";
-import { blinq } from 'blinq';
 import { keys } from '../../shared/system/entries';
+import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { FieldNameInfo } from '../system/FieldNameInfo';
 
 interface Validatable<T> {

@@ -1,6 +1,7 @@
 import React, { ChangeEvent, ClipboardEvent, Component, createRef, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
+import { ValidationPayload } from "../../../shared/system/validator/ValueValidationPayload";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
 import { ArrowButton } from "../ui-elements/Button";
@@ -9,7 +10,6 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { ValidationPayload } from "../../../shared/system/validator/ValueValidationPayload";
 
 export interface EnterTokenStateProps {
     token: string,
@@ -30,7 +30,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     constructor(props: EnterTokenProps) {
         super(props)
         this.state = {
-            token: [...props.token]
+            token: ['','','','','','']
         }
     }
 
@@ -60,6 +60,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         token[index] = value
         // console.log(token)
         this.setState({ token })
+
         if(this.ref2.current && index===0)
             this.ref2.current.focus()
         else if (this.ref3.current && index===1)
@@ -100,18 +101,18 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                     <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                         <Card width="100%" align="center" minHeight="225px" padding="2em 8em 2em 8em">
                                             <Text fontSize="14px">Enter Token</Text>
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref1} autoFocus
-                                                name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" error={validationFailed} />
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref2}
-                                                name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" error={validationFailed} />
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref3}
-                                                name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" error={validationFailed} />
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref4}
-                                                name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" error={validationFailed} />
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref5}
-                                                name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" error={validationFailed} />
-                    <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref6}
-                                                name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref1} autoFocus
+                                                                        name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref2}
+                                                                        name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref3}
+                                                                        name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref4}
+                                                                        name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref5}
+                                                                        name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref6}
+                                                                        name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" error={validationFailed} />
                                             {
                                                 validationFailed
                                                     ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)

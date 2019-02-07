@@ -1,11 +1,11 @@
 import { push } from "connected-react-router";
-import { put, select, take, takeLatest, cancel } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
-import { RendererRootState } from "../reducers";
-import RootActions from "./../../shared/actions";
-import { ActionCreator } from "typesafe-actions/dist/types";
 import { Task } from "redux-saga";
-import { pushRoute, appRoutes, RouteInfo } from "../routes/appRoutes";
+import { cancel, put, select, take, takeLatest } from "redux-saga/effects";
+import { getType } from "typesafe-actions";
+import { ActionCreator } from "typesafe-actions/dist/types";
+import { RendererRootState } from "../reducers";
+import { appRoutes, pushRoute, RouteInfo } from "../routes/appRoutes";
+import RootActions from "./../../shared/actions";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -61,7 +61,7 @@ export function* navSaga() {
         registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
         registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
         registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true)
-
+        registerNavAction(RootActions.passwordCaptured, appRoutes.main)
 
         const bdapAccountTask: Task =
             yield takeLatest((action: RootActions) => navMap.has(action.type), function* (action: RootActions) {
