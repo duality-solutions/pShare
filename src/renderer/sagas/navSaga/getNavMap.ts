@@ -25,8 +25,8 @@ export function getNavMap() {
                 }
             }
         });
-        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id) as Predicate<Action<any>>
-        yield take(pred);
+        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id) 
+        yield take(pred as Predicate<Action<any>>);
     });
     return { registerNavAction, runNav };
 }
