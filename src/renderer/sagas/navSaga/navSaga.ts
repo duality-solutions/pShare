@@ -1,11 +1,9 @@
-import { push } from "connected-react-router";
-import { put, select, take, takeLatest, cancel } from "redux-saga/effects";
+import { put, select, take, cancelled } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import { RendererRootState } from "../reducers";
-import RootActions from "./../../shared/actions";
-import { ActionCreator } from "typesafe-actions/dist/types";
-import { Task } from "redux-saga";
-import { pushRoute, appRoutes, RouteInfo } from "../routes/appRoutes";
+import { RendererRootState } from "../../reducers";
+import RootActions from "../../../shared/actions";
+import { pushRoute, appRoutes } from "../../routes/appRoutes";
+import { getNavMap } from "./getNavMap";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -42,18 +40,16 @@ export function* navSaga() {
         console.log("nav saga: user is onboarded, navigating to /Main")
         yield put(pushRoute(appRoutes.main))
     }
+
+
+    if (typeof newState.user.userName !== 'undefined') {
+        yield put(pushRoute(appRoutes.passwordCreate))
+    }
     else {
         console.log("nav saga: navigating to Onboarding -- /CreateAccount")
         yield put(pushRoute(appRoutes.createAccount))
         console.log("nav saga navigating to /CreateAccount")
-
-        const navMap = new Map<string, [string, boolean]>()
-        const registerNavAction = <T extends string>(
-            action: ActionCreator<T>,
-            route: RouteInfo,
-            shouldCancel: boolean = false
-        ) =>
-            navMap.set(getType(action), [route.path, shouldCancel])
+        const { registerNavAction, runNav } = getNavMap();
 
         registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
         registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
@@ -63,20 +59,13 @@ export function* navSaga() {
         registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true)
 
 
-        const bdapAccountTask: Task =
-            yield takeLatest((action: RootActions) => navMap.has(action.type), function* (action: RootActions) {
-                const navTarget = navMap.get(action.type)
-                if (typeof navTarget !== 'undefined') {
-                    const [route, shouldCancel] = navTarget
-                    yield put(push(route))
-                    if (shouldCancel) {
-                        yield cancel(bdapAccountTask)
-                    }
-                }
-            })
+        yield* runNav()
 
     }
+
+    yield put({ type: "monkey", payload: "monkey" })
 
 
 
 }
+

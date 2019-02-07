@@ -27,7 +27,7 @@ const OnboardingActions = {
     backToCreateAccount: createStandardAction('go_back_to/CREATE_TOKEN')<void>(),
     beginCreateBdapAccount:createStandardAction('onboarding/BEGIN_CREATE_BDAP_ACCOUNT')<void>(),
     createBdapAccount: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT')<CreateBdapAccountConfig>(),
-    bdapAccountCreated: createStandardAction('onboarding/BDAP_ACCOUNT_CREATED')<GetUserInfo>(),
+    bdapAccountCreated: createStandardAction('onboarding/BDAP_ACCOUNT_CREATED')<string>(),
     createBdapAccountFailed: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_FAILED')<void>(),
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>()
 }

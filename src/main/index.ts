@@ -29,7 +29,7 @@ declare module 'electron' {
 }
 
 //defines paths into the store that will be persisted
-const persistencePaths = ['user.syncAgreed'];
+const persistencePaths = ['user.syncAgreed', 'user.userName'];
 
 
 const store = configureStore(persistencePaths)

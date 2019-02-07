@@ -1,4 +1,4 @@
-import { navSaga } from "./navSaga";
+import { navSaga } from "./navSaga/navSaga";
 import { beginCreateBdapAccountSaga } from "./beginCreateBdapAccountSaga";
 
 export const getRootSaga = () => {
