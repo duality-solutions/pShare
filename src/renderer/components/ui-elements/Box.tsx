@@ -7,6 +7,7 @@ interface BoxProps {
     direction?: string,
     display?: string,
     minWidth?: string,
+    height?: string,
 }
 
 const StyledBox = styled('div')<BoxProps>`
@@ -17,6 +18,7 @@ const StyledBox = styled('div')<BoxProps>`
     margin: ${props  =>  props.margin ? props.margin : '0 0 0 0' };
     box-sizing: border-box;  
     min-width: ${props => props.minWidth || '10px'};
+    height: ${props => props.height };
 `
 
 export default StyledBox
