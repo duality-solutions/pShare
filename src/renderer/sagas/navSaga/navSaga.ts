@@ -1,4 +1,4 @@
-import { put, select, take, cancelled } from "redux-saga/effects";
+import { put, select, take } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RendererRootState } from "../../reducers";
 import RootActions from "../../../shared/actions";
@@ -49,23 +49,24 @@ export function* navSaga() {
         console.log("nav saga: navigating to Onboarding -- /CreateAccount")
         yield put(pushRoute(appRoutes.createAccount))
         console.log("nav saga navigating to /CreateAccount")
-        const { registerNavAction, runNav } = getNavMap();
+        const bdapAccountConfigNavMap = getNavMap();
 
-        registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
-        registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
-        registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
-        registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
-        registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
-        registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true)
-
-
-        yield* runNav()
+        bdapAccountConfigNavMap.registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
+        bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
+        bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
+        bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
+        bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
+        bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
+        //this will block until the navMap is complete
+        yield* bdapAccountConfigNavMap.runNav()
 
     }
 
-    yield put({ type: "monkey", payload: "monkey" })
+    console.log("navSaga navigated to passwordCreate")
+    // so at this point, we're on the password page, and we might want to set up a new navMap
 
-
+    // const someNavMap = getNavMap();
+    // someNavMap.registerNavAction(RootActions.passwordCaptured, appRoutes.theNextPage, true)
+    // yield * someNavMap.runNav();
 
 }
-
