@@ -10,15 +10,16 @@ import { Action } from "redux";
 import { v4 as uuid } from 'uuid';
 export function getNavMap() {
     const navMap = new Map<string, [string, boolean]>();
-    const registerNavAction = <T extends string>(action: ActionCreator<T>, route: RouteInfo, shouldCancel: boolean = false) => navMap.set(getType(action), [route.path, shouldCancel]);
+    const registerNavAction = <T extends string>(action: ActionCreator<T>, route: RouteInfo, stopOnThisAction: boolean = false) =>
+        navMap.set(getType(action), [route.path, stopOnThisAction]);
     const id = uuid()
     const runNav = () => call(function* () {
         const task: Task = yield takeLatest((action: RootActions) => navMap.has(action.type), function* (action: RootActions) {
             const navTarget = navMap.get(action.type);
             if (typeof navTarget !== 'undefined') {
-                const [route, shouldCancel] = navTarget;
+                const [route, stopOnThisAction] = navTarget;
                 yield put(push(route));
-                if (shouldCancel) {
+                if (stopOnThisAction) {
                     yield put(NavMapActions.navMapComplete(id));
                     yield cancel(task);
                 }
