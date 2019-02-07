@@ -6,6 +6,7 @@ import Box from "../ui-elements/Box";
 import { SCard } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
+import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, Text } from "../ui-elements/Text";
 
 export interface CreateAccountStateProps {
@@ -22,13 +23,14 @@ export const CreateAccount:React.FunctionComponent<CreateAccountProps> =
     <Box width="100%" margin="4em 0 10% 0" align="center" >
         <AppLogo src={logo} width="180px" height="150" />
     </Box>
-
+    <LoadingSpinner />
     <CSSTransitionGroup
       transitionName="example"
       transitionAppear={true}
       transitionAppearTimeout={500}
       transitionEnter={false}
       transitionLeave={false}>
+
 
     <Container height="50vh">
     <Box direction="column" align="center" width="100%">

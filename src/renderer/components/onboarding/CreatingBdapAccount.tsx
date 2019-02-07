@@ -1,4 +1,8 @@
-import { SFC } from "react";
 import React from "react";
+import LoadingSpinner from "../ui-elements/LoadingSpinner";
 
-export const CreatingBdapAccount: SFC = () => <h2>creating account...</h2>
+export const CreatingBdapAccount: React.SFC = () => (
+    <>
+        <LoadingSpinner />
+    </>
+)
