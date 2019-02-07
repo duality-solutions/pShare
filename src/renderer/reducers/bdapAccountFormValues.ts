@@ -64,7 +64,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
             }
             break;
         }
-        case getType(OnboardingActions.validated): {
+        case getType(OnboardingActions.fieldValidated): {
             const { value: validationResult, fieldName } = action.payload;
             return {
                 ...state,
@@ -87,7 +87,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
             }
         }
 
-        case getType(OnboardingActions.validate):
+        case getType(OnboardingActions.validateField):
             {
                 const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 return {
@@ -102,7 +102,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
                 }
             }
 
-        case getType(OnboardingActions.resetValidation):
+        case getType(OnboardingActions.resetValidationForField):
             {
                 const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 const requiresReset = typeof state.fields[fieldName].validationResult !== 'undefined' || state.isValid;

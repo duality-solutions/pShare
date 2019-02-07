@@ -16,12 +16,12 @@ function takeEveryValidationAction(
     fieldName: string,
     validationFunc: (value: string) => Promise<ValidationResult<string>>
 ) {
-    const predicate = (action: OnboardingActions) => action.type === getType(OnboardingActions.validate)
+    const predicate = (action: OnboardingActions) => action.type === getType(OnboardingActions.validateField)
         && action.payload.fieldName === fieldName;
-    return takeEvery(predicate, function* (action: ActionType<typeof OnboardingActions.validate>) {
+    return takeEvery(predicate, function* (action: ActionType<typeof OnboardingActions.validateField>) {
         const valueToValidate = action.payload.value;
         const validationResult: ValidationResult<string> = yield call(() => validationFunc(valueToValidate));
-        const act = OnboardingActions.validated({ fieldName, value: validationResult });
+        const act = OnboardingActions.fieldValidated({ fieldName, value: validationResult });
         yield put(act);
     });
 }

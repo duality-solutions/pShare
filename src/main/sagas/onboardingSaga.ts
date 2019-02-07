@@ -21,11 +21,11 @@ export function* onboardingSaga() {
 }
 
 function* runForField<T>(fieldName: string, value: string, action: OnboardingActions) {
-    yield put(OnboardingActions.validate({ fieldName, value }));
-    const { payload: { value: validationResult } }: ActionType<typeof OnboardingActions.validated> =
+    yield put(OnboardingActions.validateField({ fieldName, value }));
+    const { payload: { value: validationResult } }: ActionType<typeof OnboardingActions.fieldValidated> =
         yield take(
             (action: OnboardingActions) =>
-                action.type === getType(OnboardingActions.validated)
+                action.type === getType(OnboardingActions.fieldValidated)
                 && action.payload.fieldName === fieldName);
     console.log("validation result is ", validationResult);
 

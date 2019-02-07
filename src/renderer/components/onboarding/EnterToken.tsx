@@ -1,7 +1,7 @@
 import React, { ChangeEvent, ClipboardEvent, Component, createRef, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
-import { ValidationPayload } from "../../../shared/system/validator/ValueValidationPayload";
+import { FieldValidationMessage } from "../../../shared/system/validator/FieldValidationMessage";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
 import { ArrowButton } from "../ui-elements/Button";
@@ -18,7 +18,7 @@ export interface EnterTokenStateProps {
 }
 export interface EnterTokenDispatchProps {
     submitToken: (token: string) => void,
-    resetValidation: (validationPayload: ValidationPayload<void>) => void
+    resetValidationForField: (validationPayload: FieldValidationMessage<void>) => void
 }
 type EnterTokenProps = EnterTokenDispatchProps & EnterTokenStateProps
 
@@ -43,7 +43,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
 
     handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         console.log('paste is observed: ', e.clipboardData.getData('Text'))
-        this.props.resetValidation({ fieldName: "token" })
+        this.props.resetValidationForField({ fieldName: "token" })
         let clipboardData = e.clipboardData.getData('Text')
         let token = clipboardData.split("")
         if (clipboardData.length === 6) {
@@ -52,7 +52,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     }
 
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.props.resetValidation({ fieldName: "token" })
+        this.props.resetValidationForField({ fieldName: "token" })
         let token = this.state.token
         let index: number = parseInt(e.target.name) // parsed out of index name
         let value: string = e.target.value.slice(-1)
