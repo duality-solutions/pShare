@@ -16,7 +16,7 @@ const StyledOverlay = styled('div')`
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: rgba(0,0,0,0.8);
+  background-color: rgba(0,0,0,0.99);
 `
 
 const StyledPshareSpinner = styled('div')<StyledPshareSpinnerProps>`
@@ -38,7 +38,7 @@ const animationSpin = keyframes`
 const StyledPshareSpinnerContainer = styled(StyledPshareSpinner)`
         animation-duration: 2s;
         animation-name: ${animationSpin};
-        animation-delay: 0.5s;
+        animation-delay: 0.9s;
         animation-timing-function: ease-in-out;
         transform-origin: 49.75% 40.25%;
         width: 100%;
