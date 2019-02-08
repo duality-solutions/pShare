@@ -6,17 +6,17 @@ import delay from "../../shared/system/delay";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {
-        const { payload: { userName: username, commonName: displayname, token } } = action
+        const { payload: { userName, commonName, token } } = action
         if (mock) {
-            yield* mockSaga(username === "failcreatebdap")
+            yield* mockSaga(userName)
             return;
         }
-        const rawHexTx = yield call(createRawBdapAccount, username, displayname);
+        const rawHexTx = yield call(createRawBdapAccount, userName, commonName);
         const txid = yield call(activateAccount, rawHexTx, token)
 
         let userInfo: GetUserInfo;
         try {
-            userInfo = yield* waitForBdapAccountCreated(username, txid)
+            userInfo = yield* waitForBdapAccountCreated(userName, txid)
         } catch (err) {
             if (/^txid of user does not match supplied value/.test(err.message)) {
                 yield put(OnboardingActions.resetOnboarding())
@@ -24,7 +24,10 @@ export function* createBdapAccountSaga(mock: boolean = false) {
             }
             throw err
         }
-        const accountCreatedAction = OnboardingActions.bdapAccountCreated(userInfo);
+        if (userInfo.common_name !== commonName) {
+            throw Error("common_name of GetUserInfo does not match supplied commonName")
+        }
+        const accountCreatedAction = OnboardingActions.bdapAccountCreated(userName);
         yield put(accountCreatedAction)
 
     })
@@ -83,26 +86,7 @@ export const activateAccount = async (rawHexTx: string, token: string) => {
     return txId;
 };
 
-function* mockSaga(fail = false) {
-    const accountCreatedAction = OnboardingActions.bdapAccountCreated({
-        _id: "testValue",
-        common_name: "testValue",
-        dht_publickey: "testValue",
-        domain_component: "testValue",
-        expired: false,
-        expires_on: 123,
-        link_address: "testValue",
-        object_full_path: "testValue",
-        object_id: "testValue",
-        object_type: "testValue",
-        organization_name: "testValue",
-        organizational_unit: "testValue",
-        public: 3,
-        time: 123,
-        txid: "someTxId",
-        version: 123,
-        wallet_address: "testValue"
-    });
-    yield call(delay, 5000)
-    yield put(fail ? OnboardingActions.createBdapAccountFailed() : accountCreatedAction)
+function* mockSaga(userName: string) {
+    yield call(delay, 10000)
+    yield put(userName === "failcreatebdap" ? OnboardingActions.createBdapAccountFailed() : OnboardingActions.bdapAccountCreated(userName))
 }

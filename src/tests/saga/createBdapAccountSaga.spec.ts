@@ -11,7 +11,7 @@ describe("createBdapAccountSaga", function () {
     //generator.next().
     const userInfo: GetUserInfo = {
         _id: "a",
-        common_name: "b",
+        common_name: "d",
         dht_publickey: "c",
         domain_component: "d",
         expired: false,
@@ -28,7 +28,7 @@ describe("createBdapAccountSaga", function () {
         version: 123,
         wallet_address: "k"
     }
-    const createdAction = OnboardingActions.bdapAccountCreated(userInfo)
+    const createdAction = OnboardingActions.bdapAccountCreated("u")
     const createBdapAccount = OnboardingActions.createBdapAccount({ commonName: "d", token: "t", userName: "u" })
 
     it("happy path", async () => {
