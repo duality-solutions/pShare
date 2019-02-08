@@ -30,6 +30,18 @@ const StyledHeader = styled('h1')<H1Props>`
             }};
     min-width: 500px;
 `
+const StyledHeader3 = styled('h3')<H1Props>`
+    text-align: ${props => props.align || 'start'};
+    letter-spacing: 0.03em;
+    margin: ${props => props.margin || "0 0 0 0"};
+    font-weight: ${props=> props.fontWeight || 'bold'};
+    color: ${ props => {
+                    if(props.colored) return props.theme.blue;
+                    else if (props.color) return props.color
+                    else return 'black'
+            }};
+    min-width: 500px;
+`
 
 const StyledText = styled('p')<ParaProps>`
     text-align: ${ props=> props.align || 'start'};
@@ -45,5 +57,5 @@ const StyledText = styled('p')<ParaProps>`
 
 export default StyledText 
 
-export { StyledHeader as H1, StyledText as Text };
+export { StyledHeader as H1, StyledHeader3 as H3, StyledText as Text };
 

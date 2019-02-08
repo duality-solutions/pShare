@@ -1,15 +1,16 @@
+import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
+import { deepFreeze } from '../../shared/system/deepFreeze';
 import { Main } from "../components/Main";
+import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
+import { MnemonicWarning } from '../components/onboarding/MnemonicWarning';
 import CreateAccount from "../containers/onboarding/CreateAccount";
 import EnterCommonName from "../containers/onboarding/EnterCommonName";
 import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUserName from "../containers/onboarding/EnterUserName";
+import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
-import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
-import { deepFreeze } from '../../shared/system/deepFreeze';
-import { push } from 'connected-react-router';
-import PasswordCreate from '../containers/onboarding/PasswordCreate';
 
 export interface RouteInfo {
     path: string;
@@ -27,6 +28,7 @@ const routingTable = {
     enterToken: route("/EnterToken", EnterToken),
     creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
     passwordCreate: route("/PasswordCreate", PasswordCreate),
+    mnemonicWarning: route("/MnemonicWarning",MnemonicWarning),
     main: route("/Main", Main)
 };
 export const pushRoute = (route: RouteInfo) => push(route.path)
