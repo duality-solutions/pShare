@@ -2,14 +2,8 @@ import { blinq } from 'blinq';
 import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
 import { keys } from '../../shared/system/entries';
-import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { FieldNameInfo } from '../../shared/system/validator/FieldNameInfo';
-
-interface Validatable<T> {
-    value: T,
-    validationResult?: ValidationResult<T>,
-    isValidating: boolean
-}
+import { Validatable } from '../../shared/system/validator/Validatable';
 
 interface OnboardingBdapAccountOptionsValidatedFields {
     userName: Validatable<string>,

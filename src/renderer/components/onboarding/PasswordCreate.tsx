@@ -8,15 +8,19 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
+import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
+import { NamedValue } from "../../../shared/system/validator/NamedValue";
+import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
 
 export interface PasswordCreateStateProps {
     password: string
-    // isValidating: boolean,
-    // validationResult?: ValidationResult<string>
+    isValidating: boolean,
+    validationResult?: ValidationResult<string>
 
 }
 export interface PasswordCreateDispatchProps {
     submitPassword: (password: string) => void,
+    fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
     // resetValidation: (validationPayload: ValidationPayload<void>) => void
 }
 type PasswordCreateProps = PasswordCreateDispatchProps & PasswordCreateStateProps
@@ -40,7 +44,18 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
-            this.props.submitPassword(this.state.password)
+            if (this.state.password !== this.state.confirmPassword) {
+                const payload = createValidatedFailurePayload("password", "Passwords do not match", this.state.password);
+                this.props.fieldValidated(payload)
+
+            }
+            else if (!/.{6,}/.test(this.state.password)) {
+                const payload = createValidatedFailurePayload("password", "Password must be > 6 characters", this.state.password);
+                this.props.fieldValidated(payload)
+            }
+            else {
+                this.props.submitPassword(this.state.password)
+            }
 
         } finally {
             //if we don't prevent form submission, causes a browser reload
@@ -50,8 +65,8 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     }
 
     render() {
-        // const { isValidating, validationResult } = this.props
-        // let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
+        const { isValidating, validationResult } = this.props
+        let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
 
         return <>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
@@ -74,19 +89,19 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                         type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} />
                                     <Text fontSize="14px">Confirm Password</Text>
                                     <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} />
-                                    {/* {
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" />
+                                    {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                             : <></>
-                                    } */}
+                                    }
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
                                 <ArrowButton label="Continue" type="submit" />
-                                {/* {
+                                {
                                     isValidating ? <div>show spinner</div> : <></>
-                                } */}
+                                }
                             </Box>
                         </Box>
                     </form>
@@ -95,5 +110,6 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
         </>
     }
 }
+
 
 
