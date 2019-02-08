@@ -5,11 +5,12 @@ import { ValidationResult } from "../../shared/system/validator/ValidationResult
 import { validateCommonName } from "../validation/validateCommonName";
 import { validateToken } from "../validation/validateToken";
 import { validateUserName } from "../validation/validateUserName";
+import { validationScopes } from "../../renderer/reducers/validationScopes";
 
 export function* validationSaga() {
-    yield takeEveryValidationAction("bdapAccount", "userName", validateUserName)
-    yield takeEveryValidationAction("bdapAccount", "commonName", validateCommonName)
-    yield takeEveryValidationAction("bdapAccount", "token", validateToken)
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "userName", validateUserName)
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "commonName", validateCommonName)
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "token", validateToken)
 }
 
 function takeEveryValidationAction(

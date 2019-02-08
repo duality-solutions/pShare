@@ -4,6 +4,7 @@ import { OnboardingActions } from '../../shared/actions/onboarding';
 import { keys } from '../../shared/system/entries';
 import { FieldNameInfo } from '../../shared/system/validator/FieldNameInfo';
 import { Validatable } from '../../shared/system/validator/Validatable';
+import { validationScopes } from './validationScopes';
 
 interface OnboardingBdapAccountOptionsValidatedFields {
     userName: Validatable<string>,
@@ -61,7 +62,7 @@ export const bdapAccountFormValues = (state: OnboardingBdapAccountOptionsValidat
         }
         case getType(OnboardingActions.fieldValidated): {
             const { value: validationResult, name: fieldName, scope: fieldScope } = action.payload;
-            return fieldScope !== "bdapAccount"
+            return fieldScope !== validationScopes.bdapAccount
                 ? state
                 : {
                     ...state,

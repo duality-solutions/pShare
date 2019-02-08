@@ -1,18 +1,19 @@
 import { put, take, takeEvery } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
+import { validationScopes } from "../../renderer/reducers/validationScopes";
 export function* onboardingSaga() {
 
 
     yield takeEvery(getType(OnboardingActions.submitUserName), function* (action: ActionType<typeof OnboardingActions.submitUserName>) {
-        yield* runForField("bdapAccount", "userName", action.payload, OnboardingActions.userNameCaptured())
+        yield* runForField(validationScopes.bdapAccount, "userName", action.payload, OnboardingActions.userNameCaptured())
     });
     yield takeEvery(getType(OnboardingActions.submitCommonName), function* (action: ActionType<typeof OnboardingActions.submitCommonName>) {
-        yield* runForField("bdapAccount", "commonName", action.payload, OnboardingActions.commonNameCaptured())
+        yield* runForField(validationScopes.bdapAccount, "commonName", action.payload, OnboardingActions.commonNameCaptured())
     });
 
     yield takeEvery(getType(OnboardingActions.submitToken), function* (action: ActionType<typeof OnboardingActions.submitToken>) {
-        yield* runForField("bdapAccount", "token", action.payload, OnboardingActions.beginCreateBdapAccount())
+        yield* runForField(validationScopes.bdapAccount, "token", action.payload, OnboardingActions.beginCreateBdapAccount())
     })
 
     // yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>){

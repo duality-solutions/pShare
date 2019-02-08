@@ -11,6 +11,7 @@ import { H1, Text } from "../ui-elements/Text";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
+import { validationScopes } from "../../reducers/validationScopes";
 
 export interface PasswordCreateStateProps {
     password: string
@@ -43,18 +44,18 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
         else if (name === 'confirmPassword') {
             this.setState(state => ({ ...state, confirmPassword: value }))
         }
-        this.props.resetValidationForField({ scope: "password", name: "password" })
+        this.props.resetValidationForField({ scope:validationScopes.password, name: "password" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
             if (this.state.password !== this.state.confirmPassword) {
-                const payload = createValidatedFailurePayload("password", "password", "Passwords do not match", this.state.password);
+                const payload = createValidatedFailurePayload(validationScopes.password, "password", "Passwords do not match", this.state.password);
                 this.props.fieldValidated(payload)
 
             }
             else if (!/.{6,}/.test(this.state.password)) {
-                const payload = createValidatedFailurePayload("password", "password", "Password must be > 6 characters", this.state.password);
+                const payload = createValidatedFailurePayload(validationScopes.password, "password", "Password must be > 6 characters", this.state.password);
                 this.props.fieldValidated(payload)
             }
             else {

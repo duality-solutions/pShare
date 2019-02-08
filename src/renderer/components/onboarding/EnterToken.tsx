@@ -10,6 +10,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
+import { validationScopes } from "../../reducers/validationScopes";
 
 export interface EnterTokenStateProps {
     token: string,
@@ -43,7 +44,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
 
     handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         console.log('paste is observed: ', e.clipboardData.getData('Text'))
-        this.props.resetValidationForField({ scope: "bdapAccount", name: "token" })
+        this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "token" })
         let clipboardData = e.clipboardData.getData('Text')
         let token = clipboardData.split("")
         if (clipboardData.length === 6) {
@@ -52,7 +53,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     }
 
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.props.resetValidationForField({ scope: "bdapAccount", name: "token" })
+        this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "token" })
         let token = this.state.token
         let index: number = parseInt(e.target.name) // parsed out of index name
         let value: string = e.target.value.slice(-1)
