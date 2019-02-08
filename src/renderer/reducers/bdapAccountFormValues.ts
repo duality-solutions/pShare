@@ -99,7 +99,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
         case getType(OnboardingActions.resetValidationForField):
             {
                 const { name } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                const requiresReset = typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
+                const requiresReset = typeof state.fields[name] != 'undefined' && typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
                 return requiresReset
                     ? {
                         ...state,

@@ -21,7 +21,7 @@ export interface PasswordCreateStateProps {
 export interface PasswordCreateDispatchProps {
     submitPassword: (password: string) => void,
     fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
-    // resetValidation: (validationPayload: ValidationPayload<void>) => void
+    resetValidationForField: (validationPayload: NamedValue<void>) => void
 }
 type PasswordCreateProps = PasswordCreateDispatchProps & PasswordCreateStateProps
 
@@ -37,9 +37,13 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let name: string = e.target.name
         let value: string = e.target.value
-        if (name === 'password') this.setState({ password: value })
-        else if (name === 'confirmPassword') this.setState({ confirmPassword: value })
-        // this.props.resetValidation({ fieldName: "password" })
+        if (name === 'password') {
+            this.setState(state => ({ ...state, password: value }))
+        }
+        else if (name === 'confirmPassword') {
+            this.setState(state => ({ ...state, confirmPassword: value }))
+        }
+        this.props.resetValidationForField({ name: "password" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
@@ -89,7 +93,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                         type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={validationFailed} />
                                     <Text fontSize="14px">Confirm Password</Text>
                                     <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em"  error={validationFailed} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
                                     {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)

@@ -3,6 +3,7 @@ import { Validatable } from "../../shared/system/validator/Validatable";
 import { getType } from "typesafe-actions";
 import { blinq } from "blinq";
 import { keys } from "../../shared/system/entries";
+import { FieldNameInfo } from "../../shared/system/validator/FieldNameInfo";
 
 interface PasswordCreateValidatedFields {
     password: Validatable<string>
@@ -42,6 +43,27 @@ const passwordCreateFormValues = (state: PasswordCreateValidationState = default
                         })
 
             }
+        case getType(OnboardingActions.resetValidationForField): {
+            const { name } = <FieldNameInfo<PasswordCreateValidatedFields>>action.payload;
+            const requiresReset = typeof state.fields[name] != 'undefined' && typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
+            return requiresReset
+                ? {
+                    ...state,
+                    fields: typeof state.fields[name].validationResult !== 'undefined'
+                        ? {
+                            ...state.fields,
+                            [name]: {
+                                ...(state.fields)[name],
+                                isValidating: false,
+                                validationResult: undefined
+                            }
+                        }
+                        : state.fields,
+                    isValid: false
+                }
+                : state
+        }
+
         default:
             return state;
     }
