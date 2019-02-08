@@ -30,7 +30,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     constructor(props: EnterTokenProps) {
         super(props)
         this.state = {
-            token: ['','','','','','']
+            token: ['', '', '', '', '', '']
         }
     }
 
@@ -43,7 +43,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
 
     handlePaste = (e: ClipboardEvent<HTMLDivElement>) => {
         console.log('paste is observed: ', e.clipboardData.getData('Text'))
-        this.props.resetValidationForField({ name: "token" })
+        this.props.resetValidationForField({ scope: "bdapAccount", name: "token" })
         let clipboardData = e.clipboardData.getData('Text')
         let token = clipboardData.split("")
         if (clipboardData.length === 6) {
@@ -52,7 +52,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     }
 
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-        this.props.resetValidationForField({ name: "token" })
+        this.props.resetValidationForField({ scope: "bdapAccount", name: "token" })
         let token = this.state.token
         let index: number = parseInt(e.target.name) // parsed out of index name
         let value: string = e.target.value.slice(-1)
@@ -61,15 +61,15 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
         // console.log(token)
         this.setState({ token })
 
-        if(this.ref2.current && index===0)
+        if (this.ref2.current && index === 0)
             this.ref2.current.focus()
-        else if (this.ref3.current && index===1)
+        else if (this.ref3.current && index === 1)
             this.ref3.current.focus()
-        else if (this.ref4.current && index===2)
+        else if (this.ref4.current && index === 2)
             this.ref4.current.focus()
-        else if (this.ref5.current && index===3)
+        else if (this.ref5.current && index === 3)
             this.ref5.current.focus()
-        else if (this.ref6.current && index===4)
+        else if (this.ref6.current && index === 4)
             this.ref6.current.focus()
     }
 
@@ -102,17 +102,17 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                         <Card width="100%" align="center" minHeight="225px" padding="2em 8em 2em 8em">
                                             <Text fontSize="14px">Enter Token</Text>
                                             <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref1} autoFocus
-                                                                        name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref2}
-                                                                        name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref3}
-                                                                        name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref4}
-                                                                        name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref5}
-                                                                        name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" error={validationFailed} />
-                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0"  fontSize="150%" ref={this.ref6}
-                                                                        name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                                name="0" value={this.state.token[0]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref2}
+                                                name="1" value={this.state.token[1]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref3}
+                                                name="2" value={this.state.token[2]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref4}
+                                                name="3" value={this.state.token[3]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref5}
+                                                name="4" value={this.state.token[4]} onChange={this.handleChange} align="center" error={validationFailed} />
+                                            <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref6}
+                                                name="5" value={this.state.token[5]} onChange={this.handleChange} align="center" error={validationFailed} />
                                             {
                                                 validationFailed
                                                     ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)

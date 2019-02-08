@@ -43,18 +43,18 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
         else if (name === 'confirmPassword') {
             this.setState(state => ({ ...state, confirmPassword: value }))
         }
-        this.props.resetValidationForField({ name: "password" })
+        this.props.resetValidationForField({ scope: "password", name: "password" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
             if (this.state.password !== this.state.confirmPassword) {
-                const payload = createValidatedFailurePayload("password", "Passwords do not match", this.state.password);
+                const payload = createValidatedFailurePayload("password", "password", "Passwords do not match", this.state.password);
                 this.props.fieldValidated(payload)
 
             }
             else if (!/.{6,}/.test(this.state.password)) {
-                const payload = createValidatedFailurePayload("password", "Password must be > 6 characters", this.state.password);
+                const payload = createValidatedFailurePayload("password", "password", "Password must be > 6 characters", this.state.password);
                 this.props.fieldValidated(payload)
             }
             else {

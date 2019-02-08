@@ -1,7 +1,8 @@
 import { ValidationResult } from "./validator/ValidationResult";
 import { NamedValue } from "./validator/NamedValue";
-export function createValidatedFailurePayload<T>(fieldName: string, message: string, fieldValue: T): NamedValue<ValidationResult<T>> {
+export function createValidatedFailurePayload<T>(fieldScope: string, fieldName: string, message: string, fieldValue: T): NamedValue<ValidationResult<T>> {
     return {
+        scope: fieldScope,
         name: fieldName,
         value: {
             success: false,

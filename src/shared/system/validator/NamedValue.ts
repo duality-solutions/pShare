@@ -5,5 +5,6 @@ interface NameIndicatorWithValue<T> extends NameIndictator {
 }
 interface NameIndictator {
     name: string;
+    scope: string;
 }
 export type NamedValue<T> = T extends void ? NameIndictator : NameIndicatorWithValue<T>;

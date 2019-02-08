@@ -34,7 +34,7 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ userName: e.target.value })
-        this.props.resetValidationForField({ name: "userName" })
+        this.props.resetValidationForField({ scope: "bdapAccount", name: "userName" })
     }
     handleSubmit = (e: FormEvent) => {
         this.props.submitUserName(this.state.userName)

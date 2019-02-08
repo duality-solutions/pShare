@@ -39,6 +39,7 @@ const defaultState: OnboardingBdapAccountOptionsValidationState = {
 export const bdapAccountFormValues = (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
         case getType(OnboardingActions.resetOnboarding): {
+
             return {
                 ...state,
                 fields: {
@@ -59,63 +60,69 @@ export const bdapAccountFormValues = (state: OnboardingBdapAccountOptionsValidat
             break;
         }
         case getType(OnboardingActions.fieldValidated): {
-            const { value: validationResult, name: fieldName } = action.payload;
-            return {
-                ...state,
-                fields: {
-                    ...state.fields,
-                    [fieldName]: {
-                        value: validationResult.value,
-                        validationResult,
-                        isValidating: false
-                    }
-                },
-                isValid:
-                    validationResult.success
-                    && blinq(keys(state.fields))
-                        .where(f => fieldName !== f)
-                        .all(f => {
-                            const vr = state.fields[f].validationResult;
-                            return typeof vr !== 'undefined' && vr.success;
-                        })
-            }
-        }
-
-        case getType(OnboardingActions.validateField):
-            {
-                const { name: fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                return {
+            const { value: validationResult, name: fieldName, scope: fieldScope } = action.payload;
+            return fieldScope !== "bdapAccount"
+                ? state
+                : {
                     ...state,
                     fields: {
                         ...state.fields,
                         [fieldName]: {
-                            ...state.fields[fieldName],
-                            isValidating: true
+                            value: validationResult.value,
+                            validationResult,
+                            isValidating: false
+                        }
+                    },
+                    isValid:
+                        validationResult.success
+                        && blinq(keys(state.fields))
+                            .where(f => fieldName !== f)
+                            .all(f => {
+                                const vr = state.fields[f].validationResult;
+                                return typeof vr !== 'undefined' && vr.success;
+                            })
+                }
+        }
+
+        case getType(OnboardingActions.validateField):
+            {
+                const { name: fieldName, scope } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
+                return scope !== 'bdapAccount'
+                    ? state
+                    : {
+                        ...state,
+                        fields: {
+                            ...state.fields,
+                            [fieldName]: {
+                                ...state.fields[fieldName],
+                                isValidating: true
+                            }
                         }
                     }
-                }
             }
 
         case getType(OnboardingActions.resetValidationForField):
             {
-                const { name } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
+                const { name, scope } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 const requiresReset = (typeof state.fields[name] !== 'undefined' && typeof state.fields[name].validationResult !== 'undefined') || state.isValid;
-                return requiresReset
-                    ? {
-                        ...state,
-                        fields: typeof state.fields[name].validationResult !== 'undefined'
-                            ? {
-                                ...state.fields,
-                                [name]: {
-                                    ...(state.fields)[name],
-                                    isValidating: false,
-                                    validationResult: undefined
+                return scope !== 'bdapAccount'
+                    ? state
+                    : requiresReset
+                        ? {
+                            ...state,
+                            fields: typeof state.fields[name].validationResult !== 'undefined'
+                                ? {
+                                    ...state.fields,
+                                    [name]: {
+                                        ...(state.fields)[name],
+                                        isValidating: false,
+                                        validationResult: undefined
+                                    }
                                 }
-                            }
-                            : state.fields,
-                        isValid: false
-                    }
-                    : state
+                                : state.fields,
+                            isValid: false
+                        }
+                        : state
             }
 
         default:

@@ -3,4 +3,5 @@
 //into typed names.
 export interface FieldNameInfo<T> {
     name: keyof T;
+    scope: string;
 }

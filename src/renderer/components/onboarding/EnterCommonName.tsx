@@ -33,7 +33,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ commonName: e.target.value })
-        this.props.resetValidationForField({ name: "commonName" })
+        this.props.resetValidationForField({scope:"bdapAccount", name: "commonName" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)

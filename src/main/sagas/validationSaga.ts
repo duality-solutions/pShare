@@ -7,12 +7,13 @@ import { validateToken } from "../validation/validateToken";
 import { validateUserName } from "../validation/validateUserName";
 
 export function* validationSaga() {
-    yield takeEveryValidationAction("userName", validateUserName)
-    yield takeEveryValidationAction("commonName", validateCommonName)
-    yield takeEveryValidationAction("token", validateToken)
+    yield takeEveryValidationAction("bdapAccount", "userName", validateUserName)
+    yield takeEveryValidationAction("bdapAccount", "commonName", validateCommonName)
+    yield takeEveryValidationAction("bdapAccount", "token", validateToken)
 }
 
 function takeEveryValidationAction(
+    fieldScope: string,
     fieldName: string,
     validationFunc: (value: string) => Promise<ValidationResult<string>>
 ) {
@@ -21,7 +22,7 @@ function takeEveryValidationAction(
     return takeEvery(predicate, function* (action: ActionType<typeof OnboardingActions.validateField>) {
         const valueToValidate = action.payload.value;
         const validationResult: ValidationResult<string> = yield call(() => validationFunc(valueToValidate));
-        const act = OnboardingActions.fieldValidated({ name: fieldName, value: validationResult });
+        const act = OnboardingActions.fieldValidated({ scope: fieldScope, name: fieldName, value: validationResult });
         yield put(act);
     });
 }
