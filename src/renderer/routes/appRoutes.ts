@@ -7,9 +7,9 @@ import EnterUserName from "../containers/onboarding/EnterUserName";
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
-import { PasswordCreate } from "../components/onboarding/PasswordCreate";
 import { deepFreeze } from '../../shared/system/deepFreeze';
 import { push } from 'connected-react-router';
+import PasswordCreate from '../containers/onboarding/PasswordCreate';
 
 export interface RouteInfo {
     path: string;

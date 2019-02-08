@@ -28,7 +28,7 @@ interface PasswordCreateComponentState {
 export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreateComponentState>{
     constructor(props: PasswordCreateProps) {
         super(props)
-        this.state = { password: "", confirmPassword: ""}
+        this.state = { password: "", confirmPassword: "" }
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let name: string = e.target.name
@@ -39,9 +39,14 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
-        this.props.submitPassword(this.state.password)
-        //if we don't prevent form submission, causes a browser reload
-        e.preventDefault()
+        try {
+            this.props.submitPassword(this.state.password)
+
+        } finally {
+            //if we don't prevent form submission, causes a browser reload
+            e.preventDefault()
+
+        }
     }
 
     render() {
@@ -65,11 +70,11 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Create a Password</Text>
-                                    <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password" 
-                                       type="password" margin="1em 0 1em 0" padding="0 1em 0 1em"  autoFocus={true} /> 
+                                    <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} />
                                     <Text fontSize="14px">Confirm Password</Text>
-                                    <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password" 
-                                       type="password" margin="1em 0 1em 0" padding="0 1em 0 1em"  autoFocus={true} /> 
+                                    <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} />
                                     {/* {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
@@ -78,7 +83,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit"  />
+                                <ArrowButton label="Continue" type="submit" />
                                 {/* {
                                     isValidating ? <div>show spinner</div> : <></>
                                 } */}

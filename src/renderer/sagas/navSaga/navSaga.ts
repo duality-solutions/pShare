@@ -64,9 +64,9 @@ export function* navSaga() {
         console.log("navSaga navigated to passwordCreate")
         // so at this point, we're on the password page, and we might want to set up a new navMap
 
-        // const someNavMap = getNavMap();
-        // someNavMap.registerNavAction(RootActions.passwordCaptured, appRoutes.theNextPage, true)
-        // yield someNavMap.runNav();
+        const navMap = getNavMap();
+        navMap.registerNavAction(RootActions.submitPassword, appRoutes.main, true)
+        yield navMap.runNav();
     }
 
 

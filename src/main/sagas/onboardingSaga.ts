@@ -15,9 +15,9 @@ export function* onboardingSaga() {
         yield* runForField("token", action.payload, OnboardingActions.beginCreateBdapAccount())
     })
 
-    yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>){
-        yield put(OnboardingActions.passwordCaptured())
-    })
+    // yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>){
+    //     yield put(OnboardingActions.passwordCaptured())
+    // })
 }
 
 function* runForField<T>(fieldName: string, value: string, action: OnboardingActions) {
