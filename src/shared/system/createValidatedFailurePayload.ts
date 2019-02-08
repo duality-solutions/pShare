@@ -12,3 +12,15 @@ export function createValidatedFailurePayload<T>(fieldScope: string, fieldName: 
         }
     };
 }
+export function createValidatedSuccessPayload<T>(fieldScope: string, fieldName: string, fieldValue: T): NamedValue<ValidationResult<T>> {
+    return {
+        scope: fieldScope,
+        name: fieldName,
+        value: {
+            success: true,
+            validationMessages: [],
+            value: fieldValue,
+            isError: false
+        }
+    };
+}

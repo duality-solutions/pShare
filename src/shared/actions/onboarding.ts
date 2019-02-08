@@ -4,6 +4,10 @@ import { createLocalStandardAction } from '../system/createLocalStandardAction';
 import { ValidationResult } from '../system/validator/ValidationResult';
 import { NamedValue } from '../system/validator/NamedValue';
 
+interface OperationResult {
+    success: boolean
+}
+
 // ensure this is added to ./index.ts RootActions
 export const OnboardingActions = {
 
@@ -17,7 +21,7 @@ export const OnboardingActions = {
     submitUserName: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
     submitCommonName: createStandardAction('onboarding/COMMONNAME_SUBMIT')<string>(),
     submitToken: createStandardAction('onboarding/TOKEN_SUBMIT')<string>(),
-    submitPassword: createStandardAction('onboarding/PASSWORD_SUBMIT')<string>(),
+    submitPassword: createStandardAction('onboarding/SET_WALLET_PASSWORD')<string>(),
     commitUserName: createStandardAction('onboarding/COMMIT_USERNAME')<string>(),
     commitCommonName: createStandardAction('onboarding/COMMIT_COMMONNAME')<string>(),
     commitToken: createStandardAction('onboarding/COMMIT_TOKEN')<string>(),
@@ -34,7 +38,10 @@ export const OnboardingActions = {
     createBdapAccount: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT')<CreateBdapAccountConfig>(),
     bdapAccountCreated: createStandardAction('onboarding/BDAP_ACCOUNT_CREATED')<string>(),
     createBdapAccountFailed: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_FAILED')<void>(),
-    resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>()
+    resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>(),
+
+    walletPasswordSet: createStandardAction('onboarding/WALLET_PASSWORD_SET')<OperationResult>(),
+
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

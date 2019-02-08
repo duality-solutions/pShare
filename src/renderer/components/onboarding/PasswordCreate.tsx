@@ -10,7 +10,7 @@ import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import { NamedValue } from "../../../shared/system/validator/NamedValue";
-import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
+import { createValidatedFailurePayload, createValidatedSuccessPayload } from "../../../shared/system/createValidatedFailurePayload";
 import { validationScopes } from "../../reducers/validationScopes";
 
 export interface PasswordCreateStateProps {
@@ -44,7 +44,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
         else if (name === 'confirmPassword') {
             this.setState(state => ({ ...state, confirmPassword: value }))
         }
-        this.props.resetValidationForField({ scope:validationScopes.password, name: "password" })
+        this.props.resetValidationForField({ scope: validationScopes.password, name: "password" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
@@ -59,6 +59,8 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                 this.props.fieldValidated(payload)
             }
             else {
+                const payload = createValidatedSuccessPayload(validationScopes.password, "password", this.state.password);
+                this.props.fieldValidated(payload)
                 this.props.submitPassword(this.state.password)
             }
 
