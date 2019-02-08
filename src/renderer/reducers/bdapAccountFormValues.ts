@@ -3,7 +3,7 @@ import { getType } from 'typesafe-actions';
 import OnboardingActions from '../../shared/actions/onboarding';
 import { keys } from '../../shared/system/entries';
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
-import { FieldNameInfo } from '../system/FieldNameInfo';
+import { FieldNameInfo } from '../../shared/system/validator/FieldNameInfo';
 
 interface Validatable<T> {
     value: T,
@@ -65,7 +65,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
             break;
         }
         case getType(OnboardingActions.fieldValidated): {
-            const { value: validationResult, fieldName } = action.payload;
+            const { value: validationResult, name: fieldName } = action.payload;
             return {
                 ...state,
                 fields: {
@@ -89,7 +89,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.validateField):
             {
-                const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
+                const { name: fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
                 return {
                     ...state,
                     fields: {
@@ -104,16 +104,16 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
 
         case getType(OnboardingActions.resetValidationForField):
             {
-                const { fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                const requiresReset = typeof state.fields[fieldName].validationResult !== 'undefined' || state.isValid;
+                const { name } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
+                const requiresReset = typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
                 return requiresReset
                     ? {
                         ...state,
-                        fields: typeof state.fields[fieldName].validationResult !== 'undefined'
+                        fields: typeof state.fields[name].validationResult !== 'undefined'
                             ? {
                                 ...state.fields,
-                                [fieldName]: {
-                                    ...(state.fields)[fieldName],
+                                [name]: {
+                                    ...(state.fields)[name],
                                     isValidating: false,
                                     validationResult: undefined
                                 }

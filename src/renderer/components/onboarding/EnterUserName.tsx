@@ -9,7 +9,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { FieldValidationMessage } from "../../../shared/system/validator/FieldValidationMessage";
+import { NamedValue } from "../../../shared/system/validator/NamedValue";
 
 export interface EnterUserNameStateProps {
     userName: string,
@@ -18,7 +18,7 @@ export interface EnterUserNameStateProps {
 }
 export interface EnterUserNameDispatchProps {
     submitUserName: (userName: string) => void
-    resetValidationForField: (validationPayload: FieldValidationMessage<void>) => void,
+    resetValidationForField: (validationPayload: NamedValue<void>) => void,
     // backToCreateAccount: () => void 
 }
 type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
@@ -34,7 +34,7 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ userName: e.target.value })
-        this.props.resetValidationForField({ fieldName: "userName" })
+        this.props.resetValidationForField({ name: "userName" })
     }
     handleSubmit = (e: FormEvent) => {
         this.props.submitUserName(this.state.userName)

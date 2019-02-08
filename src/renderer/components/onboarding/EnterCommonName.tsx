@@ -9,7 +9,7 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { FieldValidationMessage } from "../../../shared/system/validator/FieldValidationMessage";
+import { NamedValue } from "../../../shared/system/validator/NamedValue";
 
 export interface EnterCommonNameStateProps {
     commonName: string
@@ -19,7 +19,7 @@ export interface EnterCommonNameStateProps {
 }
 export interface EnterCommonNameDispatchProps {
     submitCommonName: (commonName: string) => void,
-    resetValidationForField: (validationPayload: FieldValidationMessage<void>) => void
+    resetValidationForField: (validationPayload: NamedValue<void>) => void
 }
 type EnterCommonNameProps = EnterCommonNameDispatchProps & EnterCommonNameStateProps
 
@@ -33,7 +33,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ commonName: e.target.value })
-        this.props.resetValidationForField({ fieldName: "commonName" })
+        this.props.resetValidationForField({ name: "commonName" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)

@@ -2,14 +2,14 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccountConfig';
 import { createLocalStandardAction } from '../system/createLocalStandardAction';
 import { ValidationResult } from '../system/validator/ValidationResult';
-import { FieldValidationMessage } from '../system/validator/FieldValidationMessage';
+import { NamedValue } from '../system/validator/NamedValue';
 const OnboardingActions = {
 
-    validateField: createStandardAction('validate/request')<FieldValidationMessage<string>>(),
+    validateField: createStandardAction('validate/request')<NamedValue<string>>(),
 
-    fieldValidated: createStandardAction('validate/result')<FieldValidationMessage<ValidationResult<string>>>(),
+    fieldValidated: createStandardAction('validate/result')<NamedValue<ValidationResult<string>>>(),
 
-    resetValidationForField: createLocalStandardAction('reset/validation')<FieldValidationMessage<void>>(),
+    resetValidationForField: createLocalStandardAction('reset/validation')<NamedValue<void>>(),
 
     createAccount: createStandardAction('onboarding/CREATE_ACCOUNT')<void>(),
     submitUserName: createStandardAction('onboarding/USERNAME_SUBMIT')<string>(),
