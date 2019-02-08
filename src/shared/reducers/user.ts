@@ -1,6 +1,6 @@
-import UserActions from '../actions/user'
+import { UserActions } from '../actions/user'
 import { getType } from 'typesafe-actions';
-import OnboardingActions from '../actions/onboarding';
+import { OnboardingActions } from '../actions/onboarding';
 
 interface UserState {
     syncAgreed: boolean
@@ -8,7 +8,7 @@ interface UserState {
     userName?: string
 }
 
-export default (state: UserState = { syncAgreed: false, isOnboarded: false }, action: UserActions | OnboardingActions): UserState => {
+export const user = (state: UserState = { syncAgreed: false, isOnboarded: false }, action: UserActions | OnboardingActions): UserState => {
     switch (action.type) {
         case getType(UserActions.userAgreeSync):
             return { ...state, syncAgreed: true }

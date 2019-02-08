@@ -3,7 +3,9 @@ import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccoun
 import { createLocalStandardAction } from '../system/createLocalStandardAction';
 import { ValidationResult } from '../system/validator/ValidationResult';
 import { NamedValue } from '../system/validator/NamedValue';
-const OnboardingActions = {
+
+// ensure this is added to ./index.ts RootActions
+export const OnboardingActions = {
 
     validateField: createStandardAction('validate/request')<NamedValue<string>>(),
 
@@ -35,7 +37,5 @@ const OnboardingActions = {
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>()
 }
 
-type OnboardingActions = ActionType<typeof OnboardingActions>;
+export type OnboardingActions = ActionType<typeof OnboardingActions>;
 
-// ensure this is added to ./index.ts RootActions
-export default OnboardingActions

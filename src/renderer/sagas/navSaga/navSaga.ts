@@ -1,7 +1,7 @@
 import { put, select, take } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RendererRootState } from "../../reducers";
-import RootActions from "../../../shared/actions";
+import { RootActions } from "../../../shared/actions";
 import { pushRoute, appRoutes } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
 

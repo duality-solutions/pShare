@@ -5,7 +5,7 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
-import RootActions from '../shared/actions';
+import { RootActions } from '../shared/actions';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();

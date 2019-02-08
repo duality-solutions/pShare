@@ -1,4 +1,4 @@
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 import { Validatable } from "../../shared/system/validator/Validatable";
 import { getType } from "typesafe-actions";
 import { blinq } from "blinq";
@@ -19,7 +19,7 @@ const defaultState: PasswordCreateValidationState = {
     fields: { password: { isValidating: false, value: "" } }
 }
 
-const passwordCreateFormValues = (state: PasswordCreateValidationState = defaultState, action: OnboardingActions) => {
+export const passwordCreateFormValues = (state: PasswordCreateValidationState = defaultState, action: OnboardingActions) => {
     switch (action.type) {
         case getType(OnboardingActions.fieldValidated):
             const { value: validationResult, name: fieldName } = action.payload;
@@ -45,7 +45,7 @@ const passwordCreateFormValues = (state: PasswordCreateValidationState = default
             }
         case getType(OnboardingActions.resetValidationForField): {
             const { name } = <FieldNameInfo<PasswordCreateValidatedFields>>action.payload;
-            const requiresReset = typeof state.fields[name] != 'undefined' && typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
+            const requiresReset = (typeof state.fields[name] !== 'undefined' && typeof state.fields[name].validationResult !== 'undefined') || state.isValid;
             return requiresReset
                 ? {
                     ...state,
@@ -69,4 +69,3 @@ const passwordCreateFormValues = (state: PasswordCreateValidationState = default
     }
 }
 
-export default passwordCreateFormValues

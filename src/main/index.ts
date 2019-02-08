@@ -11,7 +11,7 @@ import { app, BrowserWindow, Menu, shell } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
-import installExtensionsAsync from './installExtensionsAsync';
+import { installExtensionsAsync } from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
 //import OnboardingActions from '../shared/actions/onboarding';

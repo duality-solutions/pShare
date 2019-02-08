@@ -1,6 +1,6 @@
 import { blinq } from 'blinq';
 import { getType } from 'typesafe-actions';
-import OnboardingActions from '../../shared/actions/onboarding';
+import { OnboardingActions } from '../../shared/actions/onboarding';
 import { keys } from '../../shared/system/entries';
 import { FieldNameInfo } from '../../shared/system/validator/FieldNameInfo';
 import { Validatable } from '../../shared/system/validator/Validatable';
@@ -36,7 +36,7 @@ const defaultState: OnboardingBdapAccountOptionsValidationState = {
     isValid: false
 }
 
-export default (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
+export const bdapAccountFormValues = (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
         case getType(OnboardingActions.resetOnboarding): {
             return {
@@ -99,7 +99,7 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
         case getType(OnboardingActions.resetValidationForField):
             {
                 const { name } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                const requiresReset = typeof state.fields[name] != 'undefined' && typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
+                const requiresReset = (typeof state.fields[name] !== 'undefined' && typeof state.fields[name].validationResult !== 'undefined') || state.isValid;
                 return requiresReset
                     ? {
                         ...state,

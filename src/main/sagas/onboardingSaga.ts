@@ -1,6 +1,6 @@
 import { put, take, takeEvery } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 export function* onboardingSaga() {
 
 

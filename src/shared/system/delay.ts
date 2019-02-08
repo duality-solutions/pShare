@@ -1,2 +1,1 @@
-const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time))
-export default delay
+export const delay = (time: number) => new Promise(resolve => setTimeout(resolve, time))

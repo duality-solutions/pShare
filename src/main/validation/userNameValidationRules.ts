@@ -25,7 +25,7 @@ const userNameDoesNotExist = async (value: string) => {
     return false
 }
 
-const userNameValidationRules: ValidationTest<string>[] = [
+export const userNameValidationRules: ValidationTest<string>[] = [
     {
         test: isValidUserName,
         message: "Value may only contain letters and numbers",
@@ -36,4 +36,3 @@ const userNameValidationRules: ValidationTest<string>[] = [
     }
 ];
 
-export default userNameValidationRules

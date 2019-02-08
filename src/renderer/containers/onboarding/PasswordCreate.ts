@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import OnboardingActions from "../../../shared/actions/onboarding";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 import { PasswordCreate, PasswordCreateDispatchProps, PasswordCreateStateProps } from '../../components/onboarding/PasswordCreate';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';

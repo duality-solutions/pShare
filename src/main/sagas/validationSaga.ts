@@ -1,6 +1,6 @@
 import { call, put, takeEvery } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 import { ValidationResult } from "../../shared/system/validator/ValidationResult";
 import { validateCommonName } from "../validation/validateCommonName";
 import { validateToken } from "../validation/validateToken";

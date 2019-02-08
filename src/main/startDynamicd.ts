@@ -2,7 +2,7 @@ import * as path from 'path'
 import childProcess from 'child_process'
 import os from 'os'
 import { app } from 'electron'
-import initializeDynamicConfig from './configuration/initializeDynamicConfig';
+import { initializeDynamicConfig } from './configuration/initializeDynamicConfig';
 
 
 declare global {
@@ -14,7 +14,7 @@ interface DynamicdProcessInfo {
     rpcUser: string
     rpcPassword: string
 }
-export default async function (): Promise<DynamicdProcessInfo> {
+export async function startDynamicd(): Promise<DynamicdProcessInfo> {
 
     const isDevelopment = process.env.NODE_ENV === 'development'
     if (isDevelopment) {

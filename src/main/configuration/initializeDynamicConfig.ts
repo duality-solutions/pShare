@@ -1,15 +1,15 @@
-import {promisify} from 'util'
-import {exists as e} from 'fs'
+import { promisify } from 'util'
+import { exists as e } from 'fs'
 import fsExtra from 'fs-extra'
-import {randomBytes as r} from 'crypto'
-import DynamicConfigOptions from './DynamicConfigOptions';
+import { randomBytes as r } from 'crypto'
+import { DynamicConfigOptions } from './DynamicConfigOptions';
 import { getKeyValuePairsFromConfFile } from './getKeyValuePairsFromConf';
 import { blinq } from 'blinq'
 
 const exists = promisify(e)
 const randomBytes = promisify(r)
 
-export default async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
+export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
     var hasConfig = await exists(pathToDynamicConf);
     if (!hasConfig) {
         await fsExtra.mkdirp(pathToDataDir);

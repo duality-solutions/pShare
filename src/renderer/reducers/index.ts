@@ -2,10 +2,10 @@ import { connectRouter } from 'connected-react-router';
 import { History } from 'history';
 import { combineReducers } from 'redux';
 import { getType } from 'typesafe-actions';
-import RootActions from '../../shared/actions';
-import StoreActions from '../../shared/actions/store';
+import { RootActions } from '../../shared/actions';
+import { StoreActions } from '../../shared/actions/store';
 import * as appModelReducers from '../../shared/reducers';
-import getInitialReducerState from '../../shared/system/getInitialReducerState';
+import { getInitialReducerState } from '../../shared/system/getInitialReducerState';
 import * as localReducers from './localReducers'
 
 

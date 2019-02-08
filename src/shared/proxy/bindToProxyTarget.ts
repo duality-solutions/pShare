@@ -1,9 +1,9 @@
 import { IpcMessageEvent } from "electron";
-import ProxyResult from "./ProxyResult";
-import ArgumentsType from "./ArgumentsType";
-import FunctionPropertyNames from "./FunctionPropertyNames";
+import { ProxyResult } from "./ProxyResult";
+import { ArgumentsType } from "./ArgumentsType";
+import { FunctionPropertyNames } from "./FunctionPropertyNames";
 import { prepareErrorForSerialization } from "./prepareErrorForSerialization";
-const bindToProxyTarget =
+export const bindToProxyTarget =
     <T>(target: T, channel: string) =>
         async (
             event: IpcMessageEvent,
@@ -23,4 +23,3 @@ const bindToProxyTarget =
             event.sender.send(channel, pr);
         };
 
-export default bindToProxyTarget

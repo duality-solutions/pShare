@@ -1,7 +1,7 @@
 import { push } from "connected-react-router";
 import { put, take, takeLatest, cancel, call } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import RootActions from "../../../shared/actions";
+import { RootActions } from "../../../shared/actions";
 import { ActionCreator, ActionType } from "typesafe-actions/dist/types";
 import { Task, Predicate } from "redux-saga";
 import { RouteInfo } from "../../routes/appRoutes";
@@ -25,7 +25,7 @@ export function getNavMap() {
                 }
             }
         });
-        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id) 
+        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id)
         yield take(pred as Predicate<Action<any>>);
     });
     return { registerNavAction, runNav };
