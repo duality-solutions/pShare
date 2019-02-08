@@ -3,6 +3,6 @@ import LoadingSpinner from "../ui-elements/LoadingSpinner";
 
 export const CreatingBdapAccount: React.SFC = () => (
     <>
-        <LoadingSpinner active />
+        <LoadingSpinner active label="Creating your Bdap Account ... " size={50}/>
     </>
 )

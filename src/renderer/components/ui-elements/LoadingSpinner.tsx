@@ -1,6 +1,8 @@
 import * as React from 'react';
 import styled, { keyframes } from "styled-components";
+import Box from './Box';
 import Container from './Container';
+import Text from './Text';
 interface StyledPshareSpinnerProps {
     width?: number,
 }
@@ -16,7 +18,7 @@ const StyledOverlay = styled('div')`
   left: 0;
   bottom: 0;
   right: 0;
-  background-color: rgba(0,0,0,0.99);
+  background-color: rgba(255,255,255,0.8);
 `
 
 const StyledPshareSpinner = styled('div')<StyledPshareSpinnerProps>`
@@ -90,11 +92,11 @@ const StyledPolygon3 = styled('polygon')`
         opacity: 0.05;
 `
 
-const LoadingSpinner:React.FunctionComponent<{ active?: boolean }>= ({ active }) => 
+const LoadingSpinner:React.FunctionComponent<{ active?: boolean, label?: string, size?:number }>= ({ active, label, size }) => 
     <> {active && 
     <StyledOverlay>
         <Container margin="25% 0 auto 0">
-        <StyledPshareSpinner width={100}>
+        <StyledPshareSpinner width={size || 100}>
         <StyledPshareSpinnerContainer>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167 239" preserveAspectRatio="xMidYMid meet">
         <StyledPath1  d="M 83,0 0,48 v 96 c 83,47 0,0 83,48 l 83,-48 V 48 Z M 123,119 83,142 43,119 V 73 L 83,50 123,73 Z"/>
@@ -105,6 +107,13 @@ const LoadingSpinner:React.FunctionComponent<{ active?: boolean }>= ({ active })
         </svg>
         </StyledPshareSpinnerContainer>
         </StyledPshareSpinner>
+        <Box display="flex" width="100%" align="center" direction="row">
+        <Box display="flex" direction="column" background="#f2f2f2" width="0" minWidth="30%"  borderRadius="4px" padding="0.5em">
+        <Text align="center" margin="0">
+        {label}
+        </Text>
+        </Box>
+        </Box>
         </Container>
     </StyledOverlay>} 
     </>
