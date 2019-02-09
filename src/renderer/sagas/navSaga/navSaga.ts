@@ -65,7 +65,7 @@ export function* navSaga() {
         // so at this point, we're on the password page, and we might want to set up a new navMap
 
         const navMap = getNavMap();
-        navMap.registerNavAction(RootActions.submitPassword, appRoutes.main, true)
+        navMap.registerNavAction(RootActions.walletPasswordSet, appRoutes.main, true)
         yield navMap.runNav();
     }
 

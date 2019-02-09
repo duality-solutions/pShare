@@ -4,9 +4,9 @@ import { createLocalStandardAction } from '../system/createLocalStandardAction';
 import { ValidationResult } from '../system/validator/ValidationResult';
 import { NamedValue } from '../system/validator/NamedValue';
 
-interface OperationResult {
-    success: boolean
-}
+// interface OperationResult {
+//     success: boolean
+// }
 
 // ensure this is added to ./index.ts RootActions
 export const OnboardingActions = {
@@ -40,7 +40,8 @@ export const OnboardingActions = {
     createBdapAccountFailed: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_FAILED')<void>(),
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>(),
 
-    walletPasswordSet: createStandardAction('onboarding/WALLET_PASSWORD_SET')<OperationResult>(),
+    walletPasswordSet: createStandardAction('onboarding/WALLET_PASSWORD_SET')<void>(),
+    walletPasswordSetFailed: createStandardAction('onboarding/WALLET_PASSWORD_SET_FAILED')<void>(),
 
 }
 

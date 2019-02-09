@@ -73,8 +73,8 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
 
     render() {
         const { isValidating, validationResult } = this.props
-        let validationFailed = typeof validationResult !== 'undefined' && !validationResult.success && !validationResult.isError
-
+        const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
+        const showFieldErrors = (validationFailed && typeof validationResult !== 'undefined' && !validationResult.isError)
         return <>
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
                 <AppLogo src={logo} width="100px" height="120px" />
@@ -93,10 +93,10 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Create a Password</Text>
                                     <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={validationFailed} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} />
                                     <Text fontSize="14px">Confirm Password</Text>
                                     <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} />
                                     {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
