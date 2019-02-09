@@ -10,7 +10,8 @@ import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import { NamedValue } from "../../../shared/system/validator/NamedValue";
-import { createValidatedFailurePayload, createValidatedSuccessPayload } from "../../../shared/system/createValidatedFailurePayload";
+import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
+import { createValidatedSuccessPayload } from "../../../shared/system/createValidatedSuccessPayload";
 import { validationScopes } from "../../reducers/validationScopes";
 
 export interface PasswordCreateStateProps {

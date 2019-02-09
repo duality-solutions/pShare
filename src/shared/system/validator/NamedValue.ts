@@ -1,6 +1,6 @@
 // import { ValidationResult } from './validation';
 //import { createLocalStandardAction } from '../system/createLocalStandardAction';
-interface NameIndicatorWithValue<T> extends NameIndictator {
+export interface NameIndicatorWithValue<T> extends NameIndictator {
     value: T;
 }
 interface NameIndictator {
