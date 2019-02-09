@@ -2,8 +2,10 @@ import { OnboardingActions } from "../../shared/actions/onboarding";
 import { Validatable } from "../../shared/system/validator/Validatable";
 import { getType } from "typesafe-actions";
 import { validationScopes } from "./validationScopes";
-import { ValidationState, FieldCollection } from "../../shared/system/validator/ValidationState";
-import { reduceFieldValidatedAction, reduceResetValidationForFieldAction, reduceValidateFieldAction } from "./validationReducers";
+import { ValidationState } from "../../shared/system/validator/ValidationState";
+import { FieldCollection } from "../../shared/system/validator/FieldCollection";
+import { reduceFieldValidatedAction, reduceResetValidationForFieldAction, reduceValidateFieldAction } from './validationReducers'
+
 
 interface PasswordCreateValidatedFields extends FieldCollection<Validatable<string>> {
     password: Validatable<string>
