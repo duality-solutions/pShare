@@ -1,9 +1,9 @@
 import { takeEvery, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
-import { createValidatedFailurePayload } from "../../shared/system/createValidatedFailurePayload";
-import { createValidateFieldPayload } from "../../shared/system/createValidateFieldPayload";
-import { createValidatedSuccessPayload } from "../../shared/system/createValidatedSuccessPayload";
+import { createValidatedFailurePayload } from "../../shared/system/validator/createValidatedFailurePayload";
+import { createValidateFieldPayload } from "../../shared/system/validator/createValidateFieldPayload";
+import { createValidatedSuccessPayload } from "../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 import { delay } from "redux-saga";
 
