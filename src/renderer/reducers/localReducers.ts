@@ -1,3 +1,3 @@
-export { default as passwordCreateFormValues } from './passwordCreateFormValues';
-export { default as bdapAccountFormValues } from './bdapAccountFormValues';
+export { passwordCreateFormValues } from './passwordCreateFormValues';
+export { bdapAccountFormValues } from './bdapAccountFormValues';
 

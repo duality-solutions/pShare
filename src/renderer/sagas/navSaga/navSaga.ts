@@ -1,6 +1,6 @@
 import { put, select, take } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import RootActions from "../../../shared/actions";
+import { RootActions } from "../../../shared/actions";
 import { RendererRootState } from "../../reducers";
 import { appRoutes, pushRoute } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
@@ -65,7 +65,7 @@ export function* navSaga() {
         // so at this point, we're on the password page, and we might want to set up a new navMap
 
         const navMap = getNavMap();
-        navMap.registerNavAction(RootActions.submitPassword, appRoutes.mnemonicWarning, true)
+        navMap.registerNavAction(RootActions.walletPasswordSet, appRoutes.main, true)
         yield navMap.runNav();
     }
 

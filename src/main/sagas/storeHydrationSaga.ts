@@ -1,9 +1,9 @@
 import { put, take, select } from 'redux-saga/effects'
 import { actionTypes } from 'redux-localstorage'
 import { getType } from 'typesafe-actions';
-import RootActions from '../../shared/actions'
+import { RootActions } from '../../shared/actions'
 
-export default function* () {
+export function* storeHydrationSaga() {
     const hydrateAction = getType(RootActions.hydratePersistedData)
 
     for (; ;) {

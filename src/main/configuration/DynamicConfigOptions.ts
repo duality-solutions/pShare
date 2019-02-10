@@ -1,4 +1,4 @@
-export default interface DynamicConfigOptions {
+export interface DynamicConfigOptions {
     pathToDynamicdDefaultConf: string;
     pathToDynamicConf: string;
     pathToDataDir: string;

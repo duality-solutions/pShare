@@ -1,8 +1,8 @@
 import { call, takeEvery, put } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 import { getBitcoinClient } from "../getBitcoinClient";
-import delay from "../../shared/system/delay";
+import { delay } from "../../shared/system/delay";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {

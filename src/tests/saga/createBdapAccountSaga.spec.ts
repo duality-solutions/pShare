@@ -1,5 +1,5 @@
 //import { createBdapAccountSaga, createRawBdapAccount } from "../../main/sagas/createBdapAccountSaga";
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 //import { cloneableGenerator } from "redux-saga/utils";
 import { expectSaga } from 'redux-saga-test-plan'
 import { createBdapAccountSaga, createRawBdapAccount, activateAccount, checkBdapAccountCreated } from "../../main/sagas/createBdapAccountSaga";

@@ -1,5 +1,5 @@
 import { ipcRenderer, IpcMessageEvent } from "electron";
-import ProxyResult from "./ProxyResult";
+import { ProxyResult } from "./ProxyResult";
 import { v4 as uuid } from 'uuid';
 
 interface PromiseResolver {

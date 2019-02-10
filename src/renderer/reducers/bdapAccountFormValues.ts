@@ -1,25 +1,18 @@
-import { blinq } from 'blinq';
 import { getType } from 'typesafe-actions';
-import OnboardingActions from '../../shared/actions/onboarding';
-import { keys } from '../../shared/system/entries';
-import { ValidationResult } from "../../shared/system/validator/ValidationResult";
-import { FieldNameInfo } from '../../shared/system/validator/FieldNameInfo';
+import { OnboardingActions } from '../../shared/actions/onboarding';
+import { Validatable } from '../../shared/system/validator/Validatable';
+import { validationScopes } from './validationScopes';
+import { ValidationState } from '../../shared/system/validator/ValidationState';
+import { FieldCollection } from "../../shared/system/validator/FieldCollection";
+import { reduceFieldValidatedAction, reduceResetValidationForFieldAction, reduceValidateFieldAction } from './validationReducers'
 
-interface Validatable<T> {
-    value: T,
-    validationResult?: ValidationResult<T>,
-    isValidating: boolean
-}
-
-interface OnboardingBdapAccountOptionsValidatedFields {
+interface OnboardingBdapAccountOptionsValidatedFields extends FieldCollection<Validatable<string>> {
     userName: Validatable<string>,
     commonName: Validatable<string>,
     token: Validatable<string>
 }
-export interface OnboardingBdapAccountOptionsValidationState {
-    fields: OnboardingBdapAccountOptionsValidatedFields,
-    isValid: boolean
-}
+
+export type OnboardingBdapAccountOptionsValidationState = ValidationState<OnboardingBdapAccountOptionsValidatedFields>
 
 const defaultState: OnboardingBdapAccountOptionsValidationState = {
     fields: {
@@ -42,9 +35,10 @@ const defaultState: OnboardingBdapAccountOptionsValidationState = {
     isValid: false
 }
 
-export default (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
+export const bdapAccountFormValues = (state: OnboardingBdapAccountOptionsValidationState = defaultState, action: OnboardingActions): OnboardingBdapAccountOptionsValidationState => {
     switch (action.type) {
         case getType(OnboardingActions.resetOnboarding): {
+
             return {
                 ...state,
                 fields: {
@@ -65,68 +59,21 @@ export default (state: OnboardingBdapAccountOptionsValidationState = defaultStat
             break;
         }
         case getType(OnboardingActions.fieldValidated): {
-            const { value: validationResult, name: fieldName } = action.payload;
-            return {
-                ...state,
-                fields: {
-                    ...state.fields,
-                    [fieldName]: {
-                        value: validationResult.value,
-                        validationResult,
-                        isValidating: false
-                    }
-                },
-                isValid:
-                    validationResult.success
-                    && blinq(keys(state.fields))
-                        .where(f => fieldName !== f)
-                        .all(f => {
-                            const vr = state.fields[f].validationResult;
-                            return typeof vr !== 'undefined' && vr.success;
-                        })
-            }
+            return reduceFieldValidatedAction(action, validationScopes.bdapAccount, state);
         }
 
         case getType(OnboardingActions.validateField):
-            {
-                const { name: fieldName } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                return {
-                    ...state,
-                    fields: {
-                        ...state.fields,
-                        [fieldName]: {
-                            ...state.fields[fieldName],
-                            isValidating: true
-                        }
-                    }
-                }
-            }
+            return reduceValidateFieldAction(action, validationScopes.bdapAccount, state);
 
         case getType(OnboardingActions.resetValidationForField):
-            {
-                const { name } = <FieldNameInfo<OnboardingBdapAccountOptionsValidatedFields>>action.payload;
-                const requiresReset = typeof state.fields[name].validationResult !== 'undefined' || state.isValid;
-                return requiresReset
-                    ? {
-                        ...state,
-                        fields: typeof state.fields[name].validationResult !== 'undefined'
-                            ? {
-                                ...state.fields,
-                                [name]: {
-                                    ...(state.fields)[name],
-                                    isValidating: false,
-                                    validationResult: undefined
-                                }
-                            }
-                            : state.fields,
-                        isValid: false
-                    }
-                    : state
-            }
-
+            return reduceResetValidationForFieldAction(action, validationScopes.bdapAccount, state);
         default:
             return state;
 
 
     }
 }
+
+
+
+

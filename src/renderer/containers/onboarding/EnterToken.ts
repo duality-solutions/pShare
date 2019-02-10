@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import OnboardingActions from "../../../shared/actions/onboarding";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 import { EnterToken, EnterTokenDispatchProps, EnterTokenStateProps } from '../../components/onboarding/EnterToken';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';

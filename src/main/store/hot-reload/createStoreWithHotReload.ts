@@ -1,8 +1,8 @@
 import { Middleware, Action, createStore, compose, applyMiddleware, Reducer } from "redux";
 import { getRootReducer, MainRootState } from "../../reducers";
-import createReduxLocalStorageAdapter from '../../../shared/system/createReduxLocalStorageAdapter'
+import { createReduxLocalStorageAdapter } from '../../../shared/system/createReduxLocalStorageAdapter'
 import persistState, { mergePersistedState } from 'redux-localstorage';
-import RootActions from "../../../shared/actions";
+import { RootActions } from "../../../shared/actions";
 import filter from 'redux-localstorage-filter';
 import { deepMerge } from "../../../shared/system/deepMerge";
 

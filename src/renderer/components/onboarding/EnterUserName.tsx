@@ -10,6 +10,7 @@ import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
 import { NamedValue } from "../../../shared/system/validator/NamedValue";
+import { validationScopes } from "../../reducers/validationScopes";
 
 export interface EnterUserNameStateProps {
     userName: string,
@@ -34,7 +35,7 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ userName: e.target.value })
-        this.props.resetValidationForField({ name: "userName" })
+        this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "userName" })
     }
     handleSubmit = (e: FormEvent) => {
         this.props.submitUserName(this.state.userName)

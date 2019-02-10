@@ -1,7 +1,7 @@
 import { put, select, takeEvery, take, race } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RendererRootState } from "../reducers";
-import OnboardingActions from "../../shared/actions/onboarding";
+import { OnboardingActions } from "../../shared/actions/onboarding";
 import { OnboardingBdapAccountOptionsValidationState } from "../reducers/bdapAccountFormValues";
 
 
@@ -30,7 +30,7 @@ export function* beginCreateBdapAccountSaga() {
         })
         if (typeof val.success !== 'undefined') {
             yield put(OnboardingActions.createBdapAccountComplete())
-            
+
         } else {
             yield put(OnboardingActions.resetOnboarding())
         }

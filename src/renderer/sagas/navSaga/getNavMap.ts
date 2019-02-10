@@ -1,8 +1,8 @@
 import { push } from "connected-react-router";
 import { put, take, takeLatest, cancel, call } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
-import RootActions from "../../../shared/actions";
-import { ActionCreator, ActionType } from "typesafe-actions/dist/types";
+import { RootActions } from "../../../shared/actions";
+import { ActionType, StringType, B, FsaBuilder } from "typesafe-actions/dist/types";
 import { Task, Predicate } from "redux-saga";
 import { RouteInfo } from "../../routes/appRoutes";
 import { createLocalStandardAction } from "../../../shared/system/createLocalStandardAction";
@@ -10,7 +10,7 @@ import { Action } from "redux";
 import { v4 as uuid } from 'uuid';
 export function getNavMap() {
     const navMap = new Map<string, [string, boolean]>();
-    const registerNavAction = <T extends string>(action: ActionCreator<T>, route: RouteInfo, stopOnThisAction: boolean = false) =>
+    const registerNavAction = <T extends StringType, P extends B<any> = B<void>, M extends B<any> = B<void>>(action: FsaBuilder<T,P,M>, route: RouteInfo, stopOnThisAction: boolean = false) =>
         navMap.set(getType(action), [route.path, stopOnThisAction]);
     const id = uuid()
     const runNav = () => call(function* () {
@@ -25,7 +25,7 @@ export function getNavMap() {
                 }
             }
         });
-        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id) 
+        const pred = ((action: NavMapActions) => getType(NavMapActions.navMapComplete) === action.type && action.payload === id)
         yield take(pred as Predicate<Action<any>>);
     });
     return { registerNavAction, runNav };

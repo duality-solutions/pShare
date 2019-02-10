@@ -2,8 +2,8 @@ import { Middleware, Action, createStore, applyMiddleware, ActionCreator, Reduce
 import { getRootReducer, RendererRootState } from "../../reducers";
 import { composeEnhancers } from "../../system/reduxDevToolsCompose";
 import { History } from "history";
-import StoreActions from '../../../shared/actions/store'
-import RootActions from "../../../shared/actions";
+import { StoreActions } from '../../../shared/actions/store'
+import { RootActions } from "../../../shared/actions";
 import { mergePersistedState } from 'redux-localstorage';
 import { deepMerge } from "../../../shared/system/deepMerge";
 

@@ -1,8 +1,8 @@
 import { History } from 'history'
 import createSagaMiddleware from 'redux-saga'
-import createRouterMiddleware from './router-middleware/createRouterMiddleware';
+import { createRouterMiddleware } from './router-middleware/createRouterMiddleware';
 import { createStoreWithHotReload } from './hot-reload/createStoreWithHotReload';
-import runRootSagaWithHotReload from './hot-reload/runRootSagaWithHotReload';
+import { runRootSagaWithHotReload } from './hot-reload/runRootSagaWithHotReload';
 import {
     forwardToMain,
     replayActionRenderer,
