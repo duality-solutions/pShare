@@ -2,7 +2,7 @@ import { app } from 'electron';
 import { startDynamicd } from './startDynamicd';
 import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
-import { lazy } from './lazy';
+import { lazy } from '../shared/system/lazy';
 interface BitcoinClientOptions {
     host: string,
     port: string,
