@@ -8,22 +8,25 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import { H1, H3, Text } from "../ui-elements/Text";
 
-export interface EnterUserNameStateProps {
+export interface MnemonicWarningStateProps {
 }
-export interface EnterUserNameDispatchProps {
+export interface MnemonicWarningDispatchProps {
+    mnemonicWarningAccepted: () => void
 }
-type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
+type MnemonicWarningProps = MnemonicWarningDispatchProps & MnemonicWarningStateProps
 
-interface EnterUserNameComponentState {
+interface MnemonicWarningComponentState {
 }
 
-export class MnemonicWarning extends Component<EnterUserNameProps, EnterUserNameComponentState>{
-    constructor(props: EnterUserNameProps) {
+export class MnemonicWarning extends Component<MnemonicWarningProps, MnemonicWarningComponentState>{
+    constructor(props: MnemonicWarningProps) {
         super(props)
     }
     handleSubmit = (e: FormEvent) => {
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
+        console.log('go to mnemonic')
+        this.props.mnemonicWarningAccepted()
     }
 
     render() {
@@ -54,7 +57,7 @@ export class MnemonicWarning extends Component<EnterUserNameProps, EnterUserName
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" />
+                                <ArrowButton label="Continue" type="submit"/>
                             </Box>
                         </Box>
                     </form>

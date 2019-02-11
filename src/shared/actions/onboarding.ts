@@ -1,8 +1,8 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
 import { CreateBdapAccountConfig } from '../dynamicd/interfaces/CreateBdapAccountConfig';
 import { createLocalStandardAction } from '../system/createLocalStandardAction';
-import { ValidationResult } from '../system/validator/ValidationResult';
 import { NamedValue } from '../system/validator/NamedValue';
+import { ValidationResult } from '../system/validator/ValidationResult';
 
 // interface OperationResult {
 //     success: boolean
@@ -43,6 +43,8 @@ export const OnboardingActions = {
     walletPasswordSet: createStandardAction('onboarding/WALLET_PASSWORD_SET')<void>(),
     walletPasswordSetFailed: createStandardAction('onboarding/WALLET_PASSWORD_SET_FAILED')<void>(),
 
+    mnemonicWarningAccepted: createStandardAction('onboarding/MNEMONIC_WARNING_ACCEPTED')<void>(),
+    mnemonicSecured: createStandardAction('onboarding/MNEMONIC_SECURED')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

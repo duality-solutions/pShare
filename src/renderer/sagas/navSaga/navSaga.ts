@@ -65,10 +65,11 @@ export function* navSaga() {
         // so at this point, we're on the password page, and we might want to set up a new navMap
 
         const navMap = getNavMap();
-        navMap.registerNavAction(RootActions.walletPasswordSet, appRoutes.main, true)
+        navMap.registerNavAction(RootActions.walletPasswordSet, appRoutes.mnemonicWarning),
+        navMap.registerNavAction(RootActions.mnemonicWarningAccepted,appRoutes.mnemonicPage)
+        navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main)
         yield navMap.runNav();
     }
-
 
 
 }

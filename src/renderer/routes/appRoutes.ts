@@ -3,11 +3,12 @@ import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
 import { Main } from "../components/Main";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
-import { MnemonicWarning } from '../components/onboarding/MnemonicWarning';
 import CreateAccount from "../containers/onboarding/CreateAccount";
 import EnterCommonName from "../containers/onboarding/EnterCommonName";
 import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUserName from "../containers/onboarding/EnterUserName";
+import MnemonicPage from '../containers/onboarding/MnemonicPage';
+import MnemonicWarning from "../containers/onboarding/MnemonicWarning";
 import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
@@ -29,6 +30,7 @@ const routingTable = {
     creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
     passwordCreate: route("/PasswordCreate", PasswordCreate),
     mnemonicWarning: route("/MnemonicWarning",MnemonicWarning),
+    mnemonicPage: route("/MneonicPage", MnemonicPage),
     main: route("/Main", Main)
 };
 export const pushRoute = (route: RouteInfo) => push(route.path)

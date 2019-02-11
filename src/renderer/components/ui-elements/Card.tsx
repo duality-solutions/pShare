@@ -7,6 +7,7 @@ interface CardProps {
     minHeight?: string,
     minWidth?: string,
     border?: string,
+    background?: string,
 }
 
 const StyledCard = styled('div')<CardProps>`
@@ -18,7 +19,7 @@ const StyledCard = styled('div')<CardProps>`
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
     border: ${props => props.border || 'solid 1px #f1f1f1'};
     border-radius: 4px;
-    background-color: #ffffff;
+    background-color: ${props => props.background || '#ffffff'};
     padding: ${props => props.padding || '2em 4em'};
     margin: 1em 0 ;
     box-sizing: border-box;
