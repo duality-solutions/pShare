@@ -41,7 +41,7 @@ const StyledPshareSpinnerContainer = styled(StyledPshareSpinner)`
         animation-duration: 2s;
         animation-name: ${animationSpin};
         animation-delay: 0.9s;
-        animation-timing-function: ease-in-out;
+        animation-timing-function: cubic-bezier(0.390, 0.120, 0.615, 0.875);
         transform-origin: 49.75% 40.25%;
         width: 100%;
         height: 100%;
@@ -76,7 +76,7 @@ const StyledPath2 = styled('path')`
         animation-duration: 1.5s;
         animation-name: ${animationSlideIn};
         animation-fill-mode: forwards;
-        animation-timing-function: ease-in-out;
+        animation-timing-function: cubic-bezier(0.550, 0.055, 0.675, 0.190);
         fill: ${props => props.theme.blue};
 `
 
