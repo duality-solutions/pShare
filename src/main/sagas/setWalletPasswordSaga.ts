@@ -1,9 +1,9 @@
 import { takeEvery, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
-import { createValidatedFailurePayload } from "../../shared/system/createValidatedFailurePayload";
-import { createValidateFieldPayload } from "../../shared/system/createValidateFieldPayload";
-import { createValidatedSuccessPayload } from "../../shared/system/createValidatedSuccessPayload";
+import { createValidatedFailurePayload } from "../../shared/system/validator/createValidatedFailurePayload";
+import { createValidateFieldPayload } from "../../shared/system/validator/createValidateFieldPayload";
+import { createValidatedSuccessPayload } from "../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 import { delay } from "redux-saga";
 
@@ -11,7 +11,10 @@ import { delay } from "redux-saga";
 
 export function* setWalletPasswordSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>) {
-
+        //spoofing validation actions
+        //the validation actions here are not processed by the validationsaga
+        //instead we're spoofing actions so that the password page can behave
+        //in the same way as, for instance, the username page
         yield put(OnboardingActions.validateField(createValidateFieldPayload(validationScopes.password, "password", action.payload)))
         yield delay(3000)
         if (action.payload === '666666') {

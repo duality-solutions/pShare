@@ -1,5 +1,5 @@
-import { ValidationResult } from "./validator/ValidationResult";
-import { NamedValue } from "./validator/NamedValue";
+import { ValidationResult } from "./ValidationResult";
+import { NamedValue } from "./NamedValue";
 export const createValidatedSuccessPayload = <T>(fieldScope: string, fieldName: string, fieldValue: T): NamedValue<ValidationResult<T>> => ({
     scope: fieldScope,
     name: fieldName,
