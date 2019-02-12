@@ -9,7 +9,7 @@ import { blinq } from 'blinq'
 const exists = promisify(e)
 const randomBytes = promisify(r)
 
-export default async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
+export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
     var hasConfig = await exists(pathToDynamicConf);
     if (!hasConfig) {
         await fsExtra.mkdirp(pathToDataDir);

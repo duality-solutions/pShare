@@ -4,7 +4,7 @@ import BitcoinClient from 'bitcoin-core';
 import RootActions from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { MainRootState } from "../../reducers";
-import delay from "../../../shared/system/delay";
+import { delay } from "../../../shared/system/delay";
 import { round } from "./round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 
