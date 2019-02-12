@@ -1,5 +1,5 @@
 import { app } from 'electron';
-import { startDynamicd } from './startDynamicd';
+import { startDynamicd } from './dynamicd/startDynamicd';
 import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
 import { lazy } from '../shared/system/lazy';
