@@ -94,10 +94,10 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Create a Password</Text>
                                     <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors}  disabled={isValidating}/>
                                     <Text fontSize="14px">Confirm Password</Text>
                                     <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors}  disabled={isValidating}/>
                                     {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
@@ -106,7 +106,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" />
+                                <ArrowButton label="Continue" type="submit" disabled={isValidating}/>
                                 {
                                     isValidating ? <div>show spinner</div> : <></>
                                 }

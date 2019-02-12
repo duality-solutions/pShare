@@ -61,12 +61,18 @@ export function* navSaga() {
 
         }
 
-        console.log("navSaga navigated to passwordCreate")
-        // so at this point, we're on the password page, and we might want to set up a new navMap
+        const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
+        if (!isEncrypted) {
+            const navMap = getNavMap();
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.main, true)
+            yield navMap.runNav();
+        }
+        else {
+            // todo: really it should be
+            // yield pushRoute(appRoutes.passwordGet)
+            yield put(pushRoute(appRoutes.main))
+        }
 
-        const navMap = getNavMap();
-        navMap.registerNavAction(RootActions.walletPasswordSet, appRoutes.main, true)
-        yield navMap.runNav();
     }
 
 

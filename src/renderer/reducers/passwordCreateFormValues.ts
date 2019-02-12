@@ -23,7 +23,7 @@ export const passwordCreateFormValues = (state: PasswordCreateValidationState = 
         case getType(OnboardingActions.fieldValidated):
             return reduceFieldValidatedAction(action, validationScopes.password, state);
         case getType(OnboardingActions.validateField):
-            return reduceValidateFieldAction(action, validationScopes.bdapAccount, state);
+            return reduceValidateFieldAction(action, validationScopes.password, state);
         case getType(OnboardingActions.resetValidationForField):
             return reduceResetValidationForFieldAction(action, validationScopes.password, state)
 

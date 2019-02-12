@@ -10,6 +10,7 @@ import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccoun
 import { deepFreeze } from '../../shared/system/deepFreeze';
 import { push } from 'connected-react-router';
 import PasswordCreate from '../containers/onboarding/PasswordCreate';
+import { PasswordGet } from '../components/onboarding/PasswordGet';
 
 export interface RouteInfo {
     path: string;
@@ -27,7 +28,8 @@ const routingTable = {
     enterToken: route("/EnterToken", EnterToken),
     creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
     passwordCreate: route("/PasswordCreate", PasswordCreate),
-    main: route("/Main", Main)
+    main: route("/Main", Main),
+    passwordGet: route("/PasswordGet",PasswordGet)
 };
 export const pushRoute = (route: RouteInfo) => push(route.path)
 
