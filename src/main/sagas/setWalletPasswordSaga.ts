@@ -23,7 +23,7 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
 
         yield put(OnboardingActions.validateField(createValidateFieldPayload(validationScopes.password, "password", password)))
         if (action.payload === '666666') {
-            yield delay(3000)
+            yield delay(10000)
 
             const payload = createValidatedFailurePayload(validationScopes.password, "password", "Could not set password", password, true)
 

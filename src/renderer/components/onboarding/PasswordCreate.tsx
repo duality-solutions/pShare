@@ -13,6 +13,7 @@ import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { createValidatedFailurePayload } from "../../../shared/system/validator/createValidatedFailurePayload";
 import { createValidatedSuccessPayload } from "../../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../reducers/validationScopes";
+import LoadingSpinner from "../ui-elements/LoadingSpinner"
 
 export interface PasswordCreateStateProps {
     password: string
@@ -108,7 +109,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
                                 <ArrowButton label="Continue" type="submit" disabled={isValidating}/>
                                 {
-                                    isValidating ? <div>show spinner</div> : <></>
+                                    isValidating ?  <LoadingSpinner active label="Encrypting your data ... " size={50}/> : <></>
                                 }
                             </Box>
                         </Box>
