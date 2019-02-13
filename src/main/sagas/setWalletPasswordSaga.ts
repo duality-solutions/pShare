@@ -22,13 +22,23 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
         const password = action.payload
 
         yield put(OnboardingActions.validateField(createValidateFieldPayload(validationScopes.password, "password", password)))
-        if (action.payload === '666666') {
-            yield delay(10000)
+        if (mock) {
+            if (action.payload === '666666') {
+                yield delay(10000)
 
-            const payload = createValidatedFailurePayload(validationScopes.password, "password", "Could not set password", password, true)
+                const payload = createValidatedFailurePayload(validationScopes.password, "password", "Could not set password", password, true)
 
-            yield put(OnboardingActions.fieldValidated(payload))
-            return
+                yield put(OnboardingActions.fieldValidated(payload))
+                return
+            }
+            if (action.payload === '666999') {
+                yield delay(10000)
+
+                const payload = createValidatedSuccessPayload(validationScopes.password, "password", password)
+
+                yield put(OnboardingActions.fieldValidated(payload))
+                return
+            }
         }
 
         const walletIsEncrypted = yield getWalletIsEncrypted();
@@ -81,8 +91,8 @@ function waitForSync() {
                 if (syncState.sync_progress === 1) {
                     break;
                 }
-            } catch(err){ 
-                console.warn("error calling syncstatus",err)
+            } catch (err) {
+                console.warn("error calling syncstatus", err)
                 console.log("waiting 5s")
                 yield delay(4000)
             }
