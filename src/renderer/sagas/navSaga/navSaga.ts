@@ -58,13 +58,14 @@ export function* navSaga() {
             bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
             //this will block until the navMap is complete
             yield bdapAccountConfigNavMap.runNav()
-
         }
 
         const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
-        if (!isEncrypted) {
+        if (!isEncrypted || true) {
             const navMap = getNavMap();
-            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.main, true)
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning),
+            navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
+            navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main, true)
             yield navMap.runNav();
         }
         else {

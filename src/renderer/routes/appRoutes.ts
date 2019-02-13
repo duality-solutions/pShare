@@ -8,6 +8,8 @@ import CreateAccount from "../containers/onboarding/CreateAccount";
 import EnterCommonName from "../containers/onboarding/EnterCommonName";
 import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUserName from "../containers/onboarding/EnterUserName";
+import MnemonicPage from '../containers/onboarding/MnemonicPage';
+import MnemonicWarning from '../containers/onboarding/MnemonicWarning';
 import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
@@ -28,9 +30,12 @@ const routingTable = {
     enterToken: route("/EnterToken", EnterToken),
     creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
     passwordCreate: route("/PasswordCreate", PasswordCreate),
+    mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
+    mnemonicPage: route("/MnemoniPage", MnemonicPage),
     main: route("/Main", Main),
     passwordGet: route("/PasswordGet",PasswordGet)
 };
+
 export const pushRoute = (route: RouteInfo) => push(route.path)
 
 deepFreeze(routingTable)
