@@ -5,10 +5,9 @@ import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 
-const mapStateToProps = (state: RendererRootState /*, ownProps*/): MnemonicPageStateProps => {
-    return {
-    };
-};
+const mapStateToProps = (state: RendererRootState /*, ownProps*/): MnemonicPageStateProps => ({
+    mnemonic:state.user.sessionWalletMnemonic
+});
 
 
 const mapDispatchToProps: MapPropsToDispatchObj<MnemonicPageDispatchProps> = { ...OnboardingActions };
