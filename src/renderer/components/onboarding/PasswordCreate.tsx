@@ -1,6 +1,11 @@
 import React, { ChangeEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
+import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
+import { createValidatedSuccessPayload } from "../../../shared/system/createValidatedSuccessPayload";
+import { NamedValue } from "../../../shared/system/validator/NamedValue";
+import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
+import { validationScopes } from "../../reducers/validationScopes";
 import Box from "../ui-elements/Box";
 import { ArrowButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
@@ -8,17 +13,11 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
-import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
-import { createValidatedSuccessPayload } from "../../../shared/system/createValidatedSuccessPayload";
-import { validationScopes } from "../../reducers/validationScopes";
 
 export interface PasswordCreateStateProps {
     password: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
-
 }
 export interface PasswordCreateDispatchProps {
     submitPassword: (password: string) => void,
@@ -80,6 +79,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
             <Box width="100%" margin="2em 0 -1.5em 0" align="center">
                 <AppLogo src={logo} width="100px" height="120px" />
             </Box>
+
             <CSSTransitionGroup
                 transitionName="example"
                 transitionAppear={true}
