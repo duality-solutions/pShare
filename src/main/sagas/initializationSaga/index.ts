@@ -22,9 +22,6 @@ export function* initializationSaga() {
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
     yield take(getType(RootActions.appInitialized))
-    // let the user reducer know if the wallet is encrypted
-    const isEncrypted = yield getWalletIsEncrypted()
-    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
     // grab the current application state
     const state: MainRootState = yield select();
     // this property will eventually be persisted
@@ -75,13 +72,17 @@ export function* initializationSaga() {
         // if we've hit 100%, we're done
         if (currentCompletionPercent === 100) {
             // complete
-            yield put(RootActions.syncComplete());
             break;
         }
 
         //wait, then go again
         yield call(delay, 1000);
     }
+    // let the user reducer know if the wallet is encrypted
+    const isEncrypted = yield getWalletIsEncrypted()
+    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
+
+    yield put(RootActions.syncComplete());
 
 }
 
