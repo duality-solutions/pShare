@@ -7,6 +7,8 @@ import { MainRootState } from "../../reducers";
 import { delay } from "../../../shared/system/delay";
 import { round } from "./round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
+import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 const round0 = round(0)
 
@@ -20,6 +22,9 @@ export function* initializationSaga() {
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
     yield take(getType(RootActions.appInitialized))
+    // let the user reducer know if the wallet is encrypted
+    const isEncrypted = yield getWalletIsEncrypted()
+    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
     // grab the current application state
     const state: MainRootState = yield select();
     // this property will eventually be persisted
@@ -77,6 +82,7 @@ export function* initializationSaga() {
         //wait, then go again
         yield call(delay, 1000);
     }
+
 }
 
 

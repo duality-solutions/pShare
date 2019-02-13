@@ -40,8 +40,10 @@ export const OnboardingActions = {
     createBdapAccountFailed: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_FAILED')<void>(),
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>(),
 
-    walletPasswordSet: createStandardAction('onboarding/WALLET_PASSWORD_SET')<void>(),
+    setSessionWalletPassword:createStandardAction('onboarding/SET_WALLET_SESSION_PASSWORD')<string>(),
+    walletPasswordSetSuccess: createStandardAction('onboarding/WALLET_PASSWORD_SET_SUCCESS')<void>(),
     walletPasswordSetFailed: createStandardAction('onboarding/WALLET_PASSWORD_SET_FAILED')<void>(),
+    walletIsEncrypted: createStandardAction('onboarding/WALLET_IS_ENCRYPTED')<boolean>(),
 
     mnemonicWarningAccepted: createStandardAction('onboarding/MNEMONIC_WARNING_ACCEPTED')<void>(),
     mnemonicSecured: createStandardAction('onboarding/MNEMONIC_SECURED')<void>(),

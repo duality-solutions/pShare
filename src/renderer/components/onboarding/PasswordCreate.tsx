@@ -1,7 +1,7 @@
 import React, { ChangeEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
-import { createValidatedFailurePayload } from "../../../shared/system/createValidatedFailurePayload";
-import { createValidatedSuccessPayload } from "../../../shared/system/createValidatedSuccessPayload";
+import { createValidatedFailurePayload } from "../../../shared/system/validator/createValidatedFailurePayload";
+import { createValidatedSuccessPayload } from "../../../shared/system/validator/createValidatedSuccessPayload";
 import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
@@ -12,6 +12,7 @@ import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
+import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, Text } from "../ui-elements/Text";
 
 export interface PasswordCreateStateProps {
@@ -94,10 +95,10 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Create a Password</Text>
                                     <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors}  disabled={isValidating}/>
                                     <Text fontSize="14px">Confirm Password</Text>
                                     <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} />
+                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors}  disabled={isValidating}/>
                                     {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
@@ -106,9 +107,9 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" />
+                                <ArrowButton label="Continue" type="submit" disabled={isValidating}/>
                                 {
-                                    isValidating ? <div>show spinner</div> : <></>
+                                    isValidating ?  <LoadingSpinner active label="Encrypting your data ... " size={50}/> : <></>
                                 }
                             </Box>
                         </Box>
