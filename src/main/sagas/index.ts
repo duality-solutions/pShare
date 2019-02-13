@@ -5,7 +5,15 @@ import { validationSaga } from "./validationSaga";
 import { onboardingSaga } from "./onboardingSaga";
 import { createBdapAccountSaga } from "./createBdapAccountSaga";
 import { setWalletPasswordSaga } from "./setWalletPasswordSaga";
+import { mnemonicSaga } from "./mnemonicSaga";
 
-export const getRootSaga = () => {
-    return [loggingSaga, initializationSaga, storeHydrationSaga, validationSaga, onboardingSaga, () => createBdapAccountSaga(true), () => setWalletPasswordSaga(true)]
-}
+export const getRootSaga = () => [
+    loggingSaga,
+    initializationSaga,
+    storeHydrationSaga,
+    validationSaga,
+    onboardingSaga,
+    () => createBdapAccountSaga(true),
+    () => setWalletPasswordSaga(true),
+    mnemonicSaga
+]
