@@ -1,15 +1,26 @@
-import { encrypt, decrypt } from "sjcl-local"
+import { getEncryptor } from "../../shared/system/encryption/getEncryptor";
 
-test("can encrypt", () => {
+test("getEncryptor wrapper", () => {
     const password = "monkey";
-    const payload = "this is a test";
-    const encrypted = encrypt(password, payload,{iter:100000,ks:256,ts:128})
-    expect(typeof encrypted).toBe("string")
-    console.log(`encrypted data : ${encrypted}`)
-    const decrypted = decrypt(password, encrypted)
-    expect(payload).not.toBe(encrypted)
-    expect(payload).toBe(decrypted)
+    const payloadStr = "this is a test";
+    interface A {
+        a: number
+        b: string
+    }
 
-    expect(()=>decrypt("foo",encrypted)).toThrow()
+    const payloadObj: A = { a: 1, b: "hello world" }
+
+    const { decrypt, decryptObject, encrypt, encryptObject } = getEncryptor(password)
+
+    const encryptedStr = encrypt(payloadStr)
+    const decryptedStr = decrypt(encryptedStr)
+
+    expect(payloadStr).not.toBe(encryptedStr)
+    expect(payloadStr).toBe(decryptedStr)
+
+    const encryptedObj = encryptObject(payloadObj)
+    const decryptedObj = decryptObject<A>(encryptedObj)
+    expect(payloadObj).toEqual(decryptedObj)
+
 
 })
