@@ -61,11 +61,11 @@ export function* navSaga() {
         }
 
         const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
-        if (!isEncrypted) {
+        if (!isEncrypted || true) {
             const navMap = getNavMap();
             navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning),
-            navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
-            navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main, true)
+                navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
+                navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main, true)
             yield navMap.runNav();
         }
         else {

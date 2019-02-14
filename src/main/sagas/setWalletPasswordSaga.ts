@@ -10,6 +10,7 @@ import { getBitcoinClient } from "../getBitcoinClient";
 import BitcoinClient from 'bitcoin-core';
 import { SyncState } from "../../dynamicdInterfaces/SyncState";
 import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
+import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 
 
 
@@ -43,8 +44,24 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
 
         const walletIsEncrypted = yield getWalletIsEncrypted();
         if (walletIsEncrypted) {
+            if (mock) {
+
+                const isCorrectPw = yield isCorrectPassword(password)
+                if (isCorrectPw) {
+                    const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
+                    yield put(OnboardingActions.fieldValidated(payload))
+                    yield put(OnboardingActions.setSessionWalletPassword(password))
+                    yield put(OnboardingActions.walletPasswordSetSuccess())
+                    return
+                } else {
+                    const payload = createValidatedFailurePayload(validationScopes.password, "password", "Wallet is already encrypted. Could not unlock wallet with supplied password.", password, true)
+                    yield put(OnboardingActions.fieldValidated(payload))
+                    return
+                }
+            }
             const payload = createValidatedFailurePayload(validationScopes.password, "password", "Wallet is already encrypted. Please contact support.", password, true)
             yield put(OnboardingActions.fieldValidated(payload))
+            return
         }
         yield encryptWallet(password)
 
@@ -56,6 +73,21 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
         yield put(OnboardingActions.fieldValidated(payload))
         yield put(OnboardingActions.setSessionWalletPassword(password))
         yield put(OnboardingActions.walletPasswordSetSuccess())
+    })
+}
+
+
+function isCorrectPassword(password: string) {
+    return call(function* () {
+        try {
+            yield unlockedCommandEffect(password, async () => { })
+        } catch (err) {
+            if (/^Error\: The wallet passphrase entered was incorrect\.$/.test(err.message)) {
+                return false
+            }
+            throw err;
+        }
+        return true;
     })
 }
 
