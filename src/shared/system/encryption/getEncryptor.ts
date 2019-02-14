@@ -16,3 +16,5 @@ export const getEncryptor = (password: string): Encryptor => {
         decryptObject: <T>(encryptedPayload: string): T => JSON.parse(d(encryptedPayload))
     });
 }
+
+export const isCorruptError = (err: any) => /^CORRUPT\:/.test(err.toString())

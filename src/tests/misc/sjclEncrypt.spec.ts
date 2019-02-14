@@ -1,4 +1,4 @@
-import { getEncryptor } from "../../shared/system/encryption/getEncryptor";
+import { getEncryptor, isCorruptError } from "../../shared/system/encryption/getEncryptor";
 
 test("getEncryptor wrapper", () => {
     const password = "monkey";
@@ -22,5 +22,16 @@ test("getEncryptor wrapper", () => {
     const decryptedObj = decryptObject<A>(encryptedObj)
     expect(payloadObj).toEqual(decryptedObj)
 
+    const badEncryptor = getEncryptor("baddpass")
+    expect(() => badEncryptor.decryptObject<A>(encryptedObj)).toThrow()
+
+    try {
+        badEncryptor.decryptObject<A>(encryptedObj)
+    } catch (err) {
+        console.log(err.toString())
+        expect(isCorruptError(err)).toBeTruthy()
+    }
+    expect(isCorruptError({})).not.toBeTruthy()
+    expect(isCorruptError(Error("bad"))).not.toBeTruthy()
 
 })
