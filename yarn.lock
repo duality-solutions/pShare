@@ -807,11 +807,6 @@
     "@types/prop-types" "*"
     csstype "^2.2.0"
 
-"@types/sjcl@^1.0.28":
-  version "1.0.28"
-  resolved "https://registry.yarnpkg.com/@types/sjcl/-/sjcl-1.0.28.tgz#4693eb6943e385e844a70fb25b4699db286c7214"
-  integrity sha1-RpPraUPjhehEpw+yW0aZ2yhschQ=
-
 "@types/styled-components@^4.1.6":
   version "4.1.6"
   resolved "https://registry.yarnpkg.com/@types/styled-components/-/styled-components-4.1.6.tgz#9aa1d47dbc6bae540083869bcc6c639c6e9af0fe"
@@ -8392,7 +8387,7 @@ sisteransi@^0.1.1:
   resolved "https://registry.yarnpkg.com/sisteransi/-/sisteransi-0.1.1.tgz#5431447d5f7d1675aac667ccd0b865a4994cb3ce"
   integrity sha512-PmGOd02bM9YO5ifxpw36nrNMBTptEtfRl4qUYl9SndkolplkrZZOW7PGHjrZL53QvMVj9nQ+TKqUnRsw4tJa4g==
 
-"sjcl@file:./src/sjcl":
+"sjcl-local@file:./src/sjcl":
   version "1.0.8"
 
 slash@^1.0.0:
