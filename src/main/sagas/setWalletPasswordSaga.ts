@@ -1,4 +1,4 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { createValidatedFailurePayload } from "../../shared/system/validator/createValidatedFailurePayload";
@@ -6,11 +6,9 @@ import { createValidateFieldPayload } from "../../shared/system/validator/create
 import { createValidatedSuccessPayload } from "../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 import { delay } from "redux-saga";
-import { getBitcoinClient } from "../getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
-import { SyncState } from "../../dynamicdInterfaces/SyncState";
 import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
-import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
+import { encryptWallet } from "./effects/encryptWallet";
+import { isCorrectPassword } from "./effects/isCorrectPassword";
 
 
 
@@ -73,63 +71,5 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
         yield put(OnboardingActions.fieldValidated(payload))
         yield put(OnboardingActions.setSessionWalletPassword(password))
         yield put(OnboardingActions.walletPasswordSetSuccess())
-    })
-}
-
-
-function isCorrectPassword(password: string) {
-    return call(function* () {
-        try {
-            yield unlockedCommandEffect(password, async () => { })
-        } catch (err) {
-            if (/^Error\: The wallet passphrase entered was incorrect\.$/.test(err.message)) {
-                return false
-            }
-            throw err;
-        }
-        return true;
-    })
-}
-
-
-
-function encryptWallet(password: string) {
-    return call(function* () {
-        const bitcoinClient: BitcoinClient = yield call(() => getBitcoinClient())
-        yield call(() => bitcoinClient.command("encryptwallet", password))
-        for (; ;) {
-            let walletIsEncrypted: boolean;
-            try {
-                walletIsEncrypted = yield getWalletIsEncrypted()
-            } catch{
-                walletIsEncrypted = false
-            }
-            if (walletIsEncrypted) {
-                break;
-            }
-            yield call(() => delay(2000))
-        }
-    })
-}
-
-// @ts-ignore
-function waitForSync() {
-    return call(function* () {
-        const bitcoinClient: BitcoinClient = yield call(() => getBitcoinClient())
-        for (; ;) {
-            try {
-                const syncState: SyncState = yield call(() => bitcoinClient.command("syncstatus"));
-                console.log(`sync progress : ${syncState.sync_progress}`)
-                if (syncState.sync_progress === 1) {
-                    break;
-                }
-            } catch (err) {
-                console.warn("error calling syncstatus", err)
-                console.log("waiting 5s")
-                yield delay(4000)
-            }
-            yield delay(1000)
-        }
-
     })
 }
