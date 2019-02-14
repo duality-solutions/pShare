@@ -19,6 +19,7 @@ export interface MnemonicPageStateProps {
 
 export interface MnemonicPageDispatchProps {
     mnemonicSecured: () => void
+    mnemonicFileCreation: () => void
 }
 
 type MnemonicPageProps = MnemonicPageDispatchProps & MnemonicPageStateProps
@@ -29,6 +30,11 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
         //if we don't prevent form submission, causes a browser reload
         e.preventDefault()
         props.mnemonicSecured()
+    }
+    const handleFileCreation = (e: FormEvent) => {
+        e.preventDefault()
+        props.mnemonicFileCreation()
+        console.log('asfd')
     }
 
     return <>
@@ -65,7 +71,7 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
                                     <Box display="flex" width="100%" margin="2em 0 0 2em">
                                         <img src={PshareSecureFileSvg} width="80px" height="80px" style={{color:"blue"}} />
                                     </Box>
-                                    <LightButton onClick={(e)=>{e.preventDefault()}}>Create a secure file</LightButton>
+                                    <LightButton onClick={handleFileCreation}>Create a secure file</LightButton>
                                 </Box>
                                 </Box>
                             </Card>

@@ -18,7 +18,7 @@ const defaultState: PasswordCreateValidationState = {
     fields: { password: { isValidating: false, value: "" } }
 }
 
-export const passwordCreateFormValues = (state: PasswordCreateValidationState = defaultState, action: OnboardingActions) => {
+export const secureMnemonicFileFormValues = (state: PasswordCreateValidationState = defaultState, action: OnboardingActions) => {
     switch (action.type) {
         case getType(OnboardingActions.fieldValidated):
             return reduceFieldValidatedAction(action, validationScopes.password, state);

@@ -48,6 +48,7 @@ export const OnboardingActions = {
     mnemonicWarningAccepted: createStandardAction('onboarding/MNEMONIC_WARNING_ACCEPTED')<void>(),
     mnemonicAcquired: createStandardAction('onboarding/MNEMONIC_RECEIVED')<string>(),
     mnemonicSecured: createStandardAction('onboarding/MNEMONIC_SECURED')<void>(),
+    mnemonicFileCreation: createStandardAction('onboarding/MNEMONIC_FILE_CREATION')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

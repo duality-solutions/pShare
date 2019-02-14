@@ -11,6 +11,7 @@ import EnterUserName from "../containers/onboarding/EnterUserName";
 import MnemonicPage from '../containers/onboarding/MnemonicPage';
 import MnemonicWarning from '../containers/onboarding/MnemonicWarning';
 import PasswordCreate from '../containers/onboarding/PasswordCreate';
+import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
 
@@ -32,6 +33,7 @@ const routingTable = {
     passwordCreate: route("/PasswordCreate", PasswordCreate),
     mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
+    secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
     main: route("/Main", Main),
     passwordGet: route("/PasswordGet",PasswordGet)
 };
