@@ -30,9 +30,10 @@ declare module 'electron' {
 
 //defines paths into the store that will be persisted
 const persistencePaths = ['user.syncAgreed', 'user.userName'];
+let mainWindow: BrowserWindow | null
 
 
-const store = configureStore(persistencePaths)
+const store = configureStore(() => mainWindow, persistencePaths)
 store.getState();
 
 //store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
@@ -47,10 +48,12 @@ isDevelopment && (!isSpectron) && app.commandLine.appendSwitch('remote-debugging
 //isSpectron && app.commandLine.appendSwitch('headless')
 isSpectron && app.commandLine.appendSwitch('disable-gpu')
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow: BrowserWindow | null
 
 function createMainWindow() {
   const window = new BrowserWindow({ width: 1024, height: 768 })
+
+
+
 
   const templateUrl =
     isSpectron
