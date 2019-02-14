@@ -3,13 +3,15 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import logo from "../../assets/svgs/logo_without_text.svg";
 import PsharePassphraseSvg from "../../assets/svgs/p-share-pass-phrase.svg";
 import PshareSafeSvg from "../../assets/svgs/p-share-safe.svg";
+import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, LightButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
+import { Divider } from "../ui-elements/Divider";
 import { AppLogo } from '../ui-elements/Image';
-import { H1, H3, Text } from "../ui-elements/Text";
 import LoadingSpinner from "../ui-elements/LoadingSpinner";
+import { H1, H3, Text } from "../ui-elements/Text";
 
 export interface MnemonicPageStateProps {
     mnemonic?: string
@@ -44,7 +46,8 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
                                 <Card width="100%" align="center" padding="1em" border="solid 1px grey" background="#fafafa">
                                     <Text color="grey" align="center" margin="0">{props.mnemonic}</Text>
                                 </Card>
-                                <Box width="100%">
+                                <Box display="flex" direction="row">
+                                <Box width="50%" margin="0 1em 0 0">
                                     <Box display="flex" width="100%" margin="2em 0 0 0">
                                         <img src={PsharePassphraseSvg} width="80px" height="80px" />
                                         <span style={{ color: "#2e77d0", lineHeight: "1.2em", fontSize: "300%" }}>&#8594;</span>
@@ -52,6 +55,18 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
                                     </Box>
                                     <Text align="center">Write or print this phrase and </Text>
                                     <Text margin="0" align="center">keep it somewhere safe.</Text>
+                                </Box>
+                                <Box width="14px" direction="column" alignContents="center">
+                                <Divider />
+                                <Text margin="0">or</Text>
+                                <Divider />
+                                </Box>
+                                <Box width="30%" margin="0 0 0 3em">
+                                    <Box display="flex" width="100%" margin="2em 0 0 2em">
+                                        <img src={PshareSecureFileSvg} width="80px" height="80px" style={{color:"blue"}} />
+                                    </Box>
+                                    <LightButton onClick={(e)=>{e.preventDefault()}}>Create a secure file</LightButton>
+                                </Box>
                                 </Box>
                             </Card>
                         </Box>

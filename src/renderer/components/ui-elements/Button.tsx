@@ -15,6 +15,7 @@ interface ArrowButtonProps {
   type?: string,
   disabled?: boolean
 }
+
 const StyledButton = styled('button') <ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
   justify-content: center;
@@ -30,6 +31,21 @@ const StyledButton = styled('button') <ButtonProps>`
   padding: 0.5em 1em;
   cursor: pointer;
 `
+const LightButton = styled('button')<ButtonProps>`
+  align-self: ${(props) => props.align ? props.align : 'center'};
+  justify-content: center;
+  min-width:218px;
+  min-height: 2em;
+  font-size:1em ;
+  background: white ;
+  border-radius: 3px;
+  border: 2px solid ${(props) => props.theme.blue};
+  color: ${(props) => props.theme.blue};
+  /* margin: 0.5em 1em; */
+  margin: 0 0 0 0;
+  padding: 0.5em 1em;
+  cursor: pointer;
+`
 
 const StyledBackArrowButton = styled('div')`
   display: block;
@@ -37,6 +53,7 @@ const StyledBackArrowButton = styled('div')`
   cursor: pointer;
   float: left;
 `
+
 
 const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onClick }) => (
   <StyledBackArrowButton onClick={() => onClick()}>
@@ -49,7 +66,8 @@ const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick,
   </StyledButton>
 )
 
+
 export default StyledButton
 
-export { ArrowButton, BackArrowButton };
+export { ArrowButton, BackArrowButton, LightButton };
 
