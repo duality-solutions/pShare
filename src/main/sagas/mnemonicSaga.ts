@@ -14,7 +14,6 @@ export function* mnemonicSaga() {
             const hdInfo: HdInfo = await command("dumphdinfo");
             return hdInfo.mnemonic;
         })
-
         yield put(OnboardingActions.mnemonicAcquired(mnemonic))
     })
 }
