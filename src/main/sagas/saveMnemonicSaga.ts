@@ -94,7 +94,7 @@ const saveFile = (path: string, contents: string) => {
 }
 
 function getSavePathSync(window: BrowserWindow) {
-    const homeDir = app.getPath("home");
+    const homeDir = app.getPath("documents");
     var savePath = dialog.showSaveDialog(window, {
         filters: [
             {
