@@ -17,12 +17,12 @@ import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, H3, Text } from "../ui-elements/Text";
 
 export interface SecureMnemonicFileStateProps {
-    password: string
+    mnemonicFilePassword: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
 export interface SecureMnemonicFileDispatchProps {
-    submitPassword: (password: string) => void,
+    mnemonicFilePasswordSubmit: (password: string) => void,
     fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
     resetValidationForField: (validationPayload: NamedValue<void>) => void
 }
@@ -46,24 +46,24 @@ export class SecureMnemonicFile extends Component<SecureMnemonicFileProps, Secur
         else if (name === 'confirmPassword') {
             this.setState(state => ({ ...state, confirmPassword: value }))
         }
-        this.props.resetValidationForField({ scope: validationScopes.password, name: "password" })
+        this.props.resetValidationForField({ scope: validationScopes.mnemonicFilePassword, name: "mnemonicFilePassword" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
             if (this.state.password !== this.state.confirmPassword) {
-                const payload = createValidatedFailurePayload(validationScopes.password, "password", "Passwords do not match", this.state.password);
+                const payload = createValidatedFailurePayload(validationScopes.mnemonicFilePassword, "mnemonicFilePassword", "Passwords do not match", this.state.password);
                 this.props.fieldValidated(payload)
 
             }
             else if (!/.{6,}/.test(this.state.password)) {
-                const payload = createValidatedFailurePayload(validationScopes.password, "password", "Password must be > 6 characters", this.state.password);
+                const payload = createValidatedFailurePayload(validationScopes.mnemonicFilePassword, "mnemonicFilePassword", "Password must be > 6 characters", this.state.password);
                 this.props.fieldValidated(payload)
             }
             else {
-                const payload = createValidatedSuccessPayload(validationScopes.password, "password", this.state.password);
+                const payload = createValidatedSuccessPayload(validationScopes.mnemonicFilePassword, "mnemonicFilePassword", this.state.password);
                 this.props.fieldValidated(payload)
-                this.props.submitPassword(this.state.password)
+                this.props.mnemonicFilePasswordSubmit(this.state.password)
             }
 
         } finally {
@@ -117,7 +117,7 @@ export class SecureMnemonicFile extends Component<SecureMnemonicFileProps, Secur
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
                                 <ArrowButton label="Continue" type="submit" disabled={isValidating}/>
                                 {
-                                    isValidating ?  <LoadingSpinner active label="Encrypting your data ... " size={50}/> : <></>
+                                    isValidating ?  <LoadingSpinner active label="Encrypting your MnemonicFile ... " size={50}/> : <></>
                                 }
                             </Box>
                         </Box>

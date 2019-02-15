@@ -8,24 +8,23 @@ import { validationScopes } from "./validationScopes";
 
 
 interface PasswordCreateValidatedFields extends FieldCollection<Validatable<string>> {
-    password: Validatable<string>
+    mnemonicFilePassword: Validatable<string>
 }
 export type PasswordCreateValidationState = ValidationState<PasswordCreateValidatedFields>
 
 const defaultState: PasswordCreateValidationState = {
-
     isValid: false,
-    fields: { password: { isValidating: false, value: "" } }
+    fields: { mnemonicFilePassword: { isValidating: false, value: "" } }
 }
 
 export const secureMnemonicFileFormValues = (state: PasswordCreateValidationState = defaultState, action: OnboardingActions) => {
     switch (action.type) {
         case getType(OnboardingActions.fieldValidated):
-            return reduceFieldValidatedAction(action, validationScopes.password, state);
+            return reduceFieldValidatedAction(action, validationScopes.mnemonicFilePassword, state);
         case getType(OnboardingActions.validateField):
-            return reduceValidateFieldAction(action, validationScopes.password, state);
+            return reduceValidateFieldAction(action, validationScopes.mnemonicFilePassword, state);
         case getType(OnboardingActions.resetValidationForField):
-            return reduceResetValidationForFieldAction(action, validationScopes.password, state)
+            return reduceResetValidationForFieldAction(action, validationScopes.mnemonicFilePassword, state)
 
 
         default:
