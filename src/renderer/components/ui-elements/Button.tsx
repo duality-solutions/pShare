@@ -50,15 +50,15 @@ const LightButton = styled('button')<ButtonProps>`
 
 const StyledBackArrowButton = styled('div')`
   display: block;
-  margin: 6% 0 0 20%;
+  direction: column;
+  width: 100px;
   cursor: pointer;
-  float: left;
 `
 
 
 const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onClick }) => (
   <StyledBackArrowButton onClick={() => onClick()}>
-    <img src={back_arrow_svg} />
+    <img src={back_arrow_svg} style={{ marginTop: '175%'}} />
   </StyledBackArrowButton>
 )
 const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled, focus }) => (

@@ -91,11 +91,12 @@ export class SecureMnemonicFile extends Component<SecureMnemonicFileProps, Secur
                 transitionEnter={false}
                 transitionLeave={false}>
                 <H1 align="center" colored fontWeight="600">Create Account</H1>
-                <Container height="50vh" margin="10% 0 0 0">
+                <Container height="50vh" margin="10% 5% 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
+                            <Box direction="column" width="800px" align="start" margin="0 auto 0 auto">
+                            <div style={{ display: "flex" }}>
                             <BackArrowButton onClick={() => mnemonicFilePasswordCancelled()} />
-                            <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
                                     <Box display="flex" direction="row" margin="0">
                                         <Box width="120px" margin="0">
@@ -116,8 +117,9 @@ export class SecureMnemonicFile extends Component<SecureMnemonicFileProps, Secur
                                         </Box>
                                     </Box>
                                 </Card>
+                                </div>
                             </Box>
-                            <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
+                            <Box direction="column" width="800px" align="right" margin="0 auto 0 auto">
                                 <ArrowButton label="Continue" type="submit" disabled={isValidating} />
                                 {
                                     isValidating ? <LoadingSpinner active label="Encrypting your MnemonicFile ... " size={50} /> : <></>
