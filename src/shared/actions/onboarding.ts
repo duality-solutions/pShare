@@ -52,7 +52,7 @@ export const OnboardingActions = {
 
     mnemonicFilePasswordSubmit: createStandardAction("onboarding/MNEMONIC_FILE_PASSWORD_SUBMIT")<string>(),
     
-    encryptAndSaveMnemonicWithPassword: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_WITH_PASSWORD')<string>(),
+    // encryptAndSaveMnemonicWithPassword: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_WITH_PASSWORD')<string>(),
     mnemonicFileSaveSuccess: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_SUCCESS')<void>(),
     mnemonicFileSaveFailed: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_FAIL')<string>(),
     mnemonicFileSavePathSelected:createStandardAction('onboarding/MNEMONIC_FILE_SAVE_PATH_SELECTED')<string>(),

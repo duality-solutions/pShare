@@ -1,17 +1,17 @@
-import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
-import { dialog, app, BrowserWindow } from "electron";
-import { takeEvery, select, call, put } from "redux-saga/effects";
+import { app, BrowserWindow, dialog } from "electron";
+import * as fs from 'fs';
+import { call, put, select, takeEvery } from "redux-saga/effects";
+import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
-import { getType, ActionType } from "typesafe-actions";
-import { MainRootState } from "../reducers";
+import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { getEncryptor } from "../../shared/system/encryption/getEncryptor";
-import * as fs from 'fs'
+import { MainRootState } from "../reducers";
 
 export function* saveMnemonicSaga(browserWindowProvider: BrowserWindowProvider) {
 
     yield takeEvery(
-        getType(OnboardingActions.encryptAndSaveMnemonicWithPassword),
-        function* (action: ActionType<typeof OnboardingActions.encryptAndSaveMnemonicWithPassword>) {
+        getType(OnboardingActions.mnemonicFilePasswordSubmit),
+        function* (action: ActionType<typeof OnboardingActions.mnemonicFilePasswordSubmit>) {
             const password = action.payload
             if (password.length == 0) {
                 yield put(OnboardingActions.mnemonicFileSaveFailed("Password too short"))
