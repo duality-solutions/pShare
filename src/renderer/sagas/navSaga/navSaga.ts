@@ -66,7 +66,7 @@ export function* navSaga() {
             navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning),
                 navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
                 navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
-                navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.main),
+                navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage),
                 navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage),
                 navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main, true)
             yield navMap.runNav();
