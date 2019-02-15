@@ -50,29 +50,29 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
                             <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 4em">
                                 <H3>Your Mnemonic Pass Phrase</H3>
                                 <Card width="100%" align="center" padding="1em" border="solid 1px grey" background="#fafafa">
-                                    <Text color="grey" align="center" margin="0">{props.mnemonic}</Text>
+                                    <Text color="grey" align="center" margin="0" notUserSelectable>{props.mnemonic}</Text>
                                 </Card>
                                 <Box display="flex" direction="row">
-                                <Box width="50%" margin="0 1em 0 0">
-                                    <Box display="flex" width="100%" margin="2em 0 0 0">
-                                        <img src={PsharePassphraseSvg} width="80px" height="80px" />
-                                        <span style={{ color: "#2e77d0", lineHeight: "1.2em", fontSize: "300%" }}>&#8594;</span>
-                                        <img src={PshareSafeSvg} width="80px" height="80px" />
+                                    <Box width="50%" margin="0 1em 0 0">
+                                        <Box display="flex" width="100%" margin="2em 0 0 0">
+                                            <img src={PsharePassphraseSvg} width="80px" height="80px" />
+                                            <span style={{ color: "#2e77d0", lineHeight: "1.2em", fontSize: "300%" }}>&#8594;</span>
+                                            <img src={PshareSafeSvg} width="80px" height="80px" />
+                                        </Box>
+                                        <Text align="center">Write or print this phrase and </Text>
+                                        <Text margin="0" align="center">keep it somewhere safe.</Text>
                                     </Box>
-                                    <Text align="center">Write or print this phrase and </Text>
-                                    <Text margin="0" align="center">keep it somewhere safe.</Text>
-                                </Box>
-                                <Box width="14px" direction="column" alignContents="center">
-                                <Divider />
-                                <Text margin="0">or</Text>
-                                <Divider />
-                                </Box>
-                                <Box width="30%" margin="0 0 0 3em">
-                                    <Box display="flex" width="100%" margin="2em 0 0 2em">
-                                        <img src={PshareSecureFileSvg} width="80px" height="80px" style={{color:"blue"}} />
+                                    <Box width="14px" direction="column" alignContents="center">
+                                        <Divider />
+                                        <Text margin="0">or</Text>
+                                        <Divider />
                                     </Box>
-                                    <LightButton onClick={handleFileCreation}>Create a secure file</LightButton>
-                                </Box>
+                                    <Box width="30%" margin="0 0 0 3em">
+                                        <Box display="flex" width="100%" margin="2em 0 0 2em">
+                                            <img src={PshareSecureFileSvg} width="80px" height="80px" style={{ color: "blue" }} />
+                                        </Box>
+                                        <LightButton onClick={handleFileCreation}>Create a secure file</LightButton>
+                                    </Box>
                                 </Box>
                             </Card>
                         </Box>
