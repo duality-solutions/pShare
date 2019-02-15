@@ -4,7 +4,14 @@ export const executeUnlockedCommandAsync = async <T>(walletPassword: string, unl
     const bitcoinClient = await getBitcoinClient();
     const bitcoinCommand: RpcCommandFunc = (rpcCommand, ...args) => bitcoinClient.command(rpcCommand, ...args);
     console.log("unlocking wallet");
-    await bitcoinCommand("walletpassphrase", walletPassword, 600000); //10mins
+    try {
+        await bitcoinCommand("walletpassphrase", walletPassword, 600000); //10mins
+    } catch (err) {
+        if (!(/^Error\: Wallet is already fully unlocked\.$/.test(err.message))) {
+            throw err
+        }
+        console.warn("wallet is already unlocked")
+    }
     console.warn("wallet unlocked");
     try {
         console.log("invoking unlocked action");
@@ -14,7 +21,21 @@ export const executeUnlockedCommandAsync = async <T>(walletPassword: string, unl
     }
     finally {
         console.log("locking wallet");
-        await bitcoinCommand("walletlock");
+        for (let i = 0; ; ++i) {
+            try {
+                await bitcoinCommand("walletlock");
+            } catch (err) {
+                if (/^ETIMEDOUT$/.test(err.message)) {
+                    if (i < 5) {
+                        console.log("timeout waiting for walletlock, trying again")
+                        continue;
+                    }
+
+                }
+                throw err
+            }
+            break;
+        }
         console.warn("wallet locked");
     }
 };
