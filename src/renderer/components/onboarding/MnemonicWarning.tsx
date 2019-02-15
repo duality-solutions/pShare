@@ -42,7 +42,7 @@ export class MnemonicWarning extends Component<MnemonicWarningProps, MnemonicWar
                 transitionLeave={false}>
                 <H1 align="center" colored fontWeight="600">Create Account</H1>
                 <Container height="50vh" margin="10% 0 0 0">
-                    <form onSubmit={this.handleSubmit}>
+                    <form onSubmit={this.handleSubmit} >
                         <Box direction="column" align="center" width="100%">
                             {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
 
@@ -57,7 +57,7 @@ export class MnemonicWarning extends Component<MnemonicWarningProps, MnemonicWar
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit"/>
+                                <ArrowButton focus label="Continue" type="submit"/>
                             </Box>
                         </Box>
                     </form>

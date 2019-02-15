@@ -13,7 +13,8 @@ interface ArrowButtonProps {
   label: string,
   onClick?: () => void,
   type?: string,
-  disabled?: boolean
+  disabled?: boolean,
+  focus?: boolean
 }
 
 const StyledButton = styled('button') <ButtonProps>`
@@ -60,8 +61,8 @@ const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onC
     <img src={back_arrow_svg} />
   </StyledBackArrowButton>
 )
-const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled }) => (
-  <StyledButton onClick={onClick} primary direction="row-reverse" align="flex-end" type={type} disabled={disabled} >
+const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled, focus }) => (
+  <StyledButton autoFocus={focus} onClick={onClick} primary direction="row-reverse" align="flex-end" type={type} disabled={disabled} >
       {label} <span style={{float:"right"}}>&#8594;</span>
   </StyledButton>
 )
