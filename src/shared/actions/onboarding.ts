@@ -51,6 +51,7 @@ export const OnboardingActions = {
     mnemonicFileCreation: createStandardAction('onboarding/MNEMONIC_FILE_CREATION')<void>(),
 
     mnemonicFilePasswordSubmit: createStandardAction("onboarding/MNEMONIC_FILE_PASSWORD_SUBMIT")<string>(),
+    mnemonicFilePasswordCancelled: createStandardAction("onboarding/MNEMONIC_FILE_PASSWORD_CANCELLED")<void>(),
     
     // encryptAndSaveMnemonicWithPassword: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_WITH_PASSWORD')<string>(),
     mnemonicFileSaveSuccess: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_SUCCESS')<void>(),

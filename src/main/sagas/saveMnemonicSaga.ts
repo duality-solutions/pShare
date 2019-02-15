@@ -29,7 +29,7 @@ export function* saveMnemonicSaga(browserWindowProvider: BrowserWindowProvider) 
             }
             var savePath = getSavePathSync(window);
             if (typeof savePath === 'undefined') {
-                yield put(OnboardingActions.mnemonicFileSaveFailed("No save path provided"))
+                yield put(OnboardingActions.mnemonicFilePasswordCancelled())
                 return
             }
             yield put(OnboardingActions.mnemonicFileSavePathSelected(savePath))
