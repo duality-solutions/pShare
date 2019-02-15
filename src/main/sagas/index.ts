@@ -8,6 +8,7 @@ import { setWalletPasswordSaga } from "./setWalletPasswordSaga";
 import { mnemonicSaga } from "./mnemonicSaga";
 import { saveMnemonicSaga } from "./saveMnemonicSaga";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
+import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     loggingSaga,
@@ -18,5 +19,6 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => createBdapAccountSaga(true),
     () => setWalletPasswordSaga(true),
     mnemonicSaga,
-    () => saveMnemonicSaga(browserWindowProvider)
+    () => saveMnemonicSaga(browserWindowProvider),
+    translateMnemonicFileSaveFailedActionsToValidationMessages
 ]
