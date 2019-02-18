@@ -1,4 +1,4 @@
-import { QueuedCommand } from "./QueuedCommand";
+import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 export interface LockedCommandQueueRunner {
-    addQueuedCommand: (walletPassphrase: string, queuedCommand: QueuedCommand) => void;
+    addQueuedCommand: (queuedCommand: QueuedCommandWithPassword) => void;
 }

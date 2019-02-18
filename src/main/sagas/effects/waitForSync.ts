@@ -1,11 +1,11 @@
 import { call } from "redux-saga/effects";
 import { delay } from "redux-saga";
-import { getBitcoinClient } from "../../getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
+import { getRpcClient } from "../../getRpcClient";
+import { RpcClient } from "../../RpcClient";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 export function waitForSync() {
     return call(function* () {
-        const bitcoinClient: BitcoinClient = yield call(() => getBitcoinClient());
+        const bitcoinClient: RpcClient = yield call(() => getRpcClient());
         for (; ;) {
             try {
                 const syncState: SyncState = yield call(() => bitcoinClient.command("syncstatus"));

@@ -1,7 +1,7 @@
 import { call, takeEvery, put } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
-import { getBitcoinClient } from "../getBitcoinClient";
+import { getRpcClient } from "../getRpcClient";
 import { delay } from "../../shared/system/delay";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
@@ -49,7 +49,7 @@ export const waitForBdapAccountCreated = function* (username: string, txid: stri
 }
 
 export const checkBdapAccountCreated = async (username: string, txId: string): Promise<[boolean, GetUserInfo | null]> => {
-    const client = await getBitcoinClient()
+    const client = await getRpcClient()
     let userInfo: GetUserInfo;
     try {
         userInfo = await client.command("getuserinfo", username)
@@ -75,7 +75,7 @@ export const checkBdapAccountCreated = async (username: string, txId: string): P
 }
 
 export const createRawBdapAccount = async (username: string, displayname: string) => {
-    const client = await getBitcoinClient()
+    const client = await getRpcClient()
     const rawHexTx = await client.command("createrawbdapaccount", username, displayname)
     return rawHexTx
 }

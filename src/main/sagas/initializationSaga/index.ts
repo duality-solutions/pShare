@@ -1,6 +1,6 @@
 import { take, call, put, select } from "redux-saga/effects";
-import { getBitcoinClient } from "../../../main/getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
+import { getRpcClient } from "../../getRpcClient";
+import { RpcClient } from "../../RpcClient";
 import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { MainRootState } from "../../reducers";
@@ -40,7 +40,7 @@ export function* initializationSaga() {
     yield put(RootActions.waitingForSync());
     // call getBitcoinClient... it's an async function (returns a Promise) so 
     // in a saga, we await for it as follows
-    const client: BitcoinClient = yield call(getBitcoinClient);
+    const client: RpcClient = yield call(getRpcClient);
     let currentCompletionPercent: number = -1000;
     for (; ;) {
         let syncState: SyncState;

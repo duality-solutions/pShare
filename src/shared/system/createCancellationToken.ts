@@ -4,14 +4,18 @@ interface CancellationTokenMethods {
     register: (callback: (e: any) => void) => void
     createDependentToken: () => CancellationToken
 }
-export interface CancellationToken {
+interface CancellationTokenProps {
     readonly isCancellationRequested: boolean
-    cancel: (e?: Error) => void
-    register: (callback: (e: any) => void) => void
-    createDependentToken: () => CancellationToken
 }
 
-export const createCancellationToken = (parentToken?: CancellationToken) => {
+export type CancellationToken = CancellationTokenMethods & CancellationTokenProps
+
+export function createCancellationToken(timeout: number): CancellationToken;
+export function createCancellationToken(parentToken?: CancellationToken): CancellationToken;
+export function createCancellationToken(parentTokenOrNumber?: CancellationToken | number): CancellationToken {
+    const t = typeof parentTokenOrNumber
+    const parentToken = (t !== 'undefined' && t !== 'number') ? parentTokenOrNumber as CancellationToken : undefined
+    const timeout = (t !== 'undefined' && t === 'number') ? parentTokenOrNumber as number : undefined
     const token = {} as CancellationToken;
     let cancellationRequested = false;
     Object.defineProperty(token, 'isCancellationRequested', {
@@ -32,13 +36,23 @@ export const createCancellationToken = (parentToken?: CancellationToken) => {
             }
         };
     });
-    methods.register = callback => {
-        cancellationPromise.then(v => callback(v));
+    methods.register = async (callback) => {
+        let v: {};
+        try {
+            v = await cancellationPromise;
+        } catch (err) {
+            console.log(err)
+            return
+        } 
+        callback(v)
     };
     methods.createDependentToken = () => createCancellationToken(token);
     if (parentToken) {
         parentToken.register(e => token.cancel(e));
     }
     mergePropertiesAsReadOnly(methods, token);
+    if (timeout) {
+        setTimeout(() => methods.cancel(), timeout)
+    }
     return token;
 };

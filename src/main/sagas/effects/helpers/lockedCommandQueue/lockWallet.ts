@@ -1,4 +1,4 @@
-import { RpcCommandFunc } from "../RpcCommandFunc";
+import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 export async function lockWallet(bitcoinCommand: RpcCommandFunc) {
     console.log("locking wallet");
     for (let i = 0; ; ++i) {
