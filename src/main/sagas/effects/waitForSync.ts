@@ -17,7 +17,7 @@ export function waitForSync(cancellationToken: CancellationToken) {
                     }
                 }
                 catch (err) {
-                    if (/^cancelled$/.test(err.message)) {
+                    if (cancellationToken.isCancellationRequested) {
                         break;
                     }
                     console.warn("error calling syncstatus", err);
@@ -26,7 +26,7 @@ export function waitForSync(cancellationToken: CancellationToken) {
                 }
                 yield delay(1000, cancellationToken);
             } catch (err) {
-                if (/^cancelled$/.test(err.message)) {
+                if (cancellationToken.isCancellationRequested) {
                     break;
                 }
                 else {

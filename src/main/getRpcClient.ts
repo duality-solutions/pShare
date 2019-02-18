@@ -37,7 +37,7 @@ async function createQueuedRpcClient(): Promise<RpcClient> {
             try {
                 qc = await bb.receive(cancellationToken)
             } catch (err) {
-                if (/^cancelled$/.test(err.message)) {
+                if (cancellationToken.isCancellationRequested) {
                     break
                 }
                 else {

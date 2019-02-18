@@ -18,16 +18,7 @@ export function encryptWallet(password: string) {
             if (walletIsEncrypted) {
                 break;
             }
-            try {
-                yield call(() => delay(2000));
-
-            } catch (err) {
-                if (/^cancelled$/.test(err.message)) {
-                    break;
-                } else {
-                    throw err
-                }
-            }
+            yield call(() => delay(2000));
         }
     });
 }

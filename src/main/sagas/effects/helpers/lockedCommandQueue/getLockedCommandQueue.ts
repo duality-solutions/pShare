@@ -23,7 +23,7 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
                 queuedCommand = await commandQueue.receive(cancellationToken)
 
             } catch (err) {
-                if (/^cancelled$/.test(err.message)) {
+                if (cancellationToken.isCancellationRequested) {
                     break;
                 }
                 throw err
@@ -46,10 +46,11 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
                     await runQueuedCommand(rpcCommandFunc, queuedCommand);
                     while (!cancellationToken.isCancellationRequested) {
 
+                        const localCancTok = cancellationToken.createDependentToken(10000);
                         try {
-                            queuedCommand = await commandQueue.receive(cancellationToken.createDependentToken(10000))
+                            queuedCommand = await commandQueue.receive(localCancTok)
                         } catch (err) {
-                            if (/^cancelled$/.test(err.message)) {
+                            if (localCancTok.isCancellationRequested) {
                                 if (cancellationToken.isCancellationRequested) {
                                     console.warn("locked command queue cancelled")
                                 }

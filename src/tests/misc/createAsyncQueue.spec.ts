@@ -29,7 +29,7 @@ test("AsyncQueue cancels", async () => {
             resolved = true;
             return a
         })
-        .catch(e => cancelled = /^cancelled$/.test(e.message))
+        .catch(e => cancelled = ct.isCancellationRequested)
 
 
     await delay(1000)
@@ -55,19 +55,19 @@ test("AsyncQueue cancels 2", async () => {
 
     }
     await delay(1000)
-    const r=await b.receive(createCancellationToken(1))
+    const r = await b.receive(createCancellationToken(1))
     expect(r).toBe(1)
 
 })
 test("AsyncQueue 2", async () => {
     const b = createAsyncQueue<number>()
-    const promises=range(0,100).select(()=>b.receive()).toArray()
+    const promises = range(0, 100).select(() => b.receive()).toArray()
 
     await delay(100)
 
-    range(0,100).forEach(i=>b.post(i))
+    range(0, 100).forEach(i => b.post(i))
 
-    const a=await Promise.all(promises)
-    expect(a).toEqual(range(0,100).toArray())
+    const a = await Promise.all(promises)
+    expect(a).toEqual(range(0, 100).toArray())
 
 })
