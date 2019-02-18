@@ -2,11 +2,11 @@ import { app } from 'electron';
 import { startDynamicd } from './dynamicd/startDynamicd';
 import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
-import { lazy } from '../shared/system/lazy';
 import { RpcClient } from './RpcClient';
 import { createAsyncQueue } from '../shared/system/createAsyncQueue';
 import { QueuedCommand } from './QueuedCommand';
 import { createPromiseResolver } from '../shared/system/createPromiseResolver';
+import { createCancellationToken } from '../shared/system/createCancellationToken';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -17,18 +17,34 @@ interface BitcoinClientOptions {
     password: string
 }
 
-const rpcClientLazy = lazy(() => createQueuedRpcClient())
+let rpcClientPromise: Promise<RpcClient>
 
 export function getRpcClient() {
-    return rpcClientLazy.get()
+    if (typeof rpcClientPromise === 'undefined') {
+        rpcClientPromise = createQueuedRpcClient()
+    }
+    return rpcClientPromise
 }
 
 async function createQueuedRpcClient(): Promise<RpcClient> {
+    const cancellationToken = createCancellationToken()
     const bb = createAsyncQueue<QueuedCommand>();
     const rpcClient = await createRpcClient();
     (async () => {
-        for (; ;) {
-            const { action, promiseResolver: { resolve, reject } } = await bb.receive()
+        while (!cancellationToken.isCancellationRequested) {
+
+            let qc: QueuedCommand;
+            try {
+                qc = await bb.receive(cancellationToken)
+            } catch (err) {
+                if (/^cancelled$/.test(err.message)) {
+                    break
+                }
+                else {
+                    throw err
+                }
+            }
+            const { action, promiseResolver: { resolve, reject } } = qc
             try {
                 resolve(action(rpcClient.command))
             }
@@ -37,13 +53,15 @@ async function createQueuedRpcClient(): Promise<RpcClient> {
             }
 
         }
+        console.log("QueuedRpcClient cancelled")
     })()
     return {
         command: <T>(command: string, ...args: any[]): Promise<T> => {
             const promiseResolver = createPromiseResolver<T>()
             bb.post({ action: cmd => cmd(command, ...args), promiseResolver });
             return promiseResolver.promise
-        }
+        },
+        cancel: () => cancellationToken.cancel()
     }
 }
 
@@ -86,7 +104,8 @@ async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcC
     console.log("rpc call successful. client is ready")
     //client is ready to be used
     return {
-        command: (command: string, ...args: any[]) => client.command(command, ...args)
+        command: (command: string, ...args: any[]) => client.command(command, ...args),
+        cancel: () => { }
     }
 }
 

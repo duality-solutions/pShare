@@ -2,7 +2,7 @@ import { mergePropertiesAsReadOnly } from "./mergePropertiesAsReadOnly";
 interface CancellationTokenMethods {
     cancel: (e?: Error) => void
     register: (callback: (e: any) => void) => void
-    createDependentToken: () => CancellationToken
+    createDependentToken: (timeout?: number) => CancellationToken
 }
 interface CancellationTokenProps {
     readonly isCancellationRequested: boolean
@@ -10,12 +10,8 @@ interface CancellationTokenProps {
 
 export type CancellationToken = CancellationTokenMethods & CancellationTokenProps
 
-export function createCancellationToken(timeout: number): CancellationToken;
-export function createCancellationToken(parentToken?: CancellationToken): CancellationToken;
-export function createCancellationToken(parentTokenOrNumber?: CancellationToken | number): CancellationToken {
-    const t = typeof parentTokenOrNumber
-    const parentToken = (t !== 'undefined' && t !== 'number') ? parentTokenOrNumber as CancellationToken : undefined
-    const timeout = (t !== 'undefined' && t === 'number') ? parentTokenOrNumber as number : undefined
+export function createCancellationToken(timeout?: number, parentToken?: CancellationToken): CancellationToken {
+
     const token = {} as CancellationToken;
     let cancellationRequested = false;
     Object.defineProperty(token, 'isCancellationRequested', {
@@ -43,10 +39,10 @@ export function createCancellationToken(parentTokenOrNumber?: CancellationToken 
         } catch (err) {
             console.log(err)
             return
-        } 
+        }
         callback(v)
     };
-    methods.createDependentToken = () => createCancellationToken(token);
+    methods.createDependentToken = (timeout?: number) => createCancellationToken(timeout, token);
     if (parentToken) {
         parentToken.register(e => token.cancel(e));
     }

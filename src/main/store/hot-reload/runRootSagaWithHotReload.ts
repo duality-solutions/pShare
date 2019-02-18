@@ -1,18 +1,30 @@
-import { SagaMiddleware } from "redux-saga";
+import { SagaMiddleware, Task } from "redux-saga";
 
-import { fork } from "redux-saga/effects";
+import { fork, take, call, put } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
+import { getType } from "typesafe-actions";
+import { AppActions } from "../../../shared/actions/app";
+import { getLockedCommandQueue } from "../../../main/sagas/effects/helpers/lockedCommandQueue/getLockedCommandQueue";
+import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lockedCommandQueue/LockedCommandQueueRunner";
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
 
     const getSagaTask = () => sagaMw.run(function* () {
         const sagas = getRootSaga(browserWindowProvider);
+        const tasks: Task[] = [];
         for (let s of sagas) {
-            yield fork(s)
+            const task: Task = yield fork(s)
+            tasks.push(task)
             console.log("forked")
         }
+        yield take(getType(AppActions.shuttingDown))
+        const r: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue())
+        r.cancel()
+        yield call(() => r.finished)
+
+        yield put(AppActions.shutdown())
     });
     let sagaTask = getSagaTask();
     const isDevelopment = process.env.NODE_ENV === 'development'

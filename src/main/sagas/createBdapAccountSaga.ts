@@ -31,6 +31,7 @@ export function* createBdapAccountSaga(mock: boolean = false) {
         yield put(accountCreatedAction)
 
     })
+
 }
 
 export const waitForBdapAccountCreated = function* (username: string, txid: string) {
@@ -87,6 +88,7 @@ export const activateAccount = async (rawHexTx: string, token: string) => {
 };
 
 function* mockSaga(userName: string) {
+    
     yield call(delay, 10000)
     yield put(userName === "failcreatebdap" ? OnboardingActions.createBdapAccountFailed() : OnboardingActions.bdapAccountCreated(userName))
 }
