@@ -9,10 +9,9 @@ import { mnemonicSaga } from "./mnemonicSaga";
 import { saveMnemonicSaga } from "./saveMnemonicSaga";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
-import { shutdownSaga } from "./shutdownSaga";
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
-    loggingSaga,
+    () => loggingSaga("Main Store"),
     () => initializationSaga(),
     () => storeHydrationSaga(),
     () => validationSaga(),
@@ -21,7 +20,7 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => setWalletPasswordSaga(true),
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
-    translateMnemonicFileSaveFailedActionsToValidationMessages,
-    () => shutdownSaga()
+    () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
+   
 ]
 

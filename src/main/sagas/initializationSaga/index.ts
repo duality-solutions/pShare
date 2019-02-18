@@ -15,9 +15,6 @@ const round0 = round(0)
 
 
 export function* initializationSaga() {
-    const initializeAppAction = getType(RootActions.initializeApp);
-    // wait for "app/INITIALIZE"
-    yield take(initializeAppAction);
     // synchronize renderer state with our state
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
@@ -83,6 +80,8 @@ export function* initializationSaga() {
     yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
 
     yield put(RootActions.syncComplete());
+
+
 
 }
 

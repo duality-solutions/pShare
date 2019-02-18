@@ -94,11 +94,7 @@ function createMainWindow() {
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
   store.dispatch(AppActions.shuttingDown())
-  
-  // // on macOS it is common for applications to stay open until the user explicitly quits
-  // if (process.platform !== 'darwin'&&false) {
-  //   app.quit()
-  // }
+  // app.quit happens in runRootSagaWithHotReload
 })
 
 

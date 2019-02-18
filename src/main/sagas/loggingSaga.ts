@@ -1,9 +1,5 @@
-import { AnyAction } from "redux";
-import { take } from "redux-saga/effects";
-export function* loggingSaga() {
-    console.log("starting saga");
-    for (; ;) {
-        const action: AnyAction = yield take("*");
-        console.log("saga action : ", action);
-    }
+import { takeEvery } from "redux-saga/effects";
+export function* loggingSaga(tag: string) {
+    yield takeEvery("*", (action: any) => console.log(`${tag} action : `, action))
+
 }
