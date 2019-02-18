@@ -16,34 +16,25 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         yield take(getType(AppActions.initializeApp))
         for (; ;) {
             const sagas = getRootSaga(browserWindowProvider);
-            const tasks: Task[] = [];
-            for (let s of sagas) {
-                const task: Task = yield fork(s)
-                tasks.push(task)
-                console.log("forked")
-            }
-            const { initializing } = yield race({ shutdown: take(getType(AppActions.shuttingDown)), initializing: take(getType(AppActions.initializeApp)) })
+            const rootSagaTask: Task = yield fork(function* () {
+                console.log("forking root sagas")
+                for (let s of sagas) {
+                    yield fork(s)
+                }
+            })
+
+            const { initializing } = yield race({
+                shutdown: take(getType(AppActions.shuttingDown)),
+                initializing: take(getType(AppActions.initializeApp))
+            })
 
             if (initializing) {
-                for (let t of tasks) {
-                    yield cancel(t)
-                }
-                const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue())
-                lockedCommandQueueRunner.cancel()
-                yield call(() => lockedCommandQueueRunner.finished)
-                yield call(() => lockedCommandQueueRunner.restart())
+                yield* coordinateRestart(rootSagaTask);
                 continue
 
             }
             else {
-                yield take(getType(AppActions.shuttingDown))
-                const r: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue())
-                r.cancel()
-                yield call(() => r.finished)
-                for (let t of tasks) {
-                    yield cancel(t)
-                }
-                app.quit()
+                yield* coordinateShutdown(rootSagaTask);
                 return;
             }
         }
@@ -63,3 +54,22 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         });
     }
 }
+function* coordinateRestart(rootSagaTask: Task) {
+    console.warn("re-initializing. killing root sagas");
+    yield cancel(rootSagaTask);
+    console.warn("shutting down lockedCommandQueueRunner");
+    const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
+    lockedCommandQueueRunner.cancel();
+    yield call(() => lockedCommandQueueRunner.finished);
+    console.warn("lockedCommandQueueRunner finished. restarting");
+    yield call(() => lockedCommandQueueRunner.restart());
+}
+
+function* coordinateShutdown(rootSagaTask: Task) {
+    const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
+    lockedCommandQueueRunner.cancel();
+    yield call(() => lockedCommandQueueRunner.finished);
+    yield cancel(rootSagaTask);
+    app.quit();
+}
+
