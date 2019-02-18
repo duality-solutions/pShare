@@ -29,12 +29,12 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
             })
 
             if (initializing) {
-                yield* coordinateRestart(rootSagaTask);
+                yield* orchestrateRestart(rootSagaTask);
                 continue
 
             }
             else {
-                yield* coordinateShutdown(rootSagaTask);
+                yield* orchestrateShutdown(rootSagaTask);
                 return;
             }
         }
@@ -54,7 +54,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         });
     }
 }
-function* coordinateRestart(rootSagaTask: Task) {
+function* orchestrateRestart(rootSagaTask: Task) {
     console.warn("re-initializing. killing root sagas");
     yield cancel(rootSagaTask);
     console.warn("shutting down lockedCommandQueueRunner");
@@ -65,7 +65,7 @@ function* coordinateRestart(rootSagaTask: Task) {
     yield call(() => lockedCommandQueueRunner.restart());
 }
 
-function* coordinateShutdown(rootSagaTask: Task) {
+function* orchestrateShutdown(rootSagaTask: Task) {
     const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
     lockedCommandQueueRunner.cancel();
     yield call(() => lockedCommandQueueRunner.finished);
