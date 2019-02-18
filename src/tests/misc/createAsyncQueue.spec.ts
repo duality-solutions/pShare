@@ -31,7 +31,6 @@ test("AsyncQueue cancels", async () => {
         })
         .catch(e => cancelled = /^cancelled$/.test(e.message))
 
-    console.log("test waiting")
 
     await delay(1000)
     expect(resolved).not.toBeTruthy()

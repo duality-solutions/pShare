@@ -28,7 +28,6 @@ test("getEncryptor wrapper", () => {
     try {
         badEncryptor.decryptObject<A>(encryptedObj)
     } catch (err) {
-        console.log(err.toString())
         expect(isCorruptError(err)).toBeTruthy()
     }
     expect(isCorruptError({})).not.toBeTruthy()
