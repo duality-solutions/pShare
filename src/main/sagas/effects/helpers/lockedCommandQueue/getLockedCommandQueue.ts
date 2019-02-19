@@ -8,9 +8,9 @@ import { createAsyncQueue } from "../../../../../shared/system/createAsyncQueue"
 import { createCancellationToken } from "../../../../../shared/system/createCancellationToken";
 import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
-import { getObjectId } from "../../../../../shared/system/getObjectId";
 
 const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
+    console.log("creating LockedCommandQueueRunner")
     let queueControls = await getQueueControls()
     return {
         addQueuedCommand: (queuedCommand: QueuedCommandWithPassword) => {
@@ -20,12 +20,10 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
         cancel: () => queueControls.cancellationToken.cancel(),
         get finished() { return queueControls.finishedResolver.promise },
         restart: async () => {
-            console.log("promise object id at restart : " + getObjectId(queueControls.finishedResolver.promise))
-
             if (!queueControls.finishedResolver.complete) {
                 throw Error("cannot restart unless cancelled first")
             }
-            //console.log("getting new queueControls")
+            console.log("LockedCommandQueueRunner restart")
             queueControls = await getQueueControls()
         }
 

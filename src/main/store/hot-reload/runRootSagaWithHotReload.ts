@@ -9,7 +9,6 @@ import { AppActions } from "../../../shared/actions/app";
 import { getLockedCommandQueue } from "../../../main/sagas/effects/helpers/lockedCommandQueue/getLockedCommandQueue";
 import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lockedCommandQueue/LockedCommandQueueRunner";
 import { app } from "electron";
-import { getObjectId } from "../../../shared/system/getObjectId";
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
 
@@ -71,8 +70,7 @@ function* orchestrateRestart(rootSagaTask: Task) {
 function* orchestrateShutdown(rootSagaTask: Task) {
     console.log("orchestrating shutdown")
     yield cancelEverything(rootSagaTask);
-    console.log("quitting")
-
+    console.log("quitting application")
     app.quit();
 }
 function* orchestrateSleep(rootSagaTask: Task) {
@@ -80,21 +78,25 @@ function* orchestrateSleep(rootSagaTask: Task) {
     const restartable: Restartable = yield cancelEverything(rootSagaTask);
     yield take(getType(AppActions.initializeApp))
     yield call(() => restartable.restart());
-    console.log("restarting")
-
 }
 interface Restartable {
     restart: () => Promise<void>
 }
 function cancelEverything(rootSagaTask: Task) {
     return call(function* () {
+        console.warn("cancelling all sagas")
         yield cancel(rootSagaTask);
+        console.warn("cancelling LockedCommandQueueRunner")
         const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
         lockedCommandQueueRunner.cancel();
-        console.log("promise object id at cancelEverything : "+getObjectId(lockedCommandQueueRunner.finished))
         yield call(() => lockedCommandQueueRunner.finished);
+        console.warn("LockedCommandQueueRunner fully stopped")
+
         const restartable: Restartable = {
-            restart: () => lockedCommandQueueRunner.restart()
+            restart: () => {
+                console.warn("LockedCommandQueueRunner restarting")
+                return lockedCommandQueueRunner.restart()
+            }
         };
         console.log("everything cancelled")
         return restartable;
