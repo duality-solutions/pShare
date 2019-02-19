@@ -1,6 +1,6 @@
 import { SagaMiddleware, Task } from "redux-saga";
 
-import { fork, take, call, cancel, race } from "redux-saga/effects";
+import { fork, take, call, cancel, race, put } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
@@ -9,6 +9,8 @@ import { AppActions } from "../../../shared/actions/app";
 import { getLockedCommandQueue } from "../../../main/sagas/effects/helpers/lockedCommandQueue/getLockedCommandQueue";
 import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lockedCommandQueue/LockedCommandQueueRunner";
 import { app } from "electron";
+import { RpcClient } from "../../../main/RpcClient";
+import { getRpcClient } from "../../../main/getRpcClient";
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
 
@@ -71,6 +73,8 @@ function* orchestrateShutdown(rootSagaTask: Task) {
     console.log("orchestrating shutdown")
     yield cancelEverything(rootSagaTask);
     console.log("quitting application")
+    const client: RpcClient = yield call(getRpcClient);
+    client.dispose()
     app.quit();
 }
 function* orchestrateSleep(rootSagaTask: Task) {

@@ -29,7 +29,7 @@ export function getRpcClient() {
 async function createQueuedRpcClient(): Promise<RpcClient> {
     const cancellationToken = createCancellationToken()
     const bb = createAsyncQueue<QueuedCommand>();
-    const rpcClient = await createRpcClient();
+    const { client: rpcClient, quitFunc } = await createRpcClient();
     (async () => {
         while (!cancellationToken.isCancellationRequested) {
 
@@ -61,24 +61,25 @@ async function createQueuedRpcClient(): Promise<RpcClient> {
             bb.post({ action: cmd => cmd(command, ...args), promiseResolver });
             return promiseResolver.promise
         },
-        cancel: () => cancellationToken.cancel()
+        //cancel: () => cancellationToken.cancel(),
+        dispose: quitFunc
     }
 }
 
-async function createRpcClient(): Promise<RpcClient> {
+async function createRpcClient(): Promise<{ client: RpcClient, quitFunc: () => void }> {
     const processInfo = await startDynamicd();
-    app.on('before-quit', async () => {
+    const quitFunc = () => {
         //console.log("before quit");
         processInfo.dispose();
         console.log("dynamicd processInfo disposed");
-    });
+    }
     const client = await createBitcoinCoreClient({
         host: "localhost",
         port: "33650",
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword
     });
-    return client
+    return { client, quitFunc }
 }
 async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcClient> {
     const client = new BitcoinClient(opts);
@@ -105,7 +106,8 @@ async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcC
     //client is ready to be used
     return {
         command: (command: string, ...args: any[]) => client.command(command, ...args),
-        cancel: () => { }
+        //cancel: () => { },
+        dispose: () => { }
     }
 }
 
