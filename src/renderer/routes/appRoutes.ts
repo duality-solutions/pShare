@@ -1,7 +1,6 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import { Main } from "../components/Main";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";
@@ -14,6 +13,7 @@ import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
+import { MyList } from '../containers/main/MyList';
 
 export interface RouteInfo {
     path: string;
@@ -34,7 +34,7 @@ const routingTable = {
     mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
-    main: route("/Main", Main),
+    myList: route("/MyList", MyList),
     passwordGet: route("/PasswordGet",PasswordGet)
 };
 

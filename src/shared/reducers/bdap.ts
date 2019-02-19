@@ -1,11 +1,11 @@
 import { BdapActions } from "../actions/bdap";
 import { getRandomNames } from "../system/mockData/getRandomName";
 
-interface BdapState {
+export interface BdapState {
     users: BdapUser[]
 }
 type BdapUserState = "normal" | "linked" //mock states fttb
-interface BdapUser {
+export interface BdapUser {
     userName: string
     commonName: string
     state: BdapUserState
