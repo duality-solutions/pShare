@@ -18,12 +18,12 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
 
         },
         cancel: () => queueControls.cancellationToken.cancel(),
-        finished: queueControls.finishedResolver.promise,
+        get finished() { return queueControls.finishedResolver.promise },
         restart: async () => {
-            console.log("promise object id at restart : "+getObjectId(queueControls.finishedResolver.promise))
+            console.log("promise object id at restart : " + getObjectId(queueControls.finishedResolver.promise))
 
             if (!queueControls.finishedResolver.complete) {
-                return
+                throw Error("cannot restart unless cancelled first")
             }
             //console.log("getting new queueControls")
             queueControls = await getQueueControls()
