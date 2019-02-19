@@ -3,10 +3,14 @@ import { MyListStateProps, MyListDispatchProps, MyList as MyList_ } from "../../
 import { MapPropsToDispatchObj } from "../../../renderer/system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
+import { createSelector } from 'reselect'
+
+
+const getUserList = createSelector((state: RendererRootState) => state.bdap.users, u => u.filter(u => u.state !== "linked"))
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyListStateProps => {
     return {
-        users : state.bdap.users
+        users: getUserList(state)
     };
 };
 
