@@ -93,8 +93,9 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-  store.dispatch(AppActions.shuttingDown())
-  // app.quit happens in runRootSagaWithHotReload
+
+  store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+
 })
 
 

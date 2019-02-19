@@ -6,6 +6,9 @@ export const AppActions = {
     appInitialized: createStandardAction('app/INITIALIZED')<void>(),
     shuttingDown: createStandardAction('app/SHUTTING_DOWN')<void>(),
     shutdown: createStandardAction('app/SHUTDOWN')<void>(),
+
+    sleep:createStandardAction('app/SLEEP')<void>(),
+    wake:createStandardAction('app/WAKE')<void>(),
     
 }
 

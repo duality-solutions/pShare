@@ -9,6 +9,7 @@ import { AppActions } from "../../../shared/actions/app";
 import { getLockedCommandQueue } from "../../../main/sagas/effects/helpers/lockedCommandQueue/getLockedCommandQueue";
 import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lockedCommandQueue/LockedCommandQueueRunner";
 import { app } from "electron";
+import { getObjectId } from "../../../shared/system/getObjectId";
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
 
@@ -23,9 +24,10 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
                 }
             })
 
-            const { initializing } = yield race({
+            const { initializing, shutdown } = yield race({
                 shutdown: take(getType(AppActions.shuttingDown)),
-                initializing: take(getType(AppActions.initializeApp))
+                initializing: take(getType(AppActions.initializeApp)),
+                sleep: take(getType(AppActions.sleep)),
             })
 
             if (initializing) {
@@ -33,9 +35,13 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
                 continue
 
             }
-            else {
+            else if (shutdown) {
                 yield* orchestrateShutdown(rootSagaTask);
                 return;
+            }
+            else {
+                yield* orchestrateSleep(rootSagaTask);
+                continue
             }
         }
 
@@ -55,21 +61,44 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
     }
 }
 function* orchestrateRestart(rootSagaTask: Task) {
-    console.warn("re-initializing. killing root sagas");
-    yield cancel(rootSagaTask);
-    console.warn("shutting down lockedCommandQueueRunner");
-    const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
-    lockedCommandQueueRunner.cancel();
-    yield call(() => lockedCommandQueueRunner.finished);
-    console.warn("lockedCommandQueueRunner finished. restarting");
-    yield call(() => lockedCommandQueueRunner.restart());
+    console.log("orchestrating restart")
+    const restartable: Restartable = yield cancelEverything(rootSagaTask);
+    yield call(() => restartable.restart());
+    console.log("restarting")
+
 }
 
 function* orchestrateShutdown(rootSagaTask: Task) {
-    const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
-    lockedCommandQueueRunner.cancel();
-    yield call(() => lockedCommandQueueRunner.finished);
-    yield cancel(rootSagaTask);
+    console.log("orchestrating shutdown")
+    yield cancelEverything(rootSagaTask);
+    console.log("quitting")
+
     app.quit();
 }
+function* orchestrateSleep(rootSagaTask: Task) {
+    console.log("orchestrating shutdown")
+    const restartable: Restartable = yield cancelEverything(rootSagaTask);
+    yield take(getType(AppActions.initializeApp))
+    yield call(() => restartable.restart());
+    console.log("restarting")
+
+}
+interface Restartable {
+    restart: () => Promise<void>
+}
+function cancelEverything(rootSagaTask: Task) {
+    return call(function* () {
+        yield cancel(rootSagaTask);
+        const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
+        lockedCommandQueueRunner.cancel();
+        console.log("promise object id at cancelEverything : "+getObjectId(lockedCommandQueueRunner.finished))
+        yield call(() => lockedCommandQueueRunner.finished);
+        const restartable: Restartable = {
+            restart: () => lockedCommandQueueRunner.restart()
+        };
+        console.log("everything cancelled")
+        return restartable;
+    })
+}
+
 

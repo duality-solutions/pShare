@@ -8,6 +8,7 @@ import { createAsyncQueue } from "../../../../../shared/system/createAsyncQueue"
 import { createCancellationToken } from "../../../../../shared/system/createCancellationToken";
 import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
+import { getObjectId } from "../../../../../shared/system/getObjectId";
 
 const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
     let queueControls = await getQueueControls()
@@ -19,9 +20,12 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
         cancel: () => queueControls.cancellationToken.cancel(),
         finished: queueControls.finishedResolver.promise,
         restart: async () => {
+            console.log("promise object id at restart : "+getObjectId(queueControls.finishedResolver.promise))
+
             if (!queueControls.finishedResolver.complete) {
                 return
             }
+            //console.log("getting new queueControls")
             queueControls = await getQueueControls()
         }
 
@@ -38,6 +42,7 @@ export const getLockedCommandQueue = async () => {
     return await queueRunnerProm;
 }
 async function getQueueControls() {
+    console.log("getting queue controls")
     const cancellationToken = createCancellationToken();
     const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
     const rpcClient = await getRpcClient();
