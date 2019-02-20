@@ -14,7 +14,7 @@ export default
             <Sidebar />
         </SidebarContainer>
         <MainContentContainer>
-            <Container margin="5em 10em 0 20em" height="80vh" minWidth="50%">
+            <Container margin="8em 10em 5em 20em" height="100%" minWidth="50%">
             <MyLinks />
          {/* <Switch>
              {(Object.keys(dashboardRoutes) as Array<keyof typeof dashboardRoutes>)

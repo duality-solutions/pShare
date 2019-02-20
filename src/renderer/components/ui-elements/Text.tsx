@@ -16,7 +16,9 @@ interface ParaProps {
     colored?: boolean,
     theme?: { blue: string }
     fontSize?: string,
-    notUserSelectable?: boolean
+    notUserSelectable?: boolean,
+    fontWeight?: string,
+    disabled?: boolean,
 }
 
 const StyledHeader = styled('h1') <H1Props>`
@@ -50,6 +52,8 @@ const StyledText = styled('p') <ParaProps>`
     margin: ${ props => props.margin ? props.margin : "1em 0 0 0"};    
     line-height: 1.4em;
     font-size: ${props => props.fontSize};
+    font-weight: ${props => props.fontWeight || 'normal'};
+    opacity: ${props => props.disabled ? 0.4 : 1};
     color: ${ props => {
         if (props.colored) return props.theme.blue;
         else if (props.color) return props.color

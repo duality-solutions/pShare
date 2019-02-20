@@ -7,18 +7,19 @@ const StyledDashboardContainer = styled('div')`
     box-sizing: border-box;
     padding: 0;
     margin: 0;
+    overflow:hidden;
 `;
 
 const SidebarContainer = styled('div')`
     display: flex;
-    height:100%;
-    width: 80px;
+    height:100vh;
+    width: 64px;
     direction: column;
-    min-width: 80px;
+    min-width: 64px;
     background: #fafafa;
-    border-right: solid 0.1px #D3D3D3;
+    border-right: solid 0.1px #d2d2d2;
     max-height:100vh;
-`;
+    `;
 
 const MainContentContainer = styled('div')`
     display: flex;
@@ -26,6 +27,7 @@ const MainContentContainer = styled('div')`
     width: 100%;
     direction: column;
     background: white;
+    overflow-y: auto;
     `;
 
 const SidebarList = styled('ul')`
@@ -39,10 +41,15 @@ const SidebarList = styled('ul')`
 `;
 
 
-const SidedbarListItem = styled('li')`
-    padding: 0.5em 0.5em;
-    cursor: pointer;
-    border-bottom: solid 0.1px #D3D3D3;
+const SidedbarListItem = styled('li')<{disabled?: boolean}>`
+    display: flex;
+    flex-direction: column;
+    justify-content:center;
+    cursor: ${props => props.disabled ? 'default' : 'pointer'};
+    height: 64px;
+    max-height: 64px;
+    border-bottom: solid 0.1px #d2d2d2;
+    opacity: ${props => props.disabled ? 0.4 : 1};
 `;
 
 const UserList = styled('ul')`
@@ -55,13 +62,14 @@ const UserList = styled('ul')`
     -webkit-padding-start: 0px;
 `;
 
-const UserListItem = styled('li')`
+const UserListItem = styled('li')<{disabled?: boolean}>`
     display: flex;
     direction: row;
     justify-content: space-between;
-    padding: 1em;
+    padding: 1em 0 1em 0;
     border-bottom: solid 0.1px grey;
-`;
+    opacity: ${props => props.disabled ? 0.4 : 1};
+    `;
 
 export {
     StyledDashboardContainer as DashboardContainer,
