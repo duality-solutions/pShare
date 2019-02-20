@@ -11,9 +11,14 @@ import { app, BrowserWindow, Menu, shell } from 'electron'
 import * as path from 'path'
 import { format as formatUrl } from 'url'
 import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devtools-installer';
-import installExtensionsAsync from './installExtensionsAsync';
+import { installExtensionsAsync } from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
+import { AppActions } from '../shared/actions/app';
+//import OnboardingActions from '../shared/actions/onboarding';
+
+//import { v4 as uuid } from 'uuid';
+
 
 declare module 'electron' {
   interface BrowserWindow {
@@ -25,11 +30,15 @@ declare module 'electron' {
 }
 
 //defines paths into the store that will be persisted
-const persistencePaths = ['user'];
+const persistencePaths = ['user.syncAgreed', 'user.userName'];
+let mainWindow: BrowserWindow | null
 
-const store = configureStore(persistencePaths)
+
+
+const store = configureStore(() => mainWindow, persistencePaths)
 store.getState();
 
+//store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
 
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
@@ -41,10 +50,12 @@ isDevelopment && (!isSpectron) && app.commandLine.appendSwitch('remote-debugging
 //isSpectron && app.commandLine.appendSwitch('headless')
 isSpectron && app.commandLine.appendSwitch('disable-gpu')
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
-let mainWindow: BrowserWindow | null
 
 function createMainWindow() {
-  const window = new BrowserWindow()
+  const window = new BrowserWindow({ width: 1024, height: 768 })
+
+
+
 
   const templateUrl =
     isSpectron
@@ -82,10 +93,9 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-  // on macOS it is common for applications to stay open until the user explicitly quits
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+
+  store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+
 })
 
 

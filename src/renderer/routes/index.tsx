@@ -1,23 +1,23 @@
 import * as React from "react";
-import { Route, Switch } from 'react-router'
-import Sync from "../containers/Sync";
-import { Main } from "../components/Main";
-import SyncAgree from "../containers/SyncAgree";
+import { Route, Switch } from 'react-router';
 import { ThemeProvider } from "styled-components";
 import GlobalStyle from "../components/ui-elements/GlobalStyle";
+import { appRoutes } from "./appRoutes";
 
 const appTheme = {
-    blue : '#2e77d0'
+    blue: '#2e77d0'
 }
+
 
 export default
     <>
-    <GlobalStyle />
-    <ThemeProvider theme={appTheme}>
-    <Switch>
-        <Route exact path="/Sync" component={Sync} />
-        <Route exact path="/SyncAgree" component={SyncAgree} />
-        <Route exact path="/Main" component={Main} />
-    </Switch>
-    </ThemeProvider>
+        <GlobalStyle />
+        <ThemeProvider theme={appTheme}>
+            <Switch>
+                {(Object.keys(appRoutes) as Array<keyof typeof appRoutes>)
+                    .map((key, idx) =>
+                        <Route key={idx} exact path={appRoutes[key].path} component={appRoutes[key].component} />
+                    )}
+            </Switch>
+        </ThemeProvider>
     </>

@@ -5,13 +5,16 @@ import { Provider } from 'react-redux';
 import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
-import RootActions from '../shared/actions';
+import { RootActions } from '../shared/actions';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
 const store = configureStore(history)
 //store.subscribe(() => console.log("renderer store changed : ", store.getState()))
 store.dispatch(RootActions.initializeApp())
+
+
+
 
 let render = () => ReactDOM.render(
     <Provider store={store}>
@@ -21,7 +24,8 @@ let render = () => ReactDOM.render(
     </Provider>,
     rootEl);
 
-if (!process.env.NODE_ENV && module.hot) {
+const isDevelopment = process.env.NODE_ENV === 'development'
+if (isDevelopment && module.hot) {
     module.hot.accept("./components/App", () => {
         console.info("hot-reloading react components")
         render();

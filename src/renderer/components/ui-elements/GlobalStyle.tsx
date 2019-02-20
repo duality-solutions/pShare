@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components'
+import { createGlobalStyle } from 'styled-components';
 
  const GlobalStyle = createGlobalStyle`
   body {
@@ -6,8 +6,9 @@ import { createGlobalStyle } from 'styled-components'
     @import url('https://fonts.googleapis.com/css?family=Open+Sans');
     font-family: 'Open Sans', sans-serif;
     background: white;
-    opacity:0.8;
+    opacity:0.9;
   }
+  
   .fadeContainerIn-appear {
     opacity: 0.01;
   }

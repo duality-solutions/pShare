@@ -1,5 +1,6 @@
 import { Application } from "spectron";
 import * as path from "path"
+import { delay } from "../../shared/system/delay";
 describe("first test", function () {
     jest.setTimeout(10000);
     let app: Application;
@@ -34,7 +35,6 @@ describe("first test", function () {
         await app.client.click('#increment-if-odd-button')
         const newOddNotYetIncrementedValStr = await app.client.getText('#counter-count')
         expect(parseInt(newOddNotYetIncrementedValStr)).toBe(newOddVal)
-        const delay = (t: number) => new Promise(r => setTimeout(r, t))
         await delay(1500)
         const newOddIncrementedValStr = await app.client.getText('#counter-count')
         expect(parseInt(newOddIncrementedValStr)).toBe(newOddVal + 2)

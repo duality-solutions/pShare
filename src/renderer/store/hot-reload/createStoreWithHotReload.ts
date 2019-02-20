@@ -2,9 +2,10 @@ import { Middleware, Action, createStore, applyMiddleware, ActionCreator, Reduce
 import { getRootReducer, RendererRootState } from "../../reducers";
 import { composeEnhancers } from "../../system/reduxDevToolsCompose";
 import { History } from "history";
-import StoreActions from '../../../shared/actions/store'
-import RootActions from "../../../shared/actions";
+import { StoreActions } from '../../../shared/actions/store'
+import { RootActions } from "../../../shared/actions";
 import { mergePersistedState } from 'redux-localstorage';
+import { deepMerge } from "../../../shared/system/deepMerge";
 
 declare global {
     interface Window {
@@ -17,7 +18,9 @@ export function createStoreWithHotReload(history: History<any>, middlewares: Mid
     const rootReducer = getPersistingReducer(history);
     const enhancers = composeEnhancers(applyMiddleware(...middlewares));
     const store = createStore(rootReducer, enhancers);
-    if (!process.env.NODE_ENV && module.hot) {
+
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    if (isDevelopment && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
             store.replaceReducer(getPersistingReducer(history));
@@ -30,6 +33,6 @@ export function createStoreWithHotReload(history: History<any>, middlewares: Mid
 
 function getPersistingReducer(history: History<any>) {
     const rootReducer = getRootReducer(history);
-    const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    const reducer: Reducer<RendererRootState, RootActions> = compose(mergePersistedState(deepMerge))(rootReducer);
     return reducer;
 }

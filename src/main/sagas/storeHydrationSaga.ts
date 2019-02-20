@@ -1,17 +1,15 @@
-import { put, take, select } from 'redux-saga/effects'
+import { put, select, takeEvery } from 'redux-saga/effects'
 import { actionTypes } from 'redux-localstorage'
 import { getType } from 'typesafe-actions';
-import RootActions from '../../shared/actions'
+import { RootActions } from '../../shared/actions'
 
-export default function* () {
-    const hydrateAction = getType(RootActions.hydratePersistedData)
+export function* storeHydrationSaga() {
 
-    for (; ;) {
 
-        yield take(hydrateAction);
+    yield takeEvery(getType(RootActions.hydratePersistedData), function* () {
         const state = yield select();
         yield put({ type: actionTypes.INIT, payload: state })
         yield put(RootActions.appInitialized())
+    })
 
-    }
 }

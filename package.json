@@ -1,6 +1,6 @@
 {
   "name": "pshare",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Secure and private peer to peer file sharing",
   "license": "UNLICENSED",
   "author": {
@@ -34,7 +34,7 @@
   "dependencies": {
     "@types/react-transition-group": "1.x",
     "bitcoin-core": "^2.0.0",
-    "blinq": "^2.0.0",
+    "blinq": "^2.0.2",
     "connected-react-router": "^5.0.1",
     "devtron": "^1.4.0",
     "electron-devtools-installer": "^2.2.4",
@@ -57,12 +57,16 @@
     "redux-observable": "^1.0.0",
     "redux-saga": "^0.16.2",
     "rxjs": "^6.3.3",
+    "sjcl-local": "file:./src/sjcl",
     "source-map-support": "^0.5.9",
     "styled-components": "^4.1.3",
+    "styled-components-ts": "^0.0.15",
     "symbol-observable": "^1.2.0",
     "tslib": "^1.9.3",
     "typesafe-actions": "^2.0.4",
-    "typescript": "^3.2.4"
+    "typescript": "^3.2.4",
+    "typescript-collections": "^1.3.2",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
@@ -80,12 +84,14 @@
     "@types/react-router": "^4.4.1",
     "@types/react-router-dom": "^4.3.1",
     "@types/styled-components": "^4.1.6",
+    "@types/uuid": "^3.4.4",
     "@types/webdriverio": "^4.13.0",
     "electron": "3.0.10",
     "electron-builder": "^20.36.2",
     "electron-webpack": "^2.6.1",
     "electron-webpack-ts": "^3.1.0",
     "jest": "^23.6.0",
+    "redux-saga-test-plan": "^3.7.0",
     "spectron": "^5.0.0",
     "ts-jest": "^23.10.5",
     "tslint": "^5.11.0",

@@ -1,17 +1,10 @@
-import { Middleware, Action, createStore, compose, applyMiddleware, ActionCreator, Reducer } from "redux";
+import { Middleware, Action, createStore, compose, applyMiddleware, Reducer } from "redux";
 import { getRootReducer, MainRootState } from "../../reducers";
-import StoreActions from '../../../shared/actions/store'
-import createReduxLocalStorageAdapter from '../../../shared/system/createReduxLocalStorageAdapter'
+import { createReduxLocalStorageAdapter } from '../../../shared/system/createReduxLocalStorageAdapter'
 import persistState, { mergePersistedState } from 'redux-localstorage';
-import RootActions from "../../../shared/actions";
+import { RootActions } from "../../../shared/actions";
 import filter from 'redux-localstorage-filter';
-
-declare global {
-    interface Window {
-        resetStore: ActionCreator<StoreActions>
-    }
-}
-
+import { deepMerge } from "../../../shared/system/deepMerge";
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
@@ -20,7 +13,8 @@ export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[],
     const enhancers = compose(applyMiddleware(...middlewares), persistenceEnhancer)
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
     const store = createStore(reducer, enhancers);
-    if (!process.env.NODE_ENV && module.hot) {
+    const isDevelopment = process.env.NODE_ENV === 'development'
+    if (isDevelopment && module.hot) {
         module.hot.accept("../../reducers", () => {
             console.info("hot-reloading reducers");
             const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();
@@ -40,6 +34,6 @@ function getPersistenceEnhancer(persistencePaths: string[] | undefined, persiste
 
 function getPersistingReducer() {
     const rootReducer = getRootReducer();
-    const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState())(rootReducer);
+    const reducer: Reducer<MainRootState, RootActions> = compose(mergePersistedState(deepMerge))(rootReducer);
     return reducer;
 }

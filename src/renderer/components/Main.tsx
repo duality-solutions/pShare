@@ -1,24 +1,6 @@
 import React from "react";
-import Box from "./ui-elements/Box";
-import { H1 } from "./ui-elements/Text";
-import { AppLogo }from './ui-elements/Image';
-import logo from "../assets/logowt.svg";
-import { CSSTransitionGroup } from 'react-transition-group';
 
-export const Main:React.FunctionComponent = ()=>
+export const Main: React.FunctionComponent = () =>
     <>
-    <Box width="100%" margin="2em 0 -1.5em 0" align="center">
-        <AppLogo src={logo} width="100px" height="120px" />
-    </Box>
-
-    <CSSTransitionGroup
-      transitionName="example"
-      transitionAppear={true}
-      transitionAppearTimeout={500}
-      transitionEnter={false}
-      transitionLeave={false}>
-
-        <H1 align="center" colored>Sync Complete</H1>
-
-    </CSSTransitionGroup>
-    </> 
+        <h1>main page</h1>
+    </>

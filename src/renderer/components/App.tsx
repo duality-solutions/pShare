@@ -1,4 +1,4 @@
-import * as React from 'react'
+import * as React from 'react';
 import routes from '../routes';
 
 
@@ -8,3 +8,4 @@ export const App: React.FunctionComponent =
             {routes}
         </div>
 
+ 

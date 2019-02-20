@@ -1,41 +1,20 @@
 import { take, call, put, select } from "redux-saga/effects";
-import { getBitcoinClient } from "../../../main/getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
-import RootActions from "../../../shared/actions";
+import { getRpcClient } from "../../getRpcClient";
+import { RpcClient } from "../../RpcClient";
+import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
-import { DynodeSyncState } from "./DynodeSyncState";
-import { ExpectedMonitoringState } from "./ExpectedMonitoringState";
-import { getExpectedMonitoringStates } from "./getExpectedMonitoringStates";
 import { MainRootState } from "../../reducers";
+import { delay } from "../../../shared/system/delay";
+import { round } from "./round";
+import { SyncState } from "../../../dynamicdInterfaces/SyncState";
+import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
-const delay = (time: number) => new Promise(r => setTimeout(r, time));
-const expectedMonitoringStates = getExpectedMonitoringStates()
-const maximumStageIndex = Math.max(...expectedMonitoringStates.map(ms => ms.stageIndex));
-// 1 level deep object comparison
-// compares each property in `stateToMatch` for equality against the matching property in `currentState`
-// and if all comparisons are `true`, returns `true`.
-// `currentState` may contain more properties than `stateToMatch`. These will be ignored
-const isMatch = (currentState: any, stateToMatch: any) => Object.keys(stateToMatch)
-    .reduce((isMatch, propName) => isMatch && currentState[propName] === stateToMatch[propName], true);
-// matches `currentState` to one of the items in `expectedMonitoringStates` and return a `stageIndex`
-function getStageIndex(currentState: DynodeSyncState, expectedMonitoringStates: ExpectedMonitoringState[]) {
-    const candidateStates = expectedMonitoringStates.filter(expectedMonitoringState => isMatch(currentState, expectedMonitoringState.state));
-    if (candidateStates.length > 1) {
-        throw Error("unexpectedly matched more than one state");
-    }
-    if (candidateStates.length === 0) {
-        console.log("stateMismatch : ", currentState);
-        throw Error("currentState did not match an expected state");
-    }
-    const [matchedState] = candidateStates;
-    return matchedState.stageIndex;
-}
+const round0 = round(0)
+
 
 
 export function* initializationSaga() {
-    const initializeAppAction = getType(RootActions.initializeApp);
-    // wait for "app/INITIALIZE"
-    yield take(initializeAppAction);
     // synchronize renderer state with our state
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
@@ -58,40 +37,53 @@ export function* initializationSaga() {
     yield put(RootActions.waitingForSync());
     // call getBitcoinClient... it's an async function (returns a Promise) so 
     // in a saga, we await for it as follows
-    const client: BitcoinClient = yield call(getBitcoinClient);
-    let stageIndex: number = -1000;
+    const client: RpcClient = yield call(getRpcClient);
+
+    let currentCompletionPercent: number = -1000;
     for (; ;) {
-        let syncState: DynodeSyncState;
+        let syncState: SyncState;
         try {
             // fetch the state from dynamicd
-            syncState = yield call(() => client.command("dnsync", "status"));
+            syncState = yield call(() => client.command("syncstatus"));
         }
         catch (e) {
             // oh no, something bad
-            console.log("an error occurred when querying dnsync status", e);
+            console.log("an error occurred when querying syncstatus", e);
             // wait 5s
             yield call(delay, 5000);
             // try again
             continue;
         }
-        // currentStageIndex indicates how far we've progressed
-        const currentStageIndex = getStageIndex(syncState, expectedMonitoringStates);
-        // if anything has changed, we need to dispatch an action, announcing
-        // the change
-        if (currentStageIndex !== stageIndex) {
-            // we can use currentStageIndex to calculate a percentatge
-            const completionPercent: number = 100 * currentStageIndex / maximumStageIndex;
-            // dispatch a "sync/PROGRESS" action
+
+        // sync_progress progress indicates our progress from 0.0 to 1.0
+        // Multiply by 100 and round off to 0 decimal places
+        const currentVerificationProgress = round0(syncState.sync_progress * 100)
+        const completionPercent: number = currentVerificationProgress;
+        if (completionPercent !== currentCompletionPercent) {
+            currentCompletionPercent = completionPercent
             yield put(RootActions.syncProgress({ completionPercent }));
-            stageIndex = currentStageIndex;
-            // if we've hit the final stage, we're done
-            if (stageIndex === maximumStageIndex) {
-                // complete
-                yield put(RootActions.syncComplete());
-                break;
-            }
         }
+        // dispatch a "sync/PROGRESS" action
+
+
+
+        // if we've hit 100%, we're done
+        if (currentCompletionPercent === 100) {
+            // complete
+            break;
+        }
+
         //wait, then go again
         yield call(delay, 1000);
     }
+    // let the user reducer know if the wallet is encrypted
+    const isEncrypted = yield getWalletIsEncrypted()
+    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
+
+    yield put(RootActions.syncComplete());
+
+
+
 }
+
+

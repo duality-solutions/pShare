@@ -3,6 +3,7 @@ module.exports = {
   testEnvironment: 'node',
   "testPathIgnorePatterns": [
     "/node_modules/",
-    "/e2e/"
+    "/e2e/",
+    "/src/sjcl"
   ],
 };
