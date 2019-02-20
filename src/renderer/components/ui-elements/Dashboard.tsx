@@ -17,6 +17,7 @@ const SidebarContainer = styled('div')`
     min-width: 80px;
     background: #fafafa;
     border-right: solid 0.1px #D3D3D3;
+    max-height:100vh;
 `;
 
 const MainContentContainer = styled('div')`
@@ -44,8 +45,27 @@ const SidedbarListItem = styled('li')`
     border-bottom: solid 0.1px #D3D3D3;
 `;
 
+const UserList = styled('ul')`
+    list-style-type: none;
+    margin: 20px 0 0 0;
+    -webkit-margin-before: 20px;
+    -webkit-margin-after: 0em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 0px;
+`;
+
+const UserListItem = styled('li')`
+    display: flex;
+    direction: row;
+    justify-content: space-between;
+    padding: 1em;
+    border-bottom: solid 0.1px grey;
+`;
+
 export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
-    SidebarList as UL, SidedbarListItem as LI
+    SidebarList as UL, SidedbarListItem as LI,
+    UserList, UserListItem,
 }

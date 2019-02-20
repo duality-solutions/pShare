@@ -14,7 +14,7 @@ import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
-import { MyLinks } from '../components/dashboard/MyLinks';
+import MyLinks from '../containers/dashboard/MyLinks';
 
 export interface RouteInfo {
     path: string;
@@ -40,7 +40,7 @@ const routingTable = {
 };
 
 const dashboardRoutingTable = {
-    myLinks : route("/Main/MyLinks", MyLinks)
+    myLinks : route("/Dashboard/MyLinks", MyLinks)
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

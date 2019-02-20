@@ -18,11 +18,14 @@ const SvgIcon = styled('img')<ImageProps>`
     width: ${props => props.width ? props.width : '100%'};
     height: ${props=> props.height ? props.height : '100px'};  
     margin: ${props => props.margin || '0'};  
+    vertical-align: middle;
 `
 
 const PlainAppLogo = () => <SvgIcon src={logosrc} height="70px"/>
 
-const MyLinksIcon = () => <SvgIcon src={mylinks} width="50px" height="30px" margin="0 10px"/>
+
+const MyLinksIcon:React.FunctionComponent<ImageProps> = 
+    ({ width, height }) => <SvgIcon src={mylinks} width={width || '50px'} height={height || "30px"} margin="0 10px"/>
 const InboxIcon = () => <SvgIcon src={inbox} width="50px" height="30px" margin="0 10px"/>
 const OutboxIcon = () => <SvgIcon src={outbox} width="50px" height="30px" margin="0 10px"/>
 const InvitesIcon = () => <SvgIcon src={invites} width="50px" height="30px" margin="0 10px"/>

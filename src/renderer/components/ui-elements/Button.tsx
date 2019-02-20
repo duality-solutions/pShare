@@ -7,6 +7,7 @@ interface ButtonProps {
   primary?: boolean,
   theme?: { blue: string },
   direction?: string,
+  width?: string,
 }
 
 interface ArrowButtonProps {
@@ -20,7 +21,7 @@ interface ArrowButtonProps {
 const StyledButton = styled('button') <ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
   justify-content: center;
-  min-width:218px;
+  min-width: ${(props)=> props.width || '218px'};
   min-height: 2em;
   font-size:1em ;
   background: ${(props) => props.primary ? props.theme.blue : 'palevioletred'} ;
