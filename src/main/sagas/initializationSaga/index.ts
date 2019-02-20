@@ -1,4 +1,4 @@
-import { take, call, put, select, fork } from "redux-saga/effects";
+import { take, call, put, select } from "redux-saga/effects";
 import { getRpcClient } from "../../getRpcClient";
 import { RpcClient } from "../../RpcClient";
 import { RootActions } from "../../../shared/actions";
@@ -9,7 +9,6 @@ import { round } from "./round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
-import { AppActions } from "../../../shared/actions/app";
 
 const round0 = round(0)
 

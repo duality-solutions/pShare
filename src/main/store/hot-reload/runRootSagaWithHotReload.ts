@@ -1,6 +1,6 @@
 import { SagaMiddleware, Task } from "redux-saga";
 
-import { fork, take, call, cancel, race, put } from "redux-saga/effects";
+import { fork, take, call, cancel, race } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
