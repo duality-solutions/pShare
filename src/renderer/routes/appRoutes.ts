@@ -1,7 +1,7 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import { Main } from "../components/Main";
+import Dashboard from "../components/dashboard";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";
@@ -14,6 +14,7 @@ import PasswordCreate from '../containers/onboarding/PasswordCreate';
 import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
+import { MyLinks } from '../components/dashboard/MyLinks';
 
 export interface RouteInfo {
     path: string;
@@ -34,12 +35,17 @@ const routingTable = {
     mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
-    main: route("/Main", Main),
+    dashboard: route("/Dashboard", Dashboard),
     passwordGet: route("/PasswordGet",PasswordGet)
 };
 
+const dashboardRoutingTable = {
+    myLinks : route("/Main/MyLinks", MyLinks)
+}
 export const pushRoute = (route: RouteInfo) => push(route.path)
 
 deepFreeze(routingTable)
+deepFreeze(dashboardRoutingTable)
 
 export const appRoutes = routingTable
+export const dashboardRoutes = dashboardRoutingTable
