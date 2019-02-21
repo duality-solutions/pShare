@@ -2,7 +2,7 @@ import { put, select, take } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RootActions } from "../../../shared/actions";
 import { RendererRootState } from "../../reducers";
-import { appRoutes, pushRoute } from "../../routes/appRoutes";
+import { appRoutes, pushRoute, dashboardRoutes } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
@@ -68,13 +68,13 @@ export function* navSaga() {
                 navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
                 navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage),
                 navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.dashboard, true)
+                navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.addLinks, true)
             yield navMap.runNav();
         }
         else {
             // todo: really it should be
             // yield pushRoute(appRoutes.passwordGet)
-            yield put(pushRoute(appRoutes.dashboard))
+            yield put(pushRoute(dashboardRoutes.addLinks))
         }
 
     }
