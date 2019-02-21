@@ -1,4 +1,4 @@
-interface LinkRequest {
+export interface LinkRequestEntry {
     requestor_fqdn: string;
     recipient_fqdn: string;
     requestor_link_pubkey: string;

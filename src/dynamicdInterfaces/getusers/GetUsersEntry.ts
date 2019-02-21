@@ -1,4 +1,4 @@
-interface GetUsersEntry {
+export interface GetUsersEntry {
     _id: string
     version: number,
     domain_component: string,
