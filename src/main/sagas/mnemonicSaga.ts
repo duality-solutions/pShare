@@ -2,7 +2,7 @@ import { takeEvery, select, put } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { MainRootState } from "../reducers";
-import { RpcCommandFunc } from "./effects/helpers/RpcCommandFunc";
+import { RpcCommandFunc } from "../RpcCommandFunc";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { HdInfo } from "../../dynamicdInterfaces/HdInfo";
 

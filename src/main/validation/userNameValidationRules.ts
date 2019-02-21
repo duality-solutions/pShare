@@ -1,9 +1,9 @@
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
-import { getBitcoinClient } from "../getBitcoinClient";
+import { getRpcClient } from "../getRpcClient";
 
 const isValidUserName = (value: string) => /^[A-Za-z0-9]+$/.test(value);
 const userNameDoesNotExist = async (value: string) => {
-    const client = await getBitcoinClient()
+    const client = await getRpcClient()
     let userInfo: GetUserInfo;
     try {
         userInfo = await client.command("getuserinfo", value)

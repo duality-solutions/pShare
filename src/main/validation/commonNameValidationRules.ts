@@ -6,7 +6,7 @@ export const commonNameValidationRules: ValidationTest<string>[] = [
     {
         test: isValidCommonName,
         message: "Value may only contain letters and numbers.",
-        
+
     }
 ];
 

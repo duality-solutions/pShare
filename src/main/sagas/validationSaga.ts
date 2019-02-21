@@ -8,9 +8,9 @@ import { validateUserName } from "../validation/validateUserName";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 
 export function* validationSaga() {
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "userName", validateUserName)
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "commonName", validateCommonName)
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "token", validateToken)
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "userName", v => validateUserName(v))
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "commonName", v => validateCommonName(v))
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "token", v => validateToken(v))
 }
 
 function takeEveryValidationAction(

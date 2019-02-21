@@ -5,3 +5,6 @@ export const deleteOptionalProperty = <T>(obj: T, id: OptionalKeys<T>): T => {
     const { [id]: deleted, ...newState } = obj;
     return newState as T // this type-conversion is safe because we're sure we only deleted optional props
 }
+
+export const deleteOptionalProperties = <T>(obj: T, ...ids: OptionalKeys<T>[]): T =>
+    ids.reduce((prev, id) => deleteOptionalProperty(prev, id), obj)

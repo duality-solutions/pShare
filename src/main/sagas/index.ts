@@ -11,14 +11,16 @@ import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider
 import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
-    loggingSaga,
-    initializationSaga,
-    storeHydrationSaga,
-    validationSaga,
-    onboardingSaga,
+    () => loggingSaga("Main Store"),
+    () => initializationSaga(),
+    () => storeHydrationSaga(),
+    () => validationSaga(),
+    () => onboardingSaga(),
     () => createBdapAccountSaga(true),
     () => setWalletPasswordSaga(true),
-    mnemonicSaga,
+    () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
-    translateMnemonicFileSaveFailedActionsToValidationMessages
+    () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
+   
 ]
+

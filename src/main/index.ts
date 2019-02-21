@@ -14,6 +14,7 @@ import { REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF } from 'electron-devt
 import { installExtensionsAsync } from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
+import { AppActions } from '../shared/actions/app';
 //import OnboardingActions from '../shared/actions/onboarding';
 
 //import { v4 as uuid } from 'uuid';
@@ -31,6 +32,7 @@ declare module 'electron' {
 //defines paths into the store that will be persisted
 const persistencePaths = ['user.syncAgreed', 'user.userName'];
 let mainWindow: BrowserWindow | null
+
 
 
 const store = configureStore(() => mainWindow, persistencePaths)
@@ -91,10 +93,9 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-  // on macOS it is common for applications to stay open until the user explicitly quits
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+
+  store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+
 })
 
 

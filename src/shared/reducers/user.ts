@@ -1,7 +1,8 @@
 import { UserActions } from '../actions/user'
 import { getType } from 'typesafe-actions';
 import { OnboardingActions } from '../actions/onboarding';
-import { deleteOptionalProperty } from '../system/deleteOptionalProperty';
+import { deleteOptionalProperty, deleteOptionalProperties } from '../system/deleteOptionalProperty';
+import { AppActions } from '../actions/app';
 
 interface UserState {
     syncAgreed: boolean
@@ -11,8 +12,9 @@ interface UserState {
     sessionWalletPassword?: string //this should not be persisted. EVER
     sessionWalletMnemonic?: string //nor this
 }
+const defaultState: UserState = { syncAgreed: false, isOnboarded: false, walletEncrypted: false }
 
-export const user = (state: UserState = { syncAgreed: false, isOnboarded: false, walletEncrypted: false }, action: UserActions | OnboardingActions): UserState => {
+export const user = (state: UserState = defaultState, action: UserActions | OnboardingActions | AppActions): UserState => {
     switch (action.type) {
         case getType(UserActions.userAgreeSync):
             return { ...state, syncAgreed: true }
@@ -28,6 +30,8 @@ export const user = (state: UserState = { syncAgreed: false, isOnboarded: false,
             return { ...state, sessionWalletMnemonic: action.payload }
         case (getType(OnboardingActions.mnemonicSecured)):
             return deleteOptionalProperty(state, "sessionWalletMnemonic")
+        case (getType(AppActions.initializeApp)):
+            return deleteOptionalProperties(state, "sessionWalletMnemonic", "sessionWalletPassword")
         default:
             return state;
 

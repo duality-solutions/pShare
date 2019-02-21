@@ -1,47 +1,115 @@
-import { lazy } from "../../../../../shared/system/lazy";
-import { getBitcoinClient } from "../../../../getBitcoinClient";
-import { RpcCommandFunc } from "../RpcCommandFunc";
-import { QueuedCommand } from "./QueuedCommand";
+import { getRpcClient } from "../../../../getRpcClient";
+import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 import { LockedCommandQueueRunner } from "./LockedCommandQueueRunner";
 import { runQueuedCommand } from "./runQueuedCommand";
 import { unlockWallet } from "./unlockWallet";
 import { lockWallet } from "./lockWallet";
+import { createAsyncQueue } from "../../../../../shared/system/createAsyncQueue";
+import { createCancellationToken } from "../../../../../shared/system/createCancellationToken";
+import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
+import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
 
 const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
-    const commandQueue: QueuedCommand[] = [];
-    let unlocked = false;
-    const bitcoinClient = await getBitcoinClient();
-    const bitcoinCommand: RpcCommandFunc = (rpcCommand, ...args) => bitcoinClient.command(rpcCommand, ...args);
-    const runQueue = async (walletPassphrase: string) => {
-        if (unlocked) {
-            return;
-        }
-        console.log("command queue starting");
-        unlocked = true;
-        while (commandQueue.length > 0) {
-            await unlockWallet(bitcoinCommand, walletPassphrase);
-            try {
-                let queuedCommand: QueuedCommand | undefined;
-                while (typeof (queuedCommand = commandQueue.shift()) !== 'undefined') {
-                    await runQueuedCommand(bitcoinCommand, queuedCommand);
-                }
-            }
-            finally {
-                await lockWallet(bitcoinCommand);
-            }
-        }
-        console.log("command queue stopping");
-        unlocked = false;
-    };
+    console.log("creating LockedCommandQueueRunner")
+    let queueControls = await getQueueControls()
     return {
-        addQueuedCommand: (walletPassphrase: string, queuedCommand: QueuedCommand) => {
-            commandQueue.push(queuedCommand);
-            runQueue(walletPassphrase);
+        addQueuedCommand: (queuedCommand: QueuedCommandWithPassword) => {
+            queueControls.commandQueue.post(queuedCommand);
+
+        },
+        cancel: () => queueControls.cancellationToken.cancel(),
+        get finished() { return queueControls.finishedResolver.promise },
+        restart: async () => {
+            if (!queueControls.finishedResolver.complete) {
+                throw Error("cannot restart unless cancelled first")
+            }
+            console.log("LockedCommandQueueRunner restart")
+            queueControls = await getQueueControls()
         }
+
     };
 };
 
-const queueRunnerLazy = lazy(() => createQueueRunner());
+let queueRunnerProm: Promise<LockedCommandQueueRunner>
 
 
-export const getLockedCommandQueue = () => queueRunnerLazy.get();
+export const getLockedCommandQueue = async () => {
+    if (typeof queueRunnerProm === 'undefined') {
+        queueRunnerProm = createQueueRunner()
+    }
+    return await queueRunnerProm;
+}
+async function getQueueControls() {
+    console.log("getting queue controls")
+    const cancellationToken = createCancellationToken();
+    const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
+    const rpcClient = await getRpcClient();
+    const rpcCommandFunc: RpcCommandFunc = (rpcCommand, ...args) => rpcClient.command(rpcCommand, ...args);
+    const finishedResolver = createPromiseResolver<void>();
+    const runQueue = async () => {
+        while (!cancellationToken.isCancellationRequested) {
+            //let lockedSessionIsValid = true;
+            let queuedCommand: QueuedCommandWithPassword;
+            try {
+                queuedCommand = await commandQueue.receive(cancellationToken);
+            }
+            catch (err) {
+                if (cancellationToken.isCancellationRequested) {
+                    break;
+                }
+                throw err;
+            }
+            let didTimeout = false;
+            while (!didTimeout && !cancellationToken.isCancellationRequested) {
+                const pw = queuedCommand.password;
+                let currentPassword: string = pw;
+                try {
+                    await unlockWallet(rpcCommandFunc, pw);
+                }
+                catch (err) {
+                    queuedCommand.promiseResolver.reject(err);
+                    console.log("pw is invalid");
+                    break;
+                }
+                try {
+                    await runQueuedCommand(rpcCommandFunc, queuedCommand);
+                    while (!cancellationToken.isCancellationRequested) {
+                        const localCancTok = cancellationToken.createDependentToken(10000);
+                        try {
+                            queuedCommand = await commandQueue.receive(localCancTok);
+                        }
+                        catch (err) {
+                            if (localCancTok.isCancellationRequested) {
+                                if (cancellationToken.isCancellationRequested) {
+                                    console.warn("locked command queue cancelled");
+                                }
+                                else {
+                                    console.log("timeout waiting for queue");
+                                }
+                                didTimeout = true;
+                                break;
+                            }
+                            else {
+                                throw err;
+                            }
+                        }
+                        if (queuedCommand.password !== currentPassword) {
+                            break;
+                        }
+                        await runQueuedCommand(rpcCommandFunc, queuedCommand);
+                    }
+                }
+                catch (err) {
+                    throw err;
+                }
+                finally {
+                    await lockWallet(rpcCommandFunc);
+                }
+            }
+        }
+        finishedResolver.resolve();
+    };
+    runQueue();
+    return { finishedResolver, commandQueue, cancellationToken };
+}
+
