@@ -8,23 +8,26 @@ export const Sidebar: FunctionComponent<RouteComponentProps<any>> = ({ history, 
     <UL>
         <div style={{ borderBottom: "solid 0.1px #d2d2d2 " }}><PlainAppLogo /></div>
         {
-            tabs.map((t, idx) =>
-                <LI key={idx} disabled={t.disabled}
-                    onClick={t.disabled ? undefined : () => history.push(t.location)}
-                    dark={t.isSelected(location.pathname)}>
+            tabs.map((t, idx) => {
+                return (
+                    <LI key={idx}
+                        disabled={t.disabled}
+                        onClick={t.disabled ? undefined : () => history.push(t.location)}
+                        dark={t.isSelected(location.pathname)}>
 
-                    {t.icon(t.isSelected(location.pathname))}
+                        {t.icon(t.isSelected(location.pathname))}
 
-                    <Text
-                        color={t.isSelected(location.pathname) ? "white" : "#4a4a4a"}
-                        margin="0"
-                        align="center"
-                        fontSize="0.6em"
-                        fontWeight="bold">{
-                            t.text
-                        }
-                    </Text>
-                </LI>)
+                        <Text color={t.isSelected(location.pathname) ? "white" : "#4a4a4a"}
+                            margin="0"
+                            align="center"
+                            fontSize="0.6em"
+                            fontWeight="bold">{
+                                t.text
+                            }
+                        </Text>
+                    </LI>
+                );
+            })
         }
     </UL>
 </>
