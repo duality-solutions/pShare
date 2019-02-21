@@ -3,24 +3,51 @@ import { getType } from "typesafe-actions";
 import { BdapActions } from "../../shared/actions/bdap";
 import { getRpcClient } from "../getRpcClient";
 import { RpcClient } from "../RpcClient";
-import { GetUsersEntry } from "../../dynamicdInterfaces/getusers/GetUsersEntry";
-import { LinkRequestEntry } from "../../dynamicdInterfaces/links/LinkRequestEntry";
+import { LinkResponse } from "../../dynamicdInterfaces/links/LinkResponse";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { MainRootState } from "../reducers";
 import { RpcCommandFunc } from "../RpcCommandFunc";
+import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
+import { Link } from "../../dynamicdInterfaces/links/Link";
 
 export function* bdapSaga() {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
         const rpcClient: RpcClient = yield call(() => getRpcClient())
-        let response: GetUsersEntry[];
-        response = yield call(() => rpcClient.command("getusers"))
+        let response: GetUserInfo[];
+        try {
+            response = yield call(() => rpcClient.command("getusers"))
+
+        } catch (err) {
+            yield put(BdapActions.getUsersFailed(err.message))
+            return
+        }
         yield put(BdapActions.getUsersSuccess(response))
     })
-    yield takeEvery(getType(BdapActions.getPendingLinks), function* () {
-        yield* rpcLinkCommand((command) => command("link", "pending"), BdapActions.getPendingLinksSuccess, BdapActions.getPendingLinksFailed)
+    yield takeEvery(getType(BdapActions.getPendingAcceptLinks), function* () {
+        yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
+    })
+    yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
+        yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
-        yield* rpcLinkCommand((command) => command("link", "complete"), BdapActions.getCompleteLinksSuccess, BdapActions.getCompleteLinksFailed)
+        const rpcClient: RpcClient = yield call(() => getRpcClient())
+        let response: LinkResponse<Link>;
+        try {
+            response = yield call(() => rpcClient.command("link", "complete"))
+
+        } catch (err) {
+            yield put(BdapActions.getCompleteLinksFailed(err.message))
+            return
+        }
+        yield put(BdapActions.getCompleteLinksSuccess(response))
+
+    })
+
+    yield takeEvery(getType(BdapActions.initialize), function* () {
+        yield put(BdapActions.getUsers())
+        yield put(BdapActions.getCompleteLinks())
+        yield put(BdapActions.getPendingAcceptLinks())
+        yield put(BdapActions.getPendingRequestLinks())
     })
 }
 
@@ -28,9 +55,9 @@ export function* bdapSaga() {
 
 
 
-function* rpcLinkCommand(
-    cmd: (c: RpcCommandFunc) => Promise<LinkRequestEntry[]>,
-    successActionCreator: (entries: LinkRequestEntry[]) => any,
+function* rpcLinkCommand<T extends Link>(
+    cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
+    successActionCreator: (entries: LinkResponse<T>) => any,
     failActionCreator: (message: string) => any
 ) {
     const password: string | undefined = yield select((state: MainRootState) => state.user.sessionWalletPassword)
@@ -38,7 +65,7 @@ function* rpcLinkCommand(
         yield put(failActionCreator("no password in state"))
         return
     }
-    let response: LinkRequestEntry[];
+    let response: LinkResponse<T>;
     try {
         response = yield unlockedCommandEffect(password, cmd)
     } catch (err) {

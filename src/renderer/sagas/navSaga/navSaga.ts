@@ -4,6 +4,7 @@ import { RootActions } from "../../../shared/actions";
 import { RendererRootState } from "../../reducers";
 import { appRoutes, pushRoute, dashboardRoutes } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
+import { BdapActions } from "../../../shared/actions/bdap";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -63,20 +64,21 @@ export function* navSaga() {
         const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
         if (!isEncrypted) {
             const navMap = getNavMap();
-            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning),
-                navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
-                navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.addLinks, true)
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning)
+            navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
+            navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.addLinks, true)
             yield navMap.runNav();
         }
         else {
-            // todo: really it should be
-            // yield pushRoute(appRoutes.passwordGet)
-            yield put(pushRoute(dashboardRoutes.addLinks))
-        }
+            const navMap = getNavMap();
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.addLinks, true)
 
+            yield navMap.runNav();
+        }
+        yield put(BdapActions.initialize())
     }
 
 

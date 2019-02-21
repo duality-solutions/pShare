@@ -1,4 +1,4 @@
-interface GetUserInfo {
+export interface GetUserInfo {
     _id: string
     version: number
     domain_component: string
