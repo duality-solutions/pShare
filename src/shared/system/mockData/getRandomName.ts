@@ -1,24 +1,19 @@
 import { nameData } from "./nameData";
-import { range, blinq } from "blinq";
-import * as seedrandom from 'seedrandom'
+import { randomSample } from "./randomSample";
 
 export const getRandomNames = (count: number, seed?: string) => {
     const femaleNames = nameData.firstnames.female
     const maleNames = nameData.firstnames.male
     const lastNames = nameData.surnames
 
-    const allFirstNames = blinq(femaleNames).concat(maleNames).toArray()
+    const allFirstNames = femaleNames.concat(maleNames)
 
-    var rng = seedrandom(seed);
+    const indexToName = (idx: number) => `${allFirstNames[(idx / lastNames.length) >> 0]} ${lastNames[idx % lastNames.length]}`
+    const totalIndexes = lastNames.length * allFirstNames.length
 
-    let names: string[] = [];
-    while (names.length !== count) {
-        const remainingNames = count - (names.length)
-
-        names = range(0, remainingNames)
-            .select(() => `${allFirstNames[(rng() * allFirstNames.length) >> 0]} ${lastNames[(rng() * lastNames.length) >> 0]}`)
-            .concat(names)
-            .toArray()
+    if (count > totalIndexes) {
+        throw Error(`can only generate up to ${totalIndexes} unique names`)
     }
-    return names
+
+    return randomSample(totalIndexes, count, seed).map(indexToName)
 }

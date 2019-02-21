@@ -1,6 +1,6 @@
 import { BdapActions } from "../actions/bdap";
 import { getRandomNames } from "../system/mockData/getRandomName";
-import seedrandom from "seedrandom";
+import * as seedrandom from "seedrandom";
 
 export interface BdapState {
     users: BdapUser[]
