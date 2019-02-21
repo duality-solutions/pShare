@@ -25,7 +25,7 @@ export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location }) => 
                         onClick={t.disabled ? undefined : () => push(t.location)}
                         dark={isSelected}>
 
-                        {t.icon(isSelected)}
+                        <t.icon selected={isSelected} />
 
                         <Text color={isSelected ? "white" : "#4a4a4a"}
                             margin="0"
@@ -42,9 +42,12 @@ export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location }) => 
     </UL>
 </>
 
+interface IconProps {
+    selected: boolean
+}
 interface TabInfo {
     location: string
-    icon: (selected: boolean) => any
+    icon: FunctionComponent<IconProps>
     text: string
     isSelected: (pathname: string) => boolean,
     disabled?: boolean
@@ -52,29 +55,46 @@ interface TabInfo {
 const tabs: TabInfo[] = [
     {
         location: '/Dashboard/MyLinks',
-        icon: (selected: boolean) => <MyLinksIcon white={selected}
-            width="36px" height="36px" margin="0 0 0 1em" />,
+        icon: ({ selected }) =>
+            <MyLinksIcon
+                white={selected}
+                width="36px"
+                height="36px"
+                margin="0 0 0 1em" />,
         text: "My Links",
         isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks'
     },
     {
         location: '/Dashboard/Inbox',
-        icon: (selected: boolean) => <InboxIcon width="36px" height="36px" margin="0 0 0 0.9em" />,
+        icon: () =>
+            <InboxIcon
+                width="36px"
+                height="36px"
+                margin="0 0 0 0.9em" />,
         text: "Inbox",
         isSelected: (pathname: string) => pathname === '/Dashboard/Inbox',
         disabled: true
     },
     {
         location: '/Dashboard/Outbox',
-        icon: (selected: boolean) => <OutboxIcon width="36px" height="36px" margin="0 0 0 0.9em" />,
-        text: "Inbox",
+        icon: () =>
+            <OutboxIcon
+                width="36px"
+                height="36px"
+                margin="0 0 0 0.9em" />,
+        text: "Outbox",
         isSelected: (pathname: string) => pathname === '/Dashboard/Outbox',
         disabled: true
     },
     {
         location: '/Dashboard/Invites',
-        icon: (selected: boolean) => <InvitesIcon white={selected} width="36px" height="36px" margin="0 0 0 0.9em" />,
-        text: "Inbox",
+        icon: ({ selected }) =>
+            <InvitesIcon
+                white={selected}
+                width="36px"
+                height="36px"
+                margin="0 0 0 0.9em" />,
+        text: "Invites",
         isSelected: (pathname: string) => pathname === '/Dashboard/Invites',
     },
 
