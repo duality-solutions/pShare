@@ -18,7 +18,7 @@ export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, history }: A
         <div style={{width:"100%", display:'block'}}>
         <div style={{float:'right', margin:'40px 0 0 0'}}>
         <CloseIcon margin="0 40px 0 0" onClick={()=> history.push('/Dashboard/MyLinks') }/>
-        <Text margin="5px 0 0 5px" fontSize="0.8em">finnish</Text>
+        <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>
         </div>
         <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
         <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0"/> Add Links</H1>
