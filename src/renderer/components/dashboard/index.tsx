@@ -4,6 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Route, Switch, RouteComponentProps } from 'react-router';
 import { dashboardRoutes } from "../../routes/appRoutes";
 import { FunctionComponent } from 'react';
+import { keys } from '../../../shared/system/entries';
 
 
 export const Dashboard: FunctionComponent<RouteComponentProps<any>> =
@@ -15,11 +16,12 @@ export const Dashboard: FunctionComponent<RouteComponentProps<any>> =
                     <Sidebar {...props} />
                 </SidebarContainer>
                 <MainContentContainer>
-                    <Switch>
-                        {(Object.keys(dashboardRoutes) as Array<keyof typeof dashboardRoutes>)
-                            .map((key, idx) =>
+                    <Switch>{
+                        keys(dashboardRoutes)
+                            .select((key, idx) =>
                                 <Route key={idx} exact path={dashboardRoutes[key].path} component={dashboardRoutes[key].component} />
-                            )}
+                            )
+                    }
                     </Switch>
                 </MainContentContainer>
             </DashboardContainer>
