@@ -2,22 +2,32 @@ import React, { FunctionComponent } from "react";
 import { UL, LI } from "../ui-elements/Dashboard";
 import { PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, InvitesIcon } from "../ui-elements/Image";
 import Text from "../ui-elements/Text";
-import { RouteComponentProps } from "react-router";
 
-export const Sidebar: FunctionComponent<RouteComponentProps<any>> = ({ history, location }) => <>
+export interface SidebarStateProps {
+    location: string
+}
+export interface SidebarDispatchProps {
+    push: (pathname: string) => void
+}
+
+export type SidebarProps = SidebarStateProps & SidebarDispatchProps
+
+
+export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location }) => <>
     <UL>
         <div style={{ borderBottom: "solid 0.1px #d2d2d2 " }}><PlainAppLogo /></div>
         {
             tabs.map((t, idx) => {
+                const isSelected = t.isSelected(location);
                 return (
                     <LI key={idx}
                         disabled={t.disabled}
-                        onClick={t.disabled ? undefined : () => history.push(t.location)}
-                        dark={t.isSelected(location.pathname)}>
+                        onClick={t.disabled ? undefined : () => push(t.location)}
+                        dark={isSelected}>
 
-                        {t.icon(t.isSelected(location.pathname))}
+                        {t.icon(isSelected)}
 
-                        <Text color={t.isSelected(location.pathname) ? "white" : "#4a4a4a"}
+                        <Text color={isSelected ? "white" : "#4a4a4a"}
                             margin="0"
                             align="center"
                             fontSize="0.6em"

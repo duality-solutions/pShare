@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { DashboardContainer, SidebarContainer, MainContentContainer } from '../ui-elements/Dashboard';
-import { Sidebar } from './Sidebar';
+import { Sidebar } from '../../containers/dashboard/Sidebar';
 import { Route, Switch, RouteComponentProps } from 'react-router';
 import { dashboardRoutes } from "../../routes/appRoutes";
 import { FunctionComponent } from 'react';
@@ -13,7 +13,7 @@ export const Dashboard: FunctionComponent<RouteComponentProps<any>> =
         <>
             <DashboardContainer>
                 <SidebarContainer>
-                    <Sidebar {...props} />
+                    <Sidebar />
                 </SidebarContainer>
                 <MainContentContainer>
                     <Switch>{
