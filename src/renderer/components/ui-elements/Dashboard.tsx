@@ -41,7 +41,7 @@ const SidebarList = styled('ul')`
 `;
 
 
-const SidedbarListItem = styled('li')<{disabled?: boolean}>`
+const SidedbarListItem = styled('li')<{disabled?: boolean, dark?:boolean}>`
     display: flex;
     flex-direction: column;
     justify-content:center;
@@ -50,6 +50,7 @@ const SidedbarListItem = styled('li')<{disabled?: boolean}>`
     max-height: 64px;
     border-bottom: solid 0.1px #d2d2d2;
     opacity: ${props => props.disabled ? 0.4 : 1};
+    background: ${props=> props.dark ? '#737373' : ''};
 `;
 
 const UserList = styled('ul')`
@@ -67,7 +68,7 @@ const UserListItem = styled('li')<{disabled?: boolean}>`
     direction: row;
     justify-content: space-between;
     padding: 1em 0 1em 0;
-    border-bottom: solid 0.1px grey;
+    border-bottom: solid 0.1px #d2d2d2;
     opacity: ${props => props.disabled ? 0.4 : 1};
     `;
 

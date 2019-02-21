@@ -10,6 +10,7 @@ interface ButtonProps {
   width?: string,
   minHeight?: string,
   fontSize?: string,
+  margin?: string,
 }
 
 interface ArrowButtonProps {
@@ -26,11 +27,11 @@ const StyledButton = styled('button') <ButtonProps>`
   min-width: ${(props)=> props.width || '218px'};
   min-height: ${(props)=> props.minHeight || '2em'};
   font-size: ${(props)=> props.fontSize || '1em'};
-  background: ${(props) => props.primary ? props.theme.blue : 'palevioletred'} ;
+  background: ${(props) => props.primary ? props.theme.blue : 'white'} ;
   border-radius: 3px;
-  border: 2px solid ${(props) => props.primary ? '#0073e6' : 'palevioletred'};
-  color: white;
-  margin: 0 0 0 0;
+  border: 1px solid ${(props) => props.primary ? '#0073e6' : '#d2d2d2'};
+  color: ${props => props.primary ? 'white'  : props.theme.blue};
+  margin: ${props=> props.margin || '0 0 0 0'};
   padding: 0.5em 1em;
   cursor: pointer;
 `

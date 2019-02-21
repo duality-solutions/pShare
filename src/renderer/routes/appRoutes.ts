@@ -15,13 +15,16 @@ import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
 import MyLinks from '../containers/dashboard/MyLinks';
+import { Invites } from '../components/dashboard/Invites';
+import AddLinks from "../containers/dashboard/AddLinks";
 
 export interface RouteInfo {
     path: string;
     component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
+    exact: boolean,
 }
 
-const route = (path: string, component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>): RouteInfo => ({ path, component })
+const route = (path: string, component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>, exact:boolean=true): RouteInfo => ({ path, component, exact })
 
 const routingTable = {
     syncAgree: route("/SyncAgree", SyncAgree),
@@ -35,12 +38,14 @@ const routingTable = {
     mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
-    dashboard: route("/Dashboard", Dashboard),
+    dashboard: route("/Dashboard", Dashboard, false),
     passwordGet: route("/PasswordGet",PasswordGet)
 };
 
 const dashboardRoutingTable = {
-    myLinks : route("/Dashboard/MyLinks", MyLinks)
+    myLinks : route("/Dashboard/MyLinks", MyLinks),
+    invites: route("/Dashboard/Invites", Invites),
+    addLinks: route("/Dashboard/AddLinks", AddLinks)
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

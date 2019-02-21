@@ -2,20 +2,25 @@ import { FunctionComponent } from "react";
 import React from "react";
 import { BdapUser } from "../../../shared/reducers/bdap";
 import { H1, Text } from "../ui-elements/Text";
-import { MyLinksIcon, UserListAvatar, PendingIcon } from "../ui-elements/Image";
+import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import Button from "../ui-elements/Button";
 import man from "../../assets/man.svg";
+import Container from "../ui-elements/Container";
 
 export interface MyLinksStateProps {
     users: BdapUser[]
 }
 export interface MyLinksDispatchProps {
-
 }
-export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users }: MyLinksProps) =>
-    <>
+export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps & { history?: any}
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, history }: MyLinksProps) =>
+    <>  
+        <div style={{width:"100%", display:'block'}}>
+        <div style={{float:'right', margin:'40px 20px 0 0'}}>Add Links
+            <BtnAddLinksIcon onClick={()=> history.push('/Dashboard/AddLinks')}/>
+        </div>
+        <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
         <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0"/> My Links</H1>
         <UserList>
         {users.map(u => 
@@ -36,4 +41,6 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users }: MyLinksProps
         )}
         </UserList>
         <div style={{ padding: "2.5em"}}/>
+        </Container>
+        </div>
     </>
