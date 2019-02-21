@@ -4,9 +4,17 @@ import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
 import { createSelector } from 'reselect'
+import { blinq } from "blinq";
 
 
-const getUserList = createSelector((state: RendererRootState) => state.bdap.users, u => u.filter(u => u.state !== "linked"))
+const getUserList = createSelector(
+    (state: RendererRootState) => state.bdap.users,
+    u => blinq(u)
+        .where(u => u.state !== "normal")
+        .orderBy(u => u.commonName)
+        .thenBy(u => u.userName)
+        .toArray()
+)
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateProps => {
     return {
