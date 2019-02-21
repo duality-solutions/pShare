@@ -1,7 +1,7 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import Dashboard from "../components/dashboard";
+import { Dashboard } from "../components/dashboard";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";
@@ -24,7 +24,7 @@ export interface RouteInfo {
     exact: boolean,
 }
 
-const route = (path: string, component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>, exact:boolean=true): RouteInfo => ({ path, component, exact })
+const route = (path: string, component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>, exact: boolean = true): RouteInfo => ({ path, component, exact })
 
 const routingTable = {
     syncAgree: route("/SyncAgree", SyncAgree),
@@ -39,11 +39,11 @@ const routingTable = {
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
     dashboard: route("/Dashboard", Dashboard, false),
-    passwordGet: route("/PasswordGet",PasswordGet)
+    passwordGet: route("/PasswordGet", PasswordGet)
 };
 
 const dashboardRoutingTable = {
-    myLinks : route("/Dashboard/MyLinks", MyLinks),
+    myLinks: route("/Dashboard/MyLinks", MyLinks),
     invites: route("/Dashboard/Invites", Invites),
     addLinks: route("/Dashboard/AddLinks", AddLinks)
 }
