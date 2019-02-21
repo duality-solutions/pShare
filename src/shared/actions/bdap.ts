@@ -1,5 +1,4 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { LinkResponse } from '../../dynamicdInterfaces/links/LinkResponse';
 import { GetUserInfo } from '../../dynamicdInterfaces/GetUserInfo';
 import { Link } from '../../dynamicdInterfaces/links/Link';
 import { PendingLink } from '../../dynamicdInterfaces/links/PendingLink';
@@ -13,16 +12,16 @@ export const BdapActions = {
     getUsersFailed: createStandardAction('bdap/GET_USERS_FAILED')<string>(),
 
     getCompleteLinks: createStandardAction('bdap/GET_COMPLETE_LINKS')<void>(),
-    getCompleteLinksSuccess: createStandardAction('bdap/GET_COMPLETE_LINKS_SUCCESS')<LinkResponse<Link>>(),
+    getCompleteLinksSuccess: createStandardAction('bdap/GET_COMPLETE_LINKS_SUCCESS')<Link[]>(),
     getCompleteLinksFailed: createStandardAction('bdap/GET_COMPLETE_LINKS_FAILED')<string>(),
 
 
     getPendingRequestLinks: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS')<void>(),
-    getPendingRequestLinksSuccess: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS_SUCCESS')<LinkResponse<PendingLink>>(),
+    getPendingRequestLinksSuccess: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingRequestLinksFailed: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS_FAILED')<string>(),
 
     getPendingAcceptLinks: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS')<void>(),
-    getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<LinkResponse<PendingLink>>(),
+    getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
 }

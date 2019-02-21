@@ -9,6 +9,7 @@ import { MainRootState } from "../reducers";
 import { RpcCommandFunc } from "../RpcCommandFunc";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
+import { entries } from "../../shared/system/entries";
 
 export function* bdapSaga() {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -27,7 +28,7 @@ export function* bdapSaga() {
         yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
-        yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
+        yield* rpcLinkCommand((command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         const rpcClient: RpcClient = yield call(() => getRpcClient())
@@ -39,7 +40,7 @@ export function* bdapSaga() {
             yield put(BdapActions.getCompleteLinksFailed(err.message))
             return
         }
-        yield put(BdapActions.getCompleteLinksSuccess(response))
+        yield put(BdapActions.getCompleteLinksSuccess(extractLinks(response)))
 
     })
 
@@ -52,12 +53,12 @@ export function* bdapSaga() {
 }
 
 
-
+const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] => entries(response).select(([, v]) => v).toArray()
 
 
 function* rpcLinkCommand<T extends Link>(
     cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
-    successActionCreator: (entries: LinkResponse<T>) => any,
+    successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
 ) {
     const password: string | undefined = yield select((state: MainRootState) => state.user.sessionWalletPassword)
@@ -72,5 +73,6 @@ function* rpcLinkCommand<T extends Link>(
         yield put(failActionCreator(err.message))
         return;
     }
-    yield put(successActionCreator(response))
+    const links = extractLinks(response)
+    yield put(successActionCreator(links))
 }

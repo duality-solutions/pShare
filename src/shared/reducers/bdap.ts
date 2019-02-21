@@ -3,29 +3,46 @@ import { BdapActions } from "../actions/bdap";
 // import * as seedrandom from "seedrandom";
 import { getType } from "typesafe-actions";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
+import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
+import { Link } from "../../dynamicdInterfaces/links/Link";
 
 export interface BdapState {
-    users: BdapUser[]
+    users: GetUserInfo[]
+    pendingAcceptLinks: PendingLink[]
+    pendingRequestLinks: PendingLink[]
+    completeLinks: Link[]
 }
-type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
-export interface BdapUser {
-    userName: string
-    commonName: string
-    state: BdapUserState
-    userInfoEntry: GetUserInfo
-}
+const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [] };
+// type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
+// export interface BdapUser {
+//     userName: string
+//     commonName: string
+//     state: BdapUserState
+//     userInfoEntry: GetUserInfo
+// }
 
 // const defaultState: BdapState = {
 //     users: generateMockUsers()
 // };
 
-export const bdap = (state: BdapState = { users: [] }, action: BdapActions): BdapState => {
+export const bdap = (state: BdapState = defaultState, action: BdapActions): BdapState => {
     switch (action.type) {
         case getType(BdapActions.getUsersSuccess):
-            const userEntries = action.payload
-            return { ...state, users: userEntries.map<BdapUser>(e => ({ commonName: e.common_name, userName: e.object_id, state: "normal", userInfoEntry: e })) }
+            const users = action.payload
+            return { ...state, users }
+        case getType(BdapActions.getPendingAcceptLinksSuccess):
+            const pendingAcceptLinks = action.payload
+            return { ...state, pendingAcceptLinks }
+        case getType(BdapActions.getPendingRequestLinksSuccess):
+            const pendingRequestLinks = action.payload
+            return { ...state, pendingRequestLinks }
+        case getType(BdapActions.getCompleteLinksSuccess):
+            const completeLinks = action.payload
+            return { ...state, completeLinks }
+        default:
+            return state
+
     }
-    return state
 }
 
 // function generateMockUsers() {

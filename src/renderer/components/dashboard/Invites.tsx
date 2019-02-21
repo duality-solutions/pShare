@@ -1,12 +1,12 @@
 import { FunctionComponent } from "react";
 import React from "react";
-import { BdapUser } from "../../../shared/reducers/bdap";
 import { H1, Text } from "../ui-elements/Text";
 import { InvitesIcon, UserListAvatar } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import Container from "../ui-elements/Container";
 import man from "../../assets/man.svg";
 import Button from "../ui-elements/Button";
+import { BdapUser } from "../../../renderer/system/BdapUser";
 
 const userlist: Array<string> = [
     'Hannah Ashley', 'Heather Atchison', 'Krisitan Banister'

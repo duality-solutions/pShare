@@ -3,6 +3,7 @@ import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { getRpcClient } from "../getRpcClient";
 import { delay } from "../../shared/system/delay";
+import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {

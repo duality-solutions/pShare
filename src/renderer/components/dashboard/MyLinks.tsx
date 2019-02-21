@@ -1,12 +1,12 @@
 import { FunctionComponent } from "react";
 import React from "react";
-import { BdapUser } from "../../../shared/reducers/bdap";
 import { H1, Text } from "../ui-elements/Text";
 import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import Button from "../ui-elements/Button";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
+import { BdapUser } from "../../system/BdapUser";
 
 export interface MyLinksStateProps {
     users: BdapUser[]
