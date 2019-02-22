@@ -15,7 +15,7 @@ import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
 import MyLinks from '../containers/dashboard/MyLinks';
-import { Invites } from '../components/dashboard/Invites';
+import { Invites } from '../containers/dashboard/Invites';
 import AddLinks from "../containers/dashboard/AddLinks";
 
 export interface RouteInfo {

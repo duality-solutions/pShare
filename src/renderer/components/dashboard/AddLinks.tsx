@@ -34,7 +34,7 @@ export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, history }: A
                                     </div>
                                 </div>
                             </div>
-                            {u.state === 'pending' ?
+                            {u.state === 'pending-request' ?
                                 <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
                                 : <div style={{ fontSize: "0.7em" }}> Request <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
                             }

@@ -24,6 +24,8 @@ export const BdapActions = {
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
+    currentUserReceived:createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>()
+
 }
 
 export type BdapActions = ActionType<typeof BdapActions>;

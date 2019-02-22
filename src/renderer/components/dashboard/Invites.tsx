@@ -8,9 +8,7 @@ import man from "../../assets/man.svg";
 import Button from "../ui-elements/Button";
 import { BdapUser } from "../../../renderer/system/BdapUser";
 
-const userlist: Array<string> = [
-    'Hannah Ashley', 'Heather Atchison', 'Krisitan Banister'
-]
+
 
 export interface InvitesStateProps {
     users: BdapUser[]
@@ -24,14 +22,14 @@ export const Invites: FunctionComponent<InvitesProps> = ({ users }: InvitesProps
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><InvitesIcon width="50px" height="50px" margin="0" /> Invites</H1>
                 <UserList>
-                    {userlist.map((u, idx) =>
+                    {users.map((u, idx) =>
                         <UserListItem key={idx}>
                             <div style={{ display: 'flex' }}>
                                 <UserListAvatar src={man} />
                                 <div style={{ display: 'flex', flexDirection: "column", justifyContent: "center", height: "30px" }}>
                                     <div style={{ display: 'flex', flexDirection: "row", justifyContent: "space-between" }}>
-                                        <Text margin="0 0.2em 0 0.5em" >{u.split(" ")[0]}</Text>
-                                        <Text margin="0 0.2em" fontWeight="bold">{u.split(" ")[1]}</Text>
+                                        <Text margin="0 0.2em 0 0.5em" >{u.commonName.split(" ")[0]}</Text>
+                                        <Text margin="0 0.2em" fontWeight="bold">{u.commonName.split(" ")[1]}</Text>
                                     </div></div>
                             </div>
                             <div>

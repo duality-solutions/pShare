@@ -22,7 +22,7 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
-    () => bdapSaga()
-   
+    () => bdapSaga(true)
+
 ]
 

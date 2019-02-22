@@ -11,6 +11,7 @@ export interface BdapState {
     pendingAcceptLinks: PendingLink[]
     pendingRequestLinks: PendingLink[]
     completeLinks: Link[]
+    currentUser?: GetUserInfo
 }
 const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [] };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
@@ -30,6 +31,9 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions): Bdap
         case getType(BdapActions.getUsersSuccess):
             const users = action.payload
             return { ...state, users }
+        case getType(BdapActions.currentUserReceived):
+            const currentUser = action.payload
+            return { ...state, currentUser }
         case getType(BdapActions.getPendingAcceptLinksSuccess):
             const pendingAcceptLinks = action.payload
             return { ...state, pendingAcceptLinks }
