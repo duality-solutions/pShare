@@ -10,7 +10,6 @@ import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
 
 const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
-    console.log("creating LockedCommandQueueRunner")
     let queueControls = await getQueueControls()
     return {
         addQueuedCommand: (queuedCommand: QueuedCommandWithPassword) => {
@@ -23,7 +22,6 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
             if (!queueControls.finishedResolver.complete) {
                 throw Error("cannot restart unless cancelled first")
             }
-            console.log("LockedCommandQueueRunner restart")
             queueControls = await getQueueControls()
         }
 
@@ -40,7 +38,6 @@ export const getLockedCommandQueue = async () => {
     return await queueRunnerProm;
 }
 async function getQueueControls() {
-    console.log("getting queue controls")
     const cancellationToken = createCancellationToken();
     const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
     const rpcClient = await getRpcClient();
@@ -48,7 +45,6 @@ async function getQueueControls() {
     const finishedResolver = createPromiseResolver<void>();
     const runQueue = async () => {
         while (!cancellationToken.isCancellationRequested) {
-            //let lockedSessionIsValid = true;
             let queuedCommand: QueuedCommandWithPassword;
             try {
                 queuedCommand = await commandQueue.receive(cancellationToken);
@@ -68,7 +64,6 @@ async function getQueueControls() {
                 }
                 catch (err) {
                     queuedCommand.promiseResolver.reject(err);
-                    console.log("pw is invalid");
                     break;
                 }
                 try {
@@ -82,9 +77,6 @@ async function getQueueControls() {
                             if (localCancTok.isCancellationRequested) {
                                 if (cancellationToken.isCancellationRequested) {
                                     console.warn("locked command queue cancelled");
-                                }
-                                else {
-                                    console.log("timeout waiting for queue");
                                 }
                                 didTimeout = true;
                                 break;

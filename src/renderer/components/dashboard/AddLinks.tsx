@@ -6,6 +6,7 @@ import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
+import { LinkDisplayName } from "./LinkDisplayName";
 
 export interface AddLinksStateProps {
     users: BdapUser[]
@@ -28,12 +29,8 @@ export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, push }: AddL
                         <UserListItem key={u.userName} >
                             <div style={{ display: 'flex' }}>
                                 <UserListAvatar src={man} />
-                                <div style={{ display: 'flex', flexDirection: "column", justifyContent: "center", height: "30px" }}>
-                                    <div style={{ display: 'flex', flexDirection: "row", justifyContent: "space-between" }}>
-                                        <Text margin="0 0.2em 0 0.5em" >{u.commonName.split(' ')[0]}</Text>
-                                        <Text margin="0 0.2em" fontWeight="bold" >{u.commonName.split(' ')[1]}</Text>
-                                    </div>
-                                </div>
+                                <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
+
                             </div>
                             {u.state === 'pending' ?
                                 <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>

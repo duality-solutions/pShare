@@ -7,6 +7,7 @@ import Container from "../ui-elements/Container";
 import man from "../../assets/man.svg";
 import Button from "../ui-elements/Button";
 import { BdapUser } from "../../../renderer/system/BdapUser";
+import { LinkDisplayName } from "./LinkDisplayName";
 
 
 
@@ -26,11 +27,8 @@ export const Invites: FunctionComponent<InvitesProps> = ({ users }: InvitesProps
                         <UserListItem key={idx}>
                             <div style={{ display: 'flex' }}>
                                 <UserListAvatar src={man} />
-                                <div style={{ display: 'flex', flexDirection: "column", justifyContent: "center", height: "30px" }}>
-                                    <div style={{ display: 'flex', flexDirection: "row", justifyContent: "space-between" }}>
-                                        <Text margin="0 0.2em 0 0.5em" >{u.commonName.split(" ")[0]}</Text>
-                                        <Text margin="0 0.2em" fontWeight="bold">{u.commonName.split(" ")[1]}</Text>
-                                    </div></div>
+                                <LinkDisplayName displayName={u.commonName} />
+
                             </div>
                             <div>
                                 <Button primary width="102px" minHeight="30px" fontSize="0.8em" margin="0 5px 0 0"> Accept </Button>

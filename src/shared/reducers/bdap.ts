@@ -5,6 +5,8 @@ import { getType } from "typesafe-actions";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { Link } from "../../dynamicdInterfaces/links/Link";
+import { AppActions } from "../actions/app";
+import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 
 export interface BdapState {
     users: GetUserInfo[]
@@ -26,7 +28,7 @@ const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequ
 //     users: generateMockUsers()
 // };
 
-export const bdap = (state: BdapState = defaultState, action: BdapActions): BdapState => {
+export const bdap = (state: BdapState = defaultState, action: BdapActions | AppActions): BdapState => {
     switch (action.type) {
         case getType(BdapActions.getUsersSuccess):
             const users = action.payload
@@ -43,6 +45,14 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions): Bdap
         case getType(BdapActions.getCompleteLinksSuccess):
             const completeLinks = action.payload
             return { ...state, completeLinks }
+        case getType(AppActions.initializeApp):
+            return {
+                ...deleteOptionalProperty(state, "currentUser"),
+                completeLinks: [],
+                pendingAcceptLinks: [],
+                pendingRequestLinks: [],
+                users: []
+            }
         default:
             return state
 

@@ -64,8 +64,8 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
 function* orchestrateRestart(rootSagaTask: Task) {
     console.log("orchestrating restart")
     const restartable: Restartable = yield cancelEverything(rootSagaTask);
+    console.log("restarting application")
     yield call(() => restartable.restart());
-    console.log("restarting")
 
 }
 
@@ -90,11 +90,10 @@ function cancelEverything(rootSagaTask: Task) {
     return call(function* () {
         console.warn("cancelling all sagas")
         yield cancel(rootSagaTask);
-        console.warn("cancelling LockedCommandQueueRunner")
         const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
         lockedCommandQueueRunner.cancel();
         yield call(() => lockedCommandQueueRunner.finished);
-        console.warn("LockedCommandQueueRunner fully stopped")
+        console.warn("LockedCommandQueueRunner stopped")
 
         const restartable: Restartable = {
             restart: () => {
@@ -102,7 +101,7 @@ function cancelEverything(rootSagaTask: Task) {
                 return lockedCommandQueueRunner.restart()
             }
         };
-        console.log("everything cancelled")
+        console.log("app successfully shutdown")
         return restartable;
     })
 }
