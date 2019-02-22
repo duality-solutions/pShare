@@ -1,1 +1,1 @@
-export type BdapUserState = "normal" | "pending-request" | "pending-accept" | "linked";
+export type BdapUserState = "normal" | "pending" | "linked";

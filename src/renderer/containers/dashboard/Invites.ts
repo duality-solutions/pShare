@@ -29,7 +29,7 @@ const getUserList = createSelector(
             .select(({ u }) => ({
                 userName: u.object_id,
                 commonName: u.common_name,
-                state: "pending-request"
+                state: "pending"
             } as BdapUser))
             .orderBy(u => u.commonName.toLowerCase())
             .thenBy(u => u.userName.toLowerCase())

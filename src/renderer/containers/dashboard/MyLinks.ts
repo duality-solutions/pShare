@@ -6,6 +6,7 @@ import { connect } from "react-redux";
 import { createSelector } from 'reselect'
 import { blinq } from "blinq";
 import { BdapUser } from "../../system/BdapUser";
+import { push } from "connected-react-router";
 
 
 const getUserList = createSelector(
@@ -35,7 +36,7 @@ const getUserList = createSelector(
                 (u) => ({
                     userName: u.object_id,
                     commonName: u.common_name,
-                    state: "pending-accept"
+                    state: "pending"
                 } as BdapUser))
         const pendingRequestUsers = blinq(users)
             .join(
@@ -45,7 +46,7 @@ const getUserList = createSelector(
                 (u) => ({
                     userName: u.object_id,
                     commonName: u.common_name,
-                    state: "pending-request"
+                    state: "pending"
                 } as BdapUser))
         return linkedUsers
             .concat(pendingAcceptUsers)
@@ -62,6 +63,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateP
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...BdapActions };
+const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...BdapActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyLinks)

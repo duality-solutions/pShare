@@ -11,13 +11,14 @@ export interface AddLinksStateProps {
     users: BdapUser[]
 }
 export interface AddLinksDispatchProps {
+    push: (pathname: string) => void
 }
-export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps & { history?: any }
-export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, history }: AddLinksProps) =>
+export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
+export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, push }: AddLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 0 0 0' }}>
-                <CloseIcon margin="0 40px 0 0" onClick={() => history.push('/Dashboard/MyLinks')} />
+                <CloseIcon margin="0 40px 0 0" onClick={() => push('/Dashboard/MyLinks')} />
                 <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
@@ -34,7 +35,7 @@ export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, history }: A
                                     </div>
                                 </div>
                             </div>
-                            {u.state === 'pending-request' ?
+                            {u.state === 'pending' ?
                                 <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
                                 : <div style={{ fontSize: "0.7em" }}> Request <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
                             }

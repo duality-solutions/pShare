@@ -69,12 +69,12 @@ export function* navSaga() {
             navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
             navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage)
             navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage)
-            navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.addLinks, true)
+            navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.myLinks, true)
             yield navMap.runNav();
         }
         else {
             const navMap = getNavMap();
-            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.addLinks, true)
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.myLinks, true)
 
             yield navMap.runNav();
         }
