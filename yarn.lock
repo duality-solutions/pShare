@@ -4996,6 +4996,11 @@ is-glob@^4.0.0:
   dependencies:
     is-extglob "^2.1.1"
 
+is-in-subnet@^1.9.0:
+  version "1.9.0"
+  resolved "https://registry.yarnpkg.com/is-in-subnet/-/is-in-subnet-1.9.0.tgz#a581f71676ed5e2914dfa8559d23881f6a9348c8"
+  integrity sha512-zx7GdTPsGrLNIWIx978xGPP6UUjXYH/gG0vFtUARakofU2m+uiMqbSTR/bKCXooHjhW2W1KUDrhuuiaCc27sog==
+
 is-installed-globally@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/is-installed-globally/-/is-installed-globally-0.1.0.tgz#0dfd98f5a9111716dd535dda6492f67bf3d25a80"
