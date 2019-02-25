@@ -40,14 +40,19 @@ export function* createBdapAccountSaga(mock: boolean = false) {
 export const waitForBdapAccountCreated = function* (username: string, txid: string) {
     for (; ;) {
         //todo: consider a timeout or similar
+        console.log("checking if bdap account has been created")
         const [accountCreated, userInfo] = yield call(checkBdapAccountCreated, username, txid)
 
         if (accountCreated) {
             if (userInfo != null) {
+                console.log("bdap account has been created")
+
                 return userInfo
             }
             throw Error("expected userInfo to be non-null")
         }
+        console.log("bdap account has not yet been created")
+
         yield call(delay, 5000)
     }
 }
