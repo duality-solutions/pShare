@@ -27,9 +27,17 @@ export function createEventEmitter() {
         }
         return false;
     };
+    const once = (evtName: string, handler: (evtObj: any) => void) => {
+        const h = (evtObj: any) => {
+            handler(evtObj)
+            removeEventListener(evtName, h)
+        }
+        return addEventListener(evtName, h)
+    }
     const em: EventDispatcher = {
         dispatchEvent,
         addEventListener,
+        once,
         removeEventListener
     };
     return em;
