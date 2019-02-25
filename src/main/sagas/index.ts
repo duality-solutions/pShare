@@ -17,7 +17,7 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => storeHydrationSaga(),
     () => validationSaga(),
     () => onboardingSaga(),
-    () => createBdapAccountSaga(true),
+    () => createBdapAccountSaga(),
     () => setWalletPasswordSaga(true),
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),

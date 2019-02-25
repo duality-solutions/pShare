@@ -5,23 +5,18 @@ import * as http from 'http'
 import * as https from 'https'
 import { streamToBufferAsync } from './streamToBufferAsync'
 import { createCancellationToken, CancellationToken } from '../../../shared/system/createCancellationToken';
-import { blinq as loq } from 'blinq'
+import { blinq } from 'blinq'
 import * as isInSubnet from 'is-in-subnet';
 
 const { IPv4: { isInSubnet: isInSubnetV4 }, IPv6: { isInSubnet: isInSubnetV6 } } = isInSubnet
 
-//const url = require("url");
-// const dns = require("dns");
-// const net = require("net");
-//const streamToBufferAsync = require("./streamToBufferAsync");
-//const CancellationToken = require("./CancellationToken");
-//const loq = require("loq");
 
 
-const subnetsV4 = loq(['0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8',
+
+const subnetsV4 = blinq(['0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8',
     '169.254.0.0/16', '172.16.0.0/12', '192.0.0.0/24', '192.0.2.0/24', '192.88.99.0/24', '192.168.0.0/16',
     '198.18.0.0/15', '198.51.100.0/24', '203.0.113.0/24', '224.0.0.0/4', '240.0.0.0/4', '255.255.255.255/32']);
-const subnetsV6 = loq(['::/128', '::1/128', '::ffff:0:0/96', '::ffff:0:0:0/96', '64:ff9b::/96', '100::/64', '2001::/32',
+const subnetsV6 = blinq(['::/128', '::1/128', '::ffff:0:0/96', '::ffff:0:0:0/96', '64:ff9b::/96', '100::/64', '2001::/32',
     '2001:20::/28', '2001:db8::/32', '2002::/16', 'fc00::/7', 'fe80::/10', 'ff00::/8']);
 const isPrivateOrReservedIpAddress =
     (ipAddr: string) => {
@@ -98,9 +93,7 @@ async function getRequestOptionsAsync(opts: RequestOpts) {
 
     const records = await dnsResolveAsync(parsedUrl.hostname);
 
-    // console.log(`addresses : ${JSON.stringify(addresses)}`);
-
-    const addr = loq(records).where(a => a.family === 4).orderBy(_ => Math.random()).select(r => r.address).firstOrDefault();
+    const addr = blinq(records).where(a => a.family === 4).orderBy(_ => Math.random()).select(r => r.address).firstOrDefault();
 
     if (!addr) {
         throw Error(`could not resolve hostname ${parsedUrl.hostname}`)

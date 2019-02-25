@@ -4,6 +4,8 @@ import { OnboardingActions } from "../../shared/actions/onboarding";
 import { getRpcClient } from "../getRpcClient";
 import { delay } from "../../shared/system/delay";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
+import { httpRequestStringAsync } from "../system/http/httpRequestAsync";
+import { createCancellationToken } from "../../shared/system/createCancellationToken";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {
@@ -83,13 +85,14 @@ export const createRawBdapAccount = async (username: string, displayname: string
 }
 
 export const activateAccount = async (rawHexTx: string, token: string) => {
-    await delay(10000)
-    const txId = "10c3cd285b1b08747879347648d2d250d31987d23c7a2d087603287c594999a7" //txId for user "batman"
+    const serviceUrl = `https://pshare.duality.solutions/callback?token=${encodeURIComponent(token)}&tx=${encodeURIComponent(rawHexTx)}`
+    const ct = createCancellationToken()
+    const txId = await httpRequestStringAsync({ url: serviceUrl, method: "GET" }, ct)
     return txId;
 };
 
 function* mockSaga(userName: string) {
-    
+
     yield call(delay, 10000)
     yield put(userName === "failcreatebdap" ? OnboardingActions.createBdapAccountFailed() : OnboardingActions.bdapAccountCreated(userName))
 }
