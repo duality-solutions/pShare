@@ -142,7 +142,7 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
         //requestOpts.method = opts.method || "GET";
 
         const request = httpLib.request(ro, (response) => {
-            //console.log("got response");
+            console.log("got response code " + response.statusCode);
             resolve(response);
         });
 
@@ -182,14 +182,27 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
 
 }
 
-export async function httpRequestBufferAsync(opts: RequestOpts, cancellationToken: CancellationToken) {
-    const response = await httpRequestResponseAsync(opts, cancellationToken);
-    return await streamToBufferAsync(response);
+interface RequestBufferResponse {
+    responseBuffer: Buffer
+    response: http.IncomingMessage
 }
 
-export async function httpRequestStringAsync(opts: RequestOpts, cancellationToken: CancellationToken) {
-    const responseBuf = await httpRequestBufferAsync(opts, cancellationToken);
-    return responseBuf.toString();
+export async function httpRequestBufferAsync(opts: RequestOpts, cancellationToken: CancellationToken): Promise<RequestBufferResponse> {
+    const response = await httpRequestResponseAsync(opts, cancellationToken);
+    const buf = await streamToBufferAsync(response);
+    return { responseBuffer: buf, response };
+}
+
+interface RequestStringResponse {
+    responseString: string
+    response: http.IncomingMessage
+}
+
+
+export async function httpRequestStringAsync(opts: RequestOpts, cancellationToken: CancellationToken): Promise<RequestStringResponse> {
+    const { response, responseBuffer } = await httpRequestBufferAsync(opts, cancellationToken);
+
+    return { responseString: responseBuffer.toString(), response };
 }
 
 function dnsResolveAsync(hostname: string): Promise<dns.LookupAddress[]> {

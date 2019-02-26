@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer'
 import { Stream } from 'stream';
 
-export function streamToBufferAsync(stream: Stream) {
+export function streamToBufferAsync(stream: Stream):Promise<Buffer> {
     return new Promise((resolve, reject) => {
         let buffers: Buffer[] = [];
         stream.on('data', (buffer) => {

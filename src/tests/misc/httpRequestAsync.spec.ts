@@ -3,7 +3,7 @@ import { createCancellationToken } from "../../shared/system/createCancellationT
 
 test("httpRequestStringAsync", async () => {
     const ct = createCancellationToken()
-    const str = await httpRequestStringAsync({ url: "https://www.google.com" }, ct)
-    console.log(str)
-    expect(str.length).toBeGreaterThan(0)
+    const { responseString } = await httpRequestStringAsync({ url: "https://www.google.com" }, ct)
+    console.log(responseString)
+    expect(responseString.length).toBeGreaterThan(0)
 })
