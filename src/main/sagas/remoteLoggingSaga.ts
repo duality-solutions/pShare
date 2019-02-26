@@ -4,10 +4,18 @@ import { getType, ActionType } from "typesafe-actions";
 import { getLogger } from "../system/getLogger";
 import winston from 'winston'
 
-export function* remoteLoggingSaga() {
-    yield takeEvery(getType(AppActions.log), function* (action: ActionType<typeof AppActions.log>) {
-        const logger: winston.Logger = yield call(() => getLogger())
+const isDevelopment = process.env.NODE_ENV === 'development'
 
+
+export function* remoteLoggingSaga() {
+    if (isDevelopment) {
+        return;
+    }
+    yield takeEvery(getType(AppActions.log), function* (action: ActionType<typeof AppActions.log>) {
+        const logger: winston.Logger | undefined = yield call(() => getLogger())
+        if (typeof logger === 'undefined') {
+            return;
+        }
         switch (action.payload.level) {
             case "error":
                 logger.error(["Renderer console", ...action.payload.args]);

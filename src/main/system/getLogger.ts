@@ -4,7 +4,9 @@ import winston, { createLogger } from 'winston';
 import * as fs from 'fs'
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
 
-const loggerProm = _createLogger();
+const isDevelopment = process.env.NODE_ENV === 'development'
+
+const loggerProm = isDevelopment ? Promise.resolve(undefined as winston.Logger | undefined) : _createLogger();
 
 
 

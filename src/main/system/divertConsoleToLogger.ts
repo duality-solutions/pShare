@@ -1,6 +1,10 @@
 import { prepareErrorForSerialization } from '../../shared/proxy/prepareErrorForSerialization';
-import winston from 'winston';
-export function divertConsoleToLogger(logger: winston.Logger) {
+import { getLogger } from './getLogger';
+export async function divertConsoleToLogger() {
+  const logger = await getLogger()
+  if (typeof logger === 'undefined') {
+    return
+  }
   const originalConsoleLog = console.log.bind(console);
   const originalConsoleWarn = console.warn.bind(console);
   const originalConsoleInfo = console.info.bind(console);

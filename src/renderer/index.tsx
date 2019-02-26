@@ -11,10 +11,12 @@ import { divertConsoleToStore } from './system/divertConsoleToStore';
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
 const store = configureStore(history)
+const isDevelopment = process.env.NODE_ENV === 'development'
 
-divertConsoleToStore(store)
+if (!isDevelopment) {
+    divertConsoleToStore(store)
+}
 
-setTimeout(() => { throw Error("monkey") }, 5000)
 
 //store.subscribe(() => console.log("renderer store changed : ", store.getState()))
 store.dispatch(RootActions.initializeApp())
@@ -30,7 +32,6 @@ let render = () => ReactDOM.render(
     </Provider>,
     rootEl);
 
-const isDevelopment = process.env.NODE_ENV === 'development'
 if (isDevelopment && module.hot) {
     module.hot.accept("./components/App", () => {
         console.info("hot-reloading react components")
