@@ -6,10 +6,16 @@ import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
 import { RootActions } from '../shared/actions';
+import { divertConsoleToStore } from './system/divertConsoleToStore';
 
 const rootEl = document.getElementById("app");
 const history: History = createMemoryHistory();
 const store = configureStore(history)
+
+divertConsoleToStore(store)
+
+setTimeout(() => { throw Error("monkey") }, 5000)
+
 //store.subscribe(() => console.log("renderer store changed : ", store.getState()))
 store.dispatch(RootActions.initializeApp())
 

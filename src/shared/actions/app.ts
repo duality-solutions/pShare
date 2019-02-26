@@ -1,5 +1,10 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
 
+interface LogMessage{
+    args:any[],
+    level:"error"|"warn"|"log"|"info"
+}
+
 // ensure this is added to ./index.ts RootActions
 export const AppActions = {
     initializeApp: createStandardAction('app/INITIALIZE')<void>(),
@@ -9,6 +14,8 @@ export const AppActions = {
 
     sleep:createStandardAction('app/SLEEP')<void>(),
     wake:createStandardAction('app/WAKE')<void>(),
+
+    log:createStandardAction('app/LOG')<LogMessage>()
     
 }
 

@@ -15,9 +15,9 @@ import { installExtensionsAsync } from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
 import { AppActions } from '../shared/actions/app';
-//import OnboardingActions from '../shared/actions/onboarding';
 
-//import { v4 as uuid } from 'uuid';
+import { getLogger } from './system/getLogger';
+import { divertConsoleToLogger } from './system/divertConsoleToLogger';
 
 
 declare module 'electron' {
@@ -109,6 +109,10 @@ app.on('activate', () => {
 
 // create main BrowserWindow when electron is ready
 app.on('ready', async () => {
+  const logger = await getLogger()
+
+  divertConsoleToLogger(logger);
+
   if (isDevelopment) {
     const installPromise = installExtensionsAsync(devToolsExtensions);
     installDevtron();
