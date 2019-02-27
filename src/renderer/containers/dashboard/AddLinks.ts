@@ -27,15 +27,15 @@ const getUserList = createSelector(
     ],
     (users, pendingRequestLinks, pendingAcceptLinks, completeLinks, currentFqUser) => {
         //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
-        const removeLinks = completeLinks.concat(pendingAcceptLinks)
+        const existingLinks = completeLinks.concat(pendingAcceptLinks)
         return blinq(users)
             .leftOuterJoin(
-                removeLinks,
+                existingLinks,
                 u => u.object_full_path,
                 c => blinq([c.recipient_fqdn, c.requestor_fqdn]).first(n => n !== currentFqUser),
                 (user, link) => ({ user, link }))
             .where(({ link }) => typeof link === 'undefined')
-            .select(({ user }) => user) //all users, minus those for whom we already have a complete link
+            .select(({ user }) => user) //all users, minus those for whom we already have a complete/pending accept link
             .leftOuterJoin(
                 pendingRequestLinks,
                 user => user.object_full_path,
