@@ -29,7 +29,7 @@ export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptL
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><InvitesIcon width="50px" height="50px" margin="0" /> Invites</H1>
                 <UserList>
-                    {invites.map(({ user, link: { recipient, requestor } }, idx) =>
+                    {invites.map(({ user, link }, idx) =>
                         <UserListItem key={idx}>
                             <div style={{ display: 'flex' }}>
                                 <UserListAvatar src={man} />
@@ -37,7 +37,7 @@ export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptL
 
                             </div>
                             <div>
-                                <Button primary width="102px" minHeight="30px" fontSize="0.8em" margin="0 5px 0 0" onClick={() => beginAcceptLink({ recipient, requestor })}> Accept </Button>
+                                <Button primary width="102px" minHeight="30px" fontSize="0.8em" margin="0 5px 0 0" onClick={() => beginAcceptLink(link)}> Accept </Button>
                                 <Button width="102px" minHeight="30px" fontSize="0.8em" > Decline </Button>
                             </div>
                         </UserListItem>
