@@ -2,6 +2,8 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 import { GetUserInfo } from '../../dynamicdInterfaces/GetUserInfo';
 import { Link } from '../../dynamicdInterfaces/links/Link';
 import { PendingLink } from '../../dynamicdInterfaces/links/PendingLink';
+import { LinkRequestOptions } from './payloadTypes/LinkRequestOptions';
+import { LinkAcceptOptions } from "./payloadTypes/LinkAcceptOptions";
 
 export const BdapActions = {
 
@@ -24,7 +26,12 @@ export const BdapActions = {
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
-    currentUserReceived:createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>()
+    currentUserReceived:createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>(),
+
+    createLinkRequest:createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
+    acceptLink:createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
+
+
 
 }
 
