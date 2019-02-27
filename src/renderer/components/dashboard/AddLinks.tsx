@@ -7,15 +7,18 @@ import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
+import { LinkBase } from "../../../shared/actions/payloadTypes/LinkBase";
 
 export interface AddLinksStateProps {
     users: BdapUser[]
+    currentUserName: string
 }
 export interface AddLinksDispatchProps {
     push: (pathname: string) => void
+    startCreateLinkRequest: (opts: LinkBase) => void
 }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
-export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, push }: AddLinksProps) =>
+export const AddLinks: FunctionComponent<AddLinksProps> = ({ currentUserName, users, push, startCreateLinkRequest }: AddLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 0 0 0' }}>
@@ -34,7 +37,7 @@ export const AddLinks: FunctionComponent<AddLinksProps> = ({ users, push }: AddL
                             </div>
                             {u.state === 'pending' ?
                                 <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                : <div style={{ fontSize: "0.7em" }}> Request <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                                : <div style={{ fontSize: "0.7em" }} onClick={() => startCreateLinkRequest({ requestor: currentUserName, recipient: u.userName })}> Request <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
                             }
                         </UserListItem>
                     )}

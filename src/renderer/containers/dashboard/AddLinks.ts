@@ -10,32 +10,41 @@ import { push } from "connected-react-router";
 
 
 
-
+const getCurrentUserName = createSelector((state: RendererRootState) => state.bdap.currentUser, currentUser => {
+    if (typeof currentUser === 'undefined') {
+        throw Error("state.bdap.currentUser is unexpectedly undefined")
+    }
+    return currentUser.object_id
+})
 const getUserList = createSelector(
     [
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.pendingRequestLinks,
+        (state: RendererRootState) => state.bdap.pendingAcceptLinks,
         (state: RendererRootState) => state.bdap.completeLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
 
     ],
-    (users, pendingRequestLinks, completeLinks, currentFqUser) => {
+    (users, pendingRequestLinks, pendingAcceptLinks, completeLinks, currentFqUser) => {
+        //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
+        const removeLinks = completeLinks.concat(pendingAcceptLinks)
         return blinq(users)
             .leftOuterJoin(
-                completeLinks,
+                removeLinks,
                 u => u.object_full_path,
                 c => blinq([c.recipient_fqdn, c.requestor_fqdn]).first(n => n !== currentFqUser),
-                (u, c) => ({ u, c }))
-            .where(({ c }) => typeof c === 'undefined')
-            .select(({ u }) => u) //all users, minus those for whom we already have a complete link
+                (user, link) => ({ user, link }))
+            .where(({ link }) => typeof link === 'undefined')
+            .select(({ user }) => user) //all users, minus those for whom we already have a complete link
             .leftOuterJoin(
                 pendingRequestLinks,
-                u => u.object_full_path,
-                l => blinq([l.recipient_fqdn, l.requestor_fqdn]).first(n => n !== currentFqUser),
-                (u, l) => ({
-                    userName: u.object_id,
-                    commonName: u.common_name,
-                    state: typeof l === 'undefined' ? "normal" : "pending"
+                user => user.object_full_path,
+                link => blinq([link.recipient_fqdn, link.requestor_fqdn]).first(n => n !== currentFqUser),
+                (user, link) => ({
+                    userName: user.object_id,
+                    commonName: user.common_name,
+                    state: typeof link === 'undefined' ? "normal" : "pending",
+                    pendingLink: link
                 } as BdapUser))
             .orderBy(u => u.commonName.toLowerCase())
             .thenBy(u => u.userName.toLowerCase())
@@ -43,8 +52,11 @@ const getUserList = createSelector(
     })
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksStateProps => {
+    const currentUserName = getCurrentUserName(state)
+   
     return {
-        users: getUserList(state)
+        users: getUserList(state),
+        currentUserName
     };
 };
 

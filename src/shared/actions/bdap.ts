@@ -4,6 +4,7 @@ import { Link } from '../../dynamicdInterfaces/links/Link';
 import { PendingLink } from '../../dynamicdInterfaces/links/PendingLink';
 import { LinkRequestOptions } from './payloadTypes/LinkRequestOptions';
 import { LinkAcceptOptions } from "./payloadTypes/LinkAcceptOptions";
+import { LinkBase } from './payloadTypes/LinkBase';
 
 export const BdapActions = {
 
@@ -28,6 +29,7 @@ export const BdapActions = {
 
     currentUserReceived:createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>(),
 
+    startCreateLinkRequest:createStandardAction('bdap/START_CREATE_LINK_REQUEST')<LinkBase>(),
     createLinkRequest:createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
     acceptLink:createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
 
