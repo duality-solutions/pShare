@@ -1,44 +1,54 @@
 import { RendererRootState } from "../../reducers";
-import { Invites as Invites_, InvitesDispatchProps, InvitesStateProps } from "../../components/dashboard/Invites";
+import { Invites as Invites_, InvitesDispatchProps, InvitesStateProps, Invite } from "../../components/dashboard/Invites";
 import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
 import { createSelector } from 'reselect'
-import { BdapUser } from "../../system/BdapUser";
 import { blinq } from "blinq";
 
-
-
-
-const getUserList = createSelector(
+const getInvites = createSelector(
     [
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
-        (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
+        (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined,
+        (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined
 
     ],
-    (users, pendingAcceptLinks, currentFqUser) => {
+    (users, pendingAcceptLinks, currentFqUser, currentUserName) => {
         return blinq(users)
             .leftOuterJoin(
                 pendingAcceptLinks,
-                u => u.object_full_path,
-                a => blinq([a.recipient_fqdn, a.requestor_fqdn]).firstOrDefault(fqdn => currentFqUser !== fqdn),
-                (u, a) => ({ u, a })
+                user => user.object_full_path,
+                link => blinq([link.recipient_fqdn, link.requestor_fqdn]).firstOrDefault(fqdn => currentFqUser !== fqdn),
+                (user, link) => ({ user, link })
             )
-            .where(({ a }) => typeof a !== 'undefined')
-            .select(({ u }) => ({
-                userName: u.object_id,
-                commonName: u.common_name,
-                state: "pending"
-            } as BdapUser))
-            .orderBy(u => u.commonName.toLowerCase())
-            .thenBy(u => u.userName.toLowerCase())
+            .where(({ link }) => typeof link !== 'undefined')
+            .select(({ user, link }) => {
+                if (typeof link === 'undefined') {
+                    throw Error("link should be defined")
+                }
+                return ({
+                    user: {
+                        userName: user.object_id,
+                        commonName: user.common_name,
+                        state: "pending"
+                    },
+                    link: typeof link === 'undefined'
+                        ? undefined
+                        : currentFqUser === link.requestor_fqdn
+                            ? { requestor: currentUserName, recipient: user.object_id }
+                            : { recipient: currentUserName, requestor: user.object_id }
+                } as Invite);
+            })
+            .orderBy(({ user }) => user.commonName.toLowerCase())
+            .thenBy(({ user }) => user.userName.toLowerCase())
             .toArray()
     })
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): InvitesStateProps => {
+    const invites = getInvites(state);
     return {
-        users: getUserList(state)
+        invites: invites
     };
 };
 

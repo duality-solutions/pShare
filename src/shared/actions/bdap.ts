@@ -27,11 +27,13 @@ export const BdapActions = {
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
-    currentUserReceived:createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>(),
+    currentUserReceived: createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>(),
 
-    startCreateLinkRequest:createStandardAction('bdap/START_CREATE_LINK_REQUEST')<LinkBase>(),
-    createLinkRequest:createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
-    acceptLink:createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
+    beginCreateLinkRequest: createStandardAction('bdap/BEGIN_CREATE_LINK_REQUEST')<LinkBase>(),
+    createLinkRequest: createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
+
+    beginAcceptLink: createStandardAction('bdap/BEGIN_ACCEPT_LINK')<LinkBase>(),
+    acceptLink: createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
 
 
 
