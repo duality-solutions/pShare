@@ -44,9 +44,7 @@ export function* bdapSaga(mock: boolean) {
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
             const userFqdn: string = yield getUserFqdn();
-
             const p = blinq(mockPendingRequestLinks).select(l => ({ ...l, requestor_fqdn: userFqdn })).toArray()
-
             yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
@@ -55,7 +53,6 @@ export function* bdapSaga(mock: boolean) {
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
             const userFqdn: string = yield getUserFqdn();
-
             const p = blinq(mockCompleteLinks).select(l => (l.requestor_fqdn === 'bob@public.bdap.io' ? { ...l, requestor_fqdn: userFqdn } : { ...l, recipient_fqdn: userFqdn })).toArray()
             yield put(BdapActions.getCompleteLinksSuccess(p))
             return
@@ -102,14 +99,10 @@ function* rpcLinkCommand<T extends Link>(
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
 ) {
-    const password: string | undefined = yield select((state: MainRootState) => state.user.sessionWalletPassword)
-    if (typeof password === 'undefined') {
-        yield put(failActionCreator("no password in state"))
-        return
-    }
+
     let response: LinkResponse<T>;
     try {
-        response = yield unlockedCommandEffect(password, cmd)
+        response = yield unlockedCommandEffect(cmd)
     } catch (err) {
         yield put(failActionCreator(err.message))
         return;
