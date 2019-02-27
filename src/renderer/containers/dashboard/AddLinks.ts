@@ -43,8 +43,7 @@ const getUserList = createSelector(
                 (user, link) => ({
                     userName: user.object_id,
                     commonName: user.common_name,
-                    state: typeof link === 'undefined' ? "normal" : "pending",
-                    pendingLink: link
+                    state: typeof link === 'undefined' ? "normal" : "pending"
                 } as BdapUser))
             .orderBy(u => u.commonName.toLowerCase())
             .thenBy(u => u.userName.toLowerCase())
