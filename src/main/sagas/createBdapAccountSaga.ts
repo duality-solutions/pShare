@@ -29,7 +29,7 @@ export function* createBdapAccountSaga(mock: boolean = false) {
             const regex = /^Error: Activation service responded with status code\: \d*/;
             const matches = regex.exec(err.message)
             if (matches !== null) {
-                yield put(OnboardingActions.createBdapAccountFailed(matches[0]))
+                yield put(OnboardingActions.createBdapAccountFailed(`Activation error response : ${err.message}`))
                 return;
             }
             throw err;

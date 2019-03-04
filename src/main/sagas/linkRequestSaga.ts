@@ -72,7 +72,6 @@ interface BdapAccount {
 const getMyBdapAccount = () => call(function* () {
     const rpcClient: RpcClient = yield call(async () => getRpcClient())
     const myBdapAccountsResponse: Record<string, BdapAccount> = yield call(() => rpcClient.command("mybdapaccounts"))
-    debugger
     const myBdapAccounts = entries(myBdapAccountsResponse).select(([, v]) => v)
     const user: UserState = yield select((state: MainRootState) => state.user)
     const myBdapAccount = myBdapAccounts.singleOrDefault(acc => acc.object_id === user.userName)

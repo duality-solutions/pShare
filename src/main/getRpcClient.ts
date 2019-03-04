@@ -1,11 +1,12 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
 import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
-import { RpcClient } from './RpcClient';
+import { RpcClient, RpcClientWrapper } from './RpcClient';
 import { createAsyncQueue } from '../shared/system/createAsyncQueue';
 import { QueuedCommand } from './QueuedCommand';
 import { createPromiseResolver } from '../shared/system/createPromiseResolver';
 import { createCancellationToken } from '../shared/system/createCancellationToken';
+import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -16,7 +17,7 @@ interface BitcoinClientOptions {
     password: string
 }
 
-let rpcClientPromise: Promise<RpcClient>
+let rpcClientPromise: Promise<RpcClientWrapper>
 
 export function getRpcClient() {
     if (typeof rpcClientPromise === 'undefined') {
@@ -25,10 +26,10 @@ export function getRpcClient() {
     return rpcClientPromise
 }
 
-async function createQueuedRpcClient(): Promise<RpcClient> {
+async function createQueuedRpcClient(): Promise<RpcClientWrapper> {
     const cancellationToken = createCancellationToken()
     const bb = createAsyncQueue<QueuedCommand>();
-    const { client: rpcClient, quitFunc } = await createRpcClient();
+    const { client: rpcClient, processInfo, quitFunc } = await createRpcClient();
     (async () => {
         while (!cancellationToken.isCancellationRequested) {
 
@@ -61,11 +62,12 @@ async function createQueuedRpcClient(): Promise<RpcClient> {
             return promiseResolver.promise
         },
         //cancel: () => cancellationToken.cancel(),
-        dispose: quitFunc
+        dispose: quitFunc,
+        processInfo
     }
 }
 
-async function createRpcClient(): Promise<{ client: RpcClient, quitFunc: () => void }> {
+async function createRpcClient(): Promise<{ client: RpcClient, processInfo: DynamicdProcessInfo, quitFunc: () => void }> {
     const processInfo = await startDynamicd();
     const quitFunc = () => {
         //console.log("before quit");
@@ -78,7 +80,7 @@ async function createRpcClient(): Promise<{ client: RpcClient, quitFunc: () => v
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword
     });
-    return { client, quitFunc }
+    return { client, processInfo, quitFunc }
 }
 async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcClient> {
     const client = new BitcoinClient(opts);
