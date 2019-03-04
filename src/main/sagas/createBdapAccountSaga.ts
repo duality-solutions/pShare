@@ -108,14 +108,35 @@ export const createRawBdapAccount = async (username: string, displayname: string
     return rawHexTx
 }
 
+interface AccountActivationResponse {
+    success: boolean
+    content: string
+}
+
 export const activateAccount = async (rawHexTx: string, token: string) => {
     const serviceUrl = `https://pshare.duality.solutions/callback?token=${encodeURIComponent(token)}&tx=${encodeURIComponent(rawHexTx)}`
     console.log(serviceUrl)
     const ct = createCancellationToken()
     const { responseString, response } = await httpRequestStringAsync({ url: serviceUrl, method: "GET" }, ct)
+
+    let parsedResponse: AccountActivationResponse
+
+    try {
+        parsedResponse = JSON.parse(responseString)
+    } catch (err) {
+        console.warn(`response not JSON: ${responseString}`)
+        throw Error(`Error: Activation service responded with status code: ${response.statusCode}, 
+        status-message: ${response.statusMessage}, 
+        body: ${responseString}`)
+    }
+
     if (typeof response.statusCode !== 'undefined' && response.statusCode === 200) {
-        console.log(`received txid : ${responseString}`)
-        return responseString;
+        const { content: txId, success } = parsedResponse
+        if (success) {
+            console.log(`received txid : ${txId}`)
+            return txId;
+        }
+
     }
     throw Error(`Error: Activation service responded with status code: ${response.statusCode}, 
         status-message: ${response.statusMessage}, 
