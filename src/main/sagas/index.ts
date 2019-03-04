@@ -13,6 +13,7 @@ import { bdapSaga } from "./bdapSaga";
 import { remoteLoggingSaga } from "./remoteLoggingSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 
+
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => linkRequestSaga(),
     () => actionLoggingSaga("Main Store"),
@@ -26,7 +27,7 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
-    () => bdapSaga()
+    () => bdapSaga(),
 
 ]
 
