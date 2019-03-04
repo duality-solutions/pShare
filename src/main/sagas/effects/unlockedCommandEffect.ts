@@ -6,5 +6,5 @@ import { getWalletPassphrase } from "./getWalletPassphrase";
 export const unlockedCommandEffect = <T>(unlockedAction: (command: RpcCommandFunc) => Promise<T>) =>
     call(function* () {
         const walletPassphrase = yield getWalletPassphrase()
-        return executeUnlockedCommandAsync(walletPassphrase, unlockedAction)
+        return yield call(() => executeUnlockedCommandAsync(walletPassphrase, unlockedAction))
     });
