@@ -7,7 +7,7 @@ import Box from "../ui-elements/Box";
 import { SCard } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
-import { H1, H3, Text } from "../ui-elements/Text";
+import { H1, Text } from "../ui-elements/Text";
 
 export interface RestoreAccountStateProps {
 
