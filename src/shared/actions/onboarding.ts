@@ -58,7 +58,9 @@ export const OnboardingActions = {
     mnemonicFileSaveFailed: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_FAIL')<string>(),
     mnemonicFileSavePathSelected:createStandardAction('onboarding/MNEMONIC_FILE_SAVE_PATH_SELECTED')<string>(),
 
-
+    restoreAccount: createStandardAction('onboarding/RESTORE_ACCOUNT')<void>(),
+    restorePassPhrase: createStandardAction('onboarding/RESTORE_PASSPHRASE')<void>(),
+    restoreMnemonicFile: createStandardAction('onboarding/RESTORE_MNEMONIC_FILE')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

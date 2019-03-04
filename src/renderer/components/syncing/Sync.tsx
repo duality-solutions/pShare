@@ -37,7 +37,7 @@ export const Sync: React.FunctionComponent<SyncProps> =
         <Container height="60vh">
           <Box direction="column" width="100%" align="center">
             <Box direction="row" width="100%" align="center">
-            { 
+            {
               syncStarted ?
               !isComplete ?
               <ProgressBar level={progressPercent} status="Syncing blocks" /> :

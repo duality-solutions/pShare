@@ -1,4 +1,4 @@
-import { put, select, take } from "redux-saga/effects";
+import { put, select, take, takeLatest } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RootActions } from "../../../shared/actions";
 import { RendererRootState } from "../../reducers";
@@ -50,6 +50,10 @@ export function* navSaga() {
             yield put(pushRoute(appRoutes.createAccount))
             console.log("nav saga navigating to /CreateAccount")
             const bdapAccountConfigNavMap = getNavMap();
+            
+            const restoreNavMap = getNavMap();
+            restoreNavMap.registerNavAction(RootActions.restoreAccount, appRoutes.restoreAccount)
+            yield restoreNavMap.runNav()
 
             bdapAccountConfigNavMap.registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
             bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
@@ -59,6 +63,7 @@ export function* navSaga() {
             bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
             //this will block until the navMap is complete
             yield bdapAccountConfigNavMap.runNav()
+
         }
 
         const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
