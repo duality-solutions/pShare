@@ -12,7 +12,7 @@ import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
 
-export function* bdapSaga(mock: boolean) {
+export function* bdapSaga(mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
         const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: GetUserInfo[];
