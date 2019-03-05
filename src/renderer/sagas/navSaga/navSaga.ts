@@ -2,8 +2,9 @@ import { put, select, take } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RootActions } from "../../../shared/actions";
 import { RendererRootState } from "../../reducers";
-import { appRoutes, pushRoute } from "../../routes/appRoutes";
+import { appRoutes, pushRoute, dashboardRoutes } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
+import { BdapActions } from "../../../shared/actions/bdap";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -38,7 +39,7 @@ export function* navSaga() {
     const currentState: RendererRootState = yield select()
     if (currentState.user.isOnboarded) {
         console.log("nav saga: user is onboarded, navigating to /Main")
-        yield put(pushRoute(appRoutes.main))
+        yield put(pushRoute(appRoutes.dashboard))
     }
     else {
         if (typeof currentState.user.userName !== 'undefined') {
@@ -61,22 +62,23 @@ export function* navSaga() {
         }
 
         const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted)
-        if (!isEncrypted || true) {
+        if (!isEncrypted) {
             const navMap = getNavMap();
-            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning),
-                navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
-                navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage),
-                navMap.registerNavAction(RootActions.mnemonicSecured, appRoutes.main, true)
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, appRoutes.mnemonicWarning)
+            navMap.registerNavAction(RootActions.mnemonicWarningAccepted, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicFileCreation, appRoutes.secureMnemonicFile)
+            navMap.registerNavAction(RootActions.mnemonicFileSaveSuccess, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicFilePasswordCancelled, appRoutes.mnemonicPage)
+            navMap.registerNavAction(RootActions.mnemonicSecured, dashboardRoutes.myLinks, true)
             yield navMap.runNav();
         }
         else {
-            // todo: really it should be
-            // yield pushRoute(appRoutes.passwordGet)
-            yield put(pushRoute(appRoutes.main))
-        }
+            const navMap = getNavMap();
+            navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.myLinks, true)
 
+            yield navMap.runNav();
+        }
+        yield put(BdapActions.initialize())
     }
 
 

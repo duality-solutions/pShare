@@ -1,5 +1,6 @@
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 import { getRpcClient } from "../getRpcClient";
+import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 
 const isValidUserName = (value: string) => /^[A-Za-z0-9]+$/.test(value);
 const userNameDoesNotExist = async (value: string) => {
