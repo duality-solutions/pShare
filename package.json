@@ -32,7 +32,6 @@
     "dist-linux": "yarn compile && electron-builder --linux"
   },
   "dependencies": {
-    "@types/react-transition-group": "1.x",
     "bitcoin-core": "^2.0.0",
     "blinq": "^2.0.2",
     "connected-react-router": "^5.0.1",
@@ -86,6 +85,7 @@
     "@types/react-redux": "^6.0.10",
     "@types/react-router": "^4.4.1",
     "@types/react-router-dom": "^4.3.1",
+    "@types/react-transition-group": "1.x",
     "@types/seedrandom": "^2.4.27",
     "@types/styled-components": "^4.1.6",
     "@types/uuid": "^3.4.4",
@@ -101,7 +101,6 @@
     "tslint": "^5.11.0",
     "webdriverio": "^4.14.1",
     "webpack": "^4.26.0",
-    "wrtc": "^0.3.5",
     "xvfb-maybe": "^0.2.1"
   }
 }
