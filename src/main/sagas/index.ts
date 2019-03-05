@@ -1,5 +1,5 @@
 import { initializationSaga } from "./initializationSaga";
-import { loggingSaga } from "./loggingSaga";
+import { actionLoggingSaga } from "./actionLoggingSaga";
 import { storeHydrationSaga } from "./storeHydrationSaga";
 import { validationSaga } from "./validationSaga";
 import { onboardingSaga } from "./onboardingSaga";
@@ -10,14 +10,16 @@ import { saveMnemonicSaga } from "./saveMnemonicSaga";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
 import { bdapSaga } from "./bdapSaga";
+import { remoteLoggingSaga } from "./remoteLoggingSaga";
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
-    () => loggingSaga("Main Store"),
+    () => actionLoggingSaga("Main Store"),
+    () => remoteLoggingSaga(),
     () => initializationSaga(),
     () => storeHydrationSaga(),
     () => validationSaga(),
     () => onboardingSaga(),
-    () => createBdapAccountSaga(true),
+    () => createBdapAccountSaga(),
     () => setWalletPasswordSaga(true),
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
