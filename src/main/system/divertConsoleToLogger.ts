@@ -10,19 +10,23 @@ export async function divertConsoleToLogger() {
   const originalConsoleInfo = console.info.bind(console);
   const originalConsoleError = console.error.bind(console);
   console.log = (...args: any) => {
-    logger.info(["Main console", ...args]);
+    const timestamp = new Date().toUTCString()
+    logger.info(["Main console", timestamp, ...args]);
     originalConsoleLog(...args);
   };
   console.warn = (...args: any) => {
-    logger.warn(["Main console", ...args]);
+    const timestamp = new Date().toUTCString()
+    logger.warn(["Main console", timestamp, ...args]);
     originalConsoleWarn(...args);
   };
   console.info = (...args: any) => {
-    logger.info(["Main console", ...args]);
+    const timestamp = new Date().toUTCString()
+    logger.info(["Main console", timestamp, ...args]);
     originalConsoleInfo(...args);
   };
   console.error = (...args: any) => {
-    logger.error(["Main console", ...args]);
+    const timestamp = new Date().toUTCString()
+    logger.error(["Main console", timestamp, ...args]);
     originalConsoleError(...args);
   };
   process.on('uncaughtException', (err) => {

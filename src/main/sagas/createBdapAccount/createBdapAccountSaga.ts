@@ -1,11 +1,12 @@
 import { call, takeEvery, put } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
-import { OnboardingActions } from "../../shared/actions/onboarding";
-import { getRpcClient } from "../getRpcClient";
-import { delay } from "../../shared/system/delay";
-import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
-import { httpRequestStringAsync } from "../system/http/httpRequestAsync";
-import { createCancellationToken } from "../../shared/system/createCancellationToken";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
+import { getRpcClient } from "../../getRpcClient";
+import { delay } from "../../../shared/system/delay";
+import { GetUserInfo } from "../../../dynamicdInterfaces/GetUserInfo";
+import { httpRequestStringAsync } from "../../system/http/httpRequestAsync";
+import { createCancellationToken } from "../../../shared/system/createCancellationToken";
+import { AccountActivationResponse } from "./AccountActivationResponse";
 //import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 
 export function* createBdapAccountSaga(mock: boolean = false) {
@@ -27,11 +28,17 @@ export function* createBdapAccountSaga(mock: boolean = false) {
             txid = yield call(activateAccount, rawHexTx, token)
         } catch (err) {
             const regex = /^Error: Activation service responded with status code\: \d*/;
-            const matches = regex.exec(err.message)
-            if (matches !== null) {
+
+            if (regex.test(err.message)) {
                 yield put(OnboardingActions.createBdapAccountFailed(`Activation error response : ${err.message}`))
                 return;
             }
+            const regex2 = /^Unsuccessful: Activation service response/
+            if (regex2.test(err.message)) {
+                yield put(OnboardingActions.createBdapAccountFailed(`Activation was unsuccessful : ${err.message}`))
+                return;
+            }
+
             throw err;
 
         }
@@ -108,11 +115,6 @@ export const createRawBdapAccount = async (username: string, displayname: string
     return rawHexTx
 }
 
-interface AccountActivationResponse {
-    success: boolean
-    content: string
-}
-
 export const activateAccount = async (rawHexTx: string, token: string) => {
     const serviceUrl = `https://pshare.duality.solutions/callback?token=${encodeURIComponent(token)}&tx=${encodeURIComponent(rawHexTx)}`
     console.log(serviceUrl)
@@ -130,17 +132,20 @@ export const activateAccount = async (rawHexTx: string, token: string) => {
         body: ${responseString}`)
     }
 
-    if (typeof response.statusCode !== 'undefined' && response.statusCode === 200) {
-        const { content: txId, success } = parsedResponse
-        if (success) {
-            console.log(`received txid : ${txId}`)
-            return txId;
+    if (typeof parsedResponse !== 'undefined' && typeof parsedResponse.content !== 'undefined' && typeof parsedResponse.success !== 'undefined') {
+        if (typeof response.statusCode !== 'undefined' && response.statusCode === 200) {
+            if (parsedResponse.success) {
+                console.log(`received txid : ${parsedResponse.content}`)
+                return parsedResponse.content;
+            }
         }
-
+        throw Error(`Unsuccessful: Activation service response (status:${response.statusCode}, success:${parsedResponse.success}) : "${parsedResponse.content}"`)
     }
-    throw Error(`Error: Activation service responded with status code: ${response.statusCode}, 
+    else {
+        throw Error(`Error: Activation service responded with status code: ${response.statusCode}, 
         status-message: ${response.statusMessage}, 
         body: ${responseString}`)
+    }
 
 };
 
