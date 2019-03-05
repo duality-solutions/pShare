@@ -90,6 +90,7 @@ function cancelEverything(rootSagaTask: Task) {
     return call(function* () {
         console.warn("cancelling all sagas")
         yield cancel(rootSagaTask);
+        console.warn("rootSagaTask cancelled")
         const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue());
         lockedCommandQueueRunner.cancel();
         yield call(() => lockedCommandQueueRunner.finished);

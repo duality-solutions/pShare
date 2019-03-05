@@ -1,4 +1,7 @@
+import { rtcSaga } from "./rtcSaga";
 
 export const getRootSaga = () => {
-    return []
+    return [
+        () => rtcSaga()
+    ]
 }

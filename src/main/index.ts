@@ -87,7 +87,10 @@ function createMainWindow() {
 
   window.on('closed', () => {
     mainWindow = null
-    rtcWindow && rtcWindow.close()
+    if (rtcWindow) {
+      console.log("closing rtc window")
+      rtcWindow.close()
+    }
   })
 
   window.webContents.on('devtools-opened', () => {

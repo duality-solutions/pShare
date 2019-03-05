@@ -1,6 +1,5 @@
-import { createEventEmitter } from "../../shared/system/events/createEventEmitter";
-import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
-import { createAsyncQueue } from "../../shared/system/createAsyncQueue";
+import { createEventEmitter } from "../../../shared/system/events/createEventEmitter";
+import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 
 type OfferPeerEvents = "icecandidate" | "offer" | "close" | "error" | "open" | "sdp"
 
@@ -21,26 +20,27 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
 
             eventDispatcher.dispatchEvent("icecandidate", event.candidate);
         } else {
+            console.log("dispatching local session description")
             eventDispatcher.dispatchEvent("sdp", offerPeer.localDescription);
         }
     };
     const offerDataChannel = offerPeer.createDataChannel('dataChannel', {
         ordered: true
     });
-    const offerInit = await offerPeer.createOffer({});
-    const offer = new RTCSessionDescription(offerInit);
-    await offerPeer.setLocalDescription(offer);
-    eventDispatcher.dispatchEvent("offer", offer);
     const queue = createAsyncQueue<T>();
-    //addDataChannelListeners(offerDataChannel, 'offerPeer');
-    offerDataChannel.onclose = e => eventDispatcher.dispatchEvent("close", e);
-    offerDataChannel.onerror = e => eventDispatcher.dispatchEvent("error", e);
-    offerDataChannel.onmessage = e => queue.post(e.data);
-    offerDataChannel.onopen = e => eventDispatcher.dispatchEvent("open", e);
-    const resolver = createPromiseResolver<Event>();
-    eventDispatcher.once("open", resolver.resolve);
-    eventDispatcher.once("error", resolver.reject);
-    await resolver.promise;
+
+    (async () => {
+        const offerInit = await offerPeer.createOffer({});
+        const offer = new RTCSessionDescription(offerInit);
+        await offerPeer.setLocalDescription(offer);
+        eventDispatcher.dispatchEvent("offer", offer);
+        //addDataChannelListeners(offerDataChannel, 'offerPeer');
+        offerDataChannel.onclose = e => eventDispatcher.dispatchEvent("close", e);
+        offerDataChannel.onerror = e => eventDispatcher.dispatchEvent("error", e);
+        offerDataChannel.onmessage = e => queue.post(e.data);
+        offerDataChannel.onopen = e => eventDispatcher.dispatchEvent("open", e);
+    })()
+
     return {
         setRemoteDescription: (offer: RTCSessionDescription) => offerPeer.setRemoteDescription(offer),
         addIceCandidate: (candidate: RTCIceCandidate) => offerPeer.addIceCandidate(candidate),
