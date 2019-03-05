@@ -2,7 +2,7 @@
 import { OnboardingActions } from "../../shared/actions/onboarding";
 //import { cloneableGenerator } from "redux-saga/utils";
 import { expectSaga } from 'redux-saga-test-plan'
-import { createBdapAccountSaga, createRawBdapAccount, activateAccount, checkBdapAccountCreated } from "../../main/sagas/createBdapAccountSaga";
+import { createBdapAccountSaga, createRawBdapAccount, activateAccount, checkBdapAccountCreated } from "../../main/sagas/createBdapAccount/createBdapAccountSaga";
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { throwError } from "redux-saga-test-plan/providers";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
