@@ -31,6 +31,7 @@ declare module 'electron' {
 //defines paths into the store that will be persisted
 const persistencePaths = ['user.syncAgreed', 'user.userName'];
 let mainWindow: BrowserWindow | null
+let rtcWindow: BrowserWindow | null
 
 
 
@@ -50,34 +51,43 @@ isDevelopment && (!isSpectron) && app.commandLine.appendSwitch('remote-debugging
 isSpectron && app.commandLine.appendSwitch('disable-gpu')
 // global reference to mainWindow (necessary to prevent window from being garbage collected)
 
+const templateUrl =
+  isSpectron
+    ? formatUrl({
+      pathname: path.join(__dirname, '..', 'renderer', 'index.html'),
+      protocol: 'file',
+      slashes: true
+    })
+    : isDevelopment
+      ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`
+      : formatUrl({
+        pathname: path.join(__dirname, 'index.html'),
+        protocol: 'file',
+        slashes: true
+      })
+
+function createRtcWindow() {
+  const window = new BrowserWindow({ width: 1, height: 1, show: false })
+  window.loadURL(`${templateUrl}?role=rtc`)
+  return window
+}
+
 function createMainWindow() {
   const window = new BrowserWindow({ width: 1024, height: 768 })
 
 
 
 
-  const templateUrl =
-    isSpectron
-      ? formatUrl({
-        pathname: path.join(__dirname, '..', 'renderer', 'index.html'),
-        protocol: 'file',
-        slashes: true
-      })
-      : isDevelopment
-        ? `http://localhost:${process.env.ELECTRON_WEBPACK_WDS_PORT}`
-        : formatUrl({
-          pathname: path.join(__dirname, 'index.html'),
-          protocol: 'file',
-          slashes: true
-        })
+
 
   console.log(`loading templateUrl : ${templateUrl}`)
-  window.loadURL(templateUrl)
+  window.loadURL(`${templateUrl}?role=renderer`)
 
 
 
   window.on('closed', () => {
     mainWindow = null
+    rtcWindow && rtcWindow.close()
   })
 
   window.webContents.on('devtools-opened', () => {
@@ -119,6 +129,7 @@ app.on('ready', async () => {
     await installPromise;
   }
   mainWindow = createMainWindow()
+  rtcWindow = createRtcWindow()
   setAppMenu(mainWindow);
 
   if (isDevelopment) {

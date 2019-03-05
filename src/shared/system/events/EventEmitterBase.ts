@@ -1,6 +1,6 @@
-export interface EventEmitterBase{
-    addEventListener: (evtName: string, handler: (evtObj: any) => void) => boolean;
-    once: (evtName: string, handler: (evtObj: any) => void) => boolean;
-    removeEventListener: (evtName: string, handler: (evtObj: any) => void) => boolean;
+export interface EventEmitterBase<T extends string=string> {
+    addEventListener: (evtName: T, handler: (evtObj: any) => void) => boolean;
+    once: (evtName: T, handler: (evtObj: any) => void) => boolean;
+    removeEventListener: (evtName: T, handler: (evtObj: any) => void) => boolean;
 
 }

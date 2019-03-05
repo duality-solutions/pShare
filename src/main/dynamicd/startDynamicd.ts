@@ -21,6 +21,7 @@ export async function startDynamicd(): Promise<DynamicdProcessInfo> {
         return {
             start: () => { },
             dispose: async () => console.log("dispose does nothing in development"),
+            once: () => true,
             addEventListener: () => true,
             removeEventListener: () => true,
             rpcUser: "CWIXE4bsgA",
@@ -63,7 +64,7 @@ async function startDynamicdProcess(
     const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf });
     const token = createCancellationToken();
     let started = false;
-    const { addEventListener, dispatchEvent, removeEventListener } = createEventEmitter();
+    const { addEventListener, dispatchEvent, removeEventListener, once } = createEventEmitter();
     const processInfo = {
         start: () => {
             if (!started) {
@@ -92,6 +93,7 @@ async function startDynamicdProcess(
             }
         },
         addEventListener,
+        once,
         removeEventListener,
         dispose: async () => {
             token.cancel();
