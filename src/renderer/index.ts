@@ -1,5 +1,5 @@
 import { indexRenderer } from "./indexRenderer";
-import { indexRtc } from "./indexRtc";
+import { indexRtc } from "../rtc/indexRtc";
 
 function getQueryVariable(variable: string) {
     var query = window.location.search.substring(1);

@@ -6,7 +6,7 @@ import { ConnectedRouter } from 'connected-react-router';
 import { createMemoryHistory, History } from 'history';
 import { App } from './components/App';
 import { RootActions } from '../shared/actions';
-import { divertConsoleToStore } from './system/divertConsoleToStore';
+import { divertConsoleToStore } from '../shared/system/divertConsoleToStore';
 
 export function indexRenderer() {
 
@@ -17,7 +17,7 @@ export function indexRenderer() {
     const isDevelopment = process.env.NODE_ENV === 'development'
 
     if (!isDevelopment) {
-        divertConsoleToStore(store)
+        divertConsoleToStore(store, "renderer")
     }
 
 
