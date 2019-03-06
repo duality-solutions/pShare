@@ -9,6 +9,7 @@ import { notifyOnFileNotExists } from '../../shared/system/notifyOnFileNotExists
 import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
+import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
@@ -42,7 +43,8 @@ export async function startDynamicd(): Promise<DynamicdProcessInfo> {
         pathToPidFile,
         pathToDynamicd,
         sharedParameters,
-        pathToDynamicCli
+        pathToDynamicCli,
+
     };
     const processInfo = await startDynamicdProcess(opts);
     return processInfo
@@ -66,10 +68,25 @@ async function startDynamicdProcess(
         start: () => {
             if (!started) {
                 notifyOnFileNotExists(pathToPidFile, async () => {
+                    console.log(`${pathToPidFile} does not exist`)
                     const wasStarted = started;
                     started = true;
-                    const proc = childProcess.execFile(pathToDynamicd, sharedParameters);
-                    await waitForChildProcessExit(proc);
+                    const resolver = createPromiseResolver();
+                    childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
+                        if (err) {
+                            resolver.reject(err)
+                        } else {
+                            resolver.resolve(stdout)
+                        }
+                    });
+                    try {
+                        await resolver.promise;
+                    } catch (err) {
+                        console.warn(`${pathToDynamicd} did not restart`)
+                        console.error(err)
+                        throw err;
+                    }
+                    console.warn("dynamicd (re)started")
                     dispatchEvent(wasStarted ? "restart" : "start", null);
                 }, token);
             }

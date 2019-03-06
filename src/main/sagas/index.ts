@@ -3,7 +3,7 @@ import { actionLoggingSaga } from "./actionLoggingSaga";
 import { storeHydrationSaga } from "./storeHydrationSaga";
 import { validationSaga } from "./validationSaga";
 import { onboardingSaga } from "./onboardingSaga";
-import { createBdapAccountSaga } from "./createBdapAccountSaga";
+import { createBdapAccountSaga } from "./createBdapAccount/createBdapAccountSaga";
 import { setWalletPasswordSaga } from "./setWalletPasswordSaga";
 import { mnemonicSaga } from "./mnemonicSaga";
 import { saveMnemonicSaga } from "./saveMnemonicSaga";

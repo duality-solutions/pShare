@@ -16,21 +16,22 @@ export function* remoteLoggingSaga() {
         if (typeof logger === 'undefined') {
             return;
         }
+        const timestamp = new Date().toUTCString()
         switch (action.payload.level) {
             case "error":
-                logger.error(["Renderer console", ...action.payload.args]);
+                logger.error(["Renderer console", timestamp, ...action.payload.args]);
                 break;
             case "warn":
-                logger.warn(["Renderer console", ...action.payload.args]);
+                logger.warn(["Renderer console", timestamp, ...action.payload.args]);
                 break;
             case "log":
-                logger.info(["Renderer console", ...action.payload.args]);
+                logger.info(["Renderer console", timestamp, ...action.payload.args]);
                 break;
             case "info":
-                logger.info(["Renderer console", ...action.payload.args]);
+                logger.info(["Renderer console", timestamp, ...action.payload.args]);
                 break;
             default:
-                logger.info(["Renderer console", ...action.payload.args]);
+                logger.info(["Renderer console", timestamp, ...action.payload.args]);
                 break;
         }
     });
