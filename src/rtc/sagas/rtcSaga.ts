@@ -1,10 +1,12 @@
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
 import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
-import { call } from "redux-saga/effects";
+import { call, put } from "redux-saga/effects";
+import { RtcActions } from "../../shared/actions/rtc";
 
 export function* rtcSaga() {
     const sd: RTCSessionDescription = yield call(() => f())
-    console.log("sd received :", sd.sdp)
+    yield put(RtcActions.rtcSessiondescriptionReceived(sd.sdp))
+    //console.log("sd received :", sd.sdp)
 }
 
 const f = async (): Promise<RTCSessionDescription> => {
