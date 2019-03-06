@@ -31,6 +31,7 @@ export const BdapActions = {
 
     beginCreateLinkRequest: createStandardAction('bdap/BEGIN_CREATE_LINK_REQUEST')<LinkBase>(),
     createLinkRequest: createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
+    createLinkRequestFailed: createStandardAction('bdap/CREATE_LINK_REQUEST_FAILED')<string>(),
 
     beginAcceptLink: createStandardAction('bdap/BEGIN_ACCEPT_LINK')<LinkBase>(),
     acceptLink: createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
