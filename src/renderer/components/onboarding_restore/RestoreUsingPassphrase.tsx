@@ -61,18 +61,6 @@ export class RestoreUsingPassphrase extends Component<RestoreUsingPassphraseProp
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
-                                    <Input value={this.state.userName} onChange={this.handleChange} placeholder="User name"
-                                        margin="1em 0 1em 0" padding="0 1em 0 1em" error={validationFailed} autoFocus={true} />
-                                    {
-                                        validationFailed
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
-                                            : <></>
-                                    }
-                                    {
-                                        networkFailure
-                                            ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
-                                            : <></>
-                                    }
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">

@@ -13,12 +13,13 @@ export interface RestoreAccountStateProps {
 
 }
 export interface RestoreAccountDispatchProps {
-    restoreAccount : () => void 
+    restorePassphrase : () => void,
+    restoreMnemonicFile : () => void 
 }
 type RestoreAccountProps = RestoreAccountDispatchProps & RestoreAccountStateProps
 
 export const RestoreAccount:React.FunctionComponent<RestoreAccountProps> = 
-    ({ restoreAccount }) =>
+    ({ restorePassphrase, restoreMnemonicFile }) =>
     <>
     <Box width="100%" margin="2em 0 -1.5em 0" align="center" >
         <AppLogo src={logo} width="100px" height="120px" />
@@ -33,11 +34,11 @@ export const RestoreAccount:React.FunctionComponent<RestoreAccountProps> =
     <Container height="50vh" padding="4em 0 0 0">
     <Box direction="column" align="center" width="100%">
     <Box display="flex" direction="row" align="center" width="100%">
-        <SCard onClick={()=> restoreAccount()} padding="2em 1em 0em 1em" height="140px" width="220px">
+        <SCard onClick={()=> restorePassphrase()} padding="2em 1em 0em 1em" height="140px" width="220px">
             <img src={passphrase} height="60px" width="60px" style={{margin:'0 0 1em 0'}}/>
             <Text align="center" color="white" fontSize="1em" fontWeight="bold">Restore using passphrase</Text>
         </SCard>
-        <SCard onClick={()=> restoreAccount()} padding="2em 1em 0em 1em" height="140px" width="220px">
+        <SCard onClick={()=> restoreMnemonicFile()} padding="2em 1em 0em 1em" height="140px" width="220px">
             <img src={passphrasesecurefile} height="60px" width="60px" style={{margin:' 0 0 1em 0'}} />
             <Text align="center" color="white" fontSize="1em" fontWeight="bold" >Restore using secure file</Text>
         </SCard>
