@@ -3,4 +3,4 @@ declare module "*.svg" {
   export default content;
 }
 
-declare module "sjcl-local"
+declare module "sjcl-git"
