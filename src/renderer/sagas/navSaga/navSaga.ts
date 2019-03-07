@@ -42,14 +42,20 @@ export function* navSaga() {
 
             } else {
                 yield put(pushRoute(appRoutes.restoreAccount))
-                const restoreNavMap = getNavMap();
-
-                //TODO
-
+                // const restoreNavMap = getNavMap();
+                const { restoreWithPassphrase } = yield race({
+                    restoreWithPassphrase: take(getType(RootActions.restoreWithPassphrase)),
+                    restoreWithMnemonicFile: take(getType(RootActions.restoreWithMnemonicFile))
+                })
+                if ( restoreWithPassphrase ) {
+                    yield put(pushRoute(appRoutes.restoreWithPassphrase))
+                } else {
+                    yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
+                }
                 // restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase);
-                // restoreNavMap.registerNavAction(RootActions.restoreWithSecureFile, appRoutes.restoreWithSecureFile);
+                // restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFile, appRoutes.restoreWithMnemonicFile);
                 // restoreNavMap.registerNavAction(RootActions.restoreCompleteSuccess, appRoutes.dashboard, true);
-                yield restoreNavMap.runNav();
+                // yield restoreNavMap.runNav();
             }
 
 
