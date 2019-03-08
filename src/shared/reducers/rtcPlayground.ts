@@ -1,4 +1,4 @@
-import { RtcActions } from "../../shared/actions/rtc";
+import { RtcActions } from "../actions/rtc";
 import { getType } from "typesafe-actions";
 interface RtcPlaygroundState {
     text: string
@@ -6,6 +6,8 @@ interface RtcPlaygroundState {
 const defaultState: RtcPlaygroundState = { text: "" }
 export const rtcPlayground = (state: RtcPlaygroundState = defaultState, action: RtcActions) => {
     switch (action.type) {
+        case getType(RtcActions.createAnswerSuccess):
+            return { ...state, text: action.payload }
         case getType(RtcActions.createOfferSuccess):
             return { ...state, text: action.payload }
         case getType(RtcActions.textChanged):
