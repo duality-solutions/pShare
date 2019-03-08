@@ -7,6 +7,7 @@ export const RtcActions = {
     createOfferSuccess: createStandardAction('rtc/CREATE_OFFER_SUCCESS')<string>(),
     createAnswer: createStandardAction('rtc/CREATE_ANSWER')<void>(),
     createAnswerSuccess: createStandardAction('rtc/CREATE_ANSWER_SUCCESS')<string>(),
+    setAnswerFromRemote: createStandardAction('rtc/SET_ANSWER_FROM_REMOTE')<void>(),
 
     textChanged: createStandardAction('rtc/TEXT_CHANGED')<string>(),
 }
