@@ -89,7 +89,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                 transitionEnter={false}
                 transitionLeave={false}>
                 <H1 align="center" colored fontWeight="600">Create Account</H1>
-                <button onClick={() => push("/Rtc")}>go to webrtc-playground</button>
+                <button style={({ position: "absolute", top: 0, left: 0 })} onClick={() => push("/Rtc")}>go to webrtc-playground</button>
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
