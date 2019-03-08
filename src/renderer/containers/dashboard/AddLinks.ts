@@ -29,6 +29,7 @@ const getUserList = createSelector(
         //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
         const existingLinks = completeLinks.concat(pendingAcceptLinks)
         return blinq(users)
+            .where(u => u.object_full_path !== currentFqUser)
             .leftOuterJoin(
                 existingLinks,
                 u => u.object_full_path,
@@ -52,7 +53,7 @@ const getUserList = createSelector(
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksStateProps => {
     const currentUserName = getCurrentUserName(state)
-   
+
     return {
         users: getUserList(state),
         currentUserName
