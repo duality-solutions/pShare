@@ -3,6 +3,7 @@ import { OnboardingActions } from "../../../shared/actions/onboarding";
 import { PasswordCreate, PasswordCreateDispatchProps, PasswordCreateStateProps } from '../../components/onboarding/PasswordCreate';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
+import { push } from 'connected-react-router';
 
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): PasswordCreateStateProps => ({
@@ -12,7 +13,7 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): PasswordCreat
 });
 
 
-const mapDispatchToProps: MapPropsToDispatchObj<PasswordCreateDispatchProps> = { ...OnboardingActions };
+const mapDispatchToProps: MapPropsToDispatchObj<PasswordCreateDispatchProps> = { ...OnboardingActions, push };
 // const mapDispatchToProps:EnterUserNameDispatchProps = { ...OnboardingActions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(PasswordCreate)
