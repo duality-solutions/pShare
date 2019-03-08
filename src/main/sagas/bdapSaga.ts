@@ -11,6 +11,7 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
+import { delay } from "redux-saga";
 
 export function* bdapSaga(mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -72,11 +73,16 @@ export function* bdapSaga(mock: boolean = false) {
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
 
-        yield put(BdapActions.getUsers())
+        for (; ;) {
+            yield put(BdapActions.getUsers())
 
-        yield put(BdapActions.getCompleteLinks())
-        yield put(BdapActions.getPendingAcceptLinks())
-        yield put(BdapActions.getPendingRequestLinks())
+            yield put(BdapActions.getCompleteLinks())
+            yield put(BdapActions.getPendingAcceptLinks())
+            yield put(BdapActions.getPendingRequestLinks())
+
+            yield delay(60000)
+        }
+
     })
 }
 
