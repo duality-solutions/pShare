@@ -12,10 +12,12 @@ import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./tr
 import { bdapSaga } from "./bdapSaga";
 import { remoteLoggingSaga } from "./remoteLoggingSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
+import { linkAcceptSaga } from "./linkAcceptSaga";
 
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => linkRequestSaga(),
+    () => linkAcceptSaga(),
     () => actionLoggingSaga("Main Store"),
     () => remoteLoggingSaga(),
     () => initializationSaga(),
