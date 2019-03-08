@@ -8,6 +8,8 @@ export const rtcPlayground = (state: RtcPlaygroundState = defaultState, action: 
     switch (action.type) {
         case getType(RtcActions.createOfferSuccess):
             return { ...state, text: action.payload }
+        case getType(RtcActions.textChanged):
+            return { ...state, text: action.payload }
         default:
             return state
     }
