@@ -18,13 +18,9 @@ export function* rtcSaga() {
     })
     yield takeEvery(getType(RtcActions.createAnswer), function* (action: ActionType<typeof RtcActions.createAnswer>) {
         const answerPeer: ThenArg<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer())
-        console.log("got answer peer")
         const offerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
-        console.log("got offerSdpJson")
         const offerSdp = JSON.parse(offerSdpJson)
-        console.log("got offerSdp")
         const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(new RTCSessionDescription(offerSdp)))
-        console.log("got answer")
         yield put(RtcActions.createAnswerSuccess(JSON.stringify(answer.toJSON())))
     })
 
