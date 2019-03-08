@@ -1,20 +1,29 @@
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
-import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
-import { call, put } from "redux-saga/effects";
-import { RtcActions } from "../../shared/actions/rtc";
+import { call } from "redux-saga/effects";
+import { getAnswerPeer } from "../system/webRtc/getAnswerPeer";
 
 export function* rtcSaga() {
-    const sd: RTCSessionDescription = yield call(() => f())
-    yield put(RtcActions.rtcSessiondescriptionReceived(sd.sdp))
+    yield call(() => f())
+    //yield put(RtcActions.rtcSessiondescriptionReceived(sd.sdp))
     //console.log("sd received :", sd.sdp)
 }
 
-const f = async (): Promise<RTCSessionDescription> => {
+const f = async (): Promise<void> => {
     const offerPeer = await getOfferPeer()
-    const pr = createPromiseResolver<RTCSessionDescription>()
+    const offer = await offerPeer.createOffer()
+    const answerPeer = await getAnswerPeer()
+    const answer = await answerPeer.getAnswer(offer)
+    await offerPeer.setRemoteDescription(answer)
+    const answerChanProm = answerPeer.waitForDataChannelOpen()
+    const offerChanProm = offerPeer.waitForDataChannelOpen()
+    const []=await Promise.all([offerChanProm, answerChanProm])
+    
+    answerPeer.send("hello world")
+    const msg = await offerPeer.incomingMessageQueue.receive()
+    console.log(`msg from answer peer ${msg}`)
+    offerPeer.send("hello from offerPeer")
+    const msg2 = await answerPeer.incomingMessageQueue.receive()
+    console.log(`msg from offer peer ${msg2}`)
 
 
-    offerPeer.once("sdp", (d: RTCSessionDescription) => pr.resolve(d))
-    const sdp = await pr.promise;
-    return sdp
 }

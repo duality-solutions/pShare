@@ -30,6 +30,7 @@ export function indexRenderer() {
     let render = () => ReactDOM.render(
         <Provider store={store}>
             <ConnectedRouter history={history}>
+               
                 <App />
             </ConnectedRouter>
         </Provider>,

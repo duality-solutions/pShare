@@ -1,7 +1,8 @@
 import { createEventEmitter } from "../../../shared/system/events/createEventEmitter";
 import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
+import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
 
-type OfferPeerEvents = "icecandidate" | "offer" | "close" | "error" | "open" | "sdp"
+type OfferPeerEvents = "icecandidate" | "offer" | "close" | "error" | "open" | "sessiondescription"
 
 export async function getOfferPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>() {
     const peerConnectionConfig = {
@@ -10,8 +11,8 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
         ]
     };
     const eventDispatcher = createEventEmitter<OfferPeerEvents>();
-    const offerPeer = new RTCPeerConnection(peerConnectionConfig);
-    offerPeer.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
+    const peer = new RTCPeerConnection(peerConnectionConfig);
+    peer.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         console.log('offerPeer ice candidate', event);
         if (event.candidate) {
             // These would normally be sent to answerPeer over some other transport,
@@ -21,33 +22,50 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
             eventDispatcher.dispatchEvent("icecandidate", event.candidate);
         } else {
             console.log("dispatching local session description")
-            eventDispatcher.dispatchEvent("sdp", offerPeer.localDescription);
+            eventDispatcher.dispatchEvent("sessiondescription", peer.localDescription);
         }
     };
-    const offerDataChannel = offerPeer.createDataChannel('dataChannel', {
+    const dataChannel = peer.createDataChannel('dataChannel', {
         ordered: true
     });
     const queue = createAsyncQueue<T>();
 
-    (async () => {
-        const offerInit = await offerPeer.createOffer({});
-        const offer = new RTCSessionDescription(offerInit);
-        await offerPeer.setLocalDescription(offer);
-        eventDispatcher.dispatchEvent("offer", offer);
-        //addDataChannelListeners(offerDataChannel, 'offerPeer');
-        offerDataChannel.onclose = e => eventDispatcher.dispatchEvent("close", e);
-        offerDataChannel.onerror = e => eventDispatcher.dispatchEvent("error", e);
-        offerDataChannel.onmessage = e => queue.post(e.data);
-        offerDataChannel.onopen = e => eventDispatcher.dispatchEvent("open", e);
-    })()
+    dataChannel.onclose = e => eventDispatcher.dispatchEvent("close", e);
+    dataChannel.onerror = e => eventDispatcher.dispatchEvent("error", e);
+    dataChannel.onmessage = e => queue.post(e.data);
+    dataChannel.onopen = e => eventDispatcher.dispatchEvent("open", e);
 
     return {
-        setRemoteDescription: (offer: RTCSessionDescription) => offerPeer.setRemoteDescription(offer),
-        addIceCandidate: (candidate: RTCIceCandidate) => offerPeer.addIceCandidate(candidate),
+        createOffer: async () => {
+            const pr=createPromiseResolver<RTCSessionDescription>()
+            eventDispatcher.once("sessiondescription",(sd:RTCSessionDescription)=>pr.resolve(sd))
+            const offerInit = await peer.createOffer({});
+            const offer = new RTCSessionDescription(offerInit);
+            await peer.setLocalDescription(offer);
+            return await pr.promise
+        },
+        waitForDataChannelOpen: async () => {
+            const prom = createPromiseResolver<void>()
+            const res = () => prom.resolve();
+            const rej: (evtObj: any) => void = e => prom.reject(e);
+            eventDispatcher.addEventListener("open", res)
+            eventDispatcher.addEventListener("error", rej)
+            try {
+                await (prom.promise)
+
+            } finally {
+                eventDispatcher.removeEventListener("open", res)
+                eventDispatcher.removeEventListener("error", rej)
+
+            }
+            return dataChannel
+        },
+        setRemoteDescription: (offer: RTCSessionDescription) => peer.setRemoteDescription(offer),
+        //addIceCandidate: (candidate: RTCIceCandidate) => peer.addIceCandidate(candidate),
         addEventListener: eventDispatcher.addEventListener,
         once: eventDispatcher.once,
         removeEventListener: eventDispatcher.removeEventListener,
         incomingMessageQueue: queue,
-        send: (data: T) => offerDataChannel.send(data as any)
+        send: (data: T) => dataChannel.send(data as any)
     };
 }

@@ -792,10 +792,10 @@
     "@types/history" "*"
     "@types/react" "*"
 
-"@types/react-transition-group@1.x":
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-1.1.6.tgz#871079e586ba346edae3b2a1cd0614e9f4363bf7"
-  integrity sha512-zzoJIWFAqvI3EwDizpeJoShUEe6dVIw3EDRmnqLlpmQgfbaw6XUmJYFVOiAyZVnO/9L7zPSe3kN8aZ2q3JP2DA==
+"@types/react-transition-group@1.1.5":
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/@types/react-transition-group/-/react-transition-group-1.1.5.tgz#9023b0af51df4a384045e21ce00b44f4ce85334c"
+  integrity sha512-XlM6c7OFRTK9TKcoaOKOKS9EDpnHosRXdeN3HwQeMg2T5hOTe8/IQMzWYwaVA8ian4Zc9vMFoQxVlDL75b9aog==
   dependencies:
     "@types/react" "*"
 
@@ -7758,7 +7758,7 @@ react-router@^4.3.1:
     prop-types "^15.6.1"
     warning "^4.0.1"
 
-react-transition-group@1.x:
+react-transition-group@1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-1.2.1.tgz#e11f72b257f921b213229a774df46612346c7ca6"
   integrity sha512-CWaL3laCmgAFdxdKbhhps+c0HRGF4c+hdM4H23+FI1QBNUyx/AMeIJGWorehPNSaKnQNOAxL7PQmqMu78CDj3Q==
