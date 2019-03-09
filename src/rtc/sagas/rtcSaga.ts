@@ -7,6 +7,13 @@ import { RendererRootState } from "../../renderer/reducers";
 import * as fs from 'fs'
 import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
 import { delay } from "redux-saga";
+import { FileActions } from "../../shared/actions/file";
+import * as path from 'path'
+export interface FileNameInfo {
+    name: string
+    type: string
+    size: number
+}
 
 type ThenArg<T> = T extends Promise<infer U> ? U :
     T extends (...args: any[]) => Promise<infer U> ? U :
@@ -14,10 +21,12 @@ type ThenArg<T> = T extends Promise<infer U> ? U :
 
 export function* rtcSaga() {
 
-    yield takeEvery(getType(RtcActions.createOffer), function* (action: ActionType<typeof RtcActions.createOffer>) {
+    yield takeEvery(getType(FileActions.filesSelected), function* (action: ActionType<typeof FileActions.filesSelected>) {
         const offerPeer: ThenArg<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         const offer: RTCSessionDescription = yield call(() => offerPeer.createOffer())
-        yield put(RtcActions.createOfferSuccess(JSON.stringify(offer.toJSON())))
+        const filePathInfo = action.payload[0];
+        const fileNameInfo: FileNameInfo = { type: filePathInfo.type, size: filePathInfo.size, name: path.basename(filePathInfo.path) }
+        yield put(RtcActions.createOfferSuccess(JSON.stringify({ sessionDescription: offer.toJSON(), fileNameInfo })))
         yield take(getType(RtcActions.setAnswerFromRemote))
 
         const answerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
@@ -26,7 +35,7 @@ export function* rtcSaga() {
         const answerSessionDescription = new RTCSessionDescription(answerSdp);
         yield call(() => offerPeer.setRemoteDescription(answerSessionDescription))
         const dc: RTCDataChannel = yield call(() => offerPeer.waitForDataChannelOpen())
-        const fileStream = fs.createReadStream("/home/spender/Downloads/bigtiff3.tiff")
+        const fileStream = fs.createReadStream(action.payload[0].path)
 
         const chunkSize = (1 << 10) * 64;
         const maxBuffered = (1 << 12) * 512;
@@ -69,21 +78,41 @@ export function* rtcSaga() {
     yield takeEvery(getType(RtcActions.createAnswer), function* (action: ActionType<typeof RtcActions.createAnswer>) {
         const answerPeer: ThenArg<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer())
         const offerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
-        const offerSdp = JSON.parse(offerSdpJson)
+        const { fileNameInfo: { name, size, type }, sessionDescription: offerSdp }: { fileNameInfo: FileNameInfo, sessionDescription: any } = JSON.parse(offerSdpJson)
+
         const offerSessionDescription = new RTCSessionDescription(offerSdp);
         const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription))
         yield put(RtcActions.createAnswerSuccess(JSON.stringify(answer.toJSON())))
         const { }: RTCDataChannel = yield call(() => answerPeer.waitForDataChannelOpen())
         //answerPeer.send("hello from answerpeer")
+
+        const fileStream = fs.createWriteStream(`/home/spender/Desktop/__${name}`)
+
         let total = 0
         for (; ;) {
             const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
             total += msg.byteLength
             console.log(`answerpeer received : ${total}`)
+            const pr = createPromiseResolver();
+            fileStream.write(toBuffer(msg), (err) => { if (err) { pr.reject(err) } else { pr.resolve() } })
+            yield call(() => pr.promise)
+            if (total === size) {
+                break
+            }
 
         }
+        fileStream.close()
     })
 
+}
+
+function toBuffer(ab: ArrayBuffer) {
+    var buf = Buffer.alloc(ab.byteLength);
+    var view = new Uint8Array(ab);
+    for (var i = 0; i < buf.length; ++i) {
+        buf[i] = view[i];
+    }
+    return buf;
 }
 
 // const f = async (): Promise<void> => {

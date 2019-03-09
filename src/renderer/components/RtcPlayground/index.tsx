@@ -17,7 +17,7 @@ export const RtcPlayground: FunctionComponent<RtcPlaygroundProps> = ({ createOff
     <>
         <h1>rtc playground</h1>
         <div>
-            <button onClick={() => createOffer()}>create offer</button>
+            {/* <button onClick={() => createOffer()}>create offer</button> */}
             <button onClick={() => createAnswer()}>create answer</button>
             <button onClick={() => setAnswerFromRemote()}>set answer from remote</button>
         </div>

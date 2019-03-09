@@ -1,5 +1,5 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { FileInfo } from '../../renderer/components/RtcPlayground/Dropzone';
+import { FilePathInfo } from '../../renderer/components/RtcPlayground/Dropzone';
 
 
 
@@ -8,7 +8,7 @@ import { FileInfo } from '../../renderer/components/RtcPlayground/Dropzone';
 export const FileActions = {
 
 
-    filesSelected: createStandardAction('file/FILES_SELECTED')<FileInfo[]>(),
+    filesSelected: createStandardAction('file/FILES_SELECTED')<FilePathInfo[]>(),
 }
 
 export type FileActions = ActionType<typeof FileActions>;

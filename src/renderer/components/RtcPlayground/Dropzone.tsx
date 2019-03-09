@@ -1,15 +1,16 @@
 import React, { FunctionComponent } from "react";
 
-export interface FileInfo{
-    path:string
-    type:string
+export interface FilePathInfo {
+    path: string
+    type: string
+    size: number
 }
 
 export interface DropzoneStateProps {
 
 }
 export interface DropzoneDispatchProps {
-    filesSelected: (filePaths: FileInfo[]) => void
+    filesSelected: (filePaths: FilePathInfo[]) => void
 }
 export type DropzoneProps = DropzoneStateProps & DropzoneDispatchProps
 
@@ -22,7 +23,7 @@ export const Dropzone: FunctionComponent<DropzoneProps> = ({ filesSelected }) =>
         }}
         onDrop={e => {
             e.preventDefault();
-            filesSelected([...e.dataTransfer.files].map(f => ({path:f.path,type:f.type})))
+            filesSelected([...e.dataTransfer.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
         }}>
 
         <input
@@ -32,7 +33,7 @@ export const Dropzone: FunctionComponent<DropzoneProps> = ({ filesSelected }) =>
             accept="*/*"
             onChange={e => {
                 e.preventDefault();
-                e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({path:f.path,type:f.type})))
+                e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
             }}
             style={({ display: "none" })} />
         <label
