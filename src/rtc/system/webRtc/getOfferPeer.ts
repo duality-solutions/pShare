@@ -13,7 +13,7 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
     const eventDispatcher = createEventEmitter<OfferPeerEvents>();
     const peer = new RTCPeerConnection(peerConnectionConfig);
     peer.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
-        console.log('offerPeer ice candidate', event);
+        console.log('offerPeer ice candidate');
         if (event.candidate) {
             // These would normally be sent to answerPeer over some other transport,
             // like a websocket, but since this is local we can just set it here.

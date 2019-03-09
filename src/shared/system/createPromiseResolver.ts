@@ -1,7 +1,7 @@
 import { PromiseResolver, ResolvedState } from "./PromiseResolver";
 
 
-export const createPromiseResolver = <T>(): PromiseResolver<T> => {
+export const createPromiseResolver = <T = void>(): PromiseResolver<T> => {
     let resolve: ((val: T) => void) | undefined;
     let reject: ((err: any) => void) | undefined;
     const promise = new Promise<T>((_resolve, _reject) => {

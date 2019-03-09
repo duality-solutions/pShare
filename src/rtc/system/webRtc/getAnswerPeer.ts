@@ -28,7 +28,7 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
         eventDispatcher.dispatchEvent("datachannel", dataChannel)
     };
     peer.onicecandidate = (event) => {
-        console.log('answerPeer ice candidate', event);
+        console.log('answerPeer ice candidate');
         if (event.candidate) {
             // These would normally be sent to answerPeer over some other transport,
             // like a websocket, but since this is local we can just set it here.

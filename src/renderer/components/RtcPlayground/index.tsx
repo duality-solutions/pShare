@@ -1,4 +1,5 @@
 import React, { FunctionComponent } from "react";
+import { Dropzone } from "../../containers/RtcPlayground/Dropzone";
 
 export interface RtcPlaygroundStateProps {
     text: string
@@ -23,5 +24,6 @@ export const RtcPlayground: FunctionComponent<RtcPlaygroundProps> = ({ createOff
         <div>
             <textarea style={({ width: "500px", height: "400px" })} id="txtarea" value={text} onChange={e => textChanged(e.currentTarget.value)}></textarea>
         </div>
+        <Dropzone />
     </>
 

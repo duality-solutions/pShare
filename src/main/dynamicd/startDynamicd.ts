@@ -72,7 +72,7 @@ async function startDynamicdProcess(
                     console.log(`${pathToPidFile} does not exist`)
                     const wasStarted = started;
                     started = true;
-                    const resolver = createPromiseResolver();
+                    const resolver = createPromiseResolver<string>();
                     childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
                         if (err) {
                             resolver.reject(err)
