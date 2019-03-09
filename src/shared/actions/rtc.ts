@@ -10,6 +10,7 @@ export const RtcActions = {
     setAnswerFromRemote: createStandardAction('rtc/SET_ANSWER_FROM_REMOTE')<void>(),
 
     fileSendSuccess: createStandardAction('rtc/FILE_SEND_SUCCESS')<void>(),
+    fileReceiveSuccess: createStandardAction('rtc/FILE_RECEIVE_SUCCESS')<void>(),
 
     textChanged: createStandardAction('rtc/TEXT_CHANGED')<string>(),
 }

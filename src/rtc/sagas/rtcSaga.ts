@@ -12,10 +12,17 @@ import * as path from 'path'
 import { v4 as uuid } from 'uuid';
 import * as util from 'util'
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
+import { toArrayBuffer, toBuffer } from "../../shared/system/bufferConversion";
+
 export interface FileNameInfo {
     name: string
     type: string
     size: number
+}
+
+interface OfferWrapper {
+    fileNameInfo: FileNameInfo,
+    sessionDescription: any
 }
 
 const fileReadBufferSize = 65536; // 64KiB
@@ -25,15 +32,10 @@ const sendBufferedAmountLowThreshold = 262144; // 256KiB
 const open = util.promisify(fs.open)
 const close = util.promisify(fs.close)
 const read = util.promisify(fs.read)
+const write = util.promisify(fs.write)
 const rename = util.promisify(fs.rename)
 
-interface OfferWrapper {
-    fileNameInfo: FileNameInfo,
-    sessionDescription: any
-}
-
 export function* rtcSaga() {
-
     yield takeEvery(getType(FileActions.filesSelected), function* (action: ActionType<typeof FileActions.filesSelected>) {
         const offerPeer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         const offer: RTCSessionDescription = yield call(() => offerPeer.createOffer())
@@ -65,7 +67,6 @@ export function* rtcSaga() {
                 break
             }
             totalCopied += bytesRead
-
             if (dc.bufferedAmount > maxSendBuffered) {
                 console.log("buffer high")
                 const pr = createPromiseResolver()
@@ -83,8 +84,8 @@ export function* rtcSaga() {
         }
         dc.close()
         yield put(RtcActions.fileSendSuccess())
-
     })
+
     yield takeEvery(getType(RtcActions.createAnswer), function* (action: ActionType<typeof RtcActions.createAnswer>) {
         const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer())
         const offerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
@@ -96,49 +97,24 @@ export function* rtcSaga() {
         const safeName = path.basename(path.normalize(name))
         const targetPath = `/home/spender/Desktop/__${safeName}`
         const tempPath = `/home/spender/Desktop/__${uuid()}`
-        const fileStream = fs.createWriteStream(tempPath)
-
+        const fd = yield call(() => open(tempPath, "w"))
         let total = 0
         for (; ;) {
             const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
             total += msg.byteLength
             console.log(`answerpeer received : ${total}`)
-            const pr = createPromiseResolver();
-            fileStream.write(toBuffer(msg), (err) => { if (err) { pr.reject(err) } else { pr.resolve() } })
-            yield call(() => pr.promise)
+            yield call(() => write(fd, toBuffer(msg)))
             if (total > size) {
                 throw Error("more data than expected")
             }
             if (total === size) {
                 break
             }
-
         }
-        fileStream.close()
+        yield call(() => close(fd))
         dc.close()
-
         yield call(() => rename(tempPath, targetPath))
-
         console.log("file received")
+        yield put(RtcActions.fileReceiveSuccess())
     })
-
-}
-
-function toBuffer(ab: ArrayBuffer) {
-    const buf = Buffer.alloc(ab.byteLength);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < buf.length; ++i) {
-        buf[i] = view[i];
-    }
-    return buf;
-}
-
-function toArrayBuffer(buf: Buffer, amt?: number) {
-    const len = Math.min(typeof amt !== 'undefined' ? amt : buf.length, buf.length)
-    const ab = new ArrayBuffer(len);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < len; ++i) {
-        view[i] = buf[i];
-    }
-    return ab;
 }
