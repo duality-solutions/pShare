@@ -34,6 +34,7 @@ const close = util.promisify(fs.close)
 const read = util.promisify(fs.read)
 const write = util.promisify(fs.write)
 const rename = util.promisify(fs.rename)
+const unlink = util.promisify(fs.unlink)
 
 export function* rtcSaga() {
     yield takeEvery(getType(FileActions.filesSelected), function* (action: ActionType<typeof FileActions.filesSelected>) {
@@ -93,26 +94,40 @@ export function* rtcSaga() {
         const offerSessionDescription = new RTCSessionDescription(offerSdp);
         const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription))
         yield put(RtcActions.createAnswerSuccess(JSON.stringify(answer.toJSON())))
-        const dc: RTCDataChannel = yield call(() => answerPeer.waitForDataChannelOpen())
         const safeName = path.basename(path.normalize(name))
         const targetPath = `/home/spender/Desktop/__${safeName}`
         const tempPath = `/home/spender/Desktop/__${uuid()}`
-        const fd = yield call(() => open(tempPath, "w"))
-        let total = 0
-        for (; ;) {
-            const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
-            total += msg.byteLength
-            console.log(`answerpeer received : ${total}`)
-            yield call(() => write(fd, toBuffer(msg)))
-            if (total > size) {
-                throw Error("more data than expected")
+        const dc: RTCDataChannel = yield call(() => answerPeer.waitForDataChannelOpen())
+
+        try {
+            const fd: number = yield call(() => open(tempPath, "w"))
+            try {
+
+                let total = 0
+                for (; ;) {
+                    const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
+                    total += msg.byteLength
+                    console.log(`answerpeer received : ${total}`)
+                    yield call(() => write(fd, toBuffer(msg)))
+                    if (total > size) {
+                        throw Error("more data than expected")
+                    }
+                    if (total === size) {
+                        break
+                    }
+                }
+            } finally {
+                yield call(() => close(fd))
             }
-            if (total === size) {
-                break
-            }
+        } catch (err) {
+            try {
+                yield call(() => unlink(tempPath))
+            } catch{ }
+            yield put(RtcActions.fileReceiveFailed())
+            return
+        } finally {
+            dc.close()
         }
-        yield call(() => close(fd))
-        dc.close()
         yield call(() => rename(tempPath, targetPath))
         console.log("file received")
         yield put(RtcActions.fileReceiveSuccess())
