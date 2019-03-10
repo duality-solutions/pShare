@@ -89,6 +89,7 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
                 throw Error("no data channel")
             }
 
-        }
+        },
+        close: () => dataChannel && dataChannel.close()
     }
 }

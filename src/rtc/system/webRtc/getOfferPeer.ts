@@ -37,8 +37,8 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
 
     return {
         createOffer: async () => {
-            const pr=createPromiseResolver<RTCSessionDescription>()
-            eventDispatcher.once("sessiondescription",(sd:RTCSessionDescription)=>pr.resolve(sd))
+            const pr = createPromiseResolver<RTCSessionDescription>()
+            eventDispatcher.once("sessiondescription", (sd: RTCSessionDescription) => pr.resolve(sd))
             const offerInit = await peer.createOffer({});
             const offer = new RTCSessionDescription(offerInit);
             await peer.setLocalDescription(offer);
@@ -66,6 +66,7 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
         once: eventDispatcher.once,
         removeEventListener: eventDispatcher.removeEventListener,
         incomingMessageQueue: queue,
-        send: (data: T) => dataChannel.send(data as any)
+        send: (data: T) => dataChannel.send(data as any),
+        close: () => dataChannel && dataChannel.close()
     };
 }

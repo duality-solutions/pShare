@@ -13,6 +13,7 @@ import { v4 as uuid } from 'uuid';
 import * as util from 'util'
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
 import { toArrayBuffer, toBuffer } from "../../shared/system/bufferConversion";
+import { FilePathInfo } from "../../renderer/components/RtcPlayground/Dropzone";
 
 export interface FileNameInfo {
     name: string
@@ -50,10 +51,79 @@ export function* rtcSaga() {
         const answerSessionDescription = new RTCSessionDescription(answerSdp);
         yield call(() => offerPeer.setRemoteDescription(answerSessionDescription))
         const dc: RTCDataChannel = yield call(() => offerPeer.waitForDataChannelOpen())
+        try {
+            yield copyFileToDataChannel(filePathInfo, dc)
+        } catch{
+            yield put(RtcActions.fileSendFailed())
+            return
+        } finally {
+            dc.close()
+        }
+        yield put(RtcActions.fileSendSuccess())
+    })
+
+    yield takeEvery(getType(RtcActions.createAnswer), function* (action: ActionType<typeof RtcActions.createAnswer>) {
+        const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer())
+        const offerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
+        const { fileNameInfo, sessionDescription: offerSdp }: OfferWrapper = JSON.parse(offerSdpJson)
+        //const { name, size } = fileNameInfo
+        const offerSessionDescription = new RTCSessionDescription(offerSdp);
+        const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription))
+        yield put(RtcActions.createAnswerSuccess(JSON.stringify(answer.toJSON())))
+        const tempPath = `/home/spender/Desktop/__${uuid()}`
+        yield call(() => answerPeer.waitForDataChannelOpen())
+        try {
+            yield receiveFileFromAnswerPeer(tempPath, answerPeer, fileNameInfo.size)
+        } catch{
+            yield put(RtcActions.fileReceiveFailed())
+            return
+        }
+        const safeName = path.basename(path.normalize(fileNameInfo.name))
+        const targetPath = `/home/spender/Desktop/__${safeName}`
+        yield call(() => rename(tempPath, targetPath))
+        console.log("file received")
+        yield put(RtcActions.fileReceiveSuccess())
+    })
+}
+
+const receiveFileFromAnswerPeer = (savePath: string, answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>>, size: number) =>
+    call(function* () {
+        try {
+            const fd: number = yield call(() => open(savePath, "w"))
+            try {
+
+                let total = 0
+                for (; ;) {
+                    const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
+                    total += msg.byteLength
+                    console.log(`answerpeer received : ${total}`)
+                    yield call(() => write(fd, toBuffer(msg)))
+                    if (total > size) {
+                        throw Error("more data than expected")
+                    }
+                    if (total === size) {
+                        break
+                    }
+                }
+            } finally {
+                yield call(() => close(fd))
+            }
+        } catch (err) {
+            try {
+                yield call(() => unlink(savePath))
+            } catch{ }
+            throw err
+        } finally {
+            answerPeer.close()
+        }
+    })
+
+const copyFileToDataChannel = (filePathInfo: FilePathInfo, dc: RTCDataChannel) =>
+    call(function* () {
         dc.bufferedAmountLowThreshold = sendBufferedAmountLowThreshold;
         let totalCopied = 0
         let totalSent = 0
-        const filePath = action.payload[0].path;
+        const filePath = filePathInfo.path;
         var buffer = new Buffer(fileReadBufferSize);
         const fd = yield call(() => open(filePath, "r"))
         for (; ;) {
@@ -83,53 +153,4 @@ export function* rtcSaga() {
         while (dc.bufferedAmount > 0) {
             yield delay(250)
         }
-        dc.close()
-        yield put(RtcActions.fileSendSuccess())
     })
-
-    yield takeEvery(getType(RtcActions.createAnswer), function* (action: ActionType<typeof RtcActions.createAnswer>) {
-        const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer())
-        const offerSdpJson: string = yield select((state: RendererRootState) => state.rtcPlayground.text)
-        const { fileNameInfo: { name, size }, sessionDescription: offerSdp }: OfferWrapper = JSON.parse(offerSdpJson)
-        const offerSessionDescription = new RTCSessionDescription(offerSdp);
-        const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription))
-        yield put(RtcActions.createAnswerSuccess(JSON.stringify(answer.toJSON())))
-        const safeName = path.basename(path.normalize(name))
-        const targetPath = `/home/spender/Desktop/__${safeName}`
-        const tempPath = `/home/spender/Desktop/__${uuid()}`
-        const dc: RTCDataChannel = yield call(() => answerPeer.waitForDataChannelOpen())
-
-        try {
-            const fd: number = yield call(() => open(tempPath, "w"))
-            try {
-
-                let total = 0
-                for (; ;) {
-                    const msg: ArrayBuffer = yield call(() => answerPeer.incomingMessageQueue.receive())
-                    total += msg.byteLength
-                    console.log(`answerpeer received : ${total}`)
-                    yield call(() => write(fd, toBuffer(msg)))
-                    if (total > size) {
-                        throw Error("more data than expected")
-                    }
-                    if (total === size) {
-                        break
-                    }
-                }
-            } finally {
-                yield call(() => close(fd))
-            }
-        } catch (err) {
-            try {
-                yield call(() => unlink(tempPath))
-            } catch{ }
-            yield put(RtcActions.fileReceiveFailed())
-            return
-        } finally {
-            dc.close()
-        }
-        yield call(() => rename(tempPath, targetPath))
-        console.log("file received")
-        yield put(RtcActions.fileReceiveSuccess())
-    })
-}
