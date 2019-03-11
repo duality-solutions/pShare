@@ -1,10 +1,10 @@
 import { createEventEmitter } from "../../../shared/system/events/createEventEmitter";
 import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
+import { RTCOfferPeer } from "./RTCOfferPeer";
+import { OfferPeerEvents } from "./OfferPeerEvents";
 
-type OfferPeerEvents = "icecandidate" | "offer" | "close" | "error" | "open" | "sessiondescription"
-
-export async function getOfferPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>() {
+export async function getOfferPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(): Promise<RTCOfferPeer<T>> {
     const peerConnectionConfig = {
         iceServers: [
             { urls: 'turn:45.77.158.163:3478', username: "test", credential: "Admin@123", }
@@ -60,7 +60,7 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
             }
             return dataChannel
         },
-        setRemoteDescription: (offer: RTCSessionDescription) => peer.setRemoteDescription(offer),
+        setRemoteDescription: (sessionDescription: RTCSessionDescription) => peer.setRemoteDescription(sessionDescription),
         //addIceCandidate: (candidate: RTCIceCandidate) => peer.addIceCandidate(candidate),
         addEventListener: eventDispatcher.addEventListener,
         once: eventDispatcher.once,

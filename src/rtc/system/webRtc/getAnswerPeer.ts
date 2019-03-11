@@ -1,11 +1,10 @@
 import { createEventEmitter } from "../../../shared/system/events/createEventEmitter";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
 import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
+import { AnswerPeerEvents } from "./AnswerPeerEvents";
+import { RTCAnswerPeer } from "./RTCAnswerPeer";
 
-type AnswerPeerEvents = "icecandidate" | "offer" | "close" | "error" | "open" | "sessiondescription" | "datachannel"
-
-
-export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>() {
+export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(): Promise<RTCAnswerPeer<T>> {
     const peerConnectionConfig = {
         iceServers: [
             { urls: 'turn:45.77.158.163:3478', username: "test", credential: "Admin@123", }
@@ -47,6 +46,8 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
     let dataChannel: RTCDataChannel | undefined;
 
     return {
+
+
         getAnswer: async (offer: RTCSessionDescription) => {
             const pr = createPromiseResolver<RTCSessionDescription>()
             eventDispatcher.once("sessiondescription", (sd: RTCSessionDescription) => pr.resolve(sd))

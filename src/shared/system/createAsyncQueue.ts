@@ -4,7 +4,7 @@ import { createPromiseResolver } from "./createPromiseResolver";
 import { createQueue } from "./createQueue";
 
 
-interface AsyncQueue<T> {
+export interface AsyncQueue<T> {
     post: (item: T) => void
     receive: (cancellationToken?: CancellationToken) => Promise<T>
 }
