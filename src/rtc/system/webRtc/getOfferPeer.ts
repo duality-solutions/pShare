@@ -65,7 +65,8 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
         addEventListener: eventDispatcher.addEventListener,
         once: eventDispatcher.once,
         removeEventListener: eventDispatcher.removeEventListener,
-        incomingMessageQueue: queue,
+        get incomingMessageQueue() { return queue },
+        get dataChannel() { return dataChannel },
         send: (data: T) => dataChannel.send(data as any),
         close: () => dataChannel && dataChannel.close()
     };

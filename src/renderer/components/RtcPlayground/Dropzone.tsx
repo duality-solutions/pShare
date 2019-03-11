@@ -1,10 +1,7 @@
 import React, { FunctionComponent } from "react";
+import { FilePathInfo } from "../../../rtc/system/webRtc/FilePathInfo";
 
-export interface FilePathInfo {
-    path: string
-    type: string
-    size: number
-}
+
 
 export interface DropzoneStateProps {
 

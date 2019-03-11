@@ -82,7 +82,14 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
         addEventListener: eventDispatcher.addEventListener,
         once: eventDispatcher.once,
         removeEventListener: eventDispatcher.removeEventListener,
-        incomingMessageQueue: queue,
+        get incomingMessageQueue() { return queue },
+        get dataChannel() {
+            if (dataChannel) {
+                return dataChannel
+            } else {
+                throw Error("RTCDataChannel not yet acquired, did you waitForDataChannelOpen()?")
+            }
+        },
         send: (data: T) => {
             if (dataChannel) {
                 dataChannel.send(data as any);

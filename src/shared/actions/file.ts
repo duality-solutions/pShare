@@ -1,5 +1,5 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { FilePathInfo } from '../../renderer/components/RtcPlayground/Dropzone';
+import { FilePathInfo } from '../../rtc/system/webRtc/FilePathInfo';
 
 
 
