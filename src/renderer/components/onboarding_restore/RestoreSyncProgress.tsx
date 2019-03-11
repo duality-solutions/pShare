@@ -5,7 +5,7 @@ import Box from '../ui-elements/Box';
 import Container from '../ui-elements/Container';
 import { AppLogo } from '../ui-elements/Image';
 import ProgressBar from '../ui-elements/ProgressBar';
-import { H1, Text, H3 } from '../ui-elements/Text';
+import { H1 } from '../ui-elements/Text';
 
 
 export interface RestoreSyncProgressStateProps {

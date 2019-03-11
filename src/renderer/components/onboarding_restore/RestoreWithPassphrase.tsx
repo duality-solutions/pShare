@@ -7,7 +7,7 @@ import { ArrowButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
-import Input from "../ui-elements/Input";
+// import Input from "../ui-elements/Input";
 import { H1, H3 } from "../ui-elements/Text";
 import PsharePassphrase from "../../assets/svgs/p-share-pass-phrase-blue.svg";
 import { MnemonicInput } from "../ui-elements/Input";
