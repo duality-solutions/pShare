@@ -8,14 +8,12 @@ import * as util from 'util'
 import * as fs from 'fs'
 
 const fileReadBufferSize = 65536; // 64KiB
-
 const maxSendBuffered = 2097152; // 2MiB
-
 const sendBufferedAmountLowThreshold = 262144; // 256KiB
 
-const read = util.promisify(fs.read);
-const close = util.promisify(fs.close);
-const open = util.promisify(fs.open);
+const fsReadAsync = util.promisify(fs.read);
+const fsCloseAsync = util.promisify(fs.close);
+const fsOpenAsync = util.promisify(fs.open);
 
 export const copyFileToRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
@@ -26,13 +24,13 @@ export const copyFileToRTCPeer =
             let totalSent = 0;
             const filePath = filePathInfo.path;
             var buffer = new Buffer(fileReadBufferSize);
-            const fd = yield call(() => open(filePath, "r"));
+            const fd = yield call(() => fsOpenAsync(filePath, "r"));
             for (; ;) {
                 console.log("reading chunk");
                 const amtToRead = Math.min(filePathInfo.size - totalRead, fileReadBufferSize);
                 const { bytesRead }: {
                     bytesRead: number;
-                } = yield call(() => read(fd, buffer, 0, amtToRead, totalRead));
+                } = yield call(() => fsReadAsync(fd, buffer, 0, amtToRead, totalRead));
                 console.log("chunk read");
                 if (bytesRead === 0) {
                     if (totalSent !== filePathInfo.size || totalSent !== totalRead) {
@@ -52,7 +50,7 @@ export const copyFileToRTCPeer =
                 totalSent += bytesRead;
                 yield delay(0);
             }
-            yield call(() => close(fd));
+            yield call(() => fsCloseAsync(fd));
             while (dataChannel.bufferedAmount > 0) {
                 yield delay(250);
             }
