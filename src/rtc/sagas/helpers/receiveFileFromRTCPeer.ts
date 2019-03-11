@@ -14,14 +14,14 @@ export const receiveFileFromRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
         (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileNameInfo) => call(function* () {
             try {
-                const fd: number = yield call(() => fsOpenAsync(savePath, "w"));
+                const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
                     let total = 0;
                     for (; ;) {
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
                         console.log(`answerpeer received : ${total}`);
-                        yield call(() => fsWriteAsync(fd, toBuffer(msg)));
+                        yield call(() => fsWriteAsync(fileDescriptor, toBuffer(msg)));
                         if (total > fileNameInfo.size) {
                             throw Error("more data than expected");
                         }
@@ -31,7 +31,7 @@ export const receiveFileFromRTCPeer =
                     }
                 }
                 finally {
-                    yield call(() => fsCloseAsync(fd));
+                    yield call(() => fsCloseAsync(fileDescriptor));
                 }
             }
             catch (err) {

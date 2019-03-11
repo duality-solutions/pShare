@@ -24,13 +24,13 @@ export const copyFileToRTCPeer =
             let totalSent = 0;
             const filePath = filePathInfo.path;
             var buffer = new Buffer(fileReadBufferSize);
-            const fd = yield call(() => fsOpenAsync(filePath, "r"));
+            const fileDescriptor: number = yield call(() => fsOpenAsync(filePath, "r"));
             for (; ;) {
                 console.log("reading chunk");
                 const amtToRead = Math.min(filePathInfo.size - totalRead, fileReadBufferSize);
                 const { bytesRead }: {
                     bytesRead: number;
-                } = yield call(() => fsReadAsync(fd, buffer, 0, amtToRead, totalRead));
+                } = yield call(() => fsReadAsync(fileDescriptor, buffer, 0, amtToRead, totalRead));
                 console.log("chunk read");
                 if (bytesRead === 0) {
                     if (totalSent !== filePathInfo.size || totalSent !== totalRead) {
@@ -50,7 +50,7 @@ export const copyFileToRTCPeer =
                 totalSent += bytesRead;
                 yield delay(0);
             }
-            yield call(() => fsCloseAsync(fd));
+            yield call(() => fsCloseAsync(fileDescriptor));
             while (dataChannel.bufferedAmount > 0) {
                 yield delay(250);
             }
