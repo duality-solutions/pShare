@@ -42,7 +42,7 @@ export function* navSaga() {
 
             } else {
                 yield put(pushRoute(appRoutes.restoreAccount))
-                // const restoreNavMap = getNavMap();
+                const restoreNavMap = getNavMap();
                 const { restoreWithPassphrase } = yield race({
                     restoreWithPassphrase: take(getType(RootActions.restoreWithPassphrase)),
                     restoreWithMnemonicFile: take(getType(RootActions.restoreWithMnemonicFile))
@@ -51,16 +51,11 @@ export function* navSaga() {
                     yield put(pushRoute(appRoutes.restoreWithPassphrase))
                 } else {
                     yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
+                    restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
                 }
-                // restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase);
-                // restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFile, appRoutes.restoreWithMnemonicFile);
-                // restoreNavMap.registerNavAction(RootActions.restoreCompleteSuccess, appRoutes.dashboard, true);
-                // yield restoreNavMap.runNav();
+                restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress, true)
+                yield restoreNavMap.runNav();
             }
-
-
-
-
         }
 
 
@@ -68,6 +63,7 @@ export function* navSaga() {
 
 
 }
+
 
 function* waitForUserDetails() {
     const bdapAccountConfigNavMap = getNavMap();

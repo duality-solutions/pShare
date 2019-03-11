@@ -20,6 +20,8 @@ import AddLinks from "../containers/dashboard/AddLinks";
 import RestoreAccount from '../containers/onboarding_restore/RestoreAccount';
 import RestoreWithMnemonicFile from '../containers/onboarding_restore/RestoreWithMnemonicFile';
 import RestoreWithPassphrase from '../containers/onboarding_restore/RestoreWithPassphrase';
+import RestoreSyncProgress from '../containers/onboarding_restore/RestoreSyncProgress';
+import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassword';
 
 export interface RouteInfo {
     path: string;
@@ -45,7 +47,9 @@ const routingTable = {
     passwordGet: route("/PasswordGet", PasswordGet),
     restoreAccount: route('/RestoreAccount',RestoreAccount),
     restoreWithPassphrase: route('/RestoreWithPassphrase', RestoreWithPassphrase),
-    restoreWithMnemonicFile: route('/RestoreWithMnemonicFile', RestoreWithMnemonicFile)
+    restoreWithMnemonicFile: route('/RestoreWithMnemonicFile', RestoreWithMnemonicFile),
+    restoreSyncProgress: route('/RestoreSyncProgress', RestoreSyncProgress),
+    secureFilePassword: route('/SecureFilePassword', SecureFilePassword)
 };
 
 const dashboardRoutingTable = {

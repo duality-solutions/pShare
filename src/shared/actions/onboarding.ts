@@ -61,6 +61,8 @@ export const OnboardingActions = {
     restoreAccount: createStandardAction('onboarding/RESTORE_ACCOUNT')<void>(),
     restoreWithPassphrase: createStandardAction('onboarding/RESTORE_WITH_PASSPHRASE')<void>(),
     restoreWithMnemonicFile: createStandardAction('onboarding/RESTORE_WITH_MNEMONIC_FILE')<void>(),
+    restoreSync: createStandardAction('onboarding/RESTORE_SYNC')<void>(),
+    secureFilePassword: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

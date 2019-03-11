@@ -31,7 +31,7 @@ export const RestoreAccount:React.FunctionComponent<RestoreAccountProps> =
       transitionEnter={false}
       transitionLeave={false}>
       <H1 align="center" colored fontWeight="600">Restore Account</H1>
-    <Container height="50vh" padding="2em 0 0 0">
+    <Container height="50vh" padding="4em 0 0 0">
     <Box direction="column" align="center" width="100%">
     <Box display="flex" direction="row" align="center" width="100%">
         <SCard onClick={()=> restoreWithPassphrase()} padding="2em 1em 0em 1em" height="140px" width="220px">

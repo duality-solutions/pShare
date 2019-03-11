@@ -3,12 +3,14 @@ import { CSSTransitionGroup } from 'react-transition-group';
 // import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-// import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, LightButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
+import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
 import { AppLogo } from '../ui-elements/Image';
 // import Input from "../ui-elements/Input";
-import { H1, Text } from "../ui-elements/Text";
+import { H1, Text, H3 } from "../ui-elements/Text";
+import Dropzone from "../ui-elements/Dropzone";
 // import { NamedValue } from "../../../shared/system/validator/NamedValue";
 // import { validationScopes } from "../../reducers/validationScopes";
 
@@ -17,7 +19,7 @@ export interface RestoreWithMnemonicFileStateProps {
     // validationResult?: ValidationResult<string>
 }
 export interface RestoreWithMnemonicFileDispatchProps {
-
+    secureFilePassword: () => void
 }
 type RestoreWithMnemonicFileProps = RestoreWithMnemonicFileDispatchProps & RestoreWithMnemonicFileStateProps
 
@@ -52,23 +54,37 @@ export class RestoreWithMnemonicFile extends Component<RestoreWithMnemonicFilePr
                 transitionAppearTimeout={500}
                 transitionEnter={false}
                 transitionLeave={false}>
-                <H1 align="center" colored fontWeight="600">Create Account</H1>
+                <H1 align="center" colored fontWeight="600">Restore Account</H1>
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
-                            {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
-
-                            <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                                <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
-                                    <Text fontSize="14px">Enter a user name</Text>
+                        <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                                <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
+                                <Box display="flex" direction="row" margin="0">
+                                        <Box width="60px" margin="0">
+                                            <img src={PshareSecureFileSvg} width="60px" height="60px" /> 
+                                        </Box> 
+                                        <Box margin="1em 0 0 2em">
+                                        <H3 margin="0 0 1em 0">Restore using Pass phrase </H3>
+                                        <Box>
+                                        <Dropzone>
+                                            <H3 align="center">Drop files to upload</H3>
+                                            <Text margin="1.5em 0 1.5em 0">or</Text>
+                                            <LightButton >Select file</LightButton>
+                                        </Dropzone>
+                                        </Box>
+                                        </Box>
+                                        </Box>
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                {/* <ArrowButton label="Continue" type="submit" disabled={isValidating} /> */}
+                                <ArrowButton label="Continue" type="submit" onClick={()=> this.props.secureFilePassword()} /> 
+                                {/* disabled={isValidating} /> */}
                                 {/* { */}
                                     {/* isValidating ? <div>show spinner</div> : <></> */}
                                 {/* } */}
                             </Box>
+
                         </Box>
                     </form>
                 </Container>
