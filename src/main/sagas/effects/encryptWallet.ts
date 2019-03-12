@@ -1,7 +1,7 @@
 import { call } from "redux-saga/effects";
 import { getRpcClient } from "../../getRpcClient";
 import { RpcClientWrapper } from "../../RpcClient";
-import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
+import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
 import { delay } from "../../../shared/system/delay";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
 export function encryptWallet(password: string) {

@@ -4,7 +4,7 @@ import { OnboardingActions } from '../actions/onboarding';
 import { deleteOptionalProperty, deleteOptionalProperties } from '../system/deleteOptionalProperty';
 import { AppActions } from '../actions/app';
 
-interface UserState {
+export interface UserState {
     syncAgreed: boolean
     isOnboarded: boolean
     userName?: string

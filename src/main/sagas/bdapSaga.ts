@@ -1,5 +1,5 @@
-import { takeEvery, put, call, select } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
+import { takeEvery, put, call, select, take } from "redux-saga/effects";
+import { getType, ActionType } from "typesafe-actions";
 import { BdapActions } from "../../shared/actions/bdap";
 import { getRpcClient } from "../getRpcClient";
 import { RpcClient } from "../RpcClient";
@@ -11,8 +11,9 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
+import { delay } from "redux-saga";
 
-export function* bdapSaga(mock: boolean) {
+export function* bdapSaga(mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
         const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: GetUserInfo[];
@@ -34,21 +35,27 @@ export function* bdapSaga(mock: boolean) {
     })
     yield takeEvery(getType(BdapActions.getPendingAcceptLinks), function* () {
         if (mock) {
-            yield put(BdapActions.getPendingAcceptLinksSuccess(mockPendingAcceptLinks))
+            const userFqdn: string = yield getUserFqdn();
+            const p = blinq(mockPendingAcceptLinks).select(l => ({ ...l, recipient_fqdn: userFqdn })).toArray()
+            yield put(BdapActions.getPendingAcceptLinksSuccess(p))
             return
         }
         yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
-            yield put(BdapActions.getPendingRequestLinksSuccess(mockPendingRequestLinks))
+            const userFqdn: string = yield getUserFqdn();
+            const p = blinq(mockPendingRequestLinks).select(l => ({ ...l, requestor_fqdn: userFqdn })).toArray()
+            yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
         yield* rpcLinkCommand((command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
-            yield put(BdapActions.getCompleteLinksSuccess(mockCompleteLinks))
+            const userFqdn: string = yield getUserFqdn();
+            const p = blinq(mockCompleteLinks).select(l => (l.requestor_fqdn === 'bob@public.bdap.io' ? { ...l, requestor_fqdn: userFqdn } : { ...l, recipient_fqdn: userFqdn })).toArray()
+            yield put(BdapActions.getCompleteLinksSuccess(p))
             return
         }
         const rpcClient: RpcClient = yield call(() => getRpcClient())
@@ -65,10 +72,17 @@ export function* bdapSaga(mock: boolean) {
     })
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
-        yield put(BdapActions.getUsers())
-        yield put(BdapActions.getCompleteLinks())
-        yield put(BdapActions.getPendingAcceptLinks())
-        yield put(BdapActions.getPendingRequestLinks())
+
+        for (; ;) {
+            yield put(BdapActions.getUsers())
+
+            yield put(BdapActions.getCompleteLinks())
+            yield put(BdapActions.getPendingAcceptLinks())
+            yield put(BdapActions.getPendingRequestLinks())
+
+            yield delay(60000)
+        }
+
     })
 }
 
@@ -76,19 +90,25 @@ export function* bdapSaga(mock: boolean) {
 const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] => entries(response).select(([, v]) => v).toArray()
 
 
+const getUserFqdn = () =>
+    call(function* () {
+        let currentUser: GetUserInfo = yield select((state: MainRootState) => state.bdap.currentUser);
+        if (typeof currentUser === 'undefined') {
+            const a: ActionType<typeof BdapActions.currentUserReceived> = yield take(getType(BdapActions.currentUserReceived));
+            currentUser = a.payload
+        }
+        return currentUser.object_full_path;
+    })
+
 function* rpcLinkCommand<T extends Link>(
     cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
 ) {
-    const password: string | undefined = yield select((state: MainRootState) => state.user.sessionWalletPassword)
-    if (typeof password === 'undefined') {
-        yield put(failActionCreator("no password in state"))
-        return
-    }
+
     let response: LinkResponse<T>;
     try {
-        response = yield unlockedCommandEffect(password, cmd)
+        response = yield unlockedCommandEffect(cmd)
     } catch (err) {
         yield put(failActionCreator(err.message))
         return;
@@ -128,8 +148,8 @@ const mockPendingRequestLinks = [{
     "link_message": "Hi"
 },
 {
-    "requestor_fqdn": "laptop@public.bdap.io",
-    "recipient_fqdn": "bob@public.bdap.io",
+    "requestor_fqdn": "bob@public.bdap.io",
+    "recipient_fqdn": "laptop@public.bdap.io",
     "requestor_link_pubkey": "24b1281d8f5e389514a58d7408ab2206e586d26b42bd3c5650d0ddedd707a7e2",
     "txid": "21f518e646891d4bb99b2ac061deb4caeeb52ab0c4e25f3d20b89e548fe2c6e4",
     "time": 1550094743,
