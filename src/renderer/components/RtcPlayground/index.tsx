@@ -1,5 +1,7 @@
 import React, { FunctionComponent } from "react";
 import { Dropzone } from "../../containers/RtcPlayground/Dropzone";
+import { Link } from "react-router-dom";
+import { appRoutes } from "../../../renderer/routes/appRoutes";
 
 export interface RtcPlaygroundStateProps {
     text: string
@@ -16,6 +18,8 @@ export type RtcPlaygroundProps = RtcPlaygroundStateProps & RtcPlaygroundDispatch
 export const RtcPlayground: FunctionComponent<RtcPlaygroundProps> = ({ createOffer, createAnswer, text, textChanged, setAnswerFromRemote }) =>
     <>
         <h1>rtc playground</h1>
+        <p> <Link to={appRoutes.passwordCreate.path}>back to app</Link></p>
+
         <div>
             {/* <button onClick={() => createOffer()}>create offer</button> */}
             <button onClick={() => createAnswer()}>create answer</button>

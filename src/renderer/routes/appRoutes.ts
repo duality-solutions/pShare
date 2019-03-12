@@ -17,6 +17,7 @@ import SyncAgree from "../containers/syncing/SyncAgree";
 import MyLinks from '../containers/dashboard/MyLinks';
 import { Invites } from '../containers/dashboard/Invites';
 import AddLinks from "../containers/dashboard/AddLinks";
+import { RtcPlayground } from '../containers/RtcPlayground';
 
 export interface RouteInfo {
     path: string;
@@ -39,7 +40,8 @@ const routingTable = {
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
     dashboard: route("/Dashboard", Dashboard, false),
-    passwordGet: route("/PasswordGet", PasswordGet)
+    passwordGet: route("/PasswordGet", PasswordGet),
+    rtcPlayground: route("/Rtc", RtcPlayground)
 };
 
 const dashboardRoutingTable = {
