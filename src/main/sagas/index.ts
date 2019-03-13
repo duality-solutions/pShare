@@ -13,9 +13,11 @@ import { bdapSaga } from "./bdapSaga";
 import { remoteLoggingSaga } from "./remoteLoggingSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
+import { fileWatchSaga } from "./fileWatchSaga";
 
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
+    () => fileWatchSaga(),
     () => linkRequestSaga(),
     () => linkAcceptSaga(),
     () => actionLoggingSaga("Main Store"),
