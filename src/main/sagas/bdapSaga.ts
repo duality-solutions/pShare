@@ -81,7 +81,7 @@ export function* bdapSaga(mock: boolean = false) {
             yield put(BdapActions.getPendingRequestLinks())
 
 
-            const updateSuccess = yield all({
+            const getResults = yield all({
                 users: race({
                     success: take(getType(BdapActions.getUsersSuccess)),
                     failure: take(getType(BdapActions.getUsersFailed))
@@ -100,10 +100,10 @@ export function* bdapSaga(mock: boolean = false) {
                 })
             })
 
-            if (updateSuccess.users.success
-                && updateSuccess.completeLinks.success
-                && updateSuccess.pendingRequest.success
-                && updateSuccess.pendingAccept.success
+            if (getResults.users.success
+                && getResults.completeLinks.success
+                && getResults.pendingRequest.success
+                && getResults.pendingAccept.success
             ) {
                 console.log("all user/link data successful retrieved")
             }
