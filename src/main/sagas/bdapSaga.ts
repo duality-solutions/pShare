@@ -1,4 +1,4 @@
-import { takeEvery, put, call, select, take } from "redux-saga/effects";
+import { takeEvery, put, call, select, take, all, race } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { BdapActions } from "../../shared/actions/bdap";
 import { getRpcClient } from "../getRpcClient";
@@ -79,6 +79,38 @@ export function* bdapSaga(mock: boolean = false) {
             yield put(BdapActions.getCompleteLinks())
             yield put(BdapActions.getPendingAcceptLinks())
             yield put(BdapActions.getPendingRequestLinks())
+
+
+            const updateSuccess = yield all({
+                users: race({
+                    success: take(getType(BdapActions.getUsersSuccess)),
+                    failure: take(getType(BdapActions.getUsersFailed))
+                }),
+                completeLinks: race({
+                    success: take(getType(BdapActions.getCompleteLinksSuccess)),
+                    failure: take(getType(BdapActions.getCompleteLinksFailed))
+                }),
+                pendingRequest: race({
+                    success: take(getType(BdapActions.getPendingRequestLinksSuccess)),
+                    failure: take(getType(BdapActions.getPendingRequestLinksFailed))
+                }),
+                pendingAccept: race({
+                    success: take(getType(BdapActions.getPendingAcceptLinksSuccess)),
+                    failure: take(getType(BdapActions.getPendingAcceptLinksFailed))
+                })
+            })
+
+            if (updateSuccess.users.success
+                && updateSuccess.completeLinks.success
+                && updateSuccess.pendingRequest.success
+                && updateSuccess.pendingAccept.success
+            ) {
+                console.log("all user/link data successful retrieved")
+            }
+            else {
+                console.warn("some user/link data was not successfully retrieved")
+                throw Error("some user/link data was not successfully retrieved")
+            }
 
             yield delay(60000)
         }
