@@ -106,10 +106,13 @@ export function* bdapSaga(mock: boolean = false) {
                 && getResults.pendingAccept.success
             ) {
                 console.log("all user/link data successful retrieved")
+                yield put(BdapActions.bdapDataFetchSuccess())
             }
             else {
                 console.warn("some user/link data was not successfully retrieved")
-                throw Error("some user/link data was not successfully retrieved")
+                //todo: report this, somehow
+                yield put(BdapActions.bdapDataFetchFailed("some user/link data was not successfully retrieved"))
+
             }
 
             yield delay(60000)
