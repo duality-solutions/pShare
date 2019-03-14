@@ -19,6 +19,7 @@ interface ParaProps {
     notUserSelectable?: boolean,
     fontWeight?: string,
     disabled?: boolean,
+    lineHeight?: string,
 }
 
 const StyledHeader = styled('h1') <H1Props>`
@@ -60,6 +61,7 @@ const StyledText = styled('p') <ParaProps>`
         else if (props.color) return props.color
         else return 'black'
     }};
+    line-height: ${props => props.lineHeight};
 `
 
 export default StyledText

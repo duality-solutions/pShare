@@ -14,6 +14,7 @@ import addLinksBtn from "../../assets/svgs/btn-add-32.svg";
 import addlinks from "../../assets/svgs/add-32.svg";
 import requestsent from "../../assets/svgs/request-sent-32.svg";
 import close from "../../assets/svgs/close-32.svg";
+import viewbtn from "../../assets/svgs/viewbtn.svg";
 
 interface ImageProps {
     src? : string,
@@ -63,8 +64,11 @@ const CloseIcon:React.FunctionComponent<ImageProps> =
 const RequestSentIcon:React.FunctionComponent<ImageProps> =
     ({ width, height, margin }) =>  <SvgIcon src={requestsent} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
 
+const ViewBtnIcon:React.FunctionComponent<ImageProps> = 
+    ({ width, height, margin, onClick }) => <SvgIcon style={{ cursor: 'pointer'}} onClick={onClick} src={viewbtn} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
 
-    export {
-    SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon,
+
+export {
+    SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
     InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon
 }

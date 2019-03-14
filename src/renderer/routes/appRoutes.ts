@@ -22,6 +22,7 @@ import RestoreWithMnemonicFile from '../containers/onboarding_restore/RestoreWit
 import RestoreWithPassphrase from '../containers/onboarding_restore/RestoreWithPassphrase';
 import RestoreSyncProgress from '../containers/onboarding_restore/RestoreSyncProgress';
 import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassword';
+import { SharedFiles } from '../components/dashboard/SharedFiles';
 
 export interface RouteInfo {
     path: string;
@@ -55,7 +56,8 @@ const routingTable = {
 const dashboardRoutingTable = {
     myLinks: route("/Dashboard/MyLinks", MyLinks),
     invites: route("/Dashboard/Invites", Invites),
-    addLinks: route("/Dashboard/AddLinks", AddLinks)
+    addLinks: route("/Dashboard/AddLinks", AddLinks),
+    sharedFiles: route("/Dashboard/SharedFiles", SharedFiles)
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

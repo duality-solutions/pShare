@@ -1,6 +1,10 @@
 import * as React from 'react';
 import styled from 'styled-components';
 import back_arrow_svg from '../../assets/svgs/back-nav-arrow.svg';
+import { InboxIcon, OutboxIcon } from './Image';
+import { Text } from './Text';
+import { Divider } from './Divider';
+
 
 interface ButtonProps {
   align?: string,
@@ -70,8 +74,37 @@ const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick,
   </StyledButton>
 )
 
+const StyledSharedButton = styled('div')<{ white?: boolean , margin?: string}>`
+  width: 132px;
+  height: 42px;
+  display: flex;
+  border-radius: 4px;
+  background-color: ${props => props.white ? "white" : '#4f4f4f'};
+  box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.1);
+  margin: ${props => props.margin};
+  cursor: pointer;
+`;
 
+const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolean, margin?: string, }> = ({ onClick, white, margin }) => (
+  <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
+    <InboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/> 
+    <Divider margin="0 5px 0 0" height="42px" background={white? "#e9e9e9": "white"} opacity="0.1"/> 
+    <Text fontWeight="bold" margin="12px 0 0 16px" fontSize="0.7em" color={white?  "#4a4a4a": "white"}>
+        SHARED
+    </Text>
+  </StyledSharedButton>
+)
+
+const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: boolean,  margin?: string, }> = ({ onClick, white, margin }) => (
+  <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
+    <OutboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/>
+       <Divider margin="0 5px 0 0" background={white? "#e9e9e9": "white"} height="42px" width="0.5px" opacity="0.1" /> 
+        <Text margin="12px 0 0 8px" fontSize="0.7em" color={white ? "#4a4a4a" : "white"} fontWeight="bold">
+            DOWNLOADS
+        </Text>
+  </StyledSharedButton>
+)
 export default StyledButton
 
-export { ArrowButton, BackArrowButton, LightButton };
+export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton };
 

@@ -50,7 +50,7 @@ const SidedbarListItem = styled('li')<{disabled?: boolean, dark?:boolean}>`
     max-height: 64px;
     border-bottom: solid 0.1px #d2d2d2;
     opacity: ${props => props.disabled ? 0.4 : 1};
-    background: ${props=> props.dark ? '#737373' : ''};
+    background: ${props=> props.dark ? '#4f4f4f' : ''};
 `;
 
 const UserList = styled('ul')`

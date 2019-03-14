@@ -62,7 +62,8 @@ const tabs: TabInfo[] = [
                 height="36px"
                 margin="0 0 0 1em" />,
         text: "My Links",
-        isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks'
+        isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks' 
+                                          || pathname === '/Dashboard/SharedFiles'
     },
     {
         location: '/Dashboard/Inbox',

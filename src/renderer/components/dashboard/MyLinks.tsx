@@ -1,9 +1,8 @@
 import { FunctionComponent } from "react";
 import React from "react";
 import { H1 } from "../ui-elements/Text";
-import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon } from "../ui-elements/Image";
+import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
-import Button from "../ui-elements/Button";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
@@ -33,7 +32,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push }: MyLink
                             </div>
                             {u.state === 'pending' ?
                                 <div style={{ fontSize: "0.8em" }}> Pending <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                : <Button primary width="102px" minHeight="30px" fontSize="0.8em" > Send File </Button>}
+                                :  <div style={{ fontSize: "0.8em" }}> View <ViewBtnIcon onClick={()=> push('/Dashboard/SharedFiles')} width="30px" height="30px" margin="0 0 0 1em" /></div> }
                         </UserListItem>
                     )}
                 </UserList>
@@ -41,7 +40,3 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push }: MyLink
             </Container>
         </div>
     </>
-
-
-
-
