@@ -21,9 +21,10 @@ export interface InvitesStateProps {
 }
 export interface InvitesDispatchProps {
     beginAcceptLink: (link: LinkBase) => void
+    beginDeclineLink: (link: LinkBase) => void
 }
 export type InvitesProps = InvitesStateProps & InvitesDispatchProps
-export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptLink }: InvitesProps) =>
+export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptLink, beginDeclineLink }: InvitesProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
@@ -38,7 +39,7 @@ export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptL
                             </div>
                             <div>
                                 <Button primary width="102px" minHeight="30px" fontSize="0.8em" margin="0 5px 0 0" onClick={() => beginAcceptLink(link)}> Accept </Button>
-                                <Button width="102px" minHeight="30px" fontSize="0.8em" > Decline </Button>
+                                <Button width="102px" minHeight="30px" fontSize="0.8em" onClick={() => beginDeclineLink(link)}> Decline </Button>
                             </div>
                         </UserListItem>
                     )}

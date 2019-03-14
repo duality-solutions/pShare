@@ -36,6 +36,9 @@ export const BdapActions = {
     beginAcceptLink: createStandardAction('bdap/BEGIN_ACCEPT_LINK')<LinkBase>(),
     acceptLink: createStandardAction('bdap/ACCEPT_LINK')<LinkAcceptOptions>(),
 
+    beginDeclineLink: createStandardAction('bdap/BEGIN_DECLINE_LINK')<LinkBase>(),
+    declineLink: createStandardAction('bdap/DECLINE_LINK')<LinkBase>(),
+
 
 
 }
