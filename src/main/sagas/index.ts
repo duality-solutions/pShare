@@ -11,8 +11,13 @@ import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider
 import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
 import { bdapSaga } from "./bdapSaga";
 import { remoteLoggingSaga } from "./remoteLoggingSaga";
+import { linkRequestSaga } from "./linkRequestSaga";
+import { linkAcceptSaga } from "./linkAcceptSaga";
+
 
 export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
+    () => linkRequestSaga(),
+    () => linkAcceptSaga(),
     () => actionLoggingSaga("Main Store"),
     () => remoteLoggingSaga(),
     () => initializationSaga(),
@@ -24,7 +29,7 @@ export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
     () => mnemonicSaga(),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
-    () => bdapSaga(true)
+    () => bdapSaga(),
 
 ]
 

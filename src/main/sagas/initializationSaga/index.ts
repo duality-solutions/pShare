@@ -7,7 +7,7 @@ import { MainRootState } from "../../reducers";
 import { delay } from "../../../shared/system/delay";
 import { round } from "./round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
-import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
+import { getWalletIsEncrypted } from "../effects/getWalletIsEncrypted";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 const round0 = round(0)
