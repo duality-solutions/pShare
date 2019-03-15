@@ -63,11 +63,13 @@ const StyledBackArrowButton = styled('div')`
 `
 
 
-const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onClick }) => (
+const BackArrowButton: React.FunctionComponent<{ onClick: () => void, marginTop?: string }> = ({ onClick, marginTop }) => (
   <StyledBackArrowButton onClick={() => onClick()}>
-    <img src={back_arrow_svg} style={{ marginTop: '175%'}} />
+    <img src={back_arrow_svg} style={{ marginTop: marginTop || '175%'}} />
   </StyledBackArrowButton>
 )
+
+
 const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled, focus }) => (
   <StyledButton autoFocus={focus} onClick={onClick} primary direction="row-reverse" align="flex-end" type={type} disabled={disabled} >
       {label} <span style={{float:"right"}}>&#8594;</span>
@@ -84,6 +86,10 @@ const StyledSharedButton = styled('div')<{ white?: boolean , margin?: string}>`
   margin: ${props => props.margin};
   cursor: pointer;
 `;
+const BackButton:React.FunctionComponent<{margin?: string, onClick?: ()=> void }> = ({ margin, onClick }) => (
+  <img src={back_arrow_svg} onClick={onClick} style={{ 
+      float: 'left', margin , position: 'fixed', cursor: 'pointer'
+    }}/>)
 
 const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolean, margin?: string, }> = ({ onClick, white, margin }) => (
   <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
@@ -106,5 +112,6 @@ const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: bool
 )
 export default StyledButton
 
-export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton };
+export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton, BackButton };
+
 

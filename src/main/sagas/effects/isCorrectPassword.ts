@@ -1,9 +1,11 @@
 import { call } from "redux-saga/effects";
-import { unlockedCommandEffect } from "./unlockedCommandEffect";
+import { executeUnlockedCommandAsync } from "./helpers/executeUnlockedCommandAsync";
 export function isCorrectPassword(password: string) {
     return call(function* () {
         try {
-            yield unlockedCommandEffect(password, async () => { });
+            yield call(function* () {
+                return executeUnlockedCommandAsync(password, async () => { })
+            });
         }
         catch (err) {
             if (/^Error\: The wallet passphrase entered was incorrect\.$/.test(err.message)) {

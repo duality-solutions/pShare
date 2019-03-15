@@ -45,7 +45,7 @@ export const RestoreSyncProgress: React.FunctionComponent<RestoreSyncProgressPro
               <Text>RestoreSyncProgress is complete</Text> :
               <Text align="center">Waiting for RestoreSyncProgress to start...</Text>
             }   */}
-            <ProgressBar level={25} status="restoring blocks" />
+            <ProgressBar level={25} status="Restoring account" />
             </Box>
           </Box>
         </Container>

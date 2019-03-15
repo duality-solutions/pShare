@@ -6,7 +6,7 @@ import { createValidateFieldPayload } from "../../shared/system/validator/create
 import { createValidatedSuccessPayload } from "../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 import { delay } from "redux-saga";
-import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
+import { getWalletIsEncrypted } from "./effects/getWalletIsEncrypted";
 import { encryptWallet } from "./effects/encryptWallet";
 import { isCorrectPassword } from "./effects/isCorrectPassword";
 
