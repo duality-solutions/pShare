@@ -67,7 +67,7 @@ export class RestoreWithMnemonicFile extends Component<RestoreWithMnemonicFilePr
                                             <img src={PshareSecureFileSvg} width="60px" height="60px" /> 
                                         </Box> 
                                         <Box margin="1em 0 0 2em">
-                                        <H3 margin="0 0 1em 0">Restore using Pass phrase </H3>
+                                        <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
                                         <Box>
                                         <Dropzone>
                                             <H3 align="center">Drop files to upload</H3>
