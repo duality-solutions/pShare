@@ -70,11 +70,30 @@ const UserListItem = styled('li')<{disabled?: boolean}>`
     padding: 1em 0 1em 0;
     border-bottom: solid 0.1px #d2d2d2;
     opacity: ${props => props.disabled ? 0.4 : 1};
-    `;
+`;
+
+
+const FilesList = styled('ul')`
+    list-style-type: none;
+    margin: 0px 0 0 0;
+    -webkit-margin-before: 0px;
+    -webkit-margin-after: 0em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 0px;
+`;
+
+const FilesListItem = styled('li')`
+    display: flex;
+    direction: row;
+    justify-content: flex-start;
+    padding: 1em 0 0em 0;
+
+`;
 
 export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem,
+    UserList, UserListItem, FilesList, FilesListItem,
 }

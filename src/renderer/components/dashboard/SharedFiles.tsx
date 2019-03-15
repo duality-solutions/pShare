@@ -3,10 +3,11 @@ import React from "react";
 import man from "../../assets/man.svg";
 import { Box } from "../ui-elements/Box";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { UserListAvatar, CloseIcon, BtnAddLinksIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg } from "../ui-elements/Image";
 import { Text } from "../ui-elements/Text";
 import { SharedButton, DownloadButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
+import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
 
 
 export const SharedFiles: FunctionComponent = () =>
@@ -31,6 +32,18 @@ export const SharedFiles: FunctionComponent = () =>
                     <Text margin="3.8em 0 0 0" fontSize="0.8em" fontWeight="50">share new file</Text>
                     <BtnAddLinksIcon margin="2.6em 0 0 0"/>
                     </div>
+                    </Box>
+                    <Box margin="0" >
+                        <FilesList>
+                            <FilesListItem>
+                                <DocumentSvg margin="0 1em 0 0" width="30px"  />
+                                <Text margin="5px 0 0 0" color="#4f4f4f">p-share app icons_p-share-account-16</Text>
+                            </FilesListItem>
+                            <FilesListItem>
+                                <DocumentSvg margin="0 1em 0 0" width="30px"  />
+                                <Text margin="5px 0 0 0" color="#4f4f4f">p-share app icons_p-share-account-16</Text>
+                            </FilesListItem>
+                        </FilesList>
                     </Box>
                 </Box>
             </Box>
