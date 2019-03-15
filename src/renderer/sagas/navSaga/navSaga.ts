@@ -29,36 +29,39 @@ export function* navSaga() {
             console.log("nav saga: navigating to Onboarding -- /CreateAccount")
             yield put(pushRoute(appRoutes.createAccount))
             console.log("nav saga navigating to /CreateAccount")
-
-            const { createAccount } = yield race({
-                createAccount: take(getType(RootActions.createAccount)),
-                restoreAccount: take(getType(RootActions.restoreAccount))
-            })
-
-            if (createAccount) {
-                yield put(pushRoute(appRoutes.enterUserName))
-                yield* waitForUserDetails();
-                yield* waitForWalletCredentials();
-
-            } else {
-                const restoreNavMap = getNavMap();
-                restoreNavMap.registerNavAction(RootActions.restoreCancelled, appRoutes.createAccount)
-                yield put(pushRoute(appRoutes.restoreAccount))
-                const { restoreWithPassphrase } = yield race({
-                    restoreWithPassphrase: take(getType(RootActions.restoreWithPassphrase)),
-                    restoreWithMnemonicFile: take(getType(RootActions.restoreWithMnemonicFile))
+            for (; ;) {
+                const { createAccount } = yield race({
+                    createAccount: take(getType(RootActions.createAccount)),
+                    restoreAccount: take(getType(RootActions.restoreAccount))
                 })
-                if ( restoreWithPassphrase ) {
-                    yield put(pushRoute(appRoutes.restoreWithPassphrase))
+
+                let returnedToCreateAccount = false
+
+
+                if (createAccount) {
+                    yield put(pushRoute(appRoutes.enterUserName))
+                    yield* waitForUserDetails();
+                    yield* waitForWalletCredentials();
                 } else {
-                    yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
+                    yield put(pushRoute(appRoutes.restoreAccount))
+
+                    const restoreNavMap = getNavMap();
+                    //note that the last parameter (onNavigate) can be optionally supplied, and is called when that particular navAction happens
+                    //here, we're using this so that we can tell if the user has completely backed out of restore, in which case, we want to 
+                    //restart the loop that we're in
+                    restoreNavMap.registerNavAction(RootActions.restoreCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
+                    restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase)
+                    restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFile, appRoutes.restoreWithMnemonicFile)
                     restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
+                    restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount)
+                    restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount)
+                    restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
+                    restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress, true)
+                    yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
                 }
-                restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount)
-                restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount)
-                restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
-                restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress, true)
-                yield restoreNavMap.runNav();
+                if (!returnedToCreateAccount) {
+                    break;
+                }
             }
         }
 
