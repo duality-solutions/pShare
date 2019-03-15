@@ -7,7 +7,7 @@ import { ValidationResult } from "../../../shared/system/validator/ValidationRes
 import logo from "../../assets/svgs/logo_without_text.svg";
 import { validationScopes } from "../../reducers/validationScopes";
 import Box from "../ui-elements/Box";
-import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
@@ -89,6 +89,7 @@ export class SecureFilePassword extends Component<SecureFilePasswordProps, Secur
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                            <BackButton onClick={()=>{}} margin="140px 0 0 -100px"/>
                                 <Card width="100%" align="center" minHeight="300px" padding="2em 4em 2em 2em">
                                 <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">

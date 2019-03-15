@@ -3,7 +3,7 @@ import { CSSTransitionGroup } from 'react-transition-group';
 // import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton, LightButton } from "../ui-elements/Button";
+import { ArrowButton, LightButton, BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
@@ -59,6 +59,7 @@ export class RestoreWithMnemonicFile extends Component<RestoreWithMnemonicFilePr
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                        <BackButton onClick={()=>{}} margin="150px 0 0 -80px"/>
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
                                 <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">
