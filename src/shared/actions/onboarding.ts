@@ -63,6 +63,11 @@ export const OnboardingActions = {
     restoreWithMnemonicFile: createStandardAction('onboarding/RESTORE_WITH_MNEMONIC_FILE')<void>(),
     restoreSync: createStandardAction('onboarding/RESTORE_SYNC')<void>(),
     secureFilePassword: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD')<void>(),
+
+    restoreWithPassphraseCancelled: createStandardAction('onboarding/RESTORE_WITH_PASSPHRASE_CANCELLED')<void>(),
+    restoreWithMnemonicFileCancelled: createStandardAction('onboarding/RESTORE_WITH_MNEMONIC_FILE_CANCELLED')<void>(),
+    secureFilePasswordCancelled: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD_CANCELLED')<void>(),
+    restoreCancelled: createStandardAction('onboarding/RESTORE_CANCELLED')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

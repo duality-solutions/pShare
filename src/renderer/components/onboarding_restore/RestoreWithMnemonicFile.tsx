@@ -19,7 +19,8 @@ export interface RestoreWithMnemonicFileStateProps {
     // validationResult?: ValidationResult<string>
 }
 export interface RestoreWithMnemonicFileDispatchProps {
-    secureFilePassword: () => void
+    secureFilePassword: () => void,
+    restoreWithMnemonicFileCancelled: () => void,
 }
 type RestoreWithMnemonicFileProps = RestoreWithMnemonicFileDispatchProps & RestoreWithMnemonicFileStateProps
 
@@ -59,7 +60,7 @@ export class RestoreWithMnemonicFile extends Component<RestoreWithMnemonicFilePr
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                        <BackButton onClick={()=>{}} margin="150px 0 0 -80px"/>
+                        <BackButton onClick={()=> this.props.restoreWithMnemonicFileCancelled()} margin="150px 0 0 -80px"/>
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
                                 <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">

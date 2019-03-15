@@ -27,7 +27,8 @@ export interface SecureFilePasswordDispatchProps {
     submitPassword: (password: string) => void,
     fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
     resetValidationForField: (validationPayload: NamedValue<void>) => void
-    restoreSync: () => void 
+    restoreSync: () => void ,
+    secureFilePasswordCancelled: () => void
 
 }
 type SecureFilePasswordProps = SecureFilePasswordDispatchProps & SecureFilePasswordStateProps
@@ -89,7 +90,7 @@ export class SecureFilePassword extends Component<SecureFilePasswordProps, Secur
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                            <BackButton onClick={()=>{}} margin="140px 0 0 -100px"/>
+                            <BackButton onClick={()=> this.props.secureFilePasswordCancelled()} margin="140px 0 0 -100px"/>
                                 <Card width="100%" align="center" minHeight="300px" padding="2em 4em 2em 2em">
                                 <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">

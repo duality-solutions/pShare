@@ -41,8 +41,9 @@ export function* navSaga() {
                 yield* waitForWalletCredentials();
 
             } else {
-                yield put(pushRoute(appRoutes.restoreAccount))
                 const restoreNavMap = getNavMap();
+                restoreNavMap.registerNavAction(RootActions.restoreCancelled, appRoutes.createAccount)
+                yield put(pushRoute(appRoutes.restoreAccount))
                 const { restoreWithPassphrase } = yield race({
                     restoreWithPassphrase: take(getType(RootActions.restoreWithPassphrase)),
                     restoreWithMnemonicFile: take(getType(RootActions.restoreWithMnemonicFile))
@@ -53,6 +54,9 @@ export function* navSaga() {
                     yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
                     restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
                 }
+                restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount)
+                restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount)
+                restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
                 restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress, true)
                 yield restoreNavMap.runNav();
             }

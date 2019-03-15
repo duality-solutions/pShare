@@ -19,7 +19,8 @@ export interface RestoreWithPassphraseStateProps {
     // validationResult?: ValidationResult<string>
 }
 export interface RestoreWithPassphraseDispatchProps {
-    restoreSync: () => void 
+    restoreSync: () => void ,
+    restoreWithPassphraseCancelled: () => void,
 }
 type RestoreWithPassphraseProps = RestoreWithPassphraseDispatchProps & RestoreWithPassphraseStateProps
 
@@ -60,7 +61,7 @@ export class RestoreWithPassphrase extends Component<RestoreWithPassphraseProps,
 
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                            <BackButton onClick={()=>{}} margin="150px 0 0 -100px"/>
+                            <BackButton onClick={()=>{this.props.restoreWithPassphraseCancelled()}} margin="150px 0 0 -100px"/>
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
                                 <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">
