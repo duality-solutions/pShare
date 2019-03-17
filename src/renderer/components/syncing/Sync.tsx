@@ -34,7 +34,7 @@ export const Sync: React.FunctionComponent<SyncProps> =
       transitionLeaveTimeout={500}>
 
         <H1 align="center" colored>Syncing</H1>
-        <Container height="60vh" margin="150px 0 0 0">
+        <Container height="50vh" margin="150px 0 0 0">
           <Box direction="column" width="100%" align="center">
             <Box direction="row" width="100%" align="center">
             {
