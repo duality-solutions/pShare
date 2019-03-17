@@ -7,11 +7,23 @@ import Container from "../ui-elements/Container";
 import { Card } from "../ui-elements/Card";
 import Button from "../ui-elements/Button";
 
-// import { SharedButton, DownloadButton } from "../ui-elements/Button";
-// import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
+export interface FilePathInfo {
+    path: string
+    type: string
+    size: number
+}
 
+export interface AddFileStateProps {
 
-export const AddFile: FunctionComponent = () =>
+}
+
+export interface AddFilesDispatchProps {
+
+}
+
+export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
+
+export const AddFile: FunctionComponent<AddFileProps> = ({ }) =>
     <>
             <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px"
                 border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
@@ -30,13 +42,43 @@ export const AddFile: FunctionComponent = () =>
                     <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                         <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
                         <AddLinksIcon width="40px" height="30px" margin="0" /> Add file</Text>
-                        <Card background="white" border="dashed 2px #b0b0b0" minHeight="266px" padding="75px 0">
+                        <Card 
+                                 background="white" border="dashed 2px #b0b0b0" minHeight="266px" padding="75px 0"
+                                 onDragOver={e => {
+                                    e.preventDefault();
+                                    e.dataTransfer.dropEffect = "move";
+                                }}
+                                onDrop={e => {
+                                    e.preventDefault();
+                                    console.log(e.dataTransfer.files)
+                                    // filesSelected([...e.dataTransfer.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                                }}
+                        >
                         <Text fontSize="18px" fontWeight="bold" color="#9b9b9b" margin="0" align="center"> Drag file here </Text>
                         <Text align="center" margin="20px 0">or</Text>
-                        <Button>Select file</Button>
+                        <input
+                            type="file"
+                            id="fileElem"
+                            multiple
+                            accept="*/*"
+                            onChange={e => {
+                                e.preventDefault();
+                                console.log(e.currentTarget.files)
+                                // e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                            }}
+                            style={({ display: "none" })} />
+                        <Button color="#0055c4" width="175px" >
+                        <label
+                            style={{ width: "100%", height: "100%", display: "block", cursor: "pointer" }}
+                            className="button"
+                            htmlFor="fileElem">
+                            Select file
+                        </label>
+                        </Button>
                         </Card>
                     </Box>
                 </Box>
+                <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
                 </Container>
             </Box>
     </>
