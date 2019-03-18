@@ -1,4 +1,4 @@
-import { getRpcClient } from "../../../../getRpcClient";
+//import { getRpcClient } from "../../../../getRpcClient";
 import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 import { LockedCommandQueueRunner } from "./LockedCommandQueueRunner";
 import { runQueuedCommand } from "./runQueuedCommand";
@@ -8,9 +8,10 @@ import { createAsyncQueue } from "../../../../../shared/system/createAsyncQueue"
 import { createCancellationToken } from "../../../../../shared/system/createCancellationToken";
 import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
+import { RpcClient } from "../../../../../main/RpcClient";
 
-const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
-    let queueControls = await getQueueControls()
+const createQueueRunner = async (rpcClient: RpcClient): Promise<LockedCommandQueueRunner> => {
+    let queueControls = await getQueueControls(rpcClient)
     return {
         addQueuedCommand: (queuedCommand: QueuedCommandWithPassword) => {
             queueControls.commandQueue.post(queuedCommand);
@@ -22,7 +23,7 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
             if (!queueControls.finishedResolver.complete) {
                 throw Error("cannot restart unless cancelled first")
             }
-            queueControls = await getQueueControls()
+            queueControls = await getQueueControls(rpcClient)
         }
 
     };
@@ -31,16 +32,18 @@ const createQueueRunner = async (): Promise<LockedCommandQueueRunner> => {
 let queueRunnerProm: Promise<LockedCommandQueueRunner>
 
 
-export const getLockedCommandQueue = async () => {
+export const getLockedCommandQueue = async (rpcClient: RpcClient) => {
     if (typeof queueRunnerProm === 'undefined') {
-        queueRunnerProm = createQueueRunner()
+        queueRunnerProm = createQueueRunner(rpcClient)
     }
     return await queueRunnerProm;
 }
-async function getQueueControls() {
+async function getQueueControls(rpcClient: RpcClient) {
+    console.log("gqc")
     const cancellationToken = createCancellationToken();
+    cancellationToken.register(()=>console.log("queueControls cancelled"))
     const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
-    const rpcClient = await getRpcClient();
+
     const rpcCommandFunc: RpcCommandFunc = (rpcCommand, ...args) => rpcClient.command(rpcCommand, ...args);
     const finishedResolver = createPromiseResolver<void>();
     const runQueue = async () => {

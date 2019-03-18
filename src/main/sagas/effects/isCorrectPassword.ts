@@ -1,10 +1,11 @@
 import { call } from "redux-saga/effects";
 import { executeUnlockedCommandAsync } from "./helpers/executeUnlockedCommandAsync";
-export function isCorrectPassword(password: string) {
+import { RpcClient } from "../../../main/RpcClient";
+export function isCorrectPassword(rpcClient: RpcClient, password: string) {
     return call(function* () {
         try {
             yield call(function* () {
-                return executeUnlockedCommandAsync(password, async () => { })
+                return executeUnlockedCommandAsync(rpcClient, password, async () => { })
             });
         }
         catch (err) {

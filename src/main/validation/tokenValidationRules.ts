@@ -1,7 +1,8 @@
 //import delay from "../../shared/system/delay";
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
+import { RpcClient } from "../RpcClient";
 
-const isValidToken = (value: string) => /^[A-Za-z0-9]{6,}$/.test(value);
+const isValidToken = (rpcClient:RpcClient,value: string) => /^[A-Za-z0-9]{6,}$/.test(value);
 //const mockDynamicdCall = (value: string) => delay(2000).then(() => value !== "zzzzzz");
 
 export const tokenValidationRules: ValidationTest<string>[] = [
