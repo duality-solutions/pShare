@@ -28,6 +28,7 @@ export function getRpcClient(cancellationToken: CancellationToken) {
 
 async function createQueuedRpcClient(masterCancellationToken: CancellationToken): Promise<RpcClientWrapper> {
     const cancellationToken = createCancellationToken(undefined, masterCancellationToken)
+    //cancellationToken.register(()=>console.warn("rpcClient cancellation was requested"))
     const bb = createAsyncQueue<QueuedCommand>();
     const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
     (async () => {
@@ -70,7 +71,7 @@ async function createQueuedRpcClient(masterCancellationToken: CancellationToken)
 
 async function createRpcClient(cancellationToken: CancellationToken): Promise<{ client: RpcClient, processInfo: DynamicdProcessInfo }> {
     const processInfo = await startDynamicd(cancellationToken);
-
+    
     const client = await createBitcoinCoreClient({
         host: "localhost",
         port: "33650",

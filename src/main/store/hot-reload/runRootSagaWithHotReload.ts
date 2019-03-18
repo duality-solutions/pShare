@@ -2,7 +2,7 @@ import {
     SagaMiddleware, Task,
 } from "redux-saga";
 
-import { fork, take, call, cancel, race } from "redux-saga/effects";
+import { fork, take, call, cancel, ForkEffect, takeEvery } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
@@ -14,50 +14,42 @@ import { app } from "electron";
 import { RpcClient, RpcClientWrapper } from "../../../main/RpcClient";
 import { initializationSaga } from "../../../main/sagas/initializationSaga";
 import { storeHydrationSaga } from "../../../main/sagas/storeHydrationSaga";
-import { createCancellationToken } from "../../../shared/system/createCancellationToken";
+import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
 import { getRpcClient } from "../../../main/getRpcClient";
 
-export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
-
+export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider, storeCancellationToken: CancellationToken) {
+    let rpcClient: RpcClientWrapper | undefined;
     const getSagaTask = () => sagaMw.run(function* () {
-        let rpcClient: RpcClientWrapper | undefined;
-        const cancellationToken = createCancellationToken()
-        yield take(getType(AppActions.initializeApp))
 
-        for (; ;) {
+        const cancellationToken = createCancellationToken(undefined, storeCancellationToken)
+        yield take(getType(AppActions.initializeApp))
+        const getRootSagaTask = (): ForkEffect => fork(function* () {
+            yield takeEvery(getType(AppActions.shuttingDown), function* () {
+                yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationToken);
+
+            })
+            yield takeEvery(getType(AppActions.initializeApp), function* () {
+                yield* orchestrateRestart(rpcClient, rootSagaTask);
+                rootSagaTask = yield getRootSagaTask()
+            })
+            yield takeEvery(getType(AppActions.sleep), function* () {
+                orchestrateSleep(rpcClient, rootSagaTask)
+                rootSagaTask = yield getRootSagaTask()
+            })
             yield fork(storeHydrationSaga)
             rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
             if (!rpcClient) {
                 throw Error("rpcClient is unexpectedly undefined")
             }
             const sagas = getRootSaga(rpcClient, browserWindowProvider);
-            const rootSagaTask: Task = yield fork(function* () {
-                console.log("forking root sagas")
-                for (let s of sagas) {
-                    yield fork(s)
-                }
-            })
-
-            const { initializing, shutdown } = yield race({
-                shutdown: take(getType(AppActions.shuttingDown)),
-                initializing: take(getType(AppActions.initializeApp)),
-                sleep: take(getType(AppActions.sleep)),
-            })
-
-            if (shutdown) {
-                yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationToken);
-                return;
+            console.log("forking root sagas")
+            for (let s of sagas) {
+                yield fork(s)
             }
-            else if (initializing) {
-                yield* orchestrateRestart(rpcClient, rootSagaTask);
-                continue
 
-            }
-            else {
-                yield* orchestrateSleep(rpcClient, rootSagaTask);
-                continue
-            }
-        }
+        })
+        let rootSagaTask: Task = yield getRootSagaTask()
+
 
 
     });
@@ -74,7 +66,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         });
     }
 }
-function* orchestrateShutdown(rpcClient: RpcClientWrapper, rootSagaTask: Task, cancellationToken: import("/home/spender/Desktop/pShare/p-share-ui/src/shared/system/createCancellationToken").CancellationToken) {
+function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaTask: Task, cancellationToken: CancellationToken) {
     console.log("orchestrating shutdown");
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
@@ -82,43 +74,52 @@ function* orchestrateShutdown(rpcClient: RpcClientWrapper, rootSagaTask: Task, c
     app.quit();
 }
 
-function* orchestrateRestart(rpcClient: RpcClient, rootSagaTask: Task) {
+function* orchestrateRestart(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
     console.log("orchestrating restart")
-    const restartable: Restartable = yield cancelEverything(rpcClient, rootSagaTask);
+    const restartable: Restartable | undefined = yield cancelEverything(rpcClient, rootSagaTask);
     console.log("restarting application")
-    yield call(() => restartable.restart());
+    if (restartable) {
+        yield call(() => restartable.restart());
+
+    }
 
 }
 
-function* orchestrateSleep(rpcClient: RpcClient, rootSagaTask: Task) {
+function* orchestrateSleep(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
     console.log("orchestrating shutdown")
-    const restartable: Restartable = yield cancelEverything(rpcClient, rootSagaTask);
+    const restartable: Restartable | undefined = yield cancelEverything(rpcClient, rootSagaTask);
     yield take(getType(AppActions.initializeApp))
-    yield call(() => restartable.restart());
+    if (restartable) {
+        yield call(() => restartable.restart());
+
+    }
 }
 interface Restartable {
     restart: () => Promise<void>
 }
-function cancelEverything(rpcClient: RpcClient, rootSagaTask: Task) {
+function cancelEverything(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
     return call(function* () {
         console.warn("cancelling all sagas")
         yield cancel(rootSagaTask);
         console.warn("rootSagaTask cancelled")
-        const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue(rpcClient));
-        console.log("got lockedCommandQueueRunner")
-        lockedCommandQueueRunner.cancel();
-        console.log("cancelled lockedCommandQueueRunner")
-        yield call(() => lockedCommandQueueRunner.finished);
-        console.warn("LockedCommandQueueRunner stopped")
+        if (rpcClient) {
+            const lockedCommandQueueRunner: LockedCommandQueueRunner = yield call(() => getLockedCommandQueue(rpcClient));
+            console.log("got lockedCommandQueueRunner")
+            lockedCommandQueueRunner.cancel();
+            console.log("cancelled lockedCommandQueueRunner")
+            yield call(() => lockedCommandQueueRunner.finished);
+            console.warn("LockedCommandQueueRunner stopped")
 
-        const restartable: Restartable = {
-            restart: () => {
-                console.warn("LockedCommandQueueRunner restarting")
-                return lockedCommandQueueRunner.restart()
-            }
-        };
-        console.log("app successfully shutdown")
-        return restartable;
+            const restartable: Restartable = {
+                restart: () => {
+                    console.warn("LockedCommandQueueRunner restarting")
+                    return lockedCommandQueueRunner.restart()
+                }
+            };
+            console.log("app successfully shutdown")
+            return restartable;
+        }
+
     })
 }
 

@@ -17,6 +17,7 @@ import { install as installDevtron } from 'devtron'
 import { AppActions } from '../shared/actions/app';
 
 import { divertConsoleToLogger } from './system/divertConsoleToLogger';
+import { createCancellationToken } from '../shared/system/createCancellationToken';
 
 
 declare module 'electron' {
@@ -33,8 +34,8 @@ const persistencePaths = ['user.syncAgreed', 'user.userName'];
 let mainWindow: BrowserWindow | null
 
 
-
-const store = configureStore(() => mainWindow, persistencePaths)
+const storeCancellationToken=createCancellationToken()
+const store = configureStore(() => mainWindow, persistencePaths,storeCancellationToken)
 store.getState();
 
 //store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
@@ -92,8 +93,10 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-
-  store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+  
+  //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+  storeCancellationToken.cancel()
+  store.dispatch(AppActions.shuttingDown())
 
 })
 

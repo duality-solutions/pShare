@@ -1,4 +1,3 @@
-import { createEpicMiddleware } from 'redux-observable'
 import createSagaMiddleware from 'redux-saga'
 import { createStoreWithHotReload } from './hot-reload/createStoreWithHotReload';
 import { runRootSagaWithHotReload } from './hot-reload/runRootSagaWithHotReload';
@@ -8,16 +7,14 @@ import {
     replayActionMain,
 } from 'electron-redux';
 import { BrowserWindowProvider } from '../../shared/system/BrowserWindowProvider';
+import { CancellationToken } from '../../shared/system/createCancellationToken';
 
-// import runEpicWithHotReload from './hot-reload/runEpicWithHotReload';
-export function configureStore(browserWindowProvider: BrowserWindowProvider, persistencePaths: string[] | undefined = undefined) {
+export function configureStore(browserWindowProvider: BrowserWindowProvider, persistencePaths: string[] | undefined = undefined, cancellationToken: CancellationToken) {
 
-    const epicMiddleware = createEpicMiddleware()
     const sagaMiddleware = createSagaMiddleware();
-    const middlewares = [triggerAlias, epicMiddleware, sagaMiddleware, forwardToRenderer];
+    const middlewares = [triggerAlias, sagaMiddleware, forwardToRenderer];
     const store = createStoreWithHotReload(middlewares, persistencePaths);
-    //runEpicWithHotReload(epicMiddleware);
-    runRootSagaWithHotReload(sagaMiddleware, browserWindowProvider);
+    runRootSagaWithHotReload(sagaMiddleware, browserWindowProvider, cancellationToken);
     replayActionMain(store);
     return store;
 }
