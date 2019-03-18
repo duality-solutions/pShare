@@ -100,23 +100,11 @@ async function startDynamicdProcess(
     processInfo.start();
     cancellationToken.register(async () => {
         console.warn("issuing stop to dynamicd")
-        const resolver = createPromiseResolver<string>();
-
-        childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"], { encoding: "utf8" }, (err, stdout, ) => {
-            if (err) {
-                resolver.reject(err)
-            } else {
-                resolver.resolve(stdout)
-            }
-        });
         try {
             process.kill(parseInt(fs.readFileSync(pathToPidFile).toString()), 15)
         } catch{ 
             console.warn("SIGTERM failed")
         }
-        console.warn("issued stop to dynamicd")
-        const stdout = await resolver.promise
-        console.log(`stdout : ${stdout}`)
         dispatchEvent("stopping", {});
     })
     return processInfo;
