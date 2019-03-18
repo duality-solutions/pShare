@@ -4,12 +4,12 @@ import os from 'os'
 import { app } from 'electron'
 import { initializeDynamicConfig } from '../configuration/initializeDynamicConfig';
 import { CancellationToken } from '../../shared/system/createCancellationToken';
-import { waitForChildProcessExit } from '../../shared/system/waitForChildProcessExit';
 import { notifyOnFileNotExists } from '../../shared/system/notifyOnFileNotExists';
 import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
+import * as fs from 'fs'
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
@@ -100,9 +100,23 @@ async function startDynamicdProcess(
     processInfo.start();
     cancellationToken.register(async () => {
         console.warn("issuing stop to dynamicd")
-        const proc = childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"]);
+        const resolver = createPromiseResolver<string>();
+
+        childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"], { encoding: "utf8" }, (err, stdout, ) => {
+            if (err) {
+                resolver.reject(err)
+            } else {
+                resolver.resolve(stdout)
+            }
+        });
+        try {
+            process.kill(parseInt(fs.readFileSync(pathToPidFile).toString()), 15)
+        } catch{ 
+            console.warn("SIGTERM failed")
+        }
         console.warn("issued stop to dynamicd")
-        await waitForChildProcessExit(proc);
+        const stdout = await resolver.promise
+        console.log(`stdout : ${stdout}`)
         dispatchEvent("stopping", {});
     })
     return processInfo;
