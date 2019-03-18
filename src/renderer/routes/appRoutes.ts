@@ -24,6 +24,7 @@ import RestoreSyncProgress from '../containers/onboarding_restore/RestoreSyncPro
 import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassword';
 import { SharedFiles } from '../components/dashboard/SharedFiles';
 import { AddFile } from '../components/dashboard/AddFile';
+import { CreatingLinkProgress } from '../components/dashboard/CreatingLinkProgress';
 
 export interface RouteInfo {
     path: string;
@@ -59,7 +60,8 @@ const dashboardRoutingTable = {
     invites: route("/Dashboard/Invites", Invites),
     addLinks: route("/Dashboard/AddLinks", AddLinks),
     sharedFiles: route("/Dashboard/SharedFiles", SharedFiles),
-    addFile: route("/Dashboard/AddFile", AddFile)
+    addFile: route("/Dashboard/AddFile", AddFile),
+    creatingLinkProgress: route("/Dashboard/CreatingLinkProgress", CreatingLinkProgress)
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

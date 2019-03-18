@@ -14,7 +14,7 @@ import { validationScopes } from "../../reducers/validationScopes";
 
 export interface EnterUserNameStateProps {
     userName: string,
-    isValidating: boolean,
+    isValidating: boolean, 
     validationResult?: ValidationResult<string>
 }
 export interface EnterUserNameDispatchProps {
