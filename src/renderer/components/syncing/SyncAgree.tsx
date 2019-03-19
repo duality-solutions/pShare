@@ -47,19 +47,14 @@ export const SyncAgree: React.FunctionComponent<SyncAgreeProps> =
         <Box direction="column" width="50%" align="right" margin="0 auto 0 auto">
           <Card width="100%"> 
             <Text>
-              Before we begin, we need to sync a whole bunch of data we'll 
-              need to communicate with other pShare users.
+              Before we begin, we need to sync a whole bunch of data that you’ll 
+              need to be able to communicate with other pShare users.
             </Text>
             <Text>
-              This sycning process can take a while.
+              This syncing process can take a while; so grab yourself a cup of coffee, sit back and relax.
             </Text>
             <Text>
-              So, sit back, chill out, go get the kids from school; make a cuppa;
-              go organise that drawer you've been meaning to. If you can,
-              turn on the console and have a bash. 
-            </Text>
-            <Text>
-              We'll see you soon...
+               See you shortly.
             </Text>
           </Card>      
           <ArrowButton onClick={() => userAgreeSync()} label="Proceed" />

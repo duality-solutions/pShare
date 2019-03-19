@@ -6,7 +6,8 @@ import { LinkAcceptResponse } from "../../dynamicdInterfaces/LinkAcceptResponse"
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { blinq } from "blinq";
-export function* linkAcceptSaga() {
+import { RpcClient } from "../RpcClient";
+export function* linkAcceptSaga(rpcClient: RpcClient) {
 
 
     yield takeEvery(getType(BdapActions.beginAcceptLink), function* ({ payload: { recipient, requestor } }: ActionType<typeof BdapActions.beginAcceptLink>) {
@@ -46,7 +47,7 @@ export function* linkAcceptSaga() {
             let response: LinkAcceptResponse;
             try {
                 response =
-                    yield unlockedCommandEffect(command =>
+                    yield unlockedCommandEffect(rpcClient, command =>
                         typeof registrationDays === 'undefined'
                             ? command("link", "accept", recipient, requestor)
                             : command("link", "accept", recipient, requestor, registrationDays.toString()));

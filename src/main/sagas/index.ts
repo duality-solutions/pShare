@@ -1,6 +1,6 @@
-import { initializationSaga } from "./initializationSaga";
+//import { initializationSaga } from "./initializationSaga";
 import { actionLoggingSaga } from "./actionLoggingSaga";
-import { storeHydrationSaga } from "./storeHydrationSaga";
+//import { storeHydrationSaga } from "./storeHydrationSaga";
 import { validationSaga } from "./validationSaga";
 import { onboardingSaga } from "./onboardingSaga";
 import { createBdapAccountSaga } from "./createBdapAccount/createBdapAccountSaga";
@@ -14,24 +14,25 @@ import { remoteLoggingSaga } from "./remoteLoggingSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
 import { fileWatchSaga } from "./fileWatchSaga";
+import { RpcClientWrapper } from "../RpcClient";
 
 
-export const getRootSaga = (browserWindowProvider: BrowserWindowProvider) => [
+export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
     () => fileWatchSaga(),
-    () => linkRequestSaga(),
-    () => linkAcceptSaga(),
+    () => linkRequestSaga(rpcClient),
+    () => linkAcceptSaga(rpcClient),
     () => actionLoggingSaga("Main Store"),
     () => remoteLoggingSaga(),
-    () => initializationSaga(),
-    () => storeHydrationSaga(),
-    () => validationSaga(),
+    //() => initializationSaga(),
+    //() => storeHydrationSaga(),
+    () => validationSaga(rpcClient),
     () => onboardingSaga(),
-    () => createBdapAccountSaga(),
-    () => setWalletPasswordSaga(true),
-    () => mnemonicSaga(),
+    () => createBdapAccountSaga(rpcClient),
+    () => setWalletPasswordSaga(rpcClient,true),
+    () => mnemonicSaga(rpcClient),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
-    () => bdapSaga(),
+    () => bdapSaga(rpcClient),
 
 ]
 
