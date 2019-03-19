@@ -34,8 +34,8 @@ const persistencePaths = ['user.syncAgreed', 'user.userName'];
 let mainWindow: BrowserWindow | null
 
 
-const storeCancellationToken=createCancellationToken()
-const store = configureStore(() => mainWindow, persistencePaths,storeCancellationToken)
+const storeCancellationToken = createCancellationToken()
+const store = configureStore(() => mainWindow, persistencePaths, storeCancellationToken)
 store.getState();
 
 //store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
@@ -93,7 +93,7 @@ function createMainWindow() {
 
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
-  
+
   console.log("EVENT - window-all-closed")
   app.quit()
   //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
@@ -101,10 +101,21 @@ app.on('window-all-closed', () => {
   //store.dispatch(AppActions.shuttingDown())
 
 })
-
-app.on('before-quit', () => {
-
+let hasCleanedUpOnQuit = false;
+app.on('before-quit', e => {
   console.log("EVENT - before-quit")
+  if (hasCleanedUpOnQuit) {
+    //second time round
+    console.log("already cleaned up, proceeding with quit")
+    return //now everything is cleaned up, return and allow app to quit
+  }
+  //1st time round
+  //prevent this quit and cleanup. 
+  //The when cleanup is complete this will cause a second app.quit() 
+  //See function orchestrateShutdown in src/main/store/hot-reload/runRootSagaWithHotReload.ts
+  console.log("not yet cleaned up, cancelling quit")
+  e.preventDefault() 
+  hasCleanedUpOnQuit = true;
   //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
   storeCancellationToken.cancel()
   store.dispatch(AppActions.shuttingDown())
@@ -112,7 +123,7 @@ app.on('before-quit', () => {
 })
 
 app.on('quit', () => {
-  
+
   console.log("EVENT - quit")
 
 })

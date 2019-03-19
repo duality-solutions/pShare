@@ -15,26 +15,27 @@ import { initializationSaga } from "../../../main/sagas/initializationSaga";
 import { storeHydrationSaga } from "../../../main/sagas/storeHydrationSaga";
 import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
 import { getRpcClient } from "../../../main/getRpcClient";
+import { app } from "electron";
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider, storeCancellationToken: CancellationToken) {
     let rpcClient: RpcClientWrapper | undefined;
     const getSagaTask = () => sagaMw.run(function* () {
+        yield takeEvery(getType(AppActions.shuttingDown), function* () {
+            yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationToken);
 
+        })
+        yield takeEvery(getType(AppActions.initializeApp), function* () {
+            yield* orchestrateRestart(rpcClient, rootSagaTask);
+            rootSagaTask = yield getRootSagaTask()
+        })
+        yield takeEvery(getType(AppActions.sleep), function* () {
+            orchestrateSleep(rpcClient, rootSagaTask)
+            rootSagaTask = yield getRootSagaTask()
+        })
         const cancellationToken = createCancellationToken(undefined, storeCancellationToken)
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            yield takeEvery(getType(AppActions.shuttingDown), function* () {
-                yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationToken);
-
-            })
-            yield takeEvery(getType(AppActions.initializeApp), function* () {
-                yield* orchestrateRestart(rpcClient, rootSagaTask);
-                rootSagaTask = yield getRootSagaTask()
-            })
-            yield takeEvery(getType(AppActions.sleep), function* () {
-                orchestrateSleep(rpcClient, rootSagaTask)
-                rootSagaTask = yield getRootSagaTask()
-            })
+            
             yield fork(storeHydrationSaga)
             rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
             if (!rpcClient) {
@@ -70,6 +71,7 @@ function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaT
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
     cancellationToken.cancel();
+    app.quit()
 }
 
 function* orchestrateRestart(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
