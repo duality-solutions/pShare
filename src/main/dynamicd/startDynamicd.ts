@@ -15,7 +15,7 @@ declare global {
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development' && false
+    const isDevelopment = process.env.NODE_ENV === 'development'
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
