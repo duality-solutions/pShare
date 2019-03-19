@@ -94,9 +94,26 @@ function createMainWindow() {
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
   
+  console.log("EVENT - window-all-closed")
+  app.quit()
+  //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+  //storeCancellationToken.cancel()
+  //store.dispatch(AppActions.shuttingDown())
+
+})
+
+app.on('before-quit', () => {
+
+  console.log("EVENT - before-quit")
   //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
   storeCancellationToken.cancel()
   store.dispatch(AppActions.shuttingDown())
+
+})
+
+app.on('quit', () => {
+  
+  console.log("EVENT - quit")
 
 })
 
