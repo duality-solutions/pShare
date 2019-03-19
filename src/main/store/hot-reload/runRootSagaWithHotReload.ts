@@ -10,7 +10,6 @@ import { getType } from "typesafe-actions";
 import { AppActions } from "../../../shared/actions/app";
 import { getLockedCommandQueue } from "../../../main/sagas/effects/helpers/lockedCommandQueue/getLockedCommandQueue";
 import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lockedCommandQueue/LockedCommandQueueRunner";
-import { app } from "electron";
 import { RpcClient, RpcClientWrapper } from "../../../main/RpcClient";
 import { initializationSaga } from "../../../main/sagas/initializationSaga";
 import { storeHydrationSaga } from "../../../main/sagas/storeHydrationSaga";
@@ -71,7 +70,6 @@ function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaT
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
     cancellationToken.cancel();
-    app.quit();
 }
 
 function* orchestrateRestart(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
