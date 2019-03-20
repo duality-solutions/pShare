@@ -24,7 +24,21 @@ const Input = styled('input')<InputProps>`
 
 `
 
+const StyledMnemonicInputArea = styled('textarea')<{}>`
+    padding: 1em;
+    height: 10em;
+    width:100%;
+    resize:none;
+    word-break: break-word;
+    background-color: #fafafa;
+    border-radius: 4px;
+    border: solid 1px #b9b9b9 ;
+    font-size: 110%;
+`;
+
 export default Input
 
-export { Input };
+export { Input,
+    StyledMnemonicInputArea as MnemonicInput
+};
 

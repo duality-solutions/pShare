@@ -15,6 +15,7 @@ import addlinks from "../../assets/svgs/add-32.svg";
 import requestsent from "../../assets/svgs/request-sent-32.svg";
 import close from "../../assets/svgs/close-32.svg";
 
+
 interface ImageProps {
     src? : string,
     width?: string,
@@ -22,6 +23,8 @@ interface ImageProps {
     margin?: string,
     white?: boolean,
     onClick?: ()=> void,
+    cursor?: string,
+    float?: string,
 }
 
 const SvgIcon = styled('img')<ImageProps>`
@@ -31,6 +34,8 @@ const SvgIcon = styled('img')<ImageProps>`
     margin: ${props => props.margin || '0'};  
     vertical-align: middle;
     background: ${props=> props.white ? '#737373' : ''};
+    cursor: ${props => props.cursor};
+    float: ${props=> props.float};
 `;
 
 const PlainAppLogo = () => <SvgIcon src={logosrc} height="70px"/>

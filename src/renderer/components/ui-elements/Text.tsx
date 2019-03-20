@@ -44,6 +44,7 @@ const StyledHeader3 = styled('h3') <H1Props>`
         else return 'black'
     }};
     min-width: 500px;
+    word-wrap:break-word;
 `
 
 const StyledText = styled('p') <ParaProps>`
