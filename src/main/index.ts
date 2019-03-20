@@ -17,7 +17,6 @@ import { install as installDevtron } from 'devtron'
 import { AppActions } from '../shared/actions/app';
 
 import { divertConsoleToLogger } from './system/divertConsoleToLogger';
-import { createCancellationToken } from '../shared/system/createCancellationToken';
 
 
 declare module 'electron' {
@@ -34,11 +33,8 @@ const persistencePaths = ['user.syncAgreed', 'user.userName'];
 let mainWindow: BrowserWindow | null
 
 
-const storeCancellationToken = createCancellationToken()
-const store = configureStore(() => mainWindow, persistencePaths, storeCancellationToken)
+const store = configureStore(() => mainWindow, persistencePaths)
 store.getState();
-
-//store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
 
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
@@ -116,8 +112,6 @@ app.on('before-quit', e => {
   console.log("not yet cleaned up, cancelling quit")
   e.preventDefault() 
   hasCleanedUpOnQuit = true;
-  //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
-  storeCancellationToken.cancel()
   store.dispatch(AppActions.shuttingDown())
 
 })

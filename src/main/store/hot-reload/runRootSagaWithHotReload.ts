@@ -17,7 +17,7 @@ import { createCancellationToken, CancellationToken } from "../../../shared/syst
 import { getRpcClient } from "../../../main/getRpcClient";
 import { app } from "electron";
 
-export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider, storeCancellationToken: CancellationToken) {
+export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
     let rpcClient: RpcClientWrapper | undefined;
     const getSagaTask = () => sagaMw.run(function* () {
         yield takeEvery(getType(AppActions.shuttingDown), function* () {
@@ -32,7 +32,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
             orchestrateSleep(rpcClient, rootSagaTask)
             rootSagaTask = yield getRootSagaTask()
         })
-        const cancellationToken = createCancellationToken(undefined, storeCancellationToken)
+        const cancellationToken = createCancellationToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
             
