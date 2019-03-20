@@ -20,11 +20,9 @@ import { RpcClientWrapper } from "../RpcClient";
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
-    () => linkDeclineSaga(),
+    () => linkDeclineSaga(rpcClient),
     () => actionLoggingSaga("Main Store"),
     () => remoteLoggingSaga(),
-    //() => initializationSaga(),
-    //() => storeHydrationSaga(),
     () => validationSaga(rpcClient),
     () => onboardingSaga(),
     () => createBdapAccountSaga(rpcClient),
