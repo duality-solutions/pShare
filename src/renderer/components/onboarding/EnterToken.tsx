@@ -174,6 +174,19 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                                     ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
                                                     : <></>
                                             }
+                                            <Box width="392px" background="#fafafa" padding="10px" borderRadius="5px">
+                                                {/* <Text margin="0" color="#4a4a4a" align="center">Note: </Text> */}
+                                                <Text margin="0" color="#4a4a4a" align="center">Enter your six character activation token above. Don't have a token?&nbsp; Create and verify a pShare 
+                                                account online to get your activation token: </Text>
+                                                <Text align="center">
+                                                    <span  onClick={(event)=> {
+                                                    event.preventDefault();
+                                                    let link = "https://pshare.duality.solutions";
+                                                    require("electron").shell.openExternal(link);
+                                                    }}
+                                                    style={{ cursor: 'pointer', color: '#2e77d0' }}
+                                                >pshare.duality.solutions/register</span></Text>
+                                            </Box>
                                         </Card>
                                     </Box>
                                     <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
@@ -193,46 +206,3 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
     }
 }
 
-/**
- *         this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "token" })
-        let token = this.state.token
-        let index: number = parseInt(e.target.name) // parsed out of index name
-        let value: string = e.target.value.slice(-1)
-        console.log(value)
-        token[index] = value
-        this.setState({ token })
-        console.log(token)
-        if(token[index].length === 0) console.log('asdf')
-        if (this.ref1.current && index === 0){
-            if(token[index].length !== 0)
-                this.ref1.current.focus()
-        }
-        else if (this.ref2.current && index === 1){
-            if(token[index].length === 0 && this.ref0.current){
-                this.ref0.current.focus()
-            } else
-            this.ref2.current.focus()
-        }
-        else if (this.ref3.current && index === 2){
-            if(token[index].length === 0 && this.ref1.current){
-                this.ref1.current.focus()
-            } else
-            this.ref3.current.focus()
-        }
-        else if (this.ref4.current && index === 3){
-            if(token[index].length === 0 && this.ref2.current){
-                this.ref2.current.focus()
-            } else
-            this.ref4.current.focus()
-        }
-        else if (this.ref5.current && index === 4){
-            if(token[index].length === 0 && this.ref3.current){
-                this.ref3.current.focus()
-            } else 
-            this.ref5.current.focus()
-        }
-        else if (this.ref4.current && index === 5){
-            if(token[index].length === 0) this.ref4.current.focus()
-        }
-
- */

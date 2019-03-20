@@ -25,7 +25,7 @@ const StyledCard = styled('div')<CardProps>`
     box-sizing: border-box;
 `
 
-const SquareCard = styled('div')<{}>`
+const SquareCard = styled('div')<{padding?:string, height?: string, width?: string}>`
     display: flex;  
     flex-direction:column;
     align-items: center;
@@ -34,11 +34,10 @@ const SquareCard = styled('div')<{}>`
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
         border: solid 2px #f7f6f6;
         border-radius: 6px;
-    min-height: 10em;
-    max-width: 750px;
-    width: 250px;
-    height: 200px;
-    padding: 0.25em 1em;
+    // min-height: 10em;
+    width: ${props => props.width ||'200px'};
+    height: ${props => props.height ||'200px'};
+    padding: ${props => props.padding || '0.25em 1em'};
     margin: 0 0.5em 0 0.5em;
     cursor: pointer
 `
