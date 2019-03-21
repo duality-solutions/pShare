@@ -33,7 +33,6 @@
   },
   "dependencies": {
     "@types/react-transition-group": "1.x",
-    "bitcoin-core": "^2.0.0",
     "blinq": "^2.0.2",
     "connected-react-router": "^5.0.1",
     "devtron": "^1.4.0",

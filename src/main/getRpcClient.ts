@@ -1,5 +1,4 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
-import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
 import { RpcClient, RpcClientWrapper } from './RpcClient';
 import { createAsyncQueue } from '../shared/system/createAsyncQueue';
@@ -7,15 +6,10 @@ import { QueuedCommand } from './QueuedCommand';
 import { createPromiseResolver } from '../shared/system/createPromiseResolver';
 import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
+import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-interface BitcoinClientOptions {
-    host: string,
-    port: string,
-    username: string,
-    password: string
-}
 
 let rpcClientPromise: Promise<RpcClientWrapper>
 
@@ -71,17 +65,19 @@ async function createQueuedRpcClient(masterCancellationToken: CancellationToken)
 
 async function createRpcClient(cancellationToken: CancellationToken): Promise<{ client: RpcClient, processInfo: DynamicdProcessInfo }> {
     const processInfo = await startDynamicd(cancellationToken);
-    
-    const client = await createBitcoinCoreClient({
+
+    const client = await createJsonRpcClient({
         host: "localhost",
         port: "33650",
         username: processInfo.rpcUser,
-        password: processInfo.rpcPassword
-    });
+        password: processInfo.rpcPassword,
+        timeout: 30000
+    }, cancellationToken);
+
     return { client, processInfo }
 }
-async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcClient> {
-    const client = new BitcoinClient(opts);
+async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: CancellationToken): Promise<RpcClient> {
+    const client = new JsonRpcClient(opts, cancellationToken)
     let errorMessageShown = false;
     //try every 2s until we get a non-error
     for (; ;) {

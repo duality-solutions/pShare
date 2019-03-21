@@ -7,6 +7,7 @@ import { streamToBufferAsync } from './streamToBufferAsync'
 import { createCancellationToken, CancellationToken } from '../../../shared/system/createCancellationToken';
 import { blinq } from 'blinq'
 import * as isInSubnet from 'is-in-subnet';
+import { Stream } from 'stream';
 
 const { IPv4: { isInSubnet: isInSubnetV4 }, IPv6: { isInSubnet: isInSubnetV6 } } = isInSubnet
 
@@ -37,11 +38,11 @@ const isPrivateOrReservedIpAddress =
 
 const methodsWithBody = ["POST", "PATCH", "PUT"];
 
-const isStream = (stream: any) =>
+const isStream = (stream: any):stream is Stream =>
     stream !== null &&
     typeof stream === 'object' &&
     typeof stream.pipe === 'function';
-const isBuffer = (obj: any) =>
+const isBuffer = (obj: any):obj is Buffer =>
     obj != null &&
     obj.constructor != null &&
     typeof obj.constructor.isBuffer === 'function' &&
@@ -60,7 +61,7 @@ interface RequestOpts {
     headers?: ReqHeaders
     rejectUnsafeHosts?: boolean
     method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS"
-    body?: any
+    body?: Stream | string | Buffer
 }
 
 async function getRequestOptionsAsync(opts: RequestOpts) {
