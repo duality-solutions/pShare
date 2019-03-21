@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { OnboardingActions } from "../../../shared/actions/onboarding";
-import { CreateAccount, CreateAccountDispatchProps, CreateAccountStateProps } from '../../components/onboarding/CreateAccount';
+import { CreateAccount, CreateAccountStateProps, CreateAccountDispatchProps } from '../../components/onboarding/CreateAccount';
 import { RendererRootState } from '../../reducers';
 import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 

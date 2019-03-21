@@ -11,17 +11,18 @@ import { AppLogo } from '../ui-elements/Image';
 // import Input from "../ui-elements/Input";
 import { H1, Text, H3 } from "../ui-elements/Text";
 import Dropzone from "../ui-elements/Dropzone";
-// import { NamedValue } from "../../../shared/system/validator/NamedValue";
-// import { validationScopes } from "../../reducers/validationScopes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
+
 
 export interface RestoreWithMnemonicFileStateProps {
     // isValidating: boolean,
     // validationResult?: ValidationResult<string>
 }
-export interface RestoreWithMnemonicFileDispatchProps {
-    secureFilePassword: () => void,
-    restoreWithMnemonicFileCancelled: () => void,
-}
+
+export type RestoreWithMnemonicFileDispatchProps = PickedDispatchProps<typeof OnboardingActions, "restoreWithMnemonicFileCancelled" | "secureFilePassword">
+
+
 type RestoreWithMnemonicFileProps = RestoreWithMnemonicFileDispatchProps & RestoreWithMnemonicFileStateProps
 
 interface RestoreWithMnemonicFileComponentState {
@@ -59,31 +60,31 @@ export class RestoreWithMnemonicFile extends Component<RestoreWithMnemonicFilePr
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
-                        <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                        <BackButton onClick={()=> this.props.restoreWithMnemonicFileCancelled()} margin="150px 0 0 -80px"/>
+                            <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                                <BackButton onClick={() => this.props.restoreWithMnemonicFileCancelled()} margin="150px 0 0 -80px" />
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
-                                <Box display="flex" direction="row" margin="0">
+                                    <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">
-                                            <img src={PshareSecureFileSvg} width="60px" height="60px" /> 
-                                        </Box> 
+                                            <img src={PshareSecureFileSvg} width="60px" height="60px" />
+                                        </Box>
                                         <Box margin="1em 0 0 2em">
-                                        <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
-                                        <Box>
-                                        <Dropzone>
-                                            <H3 align="center">Drop files to upload</H3>
-                                            <Text margin="1.5em 0 1.5em 0">or</Text>
-                                            <LightButton >Select file</LightButton>
-                                        </Dropzone>
+                                            <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
+                                            <Box>
+                                                <Dropzone>
+                                                    <H3 align="center">Drop files to upload</H3>
+                                                    <Text margin="1.5em 0 1.5em 0">or</Text>
+                                                    <LightButton >Select file</LightButton>
+                                                </Dropzone>
+                                            </Box>
                                         </Box>
-                                        </Box>
-                                        </Box>
+                                    </Box>
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" onClick={()=> this.props.secureFilePassword()} /> 
+                                <ArrowButton label="Continue" type="submit" onClick={() => this.props.secureFilePassword()} />
                                 {/* disabled={isValidating} /> */}
                                 {/* { */}
-                                    {/* isValidating ? <div>show spinner</div> : <></> */}
+                                {/* isValidating ? <div>show spinner</div> : <></> */}
                                 {/* } */}
                             </Box>
 

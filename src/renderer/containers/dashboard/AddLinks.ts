@@ -1,5 +1,5 @@
 import { RendererRootState } from "../../reducers";
-import { AddLinksStateProps, AddLinksDispatchProps, AddLinks } from "../../components/dashboard/AddLinks";
+import { AddLinksStateProps,  AddLinks, AddLinksDispatchProps } from "../../components/dashboard/AddLinks";
 import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
