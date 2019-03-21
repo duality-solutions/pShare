@@ -71,7 +71,7 @@ async function createRpcClient(cancellationToken: CancellationToken): Promise<{ 
         port: "33650",
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword,
-        timeout: 30000
+        timeout: 60000
     }, cancellationToken);
 
     return { client, processInfo }

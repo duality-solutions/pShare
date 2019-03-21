@@ -38,11 +38,11 @@ const isPrivateOrReservedIpAddress =
 
 const methodsWithBody = ["POST", "PATCH", "PUT"];
 
-const isStream = (stream: any):stream is Stream =>
+const isStream = (stream: any): stream is Stream =>
     stream !== null &&
     typeof stream === 'object' &&
     typeof stream.pipe === 'function';
-const isBuffer = (obj: any):obj is Buffer =>
+const isBuffer = (obj: any): obj is Buffer =>
     obj != null &&
     obj.constructor != null &&
     typeof obj.constructor.isBuffer === 'function' &&
@@ -143,7 +143,7 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
         //requestOpts.method = opts.method || "GET";
 
         const request = httpLib.request(ro, (response) => {
-            console.log("got response code " + response.statusCode);
+            //console.log("got response code " + response.statusCode);
             resolve(response);
         });
 
