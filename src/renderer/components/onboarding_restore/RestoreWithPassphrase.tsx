@@ -11,17 +11,17 @@ import { AppLogo } from '../ui-elements/Image';
 import { H1, H3 } from "../ui-elements/Text";
 import PsharePassphrase from "../../assets/svgs/p-share-pass-phrase-blue.svg";
 import { MnemonicInput } from "../ui-elements/Input";
-// import { NamedValue } from "../../../shared/system/validator/NamedValue";
-// import { validationScopes } from "../../reducers/validationScopes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface RestoreWithPassphraseStateProps {
     // isValidating: boolean,
     // validationResult?: ValidationResult<string>
 }
-export interface RestoreWithPassphraseDispatchProps {
-    restoreSync: () => void ,
-    restoreWithPassphraseCancelled: () => void,
-}
+
+export type RestoreWithPassphraseDispatchProps = PickedDispatchProps<typeof OnboardingActions, "restoreWithPassphraseCancelled" | "restoreSync">
+
+
 type RestoreWithPassphraseProps = RestoreWithPassphraseDispatchProps & RestoreWithPassphraseStateProps
 
 interface RestoreWithPassphraseComponentState {
@@ -61,24 +61,24 @@ export class RestoreWithPassphrase extends Component<RestoreWithPassphraseProps,
 
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                            <BackButton onClick={()=>{this.props.restoreWithPassphraseCancelled()}} margin="150px 0 0 -100px"/>
+                                <BackButton onClick={() => { this.props.restoreWithPassphraseCancelled() }} margin="150px 0 0 -100px" />
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
-                                <Box display="flex" direction="row" margin="0">
+                                    <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">
-                                            <img src={PsharePassphrase} width="60px" height="60px" /> 
-                                        </Box> 
+                                            <img src={PsharePassphrase} width="60px" height="60px" />
+                                        </Box>
                                         <Box margin="1em 0 0 2em">
-                                        <H3 margin="0 0 1em 0">Restore using passphrase </H3>
-                                        <MnemonicInput placeholder="Enter passphrase"/>
+                                            <H3 margin="0 0 1em 0">Restore using passphrase </H3>
+                                            <MnemonicInput placeholder="Enter passphrase" />
                                         </Box>
-                                        </Box>
+                                    </Box>
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 10px auto">
-                                <ArrowButton label="Continue" type="submit" onClick={()=> this.props.restoreSync()} /> 
+                                <ArrowButton label="Continue" type="submit" onClick={() => this.props.restoreSync()} />
                                 {/* disabled={isValidating} /> */}
                                 {/* { */}
-                                    {/* isValidating ? <div>show spinner</div> : <></> */}
+                                {/* isValidating ? <div>show spinner</div> : <></> */}
                                 {/* } */}
                             </Box>
                         </Box>

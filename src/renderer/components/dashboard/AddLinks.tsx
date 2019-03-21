@@ -7,17 +7,16 @@ import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { LinkBase } from "../../../shared/actions/payloadTypes/LinkBase";
+import { BdapActions } from "../../../shared/actions/bdap";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 
 export interface AddLinksStateProps {
     users: BdapUser[]
     currentUserName: string
 }
-export interface AddLinksDispatchProps {
-    push: (pathname: string) => void
-    beginCreateLinkRequest: (opts: LinkBase) => void
-}
+export type AddLinksDispatchProps = PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
+
 export const AddLinks: FunctionComponent<AddLinksProps> = ({ currentUserName, users, push, beginCreateLinkRequest }: AddLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>

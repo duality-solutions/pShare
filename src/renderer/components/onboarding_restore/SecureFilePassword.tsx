@@ -1,8 +1,6 @@
 import React, { ChangeEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { createValidatedFailurePayload } from "../../../shared/system/validator/createValidatedFailurePayload";
-// import { createValidatedSuccessPayload } from "../../../shared/system/validator/createValidatedSuccessPayload";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import { validationScopes } from "../../reducers/validationScopes";
@@ -15,6 +13,8 @@ import Input from "../ui-elements/Input";
 import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, Text, H3 } from "../ui-elements/Text";
 import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 
 
@@ -23,14 +23,9 @@ export interface SecureFilePasswordStateProps {
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export interface SecureFilePasswordDispatchProps {
-    submitPassword: (password: string) => void,
-    fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
-    resetValidationForField: (validationPayload: NamedValue<void>) => void
-    restoreSync: () => void ,
-    secureFilePasswordCancelled: () => void
 
-}
+export type SecureFilePasswordDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "fieldValidated" | "restoreSync" | "secureFilePasswordCancelled">
+
 type SecureFilePasswordProps = SecureFilePasswordDispatchProps & SecureFilePasswordStateProps
 
 interface SecureFilePasswordComponentState {
@@ -39,7 +34,7 @@ interface SecureFilePasswordComponentState {
 export class SecureFilePassword extends Component<SecureFilePasswordProps, SecureFilePasswordComponentState>{
     constructor(props: SecureFilePasswordProps) {
         super(props)
-        this.state = { password: ""}
+        this.state = { password: "" }
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         let name: string = e.target.name
@@ -52,7 +47,7 @@ export class SecureFilePassword extends Component<SecureFilePasswordProps, Secur
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
-             if (!/.{6,}/.test(this.state.password)) {
+            if (!/.{6,}/.test(this.state.password)) {
                 const payload = createValidatedFailurePayload(validationScopes.password, "password", "Password must be > 6 characters", this.state.password);
                 this.props.fieldValidated(payload)
             }
@@ -90,32 +85,32 @@ export class SecureFilePassword extends Component<SecureFilePasswordProps, Secur
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
-                            <BackButton onClick={()=> this.props.secureFilePasswordCancelled()} margin="130px 0 0 -100px"/>
+                                <BackButton onClick={() => this.props.secureFilePasswordCancelled()} margin="130px 0 0 -100px" />
                                 <Card width="100%" align="center" minHeight="300px" padding="2em 4em 2em 2em">
-                                <Box display="flex" direction="row" margin="0">
+                                    <Box display="flex" direction="row" margin="0">
                                         <Box width="60px" margin="0">
-                                            <img src={PshareSecureFileSvg} width="60px" height="60px" /> 
-                                        </Box> 
-                                        <Box margin="1em 0 0 2em">
-                                        <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
-                                        <Text fontSize="0.8em">Enter your secure file password</Text>
-                                        <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors}  disabled={isValidating}/>
-                                        <Text fontSize="0.8em" margin="0">This is the password used to create the secure file</Text>                                       
-                                        {
-                                            validationFailed
-                                                ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
-                                                : <></>
-                                        }
-                                      </Box>
+                                            <img src={PshareSecureFileSvg} width="60px" height="60px" />
                                         </Box>
-                                   
+                                        <Box margin="1em 0 0 2em">
+                                            <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
+                                            <Text fontSize="0.8em">Enter your secure file password</Text>
+                                            <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
+                                                type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} disabled={isValidating} />
+                                            <Text fontSize="0.8em" margin="0">This is the password used to create the secure file</Text>
+                                            {
+                                                validationFailed
+                                                    ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
+                                                    : <></>
+                                            }
+                                        </Box>
+                                    </Box>
+
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" disabled={isValidating}/>
+                                <ArrowButton label="Continue" type="submit" disabled={isValidating} />
                                 {
-                                    isValidating ?  <LoadingSpinner active label="Encrypting your data ... " size={50}/> : <></>
+                                    isValidating ? <LoadingSpinner active label="Encrypting your data ... " size={50} /> : <></>
                                 }
                             </Box>
                         </Box>
