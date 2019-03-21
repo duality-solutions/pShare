@@ -49,7 +49,7 @@ export function* linkDeclineSaga(rpcClient: RpcClient) {
                 response =
                     yield unlockedCommandEffect(rpcClient, command => command("link", "deny", recipient, requestor));
             } catch (err) {
-                debugger
+                //debugger
                 throw err
             }
             console.log(response)

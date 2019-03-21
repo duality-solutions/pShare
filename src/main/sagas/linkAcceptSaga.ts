@@ -52,7 +52,7 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
                             ? command("link", "accept", recipient, requestor)
                             : command("link", "accept", recipient, requestor, registrationDays.toString()));
             } catch (err) {
-                debugger
+                //debugger
                 throw err
             }
             console.log(response)
