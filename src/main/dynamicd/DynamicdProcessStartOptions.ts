@@ -5,5 +5,5 @@ export interface DynamicdProcessStartOptions {
     pathToPidFile: string;
     pathToDynamicd: string;
     sharedParameters: string[];
-    pathToDynamicCli: string;
+
 }

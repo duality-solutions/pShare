@@ -10,6 +10,7 @@ import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
 import * as fs from 'fs'
+import { fileExists } from '../../shared/system/fileExists';
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
@@ -30,7 +31,7 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
     const topLevelDynamicdDirectory = path.join(__static, "dynamicd")
     const platformSpecificStaticPath = path.join(topLevelDynamicdDirectory, os.platform());
     const pathToDynamicd = path.join(platformSpecificStaticPath, "dynamicd")
-    const pathToDynamicCli = path.join(platformSpecificStaticPath, "dynamic-cli")
+    //const pathToDynamicCli = path.join(platformSpecificStaticPath, "dynamic-cli")
     const pathToDynamicdDefaultConf = path.join(topLevelDynamicdDirectory, "dynamic.default.conf")
     const pathToDataDir = path.join(app.getPath("home"), ".pshare", ".dynamic")
     const pathToDynamicConf = path.join(pathToDataDir, "dynamic.conf")
@@ -42,9 +43,7 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
         pathToDynamicdDefaultConf,
         pathToPidFile,
         pathToDynamicd,
-        sharedParameters,
-        pathToDynamicCli,
-
+        sharedParameters
     };
     const processInfo = await startDynamicdProcess(opts, cancellationToken);
     return processInfo
@@ -56,14 +55,16 @@ async function startDynamicdProcess(
         pathToDynamicdDefaultConf,
         pathToPidFile,
         pathToDynamicd,
-        sharedParameters,
-        pathToDynamicCli
+        sharedParameters
     }: DynamicdProcessStartOptions, cancellationToken: CancellationToken) {
 
     const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf }, cancellationToken);
     //const token = createCancellationToken(undefined, cancellationToken);
     let started = false;
     const { addEventListener, dispatchEvent, removeEventListener } = createEventEmitter();
+    if (await fileExists(pathToPidFile)) {
+        throw Error("Cannot start dynamicd. Pid file already exists.")
+    }
     const processInfo = {
         start: () => {
             if (!started) {
@@ -102,7 +103,7 @@ async function startDynamicdProcess(
         console.warn("issuing stop to dynamicd")
         try {
             process.kill(parseInt(fs.readFileSync(pathToPidFile).toString()), 15)
-        } catch{ 
+        } catch{
             console.warn("SIGTERM failed")
         }
         dispatchEvent("stopping", {});

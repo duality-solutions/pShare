@@ -2,7 +2,7 @@ import {
     SagaMiddleware, Task,
 } from "redux-saga";
 
-import { fork, take, call, cancel, ForkEffect, takeEvery } from "redux-saga/effects";
+import { fork, take, call, cancel, ForkEffect, takeEvery, put } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
@@ -35,9 +35,19 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         const cancellationToken = createCancellationToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            
+
             yield fork(storeHydrationSaga)
-            rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
+            try {
+                rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
+            } catch (err) {
+                if (/^Cannot start dynamicd\. Pid file already exists\.$/.test(err.message)) {
+                    yield put(AppActions.getRpcClientUnsuccessful(err.message))
+                }
+                else{
+                    yield put(AppActions.getRpcClientUnsuccessful())
+                }
+                return
+            }
             if (!rpcClient) {
                 throw Error("rpcClient is unexpectedly undefined")
             }

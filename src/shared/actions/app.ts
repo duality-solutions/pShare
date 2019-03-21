@@ -14,6 +14,7 @@ export const AppActions = {
 
     sleep:createStandardAction('app/SLEEP')<void>(),
     wake:createStandardAction('app/WAKE')<void>(),
+    getRpcClientUnsuccessful:createStandardAction('app/GET_RPC_CLIENT_UNSUCCESSFUL')<string|void>(),
 
     log:createStandardAction('app/LOG')<LogMessage>()
     
