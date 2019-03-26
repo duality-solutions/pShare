@@ -21,9 +21,10 @@ const SidebarContainer = styled('div')`
     max-height:100vh;
     `;
 
-const MainContentContainer = styled('div')`
+const MainContentContainer = styled('div')<{ disabled?: boolean}>`
     display: flex;
     height:100%;
+    z-index: ${props => props.disabled ? -1 : 0}
     width: 100%;
     direction: column;
     background: white;
