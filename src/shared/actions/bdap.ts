@@ -18,6 +18,10 @@ export const BdapActions = {
     getCompleteLinksSuccess: createStandardAction('bdap/GET_COMPLETE_LINKS_SUCCESS')<Link[]>(),
     getCompleteLinksFailed: createStandardAction('bdap/GET_COMPLETE_LINKS_FAILED')<string>(),
 
+    completeLinkCreated:createStandardAction('bdap/COMPLETE_LINK_CREATED')<Link>(),
+    completeLinkRemoved:createStandardAction('bdap/COMPLETE_LINK_REMOVED')<Link>(),
+
+
 
     getPendingRequestLinks: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS')<void>(),
     getPendingRequestLinksSuccess: createStandardAction('bdap/GET_PENDING_REQUEST_LINKS_SUCCESS')<PendingLink[]>(),

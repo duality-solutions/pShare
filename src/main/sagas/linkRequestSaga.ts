@@ -1,4 +1,4 @@
-import { takeEvery, select, put, call } from "redux-saga/effects";
+import { takeEvery, select, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { BdapActions } from "../../shared/actions/bdap";
 import { MainRootState } from "../reducers";
@@ -6,7 +6,8 @@ import { LinkRequestResponse } from "../../dynamicdInterfaces/LinkRequestRespons
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { UserState } from "../../shared/reducers/user";
 import { RpcClient } from "../RpcClient";
-import { entries } from "../../shared/system/entries";
+import { getMyBdapAccount } from "./effects/getMyBdapAccount";
+import { BdapAccount } from "../../dynamicdInterfaces/BdapAccount";
 
 export function* linkRequestSaga(rpcClient: RpcClient) {
 
@@ -45,7 +46,7 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
 
         try {
             response =
-                yield unlockedCommandEffect(rpcClient,command => command("link", "request", requestor, recipient, inviteMessage))
+                yield unlockedCommandEffect(rpcClient, command => command("link", "request", requestor, recipient, inviteMessage))
 
         } catch (err) {
             if (/^BDAP_SEND_LINK_RPC_ERROR\: ERRCODE\: 4001/.test(err.message)) {
@@ -65,32 +66,6 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
 
 
 }
-interface BdapAccount {
-    _id: string,
-    version: number,
-    domain_component: string,
-    common_name: string,
-    organizational_unit: string,
-    organization_name: string,
-    object_id: string,
-    object_full_path: string,
-    object_type: string,
-    wallet_address: string,
-    public: number,
-    dht_publickey: string,
-    link_address: string,
-    txid: string,
-    time: number,
-    expires_on: number,
-    expired: boolean
-}
 
-const getMyBdapAccount = (rpcClient: RpcClient) => call(function* () {
-    
-    const myBdapAccountsResponse: Record<string, BdapAccount> = yield call(() => rpcClient.command("mybdapaccounts"))
-    const myBdapAccounts = entries(myBdapAccountsResponse).select(([, v]) => v)
-    const user: UserState = yield select((state: MainRootState) => state.user)
-    const myBdapAccount = myBdapAccounts.singleOrDefault(acc => acc.object_id === user.userName)
-    return myBdapAccount
-})
+
 

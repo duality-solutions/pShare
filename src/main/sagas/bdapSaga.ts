@@ -14,7 +14,7 @@ import { delay } from "redux-saga";
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
-        
+
         let response: GetUserInfo[];
         try {
             response = yield call(() => rpcClient.command("getusers"))
@@ -39,7 +39,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingAcceptLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
@@ -48,7 +48,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
@@ -66,7 +66,9 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksFailed(err.message))
             return
         }
-        yield put(BdapActions.getCompleteLinksSuccess(extractLinks(response)))
+        const extractedLinks: Link[] = extractLinks(response);
+        yield* announceCreatedAndRemovedLinks(extractedLinks);
+        yield put(BdapActions.getCompleteLinksSuccess(extractedLinks))
 
     })
 
@@ -139,8 +141,24 @@ const getUserFqdn = () =>
         return currentUser.object_full_path;
     })
 
+function* announceCreatedAndRemovedLinks(extractedLinks: Link[]) {
+    const storeLinks: Link[] = yield select((state: MainRootState) => state.bdap.completeLinks);
+    const unpairedLinks = blinq(extractedLinks)
+        .fullOuterJoin(storeLinks, link => link.txid, link => link.txid, (newLink, storedLink) => [newLink, storedLink])
+        .where(t => !t.every(i => i != null))
+        .toArray();
+    const addedLinks = blinq(unpairedLinks).where(([, storedLink]) => storedLink == null).select(([newLink]) => newLink);
+    const removedLinks = blinq(unpairedLinks).where(([newLink]) => newLink == null).select(([, storedLink]) => storedLink);
+    for (const link of addedLinks) {
+        put(BdapActions.completeLinkCreated(link!));
+    }
+    for (const link of removedLinks) {
+        put(BdapActions.completeLinkRemoved(link!));
+    }
+}
+
 function* rpcLinkCommand<T extends Link>(
-    rpcClient:RpcClient,
+    rpcClient: RpcClient,
     cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
@@ -148,7 +166,7 @@ function* rpcLinkCommand<T extends Link>(
 
     let response: LinkResponse<T>;
     try {
-        response = yield unlockedCommandEffect(rpcClient,cmd)
+        response = yield unlockedCommandEffect(rpcClient, cmd)
     } catch (err) {
         yield put(failActionCreator(err.message))
         return;

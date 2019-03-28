@@ -9,18 +9,20 @@ import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./tr
 import { bdapSaga } from "./bdapSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
-import { fileWatchSaga } from "./fileWatchSaga";
+// import { fileWatchSaga } from "./fileWatchSaga";
 import { RpcClientWrapper } from "../RpcClient";
+import { newLinkDirectoryCreateSaga } from "./newLinkDirectoryCreateSaga";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
-    () => fileWatchSaga(),
+    // () => fileWatchSaga(),
+    () => newLinkDirectoryCreateSaga(rpcClient),
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
     () => validationSaga(rpcClient),
     () => onboardingSaga(),
     () => createBdapAccountSaga(rpcClient),
-    () => setWalletPasswordSaga(rpcClient,true),
+    () => setWalletPasswordSaga(rpcClient, true),
     () => mnemonicSaga(rpcClient),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
