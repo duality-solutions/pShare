@@ -1,8 +1,8 @@
 import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 import { QueuedCommand } from "../../../../QueuedCommand";
-export const runQueuedCommand = async (bitcoinCommand: RpcCommandFunc, { action, promiseResolver: { resolve, reject } }: QueuedCommand): Promise<void> => {
+export const runQueuedCommand = async (command: RpcCommandFunc, { action, promiseResolver: { resolve, reject } }: QueuedCommand): Promise<void> => {
     try {
-        resolve(await action(bitcoinCommand));
+        resolve(await action(command));
     }
     catch (err) {
         reject(err);
