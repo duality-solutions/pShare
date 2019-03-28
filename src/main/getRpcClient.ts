@@ -1,35 +1,30 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
-import BitcoinClient from 'bitcoin-core';
 import { delay } from '../shared/system/delay';
 import { RpcClient, RpcClientWrapper } from './RpcClient';
 import { createAsyncQueue } from '../shared/system/createAsyncQueue';
 import { QueuedCommand } from './QueuedCommand';
 import { createPromiseResolver } from '../shared/system/createPromiseResolver';
-import { createCancellationToken } from '../shared/system/createCancellationToken';
+import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
+import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-interface BitcoinClientOptions {
-    host: string,
-    port: string,
-    username: string,
-    password: string
-}
 
 let rpcClientPromise: Promise<RpcClientWrapper>
 
-export function getRpcClient() {
+export function getRpcClient(cancellationToken: CancellationToken) {
     if (typeof rpcClientPromise === 'undefined') {
-        rpcClientPromise = createQueuedRpcClient()
+        rpcClientPromise = createQueuedRpcClient(cancellationToken)
     }
     return rpcClientPromise
 }
 
-async function createQueuedRpcClient(): Promise<RpcClientWrapper> {
-    const cancellationToken = createCancellationToken()
+async function createQueuedRpcClient(masterCancellationToken: CancellationToken): Promise<RpcClientWrapper> {
+    const cancellationToken = createCancellationToken(undefined, masterCancellationToken)
+    //cancellationToken.register(()=>console.warn("rpcClient cancellation was requested"))
     const bb = createAsyncQueue<QueuedCommand>();
-    const { client: rpcClient, processInfo, quitFunc } = await createRpcClient();
+    const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
     (async () => {
         while (!cancellationToken.isCancellationRequested) {
 
@@ -38,6 +33,7 @@ async function createQueuedRpcClient(): Promise<RpcClientWrapper> {
                 qc = await bb.receive(cancellationToken)
             } catch (err) {
                 if (cancellationToken.isCancellationRequested) {
+                    console.warn("queuedRpcClient was cancelled")
                     break
                 }
                 else {
@@ -62,28 +58,26 @@ async function createQueuedRpcClient(): Promise<RpcClientWrapper> {
             return promiseResolver.promise
         },
         //cancel: () => cancellationToken.cancel(),
-        dispose: quitFunc,
+
         processInfo
     }
 }
 
-async function createRpcClient(): Promise<{ client: RpcClient, processInfo: DynamicdProcessInfo, quitFunc: () => void }> {
-    const processInfo = await startDynamicd();
-    const quitFunc = () => {
-        //console.log("before quit");
-        processInfo.dispose();
-        console.log("dynamicd processInfo disposed");
-    }
-    const client = await createBitcoinCoreClient({
+async function createRpcClient(cancellationToken: CancellationToken): Promise<{ client: RpcClient, processInfo: DynamicdProcessInfo }> {
+    const processInfo = await startDynamicd(cancellationToken);
+
+    const client = await createJsonRpcClient({
         host: "localhost",
         port: "33650",
         username: processInfo.rpcUser,
-        password: processInfo.rpcPassword
-    });
-    return { client, processInfo, quitFunc }
+        password: processInfo.rpcPassword,
+        timeout: 60000
+    }, cancellationToken);
+
+    return { client, processInfo }
 }
-async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcClient> {
-    const client = new BitcoinClient(opts);
+async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: CancellationToken): Promise<RpcClient> {
+    const client = new JsonRpcClient(opts, cancellationToken)
     let errorMessageShown = false;
     //try every 2s until we get a non-error
     for (; ;) {
@@ -108,7 +102,7 @@ async function createBitcoinCoreClient(opts: BitcoinClientOptions): Promise<RpcC
     return {
         command: (command: string, ...args: any[]) => client.command(command, ...args),
         //cancel: () => { },
-        dispose: () => { }
+        //dispose: () => { }
     }
 }
 

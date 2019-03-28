@@ -59,19 +59,25 @@ const StyledBackArrowButton = styled('div')`
 `
 
 
-const BackArrowButton: React.FunctionComponent<{ onClick: () => void }> = ({ onClick }) => (
+const BackArrowButton: React.FunctionComponent<{ onClick: () => void, marginTop?: string }> = ({ onClick, marginTop }) => (
   <StyledBackArrowButton onClick={() => onClick()}>
-    <img src={back_arrow_svg} style={{ marginTop: '175%'}} />
+    <img src={back_arrow_svg} style={{ marginTop: marginTop || '175%'}} />
   </StyledBackArrowButton>
 )
+
+
 const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick, type, disabled, focus }) => (
   <StyledButton autoFocus={focus} onClick={onClick} primary direction="row-reverse" align="flex-end" type={type} disabled={disabled} >
       {label} <span style={{float:"right"}}>&#8594;</span>
   </StyledButton>
 )
 
+const BackButton:React.FunctionComponent<{margin?: string, onClick?: ()=> void }> = ({ margin, onClick }) => (
+  <img src={back_arrow_svg} onClick={onClick} style={{ 
+      float: 'left', margin , position: 'fixed', cursor: 'pointer'
+    }}/>)
 
 export default StyledButton
 
-export { ArrowButton, BackArrowButton, LightButton };
+export { ArrowButton, BackArrowButton, LightButton , BackButton};
 

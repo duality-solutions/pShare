@@ -9,6 +9,8 @@ import Button from "../ui-elements/Button";
 import { BdapUser } from "../../../renderer/system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
 import { LinkBase } from "../../../shared/actions/payloadTypes/LinkBase";
+import { BdapActions } from "../../../shared/actions/bdap";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 
 
 
@@ -19,10 +21,10 @@ export interface Invite {
 export interface InvitesStateProps {
     invites: Invite[]
 }
-export interface InvitesDispatchProps {
-    beginAcceptLink: (link: LinkBase) => void
-}
+
+export type InvitesDispatchProps = PickedDispatchProps<typeof BdapActions, "beginAcceptLink">
 export type InvitesProps = InvitesStateProps & InvitesDispatchProps
+
 export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptLink }: InvitesProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>

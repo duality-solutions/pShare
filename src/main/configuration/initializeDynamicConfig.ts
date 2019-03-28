@@ -5,18 +5,19 @@ import { randomBytes as r } from 'crypto'
 import { DynamicConfigOptions } from './DynamicConfigOptions';
 import { getKeyValuePairsFromConfFile } from './getKeyValuePairsFromConf';
 import { blinq } from 'blinq'
+import { CancellationToken, asCancellable } from '../../shared/system/createCancellationToken';
 
 const exists = promisify(e)
 const randomBytes = promisify(r)
 
-export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions) {
-    var hasConfig = await exists(pathToDynamicConf);
+export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathToDynamicConf, pathToDataDir }: DynamicConfigOptions, cancellationToken: CancellationToken) {
+    var hasConfig = await asCancellable(exists(pathToDynamicConf), cancellationToken);
     if (!hasConfig) {
-        await fsExtra.mkdirp(pathToDataDir);
+        await asCancellable(fsExtra.mkdirp(pathToDataDir), cancellationToken);
 
-        const rpcUser = await getRandomToken(16);
-        const rpcPassword = await getRandomToken(64);
-        const defaultConfDataIterator = await getKeyValuePairsFromConfFile(pathToDynamicdDefaultConf);
+        const rpcUser = await asCancellable(getRandomToken(16), cancellationToken);
+        const rpcPassword = await asCancellable(getRandomToken(64), cancellationToken);
+        const defaultConfDataIterator = await asCancellable(getKeyValuePairsFromConfFile(pathToDynamicdDefaultConf), cancellationToken);
         const defaultConfData = [...defaultConfDataIterator];
         const rewrittenConfFileLines = defaultConfData
             .map(({ key, value }) => ({
@@ -30,9 +31,9 @@ export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathT
             .map(({ key, value }) => `${key}=${value}`);
         //by convention, we should leave empty line at end of file
         const rewrittenConf = [...rewrittenConfFileLines, ""].join("\n");
-        await fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" });
+        await asCancellable(fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" }), cancellationToken);
     }
-    const confDataIterator = await getKeyValuePairsFromConfFile(pathToDynamicConf)
+    const confDataIterator = await asCancellable(getKeyValuePairsFromConfFile(pathToDynamicConf), cancellationToken)
     const confData = [...confDataIterator]
     const blConfData = blinq(confData)
     const rpcUser = blConfData.single(x => x.key === "rpcuser").value;
@@ -41,7 +42,10 @@ export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathT
 
 }
 
+
+
 async function getRandomToken(tokenLength: number) {
     const buf = await randomBytes(tokenLength);
     return buf.toString("hex")
 }
+

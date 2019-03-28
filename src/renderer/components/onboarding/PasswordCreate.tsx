@@ -2,7 +2,6 @@ import React, { ChangeEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { createValidatedFailurePayload } from "../../../shared/system/validator/createValidatedFailurePayload";
 import { createValidatedSuccessPayload } from "../../../shared/system/validator/createValidatedSuccessPayload";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import { validationScopes } from "../../reducers/validationScopes";
@@ -16,18 +15,18 @@ import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, Text } from "../ui-elements/Text";
 import { Link } from "react-router-dom";
 import { appRoutes } from "../../../renderer/routes/appRoutes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface PasswordCreateStateProps {
     password: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export interface PasswordCreateDispatchProps {
-    submitPassword: (password: string) => void,
-    fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
-    resetValidationForField: (validationPayload: NamedValue<void>) => void
 
-}
+export type PasswordCreateDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "fieldValidated" | "submitPassword">
+
+
 type PasswordCreateProps = PasswordCreateDispatchProps & PasswordCreateStateProps
 
 interface PasswordCreateComponentState {

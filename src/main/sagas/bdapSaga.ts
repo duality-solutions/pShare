@@ -1,7 +1,6 @@
 import { takeEvery, put, call, select, take } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { BdapActions } from "../../shared/actions/bdap";
-import { getRpcClient } from "../getRpcClient";
 import { RpcClient } from "../RpcClient";
 import { LinkResponse } from "../../dynamicdInterfaces/links/LinkResponse";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
@@ -13,9 +12,9 @@ import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
 import { delay } from "redux-saga";
 
-export function* bdapSaga(mock: boolean = false) {
+export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
-        const rpcClient: RpcClient = yield call(() => getRpcClient())
+        
         let response: GetUserInfo[];
         try {
             response = yield call(() => rpcClient.command("getusers"))
@@ -40,7 +39,7 @@ export function* bdapSaga(mock: boolean = false) {
             yield put(BdapActions.getPendingAcceptLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand((command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
+        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
@@ -49,7 +48,7 @@ export function* bdapSaga(mock: boolean = false) {
             yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand((command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
+        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
@@ -58,7 +57,7 @@ export function* bdapSaga(mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksSuccess(p))
             return
         }
-        const rpcClient: RpcClient = yield call(() => getRpcClient())
+        //const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: LinkResponse<Link>;
         try {
             response = yield call(() => rpcClient.command("link", "complete"))
@@ -87,8 +86,13 @@ export function* bdapSaga(mock: boolean = false) {
 }
 
 
-const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] => entries(response).select(([, v]) => v).toArray()
-
+const reservedKeyNames = ["locked_links"]
+const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>
+    entries(response)
+        .leftOuterJoin(reservedKeyNames, ([k,]) => k, rkn => rkn, (entry, rkn) => ({ entry, rkn }))
+        .where(({ rkn }) => typeof rkn === "undefined")
+        .select(({ entry: [, v] }) => v)
+        .toArray()
 
 const getUserFqdn = () =>
     call(function* () {
@@ -101,6 +105,7 @@ const getUserFqdn = () =>
     })
 
 function* rpcLinkCommand<T extends Link>(
+    rpcClient:RpcClient,
     cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
@@ -108,7 +113,7 @@ function* rpcLinkCommand<T extends Link>(
 
     let response: LinkResponse<T>;
     try {
-        response = yield unlockedCommandEffect(cmd)
+        response = yield unlockedCommandEffect(rpcClient,cmd)
     } catch (err) {
         yield put(failActionCreator(err.message))
         return;

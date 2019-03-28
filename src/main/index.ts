@@ -34,11 +34,8 @@ let mainWindow: BrowserWindow | null
 let rtcWindow: BrowserWindow | null
 
 
-
 const store = configureStore(() => mainWindow, persistencePaths)
 store.getState();
-
-//store.dispatch(OnboardingActions.createBdapAccount({ token: "foo", username: uuid(), displayname: uuid() }))
 
 const devToolsExtensions = [REACT_DEVELOPER_TOOLS, REDUX_DEVTOOLS, REACT_PERF];
 
@@ -106,7 +103,35 @@ function createMainWindow() {
 // quit application when all windows are closed
 app.on('window-all-closed', () => {
 
-  store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+  console.log("EVENT - window-all-closed")
+  app.quit()
+  //store.dispatch(process.platform !== 'darwin' ? AppActions.shuttingDown() : AppActions.sleep())
+  //storeCancellationToken.cancel()
+  //store.dispatch(AppActions.shuttingDown())
+
+})
+let hasCleanedUpOnQuit = false;
+app.on('before-quit', e => {
+  console.log("EVENT - before-quit")
+  if (hasCleanedUpOnQuit) {
+    //second time round
+    console.log("already cleaned up, proceeding with quit")
+    return //now everything is cleaned up, return and allow app to quit
+  }
+  //1st time round
+  //prevent this quit and cleanup. 
+  //The when cleanup is complete this will cause a second app.quit() 
+  //See function orchestrateShutdown in src/main/store/hot-reload/runRootSagaWithHotReload.ts
+  console.log("not yet cleaned up, cancelling quit")
+  e.preventDefault() 
+  hasCleanedUpOnQuit = true;
+  store.dispatch(AppActions.shuttingDown())
+
+})
+
+app.on('quit', () => {
+
+  console.log("EVENT - quit")
 
 })
 

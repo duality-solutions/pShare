@@ -7,12 +7,14 @@ import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import { H1, H3, Text } from "../ui-elements/Text";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface MnemonicWarningStateProps {
 }
-export interface MnemonicWarningDispatchProps {
-    mnemonicWarningAccepted: () => void
-}
+
+export type MnemonicWarningDispatchProps = PickedDispatchProps<typeof OnboardingActions, "mnemonicWarningAccepted">
+
 type MnemonicWarningProps = MnemonicWarningDispatchProps & MnemonicWarningStateProps
 
 interface MnemonicWarningComponentState {
@@ -57,7 +59,7 @@ export class MnemonicWarning extends Component<MnemonicWarningProps, MnemonicWar
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton focus label="Continue" type="submit"/>
+                                <ArrowButton focus label="Continue" type="submit" />
                             </Box>
                         </Box>
                     </form>

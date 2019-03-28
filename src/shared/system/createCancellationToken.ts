@@ -1,7 +1,12 @@
 import { mergePropertiesAsReadOnly } from "./mergePropertiesAsReadOnly";
+import { createPromiseResolver } from "./createPromiseResolver";
+
+interface CancellationTokenRegistration {
+    unregister: () => void
+}
 interface CancellationTokenMethods {
     cancel: (e?: Error) => void
-    register: (callback: (e: any) => void) => void
+    register: (callback: (e: any) => void) => CancellationTokenRegistration
     createDependentToken: (timeout?: number) => CancellationToken
 }
 interface CancellationTokenProps {
@@ -32,15 +37,21 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
             }
         };
     });
-    methods.register = async (callback) => {
-        let v: {};
-        try {
-            v = await cancellationPromise;
-        } catch (err) {
-            console.log(err)
-            return
-        }
-        callback(v)
+    methods.register = (callback) => {
+        const resolver = createPromiseResolver()
+        Promise
+            .race([resolver.promise, cancellationPromise]).then(async (p: any) => {
+                //debugger
+                if (p && p.message && p.message === "cancelled") {
+                    return await p
+                } else {
+                    throw Error("unregistered")
+                }
+            })
+            .then(v => callback(v))
+            .catch(err => console.log("unregistered : " + err.message))
+        return { unregister: () => resolver.resolve() }
+
     };
     methods.createDependentToken = (timeout?: number) => createCancellationToken(timeout, token);
     if (parentToken) {
@@ -52,3 +63,10 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
     }
     return token;
 };
+
+export const asCancellable = <T>(promise: Promise<T>, cancellationToken: CancellationToken): Promise<T> => {
+    const resolver = createPromiseResolver<T>()
+    cancellationToken.register(() => resolver.cancel())
+    promise.then(v => resolver.resolve(v)).catch(e => resolver.reject(e))
+    return resolver.promise
+}

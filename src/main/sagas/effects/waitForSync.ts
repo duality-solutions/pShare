@@ -1,12 +1,10 @@
 import { call } from "redux-saga/effects";
 import { delay } from "redux-saga";
-import { getRpcClient } from "../../getRpcClient";
 import { RpcClient } from "../../RpcClient";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 import { CancellationToken } from "../../../shared/system/createCancellationToken";
-export function waitForSync(cancellationToken: CancellationToken) {
+export function waitForSync(rpcClient: RpcClient,cancellationToken: CancellationToken) {
     return call(function* () {
-        const rpcClient: RpcClient = yield call(() => getRpcClient());
         while (!cancellationToken.isCancellationRequested) {
             try {
                 try {

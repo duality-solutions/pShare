@@ -2,7 +2,6 @@ import React, { ChangeEvent, Component, FormEvent } from "react";
 import { CSSTransitionGroup } from 'react-transition-group';
 import { createValidatedFailurePayload } from "../../../shared/system/validator/createValidatedFailurePayload";
 import { createValidatedSuccessPayload } from "../../../shared/system/validator/createValidatedSuccessPayload";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
@@ -15,18 +14,17 @@ import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, H3, Text } from "../ui-elements/Text";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface SecureMnemonicFileStateProps {
     mnemonicFilePassword: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export interface SecureMnemonicFileDispatchProps {
-    mnemonicFilePasswordSubmit: (password: string) => void,
-    fieldValidated: (validationInfo: NamedValue<ValidationResult<string>>) => void
-    resetValidationForField: (validationPayload: NamedValue<void>) => void
-    mnemonicFilePasswordCancelled: () => void
-}
+
+export type SecureMnemonicFileDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "fieldValidated" | "mnemonicFilePasswordSubmit" | "mnemonicFilePasswordCancelled">
+
 type SecureMnemonicFileProps = SecureMnemonicFileDispatchProps & SecureMnemonicFileStateProps
 
 interface SecureMnemonicFileComponentState {
@@ -95,28 +93,28 @@ export class SecureMnemonicFile extends Component<SecureMnemonicFileProps, Secur
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="800px" align="start" margin="0 auto 0 auto">
-                            <div style={{ display: "flex" }}>
-                            <BackArrowButton onClick={() => mnemonicFilePasswordCancelled()} />
-                                <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
-                                    <Box display="flex" direction="row" margin="0">
-                                        <Box width="120px" margin="0">
-                                            <img src={PshareSecureFileSvg} width="60px" height="60px" /> </Box>
-                                        <Box margin="0 0 0 2em">
-                                            <H3>Secure file</H3>
-                                            <Text fontSize="14px">Create a secure file password </Text>
-                                            <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
-                                                type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} disabled={isValidating} />
-                                            <Text fontSize="14px">Confirm Password</Text>
-                                            <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                                type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} disabled={isValidating} />
-                                            {
-                                                validationFailed
-                                                    ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
-                                                    : <></>
-                                            }
+                                <div style={{ display: "flex" }}>
+                                    <BackArrowButton onClick={() => mnemonicFilePasswordCancelled()} />
+                                    <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 2em">
+                                        <Box display="flex" direction="row" margin="0">
+                                            <Box width="120px" margin="0">
+                                                <img src={PshareSecureFileSvg} width="60px" height="60px" /> </Box>
+                                            <Box margin="0 0 0 2em">
+                                                <H3>Secure file</H3>
+                                                <Text fontSize="14px">Create a secure file password </Text>
+                                                <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
+                                                    type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} disabled={isValidating} />
+                                                <Text fontSize="14px">Confirm Password</Text>
+                                                <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
+                                                    type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} disabled={isValidating} />
+                                                {
+                                                    validationFailed
+                                                        ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
+                                                        : <></>
+                                                }
+                                            </Box>
                                         </Box>
-                                    </Box>
-                                </Card>
+                                    </Card>
                                 </div>
                             </Box>
                             <Box direction="column" width="800px" align="right" margin="0 auto 0 auto">

@@ -12,15 +12,15 @@ import { Divider } from "../ui-elements/Divider";
 import { AppLogo } from '../ui-elements/Image';
 import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, H3, Text } from "../ui-elements/Text";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface MnemonicPageStateProps {
     mnemonic?: string
 }
 
-export interface MnemonicPageDispatchProps {
-    mnemonicSecured: () => void
-    mnemonicFileCreation: () => void
-}
+
+export type MnemonicPageDispatchProps = PickedDispatchProps<typeof OnboardingActions, "mnemonicSecured" | "mnemonicFileCreation">
 
 type MnemonicPageProps = MnemonicPageDispatchProps & MnemonicPageStateProps
 

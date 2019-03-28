@@ -1,10 +1,10 @@
 import { ValidationTest } from "../../shared/system/validator/ValidationTest";
-import { getRpcClient } from "../getRpcClient";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
+import { RpcClient } from "../RpcClient";
 
-const isValidUserName = (value: string) => /^[A-Za-z0-9]+$/.test(value);
-const userNameDoesNotExist = async (value: string) => {
-    const client = await getRpcClient()
+const isValidUserName = (client:RpcClient,value: string) => /^[A-Za-z0-9]+$/.test(value);
+const userNameDoesNotExist = async (client:RpcClient,value: string) => {
+    
     let userInfo: GetUserInfo;
     try {
         userInfo = await client.command("getuserinfo", value)

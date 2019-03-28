@@ -3,24 +3,24 @@ import childProcess from 'child_process'
 import os from 'os'
 import { app } from 'electron'
 import { initializeDynamicConfig } from '../configuration/initializeDynamicConfig';
-import { createCancellationToken } from '../../shared/system/createCancellationToken';
-import { waitForChildProcessExit } from '../../shared/system/waitForChildProcessExit';
+import { CancellationToken } from '../../shared/system/createCancellationToken';
 import { notifyOnFileNotExists } from '../../shared/system/notifyOnFileNotExists';
 import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
+import * as fs from 'fs'
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
 }
-export async function startDynamicd(): Promise<DynamicdProcessInfo> {
+export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
     const isDevelopment = process.env.NODE_ENV === 'development'
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
             start: () => { },
-            dispose: async () => console.log("dispose does nothing in development"),
+            //dispose: async () => console.log("dispose does nothing in development"),
             once: () => true,
             addEventListener: () => true,
             removeEventListener: () => true,
@@ -47,7 +47,7 @@ export async function startDynamicd(): Promise<DynamicdProcessInfo> {
         pathToDynamicCli,
 
     };
-    const processInfo = await startDynamicdProcess(opts);
+    const processInfo = await startDynamicdProcess(opts, cancellationToken);
     return processInfo
 }
 async function startDynamicdProcess(
@@ -59,10 +59,10 @@ async function startDynamicdProcess(
         pathToDynamicd,
         sharedParameters,
         pathToDynamicCli
-    }: DynamicdProcessStartOptions) {
+    }: DynamicdProcessStartOptions, cancellationToken: CancellationToken) {
 
-    const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf });
-    const token = createCancellationToken();
+    const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf }, cancellationToken);
+    //const token = createCancellationToken(undefined, cancellationToken);
     let started = false;
     const { addEventListener, dispatchEvent, removeEventListener, once } = createEventEmitter();
     const processInfo = {
@@ -89,23 +89,26 @@ async function startDynamicdProcess(
                     }
                     console.warn("dynamicd (re)started")
                     dispatchEvent(wasStarted ? "restart" : "start", null);
-                }, token);
+                }, cancellationToken);
             }
         },
         addEventListener,
         once,
         removeEventListener,
-        dispose: async () => {
-            token.cancel();
-            const proc = childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"]);
-            await waitForChildProcessExit(proc);
-            dispatchEvent("stopping", {});
-        },
         rpcUser,
         rpcPassword
     };
     addLoggingEventListeners(processInfo);
     processInfo.start();
+    cancellationToken.register(async () => {
+        console.warn("issuing stop to dynamicd")
+        try {
+            process.kill(parseInt(fs.readFileSync(pathToPidFile).toString()), 15)
+        } catch{ 
+            console.warn("SIGTERM failed")
+        }
+        dispatchEvent("stopping", {});
+    })
     return processInfo;
 }
 

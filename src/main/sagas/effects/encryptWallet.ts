@@ -1,18 +1,17 @@
 import { call } from "redux-saga/effects";
-import { getRpcClient } from "../../getRpcClient";
 import { RpcClientWrapper } from "../../RpcClient";
 import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
 import { delay } from "../../../shared/system/delay";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
-export function encryptWallet(password: string) {
+export function encryptWallet(rpcClient: RpcClientWrapper, password: string) {
     return call(function* () {
-        const rpcClient: RpcClientWrapper = yield call(() => getRpcClient());
+        //const rpcClient: RpcClientWrapper = yield call(() => getRpcClient());
         yield* encryptWalletAndWaitForRestart(rpcClient, password);
 
         while (true) {
             let walletIsEncrypted: boolean;
             try {
-                walletIsEncrypted = yield getWalletIsEncrypted();
+                walletIsEncrypted = yield getWalletIsEncrypted(rpcClient);
             }
             catch {
                 walletIsEncrypted = false;

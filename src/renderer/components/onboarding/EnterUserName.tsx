@@ -9,19 +9,17 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { validationScopes } from "../../reducers/validationScopes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface EnterUserNameStateProps {
     userName: string,
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export interface EnterUserNameDispatchProps {
-    submitUserName: (userName: string) => void
-    resetValidationForField: (validationPayload: NamedValue<void>) => void,
-    // backToCreateAccount: () => void 
-}
+export type EnterUserNameDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitUserName">
+
 type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
 
 interface EnterUserNameComponentState {
