@@ -9,8 +9,9 @@ import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { validationScopes } from "../../reducers/validationScopes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface EnterCommonNameStateProps {
     commonName: string
@@ -18,10 +19,7 @@ export interface EnterCommonNameStateProps {
     validationResult?: ValidationResult<string>
 
 }
-export interface EnterCommonNameDispatchProps {
-    submitCommonName: (commonName: string) => void,
-    resetValidationForField: (validationPayload: NamedValue<void>) => void
-}
+export type EnterCommonNameDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitCommonName">
 type EnterCommonNameProps = EnterCommonNameDispatchProps & EnterCommonNameStateProps
 
 interface EnterCommonNameComponentState {
@@ -34,7 +32,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ commonName: e.target.value })
-        this.props.resetValidationForField({scope:validationScopes.bdapAccount, name: "commonName" })
+        this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "commonName" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)

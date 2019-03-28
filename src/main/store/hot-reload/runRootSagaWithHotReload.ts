@@ -16,8 +16,10 @@ import { storeHydrationSaga } from "../../../main/sagas/storeHydrationSaga";
 import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
 import { getRpcClient } from "../../../main/getRpcClient";
 import { app } from "electron";
+import { actionLoggingSaga } from "../../sagas/actionLoggingSaga";
+import { remoteLoggingSaga } from "../../sagas/remoteLoggingSaga";
 
-export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider, storeCancellationToken: CancellationToken) {
+export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider) {
     let rpcClient: RpcClientWrapper | undefined;
     const getSagaTask = () => sagaMw.run(function* () {
         yield takeEvery(getType(AppActions.shuttingDown), function* () {
@@ -32,11 +34,13 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
             orchestrateSleep(rpcClient, rootSagaTask)
             rootSagaTask = yield getRootSagaTask()
         })
-        const cancellationToken = createCancellationToken(undefined, storeCancellationToken)
+        const cancellationToken = createCancellationToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            
+
             yield fork(storeHydrationSaga)
+            yield fork(() => actionLoggingSaga("Main Store"))
+            yield fork(remoteLoggingSaga)
             rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
             if (!rpcClient) {
                 throw Error("rpcClient is unexpectedly undefined")

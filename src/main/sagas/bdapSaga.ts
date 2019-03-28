@@ -121,8 +121,13 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 }
 
 
-const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] => entries(response).select(([, v]) => v).toArray()
-
+const reservedKeyNames = ["locked_links"]
+const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>
+    entries(response)
+        .leftOuterJoin(reservedKeyNames, ([k,]) => k, rkn => rkn, (entry, rkn) => ({ entry, rkn }))
+        .where(({ rkn }) => typeof rkn === "undefined")
+        .select(({ entry: [, v] }) => v)
+        .toArray()
 
 const getUserFqdn = () =>
     call(function* () {

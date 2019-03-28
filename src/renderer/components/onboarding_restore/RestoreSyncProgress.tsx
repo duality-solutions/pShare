@@ -5,21 +5,21 @@ import Box from '../ui-elements/Box';
 import Container from '../ui-elements/Container';
 import { AppLogo } from '../ui-elements/Image';
 import ProgressBar from '../ui-elements/ProgressBar';
-import { H1, Text } from '../ui-elements/Text';
+import { H1 } from '../ui-elements/Text';
 
 
-export interface SyncStateProps {
-  syncStarted: boolean
+export interface RestoreSyncProgressStateProps {
+  RestoreSyncProgressStarted: boolean
   progressPercent: number
   isComplete: boolean
 }
-export interface SyncDispatchProps {
+export interface RestoreSyncProgressDispatchProps {
 
 }
-type SyncProps = SyncStateProps & SyncDispatchProps
+type RestoreSyncProgressProps = RestoreSyncProgressStateProps & RestoreSyncProgressDispatchProps
 
-export const Sync: React.FunctionComponent<SyncProps> =
-  ({ progressPercent, isComplete, syncStarted }) =>
+export const RestoreSyncProgress: React.FunctionComponent<RestoreSyncProgressProps> =
+  () =>
     <>
       <Box width="100%" margin="2em 0 -1.5em 0" align="center">
         <AppLogo src={logo} width="100px" height="120px" />
@@ -33,17 +33,19 @@ export const Sync: React.FunctionComponent<SyncProps> =
       transitionLeave={true}
       transitionLeaveTimeout={500}>
 
-        <H1 align="center" colored>Syncing</H1>
-        <Container height="60vh">
+        <H1 align="center" colored fontWeight="600">Restore Account</H1>
+
+        <Container height="60vh" padding="5em 0 0 0">
           <Box direction="column" width="100%" align="center">
-            <Box direction="row" width="100%" align="center">
-            {
-              syncStarted ?
+            <Box direction="row" width="100%" align="center" >
+            {/* {
+              RestoreSyncProgressStarted ?
               !isComplete ?
-              <ProgressBar level={progressPercent} status="Syncing blocks" /> :
-              <Text>Sync is complete</Text> :
-              <Text align="center">Waiting for sync to start...</Text>
-            }  
+              <ProgressBar level={progressPercent} status="RestoreSyncProgressing blocks" /> :
+              <Text>RestoreSyncProgress is complete</Text> :
+              <Text align="center">Waiting for RestoreSyncProgress to start...</Text>
+            }   */}
+            <ProgressBar level={25} status="Restoring account" />
             </Box>
           </Box>
         </Container>

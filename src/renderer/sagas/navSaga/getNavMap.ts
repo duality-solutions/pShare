@@ -9,16 +9,17 @@ import { createLocalStandardAction } from "../../../shared/system/createLocalSta
 import { Action } from "redux";
 import { v4 as uuid } from 'uuid';
 export function getNavMap() {
-    const navMap = new Map<string, [string, boolean]>();
-    const registerNavAction = <T extends StringType, P extends B<any> = B<void>, M extends B<any> = B<void>>(action: FsaBuilder<T,P,M>, route: RouteInfo, stopOnThisAction: boolean = false) =>
-        navMap.set(getType(action), [route.path, stopOnThisAction]);
+    const navMap = new Map<string, [string, boolean, undefined | (() => void)]>();
+    const registerNavAction = <T extends StringType, P extends B<any> = B<void>, M extends B<any> = B<void>>(action: FsaBuilder<T, P, M>, route: RouteInfo, stopOnThisAction: boolean = false, onNavigate?: () => void) =>
+        navMap.set(getType(action), [route.path, stopOnThisAction, onNavigate]);
     const id = uuid()
     const runNav = () => call(function* () {
         const task: Task = yield takeLatest((action: RootActions) => navMap.has(action.type), function* (action: RootActions) {
             const navTarget = navMap.get(action.type);
             if (typeof navTarget !== 'undefined') {
-                const [route, stopOnThisAction] = navTarget;
+                const [route, stopOnThisAction, onNavigate] = navTarget;
                 yield put(push(route));
+                onNavigate && onNavigate()
                 if (stopOnThisAction) {
                     yield put(NavMapActions.navMapComplete(id));
                     yield cancel(task);
