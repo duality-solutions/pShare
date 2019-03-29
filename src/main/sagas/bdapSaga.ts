@@ -82,9 +82,14 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             response = yield unlockedCommandEffect(rpcClient, command => command("link", "denied", userName))
 
         } catch (err) {
-            yield put(BdapActions.getDeniedLinksFailed(err.message))
-            return
+            if (!/^DeniedLinkList: ERRCODE: 5604/.test(err.message)) {
+                yield put(BdapActions.getDeniedLinksFailed(err.message))
+                return
+            }
+            response = {}
+
         }
+
         if (isLinkDeniedResponse(response)) {
             const deniedList = entries(response.denied_list).select(([, v]) => v).toArray()
             yield put(BdapActions.getDeniedLinksSuccess(deniedList))
