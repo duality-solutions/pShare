@@ -37,7 +37,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         const cancellationToken = createCancellationToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            yield fork(() => actionLoggingSaga("Main Store"))
+            
             yield fork(remoteLoggingSaga)
 
             yield fork(storeHydrationSaga)
