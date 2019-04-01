@@ -37,6 +37,7 @@ export default class JsonRpcClient implements RpcClient {
     }
     private async call(method: string, ...params: any[]) {
         let body: JsonRpcRequestBody = this.createJsonRpcBody(method, params);
+        
         return await this.getJsonRpcResponse(body, this.cancellationToken);
     }
 
@@ -61,6 +62,16 @@ export default class JsonRpcClient implements RpcClient {
                     false
             }, timeoutToken)
 
+        if (response && response.responseString) {
+            const rs = response.responseString
+            const limit = 2000
+
+            const output = rs.length > limit ? `${rs.substr(0, limit)}...` : rs;
+
+            const rpcDebugMsg=`RPC request : ${JSON.stringify(body)}\nRPC response : ${output}`
+            console.log(rpcDebugMsg)
+
+        }
 
         if (response.response.headers["content-type"] === "application/json") {
             const resObj = JSON.parse(response.responseString)

@@ -7,17 +7,16 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { blinq } from "blinq";
 import { RpcClient } from "../RpcClient";
-import { getUserNameFromFqdn } from "./getUserNameFromFqdn";
-export function* linkAcceptSaga(rpcClient: RpcClient) {
+export function* linkDeclineSaga(rpcClient: RpcClient) {
 
 
-    yield takeEvery(getType(BdapActions.beginAcceptLink), function* ({ payload: { recipient, requestor } }: ActionType<typeof BdapActions.beginAcceptLink>) {
-        const action = BdapActions.acceptLink({ recipient, requestor })
+    yield takeEvery(getType(BdapActions.beginDeclineLink), function* ({ payload: { recipient, requestor } }: ActionType<typeof BdapActions.beginAcceptLink>) {
+        const action = BdapActions.declineLink({ recipient, requestor })
         yield put(action)
     })
 
-    yield takeEvery(getType(BdapActions.acceptLink), function* (action: ActionType<typeof BdapActions.acceptLink>) {
-        const { payload: { recipient, requestor, registrationDays } } = action;
+    yield takeEvery(getType(BdapActions.declineLink), function* (action: ActionType<typeof BdapActions.declineLink>) {
+        const { payload: { recipient, requestor } } = action;
         const userName: string = yield select((state: MainRootState) => state.user.userName);
         if (typeof userName === 'undefined') {
             throw Error("current user has no userName");
@@ -28,9 +27,13 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
 
         const pendingAcceptLinks: PendingLink[] = yield select((state: MainRootState) => state.bdap.pendingAcceptLinks);
 
-        
+        const getUserNameFromFqdn = (fqName: string) => {
+            const r = /^(.*?)@/.exec(fqName);
 
-        const linksToAccept = blinq(pendingAcceptLinks)
+            return r ? r[1] : null;
+        }
+
+        const linksToDecline = blinq(pendingAcceptLinks)
             .select(link => ({
                 ...link,
                 recipient: getUserNameFromFqdn(link.recipient_fqdn),
@@ -40,14 +43,11 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
                 link.recipient === recipient && link.requestor === requestor)
                 || (link.recipient === requestor && link.requestor === recipient))
 
-        for (let { recipient, requestor } of linksToAccept) {
+        for (let { recipient, requestor } of linksToDecline) {
             let response: LinkAcceptResponse;
             try {
                 response =
-                    yield unlockedCommandEffect(rpcClient, command =>
-                        typeof registrationDays === 'undefined'
-                            ? command("link", "accept", recipient, requestor)
-                            : command("link", "accept", recipient, requestor, registrationDays.toString()));
+                    yield unlockedCommandEffect(rpcClient, command => command("link", "deny", recipient, requestor));
             } catch (err) {
                 //debugger
                 throw err
