@@ -191,10 +191,10 @@ function* announceCreatedAndRemovedLinks(extractedLinks: Link[]) {
     const addedLinks = blinq(unpairedLinks).where(([, storedLink]) => storedLink == null).select(([newLink]) => newLink);
     const removedLinks = blinq(unpairedLinks).where(([newLink]) => newLink == null).select(([, storedLink]) => storedLink);
     for (const link of addedLinks) {
-        put(BdapActions.completeLinkCreated(link!));
+        yield put(BdapActions.completeLinkCreated(link!));
     }
     for (const link of removedLinks) {
-        put(BdapActions.completeLinkRemoved(link!));
+        yield put(BdapActions.completeLinkRemoved(link!));
     }
 }
 

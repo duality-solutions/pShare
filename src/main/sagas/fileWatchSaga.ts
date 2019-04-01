@@ -2,8 +2,7 @@ import { watch } from 'chokidar'
 import { eventChannel, END } from 'redux-saga';
 import { app } from 'electron';
 import * as path from 'path'
-import * as fs from 'fs'
-import * as util from 'util'
+import * as fsExtra from 'fs-extra'
 import { call, take, cancelled, fork } from 'redux-saga/effects';
 import { createAsyncQueue } from '../../shared/system/createAsyncQueue';
 import { BdapActions } from '../../shared/actions/bdap';
@@ -22,21 +21,14 @@ interface File {
     size: number
     contentType: string
 }
-const fsMkdirAsync = util.promisify(fs.mkdir)
-const fsStatAsync = util.promisify(fs.stat)
+
 //const isDirectory = (obj: DirectoryEntry): obj is Directory => obj.type === "directory"
 const isFileWatchEvent = (obj: SimpleFileWatchEvent): obj is FileWatchEvent => (<FileWatchEvent>obj).path !== undefined
 const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
 const getRelativePath = (fqPath: string) => path.relative(pathToShareDirectory, fqPath)
 export function* fileWatchSaga() {
     yield take(BdapActions.bdapDataFetchSuccess)
-    try {
-        yield call(() => fsMkdirAsync(pathToShareDirectory, { recursive: true }))
-    } catch (err) {
-        if (!/^EEXIST/.test(err.message)) {
-            throw err
-        }
-    }
+    yield call(() => fsExtra.ensureDir(pathToShareDirectory))
     const watcher = watch(pathToShareDirectory, { awaitWriteFinish: true })
     const channel = eventChannel((emitter: (v: SimpleFileWatchEvent | FileWatchEvent | END) => void) => {
         const addHandler: (...args: any[]) => void = path => emitter({ type: "add", path });
@@ -106,7 +98,7 @@ export function* fileWatchSaga() {
             }];
         })
         .select(async (fi): Promise<File> => {
-            const stats = await fsStatAsync(fi.filePath)
+            const stats = await fsExtra.promises.stat(fi.filePath)
             const contentType = mime.lookup(fi.filePath) || 'application/octet-stream';
             return ({
                 path: fi.filePath,

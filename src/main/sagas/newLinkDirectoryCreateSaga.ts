@@ -1,7 +1,6 @@
 import { app } from 'electron';
 import * as path from 'path'
-import * as fs from 'fs'
-import * as util from 'util'
+import * as fsExtra from 'fs-extra'
 import { call, takeEvery } from 'redux-saga/effects';
 import { createAsyncQueue } from '../../shared/system/createAsyncQueue';
 import { BdapActions } from '../../shared/actions/bdap';
@@ -13,7 +12,6 @@ import { getUserNameFromFqdn } from './getUserNameFromFqdn';
 import { Link } from '../../dynamicdInterfaces/links/Link';
 import { blinq } from 'blinq';
 
-const fsMkdirAsync = util.promisify(fs.mkdir)
 
 
 const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
@@ -36,13 +34,7 @@ export function* newLinkDirectoryCreateSaga(rpcClient: RpcClient) {
             path.join(userShareFolder, "out")
         ]
         for (const p of paths) {
-            try {
-                yield call(() => fsMkdirAsync(p, { recursive: true }))
-            } catch (err) {
-                if (!/^EEXIST/.test(err.message)) {
-                    throw err
-                }
-            }
+            yield call(() => fsExtra.ensureDir(p))
         }
 
     }
