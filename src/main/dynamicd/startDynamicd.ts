@@ -4,7 +4,6 @@ import os from 'os'
 import { app } from 'electron'
 import { initializeDynamicConfig } from '../configuration/initializeDynamicConfig';
 import { CancellationToken } from '../../shared/system/createCancellationToken';
-import { notifyOnFileNotExists } from '../../shared/system/notifyOnFileNotExists';
 import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
@@ -15,7 +14,7 @@ declare global {
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isDevelopment = process.env.NODE_ENV === 'development' && false
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
@@ -28,9 +27,10 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
         }
     }
     const topLevelDynamicdDirectory = path.join(__static, "dynamicd")
-    const platformSpecificStaticPath = path.join(topLevelDynamicdDirectory, os.platform());
-    const pathToDynamicd = path.join(platformSpecificStaticPath, "dynamicd")
-    const pathToDynamicCli = path.join(platformSpecificStaticPath, "dynamic-cli")
+    const osPlaform = os.platform();
+    const platformSpecificStaticPath = path.join(topLevelDynamicdDirectory, osPlaform);
+    const pathToDynamicd = path.join(platformSpecificStaticPath, `dynamicd${osPlaform === "win32" ? ".exe" : ""}`)
+    const pathToDynamicCli = path.join(platformSpecificStaticPath, `dynamic-cli${osPlaform === "win32" ? ".exe" : ""}`)
     const pathToDynamicdDefaultConf = path.join(topLevelDynamicdDirectory, "dynamic.default.conf")
     const pathToDataDir = path.join(app.getPath("home"), ".pshare", ".dynamic")
     const pathToDynamicConf = path.join(pathToDataDir, "dynamic.conf")
@@ -65,30 +65,39 @@ async function startDynamicdProcess(
     let started = false;
     const { addEventListener, dispatchEvent, removeEventListener } = createEventEmitter();
     const processInfo = {
-        start: () => {
+        start: async () => {
             if (!started) {
-                notifyOnFileNotExists(pathToPidFile, async () => {
-                    console.log(`${pathToPidFile} does not exist`)
+                while (!cancellationToken.isCancellationRequested) {
                     const wasStarted = started;
                     started = true;
                     const resolver = createPromiseResolver();
-                    childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
+                    console.log(wasStarted ? "restarting dynamicd" : "starting dynamicd")
+                    const process = childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
                         if (err) {
                             resolver.reject(err)
                         } else {
                             resolver.resolve(stdout)
                         }
                     });
+                    const registration = cancellationToken.register(() => {
+                        process.kill("SIGTERM");
+                        dispatchEvent("stopping", {});
+                    })
+                    dispatchEvent(wasStarted ? "restart" : "start", null);
                     try {
                         await resolver.promise;
                     } catch (err) {
-                        console.warn(`${pathToDynamicd} did not restart`)
+                        console.warn(`${pathToDynamicd} returned an error`)
                         console.error(err)
                         throw err;
+                    } finally {
+                        registration.unregister()
                     }
-                    console.warn("dynamicd (re)started")
-                    dispatchEvent(wasStarted ? "restart" : "start", null);
-                }, cancellationToken);
+                    //break;
+                    console.warn("dynamicd terminated")
+
+                }
+                console.log("dynamicd restart loop cancelled")
             }
         },
         addEventListener,
@@ -98,15 +107,7 @@ async function startDynamicdProcess(
     };
     addLoggingEventListeners(processInfo);
     processInfo.start();
-    cancellationToken.register(async () => {
-        console.warn("issuing stop to dynamicd")
-        try {
-            process.kill(parseInt(fs.readFileSync(pathToPidFile).toString()), 15)
-        } catch{ 
-            console.warn("SIGTERM failed")
-        }
-        dispatchEvent("stopping", {});
-    })
+
     return processInfo;
 }
 
