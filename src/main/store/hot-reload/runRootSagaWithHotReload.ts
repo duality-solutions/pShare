@@ -37,7 +37,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         const cancellationToken = createCancellationToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            
+
             yield fork(remoteLoggingSaga)
 
             yield fork(storeHydrationSaga)
@@ -76,7 +76,7 @@ function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaT
     console.log("orchestrating shutdown");
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
-    cancellationToken.cancel();
+    yield call(() => cancellationToken.cancel());
     app.quit()
 }
 

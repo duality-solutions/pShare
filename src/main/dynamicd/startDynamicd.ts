@@ -8,12 +8,13 @@ import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
+import { delay } from '../../shared/system/delay';
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isDevelopment = process.env.NODE_ENV === 'development' && false
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
@@ -33,13 +34,11 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
     const pathToDynamicdDefaultConf = path.join(topLevelDynamicdDirectory, "dynamic.default.conf")
     const pathToDataDir = path.join(app.getPath("home"), ".pshare", ".dynamic")
     const pathToDynamicConf = path.join(pathToDataDir, "dynamic.conf")
-    const pathToPidFile = path.join(pathToDataDir, "dynamicd.pid")
-    const sharedParameters = [`-conf=${pathToDynamicConf}`, `-datadir=${pathToDataDir}`, `-pid=${pathToPidFile}`]
+    const sharedParameters = [`-conf=${pathToDynamicConf}`, `-datadir=${pathToDataDir}`]
     const opts = {
         pathToDynamicConf,
         pathToDataDir,
         pathToDynamicdDefaultConf,
-        pathToPidFile,
         pathToDynamicd,
         sharedParameters,
         pathToDynamicCli,
@@ -53,10 +52,8 @@ async function startDynamicdProcess(
         pathToDynamicConf,
         pathToDataDir,
         pathToDynamicdDefaultConf,
-        pathToPidFile,
         pathToDynamicd,
         sharedParameters,
-        pathToDynamicCli
     }: DynamicdProcessStartOptions, cancellationToken: CancellationToken) {
 
     const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf }, cancellationToken);
@@ -78,9 +75,11 @@ async function startDynamicdProcess(
                             resolver.resolve(stdout)
                         }
                     });
-                    const registration = cancellationToken.register(() => {
+                    const registration = cancellationToken.register(async () => {
                         process.kill("SIGTERM");
                         dispatchEvent("stopping", {});
+                        await resolver.promise
+                        console.warn("dynamicd terminated from cancellationToken registration")
                     })
                     dispatchEvent(wasStarted ? "restart" : "start", null);
                     try {
