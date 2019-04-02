@@ -53,6 +53,7 @@ async function startDynamicdProcess(
         pathToDynamicdDefaultConf,
         pathToDynamicd,
         sharedParameters,
+        pathToDynamicCli
     }: DynamicdProcessStartOptions, cancellationToken: CancellationToken) {
 
     const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf }, cancellationToken);
@@ -67,7 +68,7 @@ async function startDynamicdProcess(
                     started = true;
                     const resolver = createPromiseResolver();
                     console.log(wasStarted ? "restarting dynamicd" : "starting dynamicd")
-                    const process = childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
+                    childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
                         if (err) {
                             resolver.reject(err)
                         } else {
@@ -75,7 +76,15 @@ async function startDynamicdProcess(
                         }
                     });
                     const registration = cancellationToken.register(async () => {
-                        process.kill("SIGTERM");
+                        const r = createPromiseResolver();
+                        childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"], { encoding: "utf8" }, (err, stdout, ) => {
+                            if (err) {
+                                r.reject(err)
+                            } else {
+                                r.resolve(stdout)
+                            }
+                        });
+                        await r.promise
                         dispatchEvent("stopping", {});
                         await resolver.promise
                         console.warn("dynamicd terminated from cancellationToken registration")
@@ -84,9 +93,13 @@ async function startDynamicdProcess(
                     try {
                         await resolver.promise;
                     } catch (err) {
+
                         console.warn(`${pathToDynamicd} returned an error`)
+                        console.log(`cancellation ${cancellationToken.isCancellationRequested ? "has" : "has not"} been requested`)
                         console.error(err)
-                        throw err;
+                        if (!cancellationToken.isCancellationRequested) {
+                            throw err;
+                        }
                     } finally {
                         registration.unregister()
                     }
