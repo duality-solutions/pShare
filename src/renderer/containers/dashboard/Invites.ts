@@ -33,11 +33,12 @@ const getInvites = createSelector(
                         commonName: user.common_name,
                         state: "pending"
                     },
-                    link: typeof link === 'undefined'
+                    link: (typeof link === 'undefined'
                         ? undefined
                         : currentFqUser === link.requestor_fqdn
                             ? { requestor: currentUserName, recipient: user.object_id }
-                            : { recipient: currentUserName, requestor: user.object_id }
+                            : { recipient: currentUserName, requestor: user.object_id }),
+                    link_message: (typeof link === 'undefined' ? undefined : link.link_message)
                 } as Invite);
             })
             .orderBy(({ user }) => user.commonName.toLowerCase())

@@ -1,4 +1,6 @@
 import styled from 'styled-components'
+import * as React from 'react';
+import { Text } from './Text';
 
 const StyledDashboardContainer = styled('div')`
     height: 100vh;
@@ -72,9 +74,45 @@ const UserListItem = styled('li')<{disabled?: boolean}>`
     opacity: ${props => props.disabled ? 0.4 : 1};
     `;
 
+const StyledInviteListItem = styled('li')`
+    padding: 1em 0 1em 0;
+    border-bottom: solid 0.1px #d2d2d2;
+    cursor: pointer
+`
+
+interface InviteProps {
+    children: React.ReactNode,
+    msg: string
+}
+interface InviteComponentState {
+    active: boolean
+}
+
+class InviteListItem extends React.Component<InviteProps, InviteComponentState>{
+    constructor(props: InviteProps){
+        super(props)
+        this.state = {
+            active: false
+        }
+    }
+    render() {
+        const { children, msg } = this.props
+        const { active } = this.state
+        return(
+            <StyledInviteListItem onClick={()=> this.setState({ active: !active })}>
+                {children}
+                {active && 
+                    <Text fontSize="0.9em" fontWeight="400" color="#4a4a4a">
+                        {msg}
+                    </Text>}
+            </StyledInviteListItem>
+        )    
+    }
+}
+
 export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem,
+    UserList, UserListItem, InviteListItem
 }
