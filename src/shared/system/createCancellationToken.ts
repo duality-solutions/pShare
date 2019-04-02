@@ -5,8 +5,8 @@ interface CancellationTokenRegistration {
     unregister: () => void
 }
 interface CancellationTokenMethods {
-    cancel: (e?: Error) => void
-    register: (callback: (e: any) => void) => CancellationTokenRegistration
+    cancel: (e?: Error) => Promise<void>
+    register: (callback: (e: any) => Promise<void> | void) => CancellationTokenRegistration
     createDependentToken: (timeout?: number) => CancellationToken
 }
 interface CancellationTokenProps {
@@ -25,8 +25,9 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
         enumerable: true
     });
     let methods = {} as CancellationTokenMethods;
+    const registrationPromises = new Set<Promise<void>>()
     const cancellationPromise = new Promise(resolve => {
-        methods.cancel = e => {
+        methods.cancel = async e => {
             cancellationRequested = true;
             if (e) {
                 resolve(e);
@@ -35,22 +36,31 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
                 const err = new Error("cancelled");
                 resolve(err);
             }
+            await Promise.all(registrationPromises)
         };
     });
     methods.register = (callback) => {
         const resolver = createPromiseResolver()
-        Promise
-            .race([resolver.promise, cancellationPromise]).then(async (p: any) => {
-                //debugger
-                if (p && p.message && p.message === "cancelled") {
-                    return await p
-                } else {
-                    throw Error("unregistered")
-                }
-            })
-            .then(v => callback(v))
-            .catch(err => console.log("unregistered : " + err.message))
-        return { unregister: () => resolver.resolve({}) }
+        const completionPromise =
+            Promise
+                .race([resolver.promise, cancellationPromise]).then(async (p: any) => {
+                    //debugger
+                    if (p && p.message && p.message === "cancelled") {
+                        return await p
+                    } else {
+                        throw Error("unregistered")
+                    }
+                })
+                .then(v => callback(v))
+                .catch(err => console.log("unregistered : " + err.message))
+
+        registrationPromises.add(completionPromise)
+        return {
+            unregister: () => {
+                registrationPromises.delete(completionPromise)
+                resolver.resolve({});
+            }
+        }
 
     };
     methods.createDependentToken = (timeout?: number) => createCancellationToken(timeout, token);
