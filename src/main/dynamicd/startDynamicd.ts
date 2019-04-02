@@ -8,13 +8,12 @@ import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
-import { delay } from '../../shared/system/delay';
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development' && false
+    const isDevelopment = process.env.NODE_ENV === 'development'
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
