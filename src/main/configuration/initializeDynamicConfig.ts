@@ -6,7 +6,6 @@ import { DynamicConfigOptions } from './DynamicConfigOptions';
 import { getKeyValuePairsFromConfFile } from './getKeyValuePairsFromConf';
 import { blinq } from 'blinq'
 import { CancellationToken, asCancellable } from '../../shared/system/createCancellationToken';
-import os from 'os'
 
 const exists = promisify(e)
 const randomBytes = promisify(r)

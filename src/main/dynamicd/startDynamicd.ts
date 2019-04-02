@@ -8,7 +8,6 @@ import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
-import * as fs from 'fs'
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
