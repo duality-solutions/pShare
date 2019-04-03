@@ -8,12 +8,14 @@ import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
 import { createPromiseResolver } from '../../shared/system/createPromiseResolver';
+import { delay } from '../../shared/system/delay';
+import { PromiseResolver } from '../../shared/system/PromiseResolver';
 declare global {
     //comes from electron. the location of the /static directory
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isDevelopment = process.env.NODE_ENV === 'development' && false
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {
@@ -66,9 +68,9 @@ async function startDynamicdProcess(
                 while (!cancellationToken.isCancellationRequested) {
                     const wasStarted = started;
                     started = true;
-                    const resolver = createPromiseResolver();
+                    const resolver = createPromiseResolver<string>();
                     console.log(wasStarted ? "restarting dynamicd" : "starting dynamicd")
-                    childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
+                    const dynamicdProcess = childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
                         if (err) {
                             resolver.reject(err)
                         } else {
@@ -76,18 +78,42 @@ async function startDynamicdProcess(
                         }
                     });
                     const registration = cancellationToken.register(async () => {
-                        const r = createPromiseResolver();
-                        childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"], { encoding: "utf8" }, (err, stdout, ) => {
-                            if (err) {
-                                r.reject(err)
-                            } else {
-                                r.resolve(stdout)
+                        const timeoutPromise = delay(15000)
+                        let r: PromiseResolver<string>;
+
+                        for (; ;) {
+                            r = createPromiseResolver();
+                            childProcess.execFile(pathToDynamicCli, [...sharedParameters, "stop"], { encoding: "utf8" }, (err, stdout, ) => {
+                                if (err) {
+                                    r.reject(err)
+                                } else {
+                                    r.resolve(stdout)
+                                }
+                            });
+                            let completedProm: Promise<any>
+                            try {
+                                const [completed] = await Promise.race([r.promise, timeoutPromise].map(p => p.then(() => [p])));
+                                completedProm = completed
+                            } catch (error) {
+                                continue
                             }
-                        });
-                        await r.promise
-                        dispatchEvent("stopping", {});
-                        await resolver.promise
-                        console.warn("dynamicd terminated from cancellationToken registration")
+                            if (completedProm === r.promise) {
+                                // we successfully issued a shutdown
+                                dispatchEvent("stopping", {});
+                                await resolver.promise
+                                console.warn("dynamicd terminated from cancellationToken registration")
+
+                            } else {
+                                console.warn("dynamicd failed to terminate from cancellationToken registration, attempting SIGKILL")
+
+                                try {
+                                    dynamicdProcess.kill("SIGKILL")
+                                } catch (error) {
+                                    console.warn("SIGKILL failed: ", error.message)
+                                }
+                            }
+                            break
+                        }
                     })
                     dispatchEvent(wasStarted ? "restart" : "start", null);
                     try {

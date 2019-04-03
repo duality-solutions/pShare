@@ -62,7 +62,7 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
         return {
             unregister: () => {
                 registrationPromises.delete(completionPromise)
-                resolver.resolve({});
+                resolver.resolve();
             }
         }
 
