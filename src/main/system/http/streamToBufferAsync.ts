@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 import { Stream } from 'stream'
-import { CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationToken';
+import { CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationTokenSource';
 
 
 export async function streamToBufferAsync(stream: Stream, cancellationToken: CancellationToken): Promise<Buffer> {

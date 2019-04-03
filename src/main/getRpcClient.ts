@@ -1,7 +1,7 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
 import { delay } from '../shared/system/delay';
 import { RpcClient, RpcClientWrapper } from './RpcClient';
-import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
+import { CancellationToken } from '../shared/system/createCancellationTokenSource';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
 import { RpcCommandOptions } from './system/jsonRpc/RpcCommandOptions';
@@ -20,7 +20,8 @@ export function getRpcClient(cancellationToken: CancellationToken) {
 }
 
 async function createQueuedRpcClient(masterCancellationToken: CancellationToken): Promise<RpcClientWrapper> {
-    const cancellationToken = createCancellationToken(undefined, masterCancellationToken)
+    const cancellationTokenSource = masterCancellationToken.createLinkedTokenSource()
+    const cancellationToken = cancellationTokenSource.getToken()
     const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
     const queuedCommand = wrapAsyncFuncWithQueue(rpcClient.command)
     return {

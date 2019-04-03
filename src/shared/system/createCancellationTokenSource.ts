@@ -4,30 +4,47 @@ import { createPromiseResolver } from "./createPromiseResolver";
 export interface CancellationTokenRegistration {
     unregister: () => void
 }
-interface CancellationTokenMethods {
+
+interface CancellationTokenCommonMethods{
+    createLinkedTokenSource: (timeout?: number) => CancellationTokenSource
+}
+interface CancellationTokenSourceMethods extends CancellationTokenCommonMethods {
     cancel: (e?: Error) => Promise<void>
+    getToken(): CancellationToken
+    
+}
+interface CancellationTokenMethods extends CancellationTokenCommonMethods {
     register: (callback: (e: any) => Promise<void> | void) => CancellationTokenRegistration
-    createDependentToken: (timeout?: number) => CancellationToken
 }
 interface CancellationTokenProps {
     readonly isCancellationRequested: boolean
 }
 
+
+export type CancellationTokenSource = CancellationTokenSourceMethods & CancellationTokenProps
+
 export type CancellationToken = CancellationTokenMethods & CancellationTokenProps
 
-export function createCancellationToken(timeout?: number, parentToken?: CancellationToken): CancellationToken {
+export function createCancellationTokenSource(timeout?: number, parentToken?: CancellationToken): CancellationTokenSource {
 
-    const token = {} as CancellationToken;
+    const source = {} as CancellationTokenSource;
+    const token = {} as CancellationToken
     let cancellationRequested = false;
     Object.defineProperty(token, 'isCancellationRequested', {
         get: () => cancellationRequested,
         configurable: false,
         enumerable: true
     });
-    let methods = {} as CancellationTokenMethods;
+    Object.defineProperty(source, 'isCancellationRequested', {
+        get: () => cancellationRequested,
+        configurable: false,
+        enumerable: true
+    });
+    const cancellationTokenMethods = {} as CancellationTokenMethods;
+    const cancellationTokenSourceMethods = {} as CancellationTokenSourceMethods;
     const registrationPromises = new Set<Promise<void>>()
     const cancellationPromise = new Promise(resolve => {
-        methods.cancel = async e => {
+        cancellationTokenSourceMethods.cancel = async e => {
             cancellationRequested = true;
             if (e) {
                 resolve(e);
@@ -39,7 +56,8 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
             await Promise.all(registrationPromises)
         };
     });
-    methods.register = (callback) => {
+    cancellationTokenSourceMethods.getToken = () => token
+    cancellationTokenMethods.register = (callback) => {
         const resolver = createPromiseResolver()
         const completionPromise =
             Promise
@@ -67,15 +85,17 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
         }
 
     };
-    methods.createDependentToken = (timeout?: number) => createCancellationToken(timeout, token);
+    cancellationTokenSourceMethods.createLinkedTokenSource = (timeout?: number) => createCancellationTokenSource(timeout, token);
+    cancellationTokenMethods.createLinkedTokenSource = (timeout?: number) => createCancellationTokenSource(timeout, token);
     if (parentToken) {
-        parentToken.register(e => token.cancel(e));
+        parentToken.register(e => source.cancel(e));
     }
-    mergePropertiesAsReadOnly(methods, token);
+    mergePropertiesAsReadOnly(cancellationTokenMethods, token);
+    mergePropertiesAsReadOnly(cancellationTokenSourceMethods, source);
     if (timeout) {
-        setTimeout(() => methods.cancel(), timeout)
+        setTimeout(() => cancellationTokenSourceMethods.cancel(), timeout)
     }
-    return token;
+    return source;
 };
 
 export const asCancellable = <T>(promise: Promise<T>, cancellationToken: CancellationToken): Promise<T> => {

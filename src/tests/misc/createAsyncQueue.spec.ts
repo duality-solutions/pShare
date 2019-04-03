@@ -1,5 +1,5 @@
 import { createAsyncQueue } from "../../shared/system/createAsyncQueue";
-import { createCancellationToken } from "../../shared/system/createCancellationToken";
+import { createCancellationTokenSource } from "../../shared/system/createCancellationTokenSource";
 import { delay } from "../../shared/system/delay";
 import { range } from "blinq";
 
@@ -23,7 +23,8 @@ test("AsyncQueue cancels", async () => {
     const b = createAsyncQueue<number>()
     let resolved = false;
     let cancelled: boolean = false
-    const ct = createCancellationToken(500)
+    const cts = createCancellationTokenSource(500)
+    const ct = cts.getToken()
     b.receive(ct)
         .then(a => {
             resolved = true;
@@ -43,7 +44,7 @@ test("AsyncQueue cancels 2", async () => {
     for (let i = 0; i < 5; ++i) {
         let err: any | undefined = undefined
         try {
-            await b.receive(createCancellationToken(1))
+            await b.receive(createCancellationTokenSource(1).getToken())
         } catch (e) {
             err = e
 
@@ -55,7 +56,7 @@ test("AsyncQueue cancels 2", async () => {
 
     }
     await delay(1000)
-    const r = await b.receive(createCancellationToken(1))
+    const r = await b.receive(createCancellationTokenSource(1).getToken())
     expect(r).toBe(1)
 
 })

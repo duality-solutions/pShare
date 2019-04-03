@@ -3,7 +3,7 @@ import childProcess from 'child_process'
 import os from 'os'
 import { app } from 'electron'
 import { initializeDynamicConfig } from '../configuration/initializeDynamicConfig';
-import { CancellationToken } from '../../shared/system/createCancellationToken';
+import { CancellationToken } from '../../shared/system/createCancellationTokenSource';
 import { DynamicdProcessInfo } from './DynamicdProcessInfo';
 import { DynamicdProcessStartOptions } from './DynamicdProcessStartOptions';
 import { createEventEmitter } from '../../shared/system/events/createEventEmitter';
@@ -15,7 +15,7 @@ declare global {
     const __static: string
 }
 export async function startDynamicd(cancellationToken: CancellationToken): Promise<DynamicdProcessInfo> {
-    const isDevelopment = process.env.NODE_ENV === 'development'
+    const isDevelopment = process.env.NODE_ENV === 'development'&&false
     if (isDevelopment) {
         console.log("not starting dynamicd as in development, this should be running in docker")
         return {

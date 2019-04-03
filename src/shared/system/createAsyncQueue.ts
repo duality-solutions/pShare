@@ -1,4 +1,4 @@
-import { CancellationToken } from "./createCancellationToken";
+import { CancellationToken } from "./createCancellationTokenSource";
 import { PromiseResolver } from "./PromiseResolver";
 import { createPromiseResolver } from "./createPromiseResolver";
 import { createQueue } from "./createQueue";

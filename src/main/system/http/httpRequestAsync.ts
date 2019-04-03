@@ -4,7 +4,7 @@ import * as net from 'net'
 import * as http from 'http'
 import * as https from 'https'
 import { streamToBufferAsync } from './streamToBufferAsync'
-import { createCancellationToken, CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationToken';
+import { createCancellationTokenSource, CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationTokenSource';
 import { blinq } from 'blinq'
 import * as isInSubnet from 'is-in-subnet';
 import { Stream } from 'stream';
@@ -120,7 +120,7 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
     if (!options) {
         throw Error("no parameters supplied");
     }
-    cancellationToken = cancellationToken || createCancellationToken();
+    cancellationToken = cancellationToken || createCancellationTokenSource().getToken();
 
 
     let opts: RequestOpts;

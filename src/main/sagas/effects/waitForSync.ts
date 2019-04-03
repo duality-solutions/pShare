@@ -2,7 +2,7 @@ import { call } from "redux-saga/effects";
 import { delay } from "redux-saga";
 import { RpcClient } from "../../RpcClient";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
-import { CancellationToken } from "../../../shared/system/createCancellationToken";
+import { CancellationToken } from "../../../shared/system/createCancellationTokenSource";
 export function waitForSync(rpcClient: RpcClient,cancellationToken: CancellationToken) {
     return call(function* () {
         while (!cancellationToken.isCancellationRequested) {

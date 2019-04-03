@@ -4,7 +4,7 @@ import { runQueuedCommand } from "./runQueuedCommand";
 import { unlockWallet } from "./unlockWallet";
 import { lockWallet } from "./lockWallet";
 import { createAsyncQueue } from "../../../../../shared/system/createAsyncQueue";
-import { createCancellationToken } from "../../../../../shared/system/createCancellationToken";
+import { createCancellationTokenSource } from "../../../../../shared/system/createCancellationTokenSource";
 import { QueuedCommandWithPassword } from "./QueuedCommandWithPassword";
 import { createPromiseResolver } from "../../../../../shared/system/createPromiseResolver";
 import { RpcClient } from "../../../../../main/RpcClient";
@@ -16,7 +16,7 @@ const createQueueRunner = async (rpcClient: RpcClient): Promise<LockedCommandQue
             queueControls.commandQueue.post(queuedCommand);
 
         },
-        cancel: () => queueControls.cancellationToken.cancel(),
+        cancel: () => queueControls.cancel(),
         get finished() { return queueControls.finishedResolver.promise },
         restart: async () => {
             if (!queueControls.finishedResolver.complete) {
@@ -39,7 +39,8 @@ export const getLockedCommandQueue = async (rpcClient: RpcClient) => {
 }
 async function getQueueControls(rpcClient: RpcClient) {
     console.log("gqc")
-    const cancellationToken = createCancellationToken();
+    const cancellationTokenSource = createCancellationTokenSource();
+    const cancellationToken = cancellationTokenSource.getToken()
     cancellationToken.register(() => console.log("queueControls cancelled"))
     const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
 
@@ -71,12 +72,13 @@ async function getQueueControls(rpcClient: RpcClient) {
                 try {
                     await runQueuedCommand(rpcClient, queuedCommand);
                     while (!cancellationToken.isCancellationRequested) {
-                        const localCancTok = cancellationToken.createDependentToken(10000);
+                        const localCancTokSrc = cancellationToken.createLinkedTokenSource(10000);
+                        const tok = localCancTokSrc.getToken();
                         try {
-                            queuedCommand = await commandQueue.receive(localCancTok);
+                            queuedCommand = await commandQueue.receive(tok);
                         }
                         catch (err) {
-                            if (localCancTok.isCancellationRequested) {
+                            if (tok.isCancellationRequested) {
                                 if (cancellationToken.isCancellationRequested) {
                                     console.warn("locked command queue cancelled");
                                 }
@@ -104,6 +106,6 @@ async function getQueueControls(rpcClient: RpcClient) {
         finishedResolver.resolve();
     };
     runQueue();
-    return { finishedResolver, commandQueue, cancellationToken };
+    return { finishedResolver, commandQueue, cancel: () => cancellationTokenSource.cancel() };
 }
 

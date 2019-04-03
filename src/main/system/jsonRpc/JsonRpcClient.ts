@@ -1,5 +1,5 @@
 import { httpRequestStringAsync } from "../http/httpRequestAsync"
-import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
+import { CancellationToken } from "../../../shared/system/createCancellationTokenSource";
 import { RpcClient } from "../../../main/RpcClient";
 import { RpcCommandOptions } from "./RpcCommandOptions";
 
@@ -58,7 +58,7 @@ export default class JsonRpcClient implements RpcClient {
     private async getJsonRpcResponse(options: RpcCommandOptions, body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
 
         const timeout = options.timeout != null ? options.timeout : this.opts.timeout;
-        const timeoutToken = createCancellationToken(timeout, cancellationToken);
+        const timeoutToken = cancellationToken.createLinkedTokenSource(timeout).getToken();
         const response =
             await httpRequestStringAsync({
                 body: JSON.stringify(body),
