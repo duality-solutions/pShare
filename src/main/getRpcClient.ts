@@ -1,13 +1,11 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
 import { delay } from '../shared/system/delay';
 import { RpcClient, RpcClientWrapper } from './RpcClient';
-import { createAsyncQueue } from '../shared/system/createAsyncQueue';
-import { QueuedCommand } from './QueuedCommand';
-import { createPromiseResolver } from '../shared/system/createPromiseResolver';
 import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
 import { RpcCommandOptions } from './system/jsonRpc/RpcCommandOptions';
+import { wrapAsyncFuncWithQueue } from '../shared/system/wrapAsyncFuncWithQueue';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -23,46 +21,15 @@ export function getRpcClient(cancellationToken: CancellationToken) {
 
 async function createQueuedRpcClient(masterCancellationToken: CancellationToken): Promise<RpcClientWrapper> {
     const cancellationToken = createCancellationToken(undefined, masterCancellationToken)
-    //cancellationToken.register(()=>console.warn("rpcClient cancellation was requested"))
-    const bb = createAsyncQueue<QueuedCommand>();
     const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
-    (async () => {
-        while (!cancellationToken.isCancellationRequested) {
-
-            let qc: QueuedCommand;
-            try {
-                qc = await bb.receive(cancellationToken)
-            } catch (err) {
-                if (cancellationToken.isCancellationRequested) {
-                    console.warn("queuedRpcClient was cancelled")
-                    break
-                }
-                else {
-                    throw err
-                }
-            }
-            const { action, promiseResolver: { resolve, reject } } = qc
-            try {
-                resolve(action(rpcClient))
-            }
-            catch (err) {
-                reject(err)
-            }
-
-        }
-        console.log("QueuedRpcClient cancelled")
-    })()
+    const queuedCommand = wrapAsyncFuncWithQueue(rpcClient.command)
     return {
         command<T>(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
             const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
             const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
             const args = typeof methodOrOptions === "string" ? params : params.slice(1)
-            const promiseResolver = createPromiseResolver<T>()
-            bb.post({ action: client => client.command(options, method, ...args), promiseResolver });
-            return promiseResolver.promise
+            return queuedCommand(options, method, ...args)
         },
-        //cancel: () => cancellationToken.cancel(),
-
         processInfo
     }
 }
