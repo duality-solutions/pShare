@@ -1,5 +1,4 @@
 //import { getRpcClient } from "../../../../getRpcClient";
-import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 import { LockedCommandQueueRunner } from "./LockedCommandQueueRunner";
 import { runQueuedCommand } from "./runQueuedCommand";
 import { unlockWallet } from "./unlockWallet";
@@ -41,10 +40,10 @@ export const getLockedCommandQueue = async (rpcClient: RpcClient) => {
 async function getQueueControls(rpcClient: RpcClient) {
     console.log("gqc")
     const cancellationToken = createCancellationToken();
-    cancellationToken.register(()=>console.log("queueControls cancelled"))
+    cancellationToken.register(() => console.log("queueControls cancelled"))
     const commandQueue = createAsyncQueue<QueuedCommandWithPassword>();
 
-    const rpcCommandFunc: RpcCommandFunc = (rpcCommand, ...args) => rpcClient.command(rpcCommand, ...args);
+    //const rpcCommandFunc: RpcCommandFunc = (rpcCommand, ...args) => rpcClient.command(rpcCommand, ...args);
     const finishedResolver = createPromiseResolver<void>();
     const runQueue = async () => {
         while (!cancellationToken.isCancellationRequested) {
@@ -63,14 +62,14 @@ async function getQueueControls(rpcClient: RpcClient) {
                 const pw = queuedCommand.password;
                 let currentPassword: string = pw;
                 try {
-                    await unlockWallet(rpcCommandFunc, pw);
+                    await unlockWallet(rpcClient, pw);
                 }
                 catch (err) {
                     queuedCommand.promiseResolver.reject(err);
                     break;
                 }
                 try {
-                    await runQueuedCommand(rpcCommandFunc, queuedCommand);
+                    await runQueuedCommand(rpcClient, queuedCommand);
                     while (!cancellationToken.isCancellationRequested) {
                         const localCancTok = cancellationToken.createDependentToken(10000);
                         try {
@@ -91,14 +90,14 @@ async function getQueueControls(rpcClient: RpcClient) {
                         if (queuedCommand.password !== currentPassword) {
                             break;
                         }
-                        await runQueuedCommand(rpcCommandFunc, queuedCommand);
+                        await runQueuedCommand(rpcClient, queuedCommand);
                     }
                 }
                 catch (err) {
                     throw err;
                 }
                 finally {
-                    await lockWallet(rpcCommandFunc);
+                    await lockWallet(rpcClient);
                 }
             }
         }

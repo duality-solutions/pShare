@@ -44,7 +44,7 @@ export function* initializationSaga(rpcClientProvider: () => Promise<RpcClientWr
         let syncState: SyncState;
         try {
             // fetch the state from dynamicd
-            syncState = yield call(() => client.command("syncstatus"));
+            syncState = yield call(() => client.command({ timeout: 5000 }, "syncstatus"));
         }
         catch (e) {
             // oh no, something bad

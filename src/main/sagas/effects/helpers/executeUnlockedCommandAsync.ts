@@ -1,10 +1,9 @@
-import { RpcCommandFunc } from "../../../RpcCommandFunc";
 import { createPromiseResolver } from "../../../../shared/system/createPromiseResolver";
 import { getLockedCommandQueue } from "./lockedCommandQueue/getLockedCommandQueue";
 import { QueuedCommandWithPassword } from "./lockedCommandQueue/QueuedCommandWithPassword";
 import { RpcClient } from "../../../../main/RpcClient";
 
-export const executeUnlockedCommandAsync = async <T>(rpcClient: RpcClient, walletPassword: string, unlockedAction: (command: RpcCommandFunc) => Promise<T>): Promise<T> => {
+export const executeUnlockedCommandAsync = async <T>(rpcClient: RpcClient, walletPassword: string, unlockedAction: (client:RpcClient) => Promise<T>): Promise<T> => {
     const queueRunner = await getLockedCommandQueue(rpcClient)
     const promiseResolver = createPromiseResolver<T>()
     const queuedCommand: QueuedCommandWithPassword = { action: unlockedAction, promiseResolver, password: walletPassword }

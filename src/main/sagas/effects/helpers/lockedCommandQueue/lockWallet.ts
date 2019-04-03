@@ -1,8 +1,8 @@
-import { RpcCommandFunc } from "../../../../RpcCommandFunc";
-export async function lockWallet(bitcoinCommand: RpcCommandFunc) {
+import { RpcClient } from "../../../../RpcClient";
+export async function lockWallet(client: RpcClient) {
     for (let i = 0; ; ++i) {
         try {
-            await bitcoinCommand("walletlock");
+            await client.command("walletlock");
         }
         catch (err) {
             if (/^ETIMEDOUT$/.test(err.message)) {

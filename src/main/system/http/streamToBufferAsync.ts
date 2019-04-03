@@ -1,8 +1,11 @@
 import { Buffer } from 'buffer'
-import { Stream } from 'stream';
+import { Stream } from 'stream'
+import { CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationToken';
 
-export function streamToBufferAsync(stream: Stream):Promise<Buffer> {
-    return new Promise((resolve, reject) => {
+
+export async function streamToBufferAsync(stream: Stream, cancellationToken: CancellationToken): Promise<Buffer> {
+    let cancellationTokenRegistration: CancellationTokenRegistration
+    const prom = new Promise<Buffer>((resolve, reject) => {
         let buffers: Buffer[] = [];
         stream.on('data', (buffer) => {
             buffers.push(buffer);
@@ -11,5 +14,12 @@ export function streamToBufferAsync(stream: Stream):Promise<Buffer> {
             resolve(Buffer.concat(buffers));
         });
         stream.on("error", e => reject(e));
+        cancellationTokenRegistration = cancellationToken.register(() => reject("cancelled"));
     });
+
+    try {
+        return await prom
+    } finally {
+        cancellationTokenRegistration!.unregister()
+    }
 }

@@ -1,7 +1,7 @@
 import { mergePropertiesAsReadOnly } from "./mergePropertiesAsReadOnly";
 import { createPromiseResolver } from "./createPromiseResolver";
 
-interface CancellationTokenRegistration {
+export interface CancellationTokenRegistration {
     unregister: () => void
 }
 interface CancellationTokenMethods {
@@ -52,7 +52,11 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
                     }
                 })
                 .then(v => callback(v))
-                .catch(err => console.log("unregistered : " + err.message))
+                .catch(err => {
+                    if (err.message !== "unregistered") {
+                        throw err
+                    }
+                })
 
         registrationPromises.add(completionPromise)
         return {

@@ -7,6 +7,7 @@ import { createPromiseResolver } from '../shared/system/createPromiseResolver';
 import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
+import { RpcCommandOptions } from './system/jsonRpc/RpcCommandOptions';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -42,7 +43,7 @@ async function createQueuedRpcClient(masterCancellationToken: CancellationToken)
             }
             const { action, promiseResolver: { resolve, reject } } = qc
             try {
-                resolve(action(rpcClient.command))
+                resolve(action(rpcClient))
             }
             catch (err) {
                 reject(err)
@@ -52,9 +53,12 @@ async function createQueuedRpcClient(masterCancellationToken: CancellationToken)
         console.log("QueuedRpcClient cancelled")
     })()
     return {
-        command: <T>(command: string, ...args: any[]): Promise<T> => {
+        command<T>(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
+            const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
+            const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
+            const args = typeof methodOrOptions === "string" ? params : params.slice(1)
             const promiseResolver = createPromiseResolver<T>()
-            bb.post({ action: cmd => cmd(command, ...args), promiseResolver });
+            bb.post({ action: client => client.command(options, method, ...args), promiseResolver });
             return promiseResolver.promise
         },
         //cancel: () => cancellationToken.cancel(),
@@ -71,7 +75,7 @@ async function createRpcClient(cancellationToken: CancellationToken): Promise<{ 
         port: "33650",
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword,
-        timeout: 60000
+        timeout: 30000
     }, cancellationToken);
 
     return { client, processInfo }
@@ -82,7 +86,7 @@ async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: Ca
     //try every 2s until we get a non-error
     for (; ;) {
         try {
-            await client.command("getinfo");
+            await client.command({ timeout: 5000 }, "getinfo");
             break;
         }
         catch (err) {
@@ -100,7 +104,12 @@ async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: Ca
     console.log("rpc call successful. client is ready")
     //client is ready to be used
     return {
-        command: (command: string, ...args: any[]) => client.command(command, ...args),
+        command(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
+            const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
+            const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
+            const args = typeof methodOrOptions === "string" ? params : params.slice(1)
+            return client.command(options, method, ...args)
+        }
         //cancel: () => { },
         //dispose: () => { }
     }

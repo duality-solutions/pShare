@@ -5,7 +5,6 @@ import { RpcClient } from "../RpcClient";
 import { LinkResponse } from "../../dynamicdInterfaces/links/LinkResponse";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { MainRootState } from "../reducers";
-import { RpcCommandFunc } from "../RpcCommandFunc";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
@@ -40,7 +39,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingAcceptLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (client) => client.command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
@@ -49,7 +48,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (client) => client.command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
@@ -79,7 +78,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
         let response: LinkDeniedResponse | {};
 
         try {
-            response = yield unlockedCommandEffect(rpcClient, command => command("link", "denied", userName))
+            response = yield unlockedCommandEffect(rpcClient, client => client.command("link", "denied", userName))
 
         } catch (err) {
             if (!/^DeniedLinkList: ERRCODE: 5604/.test(err.message)) {
@@ -183,7 +182,7 @@ const getCurrentUser = () =>
 
 function* rpcLinkCommand<T extends Link>(
     rpcClient: RpcClient,
-    cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
+    cmd: (client: RpcClient) => Promise<LinkResponse<T>>,
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
 ) {

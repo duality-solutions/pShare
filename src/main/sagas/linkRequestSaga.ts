@@ -45,7 +45,7 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
 
         try {
             response =
-                yield unlockedCommandEffect(rpcClient,command => command("link", "request", requestor, recipient, inviteMessage))
+                yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", requestor, recipient, inviteMessage))
 
         } catch (err) {
             if (/^BDAP_SEND_LINK_RPC_ERROR\: ERRCODE\: 4001/.test(err.message)) {
@@ -86,7 +86,7 @@ interface BdapAccount {
 }
 
 const getMyBdapAccount = (rpcClient: RpcClient) => call(function* () {
-    
+
     const myBdapAccountsResponse: Record<string, BdapAccount> = yield call(() => rpcClient.command("mybdapaccounts"))
     const myBdapAccounts = entries(myBdapAccountsResponse).select(([, v]) => v)
     const user: UserState = yield select((state: MainRootState) => state.user)
