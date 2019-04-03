@@ -2,7 +2,7 @@ import { PromiseResolver } from "./PromiseResolver";
 import { createPromiseResolver } from "./createPromiseResolver";
 import { createQueue } from "./createQueue";
 import { createAsyncQueue } from "./createAsyncQueue";
-export function wrapAsyncFuncWithQueue<T extends (...args: any[]) => Promise<TP>, TP = void>(func: T, maxDop: number = 1) {
+export function asyncFuncWithMaxdop<T extends (...args: any[]) => Promise<TP>, TP = void>(func: T, maxDop: number = 1) {
     const dopTokens = createAsyncQueue<{}>()
     for (var i = 0; i < maxDop; ++i) {
         dopTokens.post({})

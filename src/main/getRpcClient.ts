@@ -5,7 +5,7 @@ import { CancellationToken } from '../shared/system/createCancellationTokenSourc
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
 import { RpcCommandOptions } from './system/jsonRpc/RpcCommandOptions';
-import { wrapAsyncFuncWithQueue } from '../shared/system/wrapAsyncFuncWithQueue';
+import { asyncFuncWithMaxdop } from '../shared/system/asyncFuncWithMaxdop';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -23,7 +23,7 @@ async function createQueuedRpcClient(masterCancellationToken: CancellationToken)
     const cancellationTokenSource = masterCancellationToken.createLinkedTokenSource()
     const cancellationToken = cancellationTokenSource.getToken()
     const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
-    const queuedCommand = wrapAsyncFuncWithQueue(rpcClient.command)
+    const queuedCommand = asyncFuncWithMaxdop(rpcClient.command)
     return {
         command<T>(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
             const options = typeof methodOrOptions === "string" ? {} : methodOrOptions

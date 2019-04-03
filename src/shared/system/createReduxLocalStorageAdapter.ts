@@ -2,7 +2,7 @@ import pify from 'pify';
 import jsonStorage from 'electron-json-storage';
 import * as path from 'path'
 import { app } from 'electron'
-import { wrapAsyncFuncWithQueue } from "./wrapAsyncFuncWithQueue";
+import { asyncFuncWithMaxdop } from "./asyncFuncWithMaxdop";
 
 const storage = pify(jsonStorage);
 const pathToDataDir = path.join(app.getPath("home"), ".pshare")
@@ -19,7 +19,7 @@ async function storageImpl(operationAsync: () => Promise<any>, callback: (error:
   callback(null, v);
 }
 
-const s = wrapAsyncFuncWithQueue(storageImpl)
+const s = asyncFuncWithMaxdop(storageImpl)
 
 class ReduxLocalStorageAdapter {
   async put<T>(key: string, value: T, callback: (error: Error | null, v?: T) => void) {
