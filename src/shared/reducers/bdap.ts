@@ -7,15 +7,17 @@ import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { AppActions } from "../actions/app";
 import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
+import { DeniedLink } from "../../dynamicdInterfaces/DeniedLink";
 
 export interface BdapState {
     users: GetUserInfo[]
     pendingAcceptLinks: PendingLink[]
     pendingRequestLinks: PendingLink[]
     completeLinks: Link[]
+    deniedLinks: DeniedLink[]
     currentUser?: GetUserInfo
 }
-const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [] };
+const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [] };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
 // export interface BdapUser {
 //     userName: string
@@ -45,6 +47,9 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions | AppA
         case getType(BdapActions.getCompleteLinksSuccess):
             const completeLinks = action.payload
             return { ...state, completeLinks }
+        case getType(BdapActions.getDeniedLinksSuccess):
+            const deniedLinks = action.payload
+            return { ...state, deniedLinks }
         case getType(AppActions.initializeApp):
             return {
                 ...deleteOptionalProperty(state, "currentUser"),

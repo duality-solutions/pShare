@@ -1,7 +1,7 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import { Dashboard } from "../components/dashboard";
+import  Dashboard  from "../containers/dashboard";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";
@@ -57,7 +57,7 @@ const routingTable = {
 const dashboardRoutingTable = {
     myLinks: route("/Dashboard/MyLinks", MyLinks),
     invites: route("/Dashboard/Invites", Invites),
-    addLinks: route("/Dashboard/AddLinks", AddLinks)
+    addLinks: route("/Dashboard/AddLinks", AddLinks),
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

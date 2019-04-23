@@ -7,8 +7,8 @@ interface StyledPshareSpinnerProps {
         width?: number,
 }
 
-const StyledOverlay = styled('div') <{ opaque?: boolean }>`
-  position: fixed;
+const StyledOverlay = styled('div') <{ opaque?: boolean, position?: string }>`
+  position: ${props => props.position || 'fixed'};
   z-index: 999;
   height: 100%;
   width: 100%;
@@ -92,9 +92,9 @@ const StyledPolygon3 = styled('polygon')`
         opacity: 0.05;
 `
 
-const LoadingSpinner: React.FunctionComponent<{ active?: boolean, label?: string, size?: number, opaque?: boolean }> = ({ active, label, size, opaque }) =>
+const LoadingSpinner: React.FunctionComponent<{ active?: boolean, label?: string, size?: number, opaque?: boolean, position?: string }> = ({ active, label, size, opaque, position }) =>
         <> {active &&
-                <StyledOverlay opaque={opaque}>
+                <StyledOverlay opaque={opaque} position={position}>
                         <Container margin="25% 0 auto 0">
                                 <StyledPshareSpinner width={size || 100}>
                                         <StyledPshareSpinnerContainer>
@@ -108,11 +108,12 @@ const LoadingSpinner: React.FunctionComponent<{ active?: boolean, label?: string
                                         </StyledPshareSpinnerContainer>
                                 </StyledPshareSpinner>
                                 <Box display="flex" width="100%" align="center" direction="row">
-                                        <Box display="flex" direction="column" background="#f2f2f2" width="0" minWidth="30%" borderRadius="4px" padding="0.5em">
-                                                <Text align="center" margin="0">
-                                                        {label}
-                                                </Text>
-                                        </Box>
+                                        {label && 
+                                                <Box display="flex" direction="column" background="#f2f2f2" width="0" minWidth="30%" borderRadius="4px" padding="0.5em">
+                                                        <Text align="center" margin="0">
+                                                                {label}
+                                                        </Text>
+                                                </Box>}
                                 </Box>
                         </Container>
                 </StyledOverlay>}
