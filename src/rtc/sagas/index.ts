@@ -1,9 +1,9 @@
-import { rtcAnswerPeerSaga } from "./rtcAnswerPeerSaga";
-import { rtcOfferPeerSaga } from "./rtcOfferPeerSaga";
+import { requestFileSaga } from "./requestFileSaga";
 
 export const getRootSaga = () => {
     return [
-        () => rtcAnswerPeerSaga(),
-        () => rtcOfferPeerSaga()
+        // () => rtcAnswerPeerSaga(),
+        // () => rtcOfferPeerSaga()
+        () => requestFileSaga()
     ]
 }

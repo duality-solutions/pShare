@@ -10,6 +10,7 @@ export interface FileInfo{
     size: number;
 }
 export interface LinkMessageEnvelope<T> {
+    type:string
     sessionDescription: any,
     payload: T,
     timestamp: number,
@@ -18,7 +19,7 @@ export interface LinkMessageEnvelope<T> {
 
 export const FileSharingActions = {
     requestFile: createStandardAction('fileSharing/REQUEST_FILE')<FileRequest>(),
-    sendOfferEnvelope: createStandardAction('fileSharing/SEND_OFFER_ENVELOPE')<LinkMessageEnvelope<FileRequest>>(),
+    sendLinkMessage: createStandardAction('fileSharing/SEND_LINK_MESSAGE')<LinkMessageEnvelope<any>>(),
     offerEnvelopeReceived: createStandardAction('fileSharing/OFFER_ENVELOPE_RECEIVED')<LinkMessageEnvelope<FileRequest>>(),
     answerEnvelopeReceived: createStandardAction('fileSharing/ANSWER_ENVELOPE_RECEIVED')<LinkMessageEnvelope<FileInfo>>(),
 };

@@ -84,3 +84,6 @@ function getLinkMessages(rpcClient: RpcClient, userName: string, messageType: st
         return records;
     });
 }
+
+
+
