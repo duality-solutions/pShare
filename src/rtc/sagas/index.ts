@@ -1,9 +1,10 @@
-import { requestFileSaga } from "./requestFileSaga";
+import { requestFileSaga, processIncomingOfferSaga } from "./requestFileSaga";
 
 export const getRootSaga = () => {
     return [
         // () => rtcAnswerPeerSaga(),
         // () => rtcOfferPeerSaga()
-        () => requestFileSaga()
+        () => requestFileSaga(),
+        () => processIncomingOfferSaga()
     ]
 }
