@@ -10,6 +10,8 @@ export async function lockWallet(bitcoinCommand: RpcCommandFunc) {
                     console.log("timeout waiting for walletlock, trying again");
                     continue;
                 }
+            } else {
+                console.log("no timeout error : ", err.message)
             }
             throw err;
         }

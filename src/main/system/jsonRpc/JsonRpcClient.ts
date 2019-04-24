@@ -52,6 +52,7 @@ export default class JsonRpcClient implements RpcClient {
 
     private async getJsonRpcResponse(body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
         const timeoutToken = createCancellationToken(this.opts.timeout, cancellationToken);
+        console.log(`Starting RPC request : ${JSON.stringify(body)}`)
         const response =
             await httpRequestStringAsync({
                 body: JSON.stringify(body),
