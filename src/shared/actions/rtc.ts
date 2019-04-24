@@ -15,7 +15,9 @@ export const RtcActions = {
     fileReceiveFailed: createStandardAction('rtc/FILE_RECEIVE_FAILED')<void>(),
 
     textChanged: createStandardAction('rtc/TEXT_CHANGED')<string>(),
+
 }
 
 export type RtcActions = ActionType<typeof RtcActions>;
+
 
