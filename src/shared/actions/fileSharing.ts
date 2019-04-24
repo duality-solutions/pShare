@@ -4,7 +4,7 @@ export interface FileRequest {
     requestorUserName: string
     fileId: string
 }
-export interface OfferEnvelope<T> {
+export interface LinkMessageEnvelope<T> {
     sessionDescription: any,
     payload: T,
     timestamp: number,
@@ -13,7 +13,8 @@ export interface OfferEnvelope<T> {
 
 export const FileSharingActions = {
     requestFile: createStandardAction('fileSharing/REQUEST_FILE')<FileRequest>(),
-    sendOfferEnvelope: createStandardAction('fileSharing/SEND_OFFER_ENVELOPE')<OfferEnvelope<FileRequest>>(),
-    offerEnvelopeReceived: createStandardAction('fileSharing/OFFER_ENVELOPE_RECEIVED')<OfferEnvelope<FileRequest>>(),
+    sendOfferEnvelope: createStandardAction('fileSharing/SEND_OFFER_ENVELOPE')<LinkMessageEnvelope<FileRequest>>(),
+    offerEnvelopeReceived: createStandardAction('fileSharing/OFFER_ENVELOPE_RECEIVED')<LinkMessageEnvelope<FileRequest>>(),
+    answerEnvelopeReceived: createStandardAction('fileSharing/ANSWER_ENVELOPE_RECEIVED')<LinkMessageEnvelope<FileRequest>>(),
 };
 export type FileSharingActions = ActionType<typeof FileSharingActions>;

@@ -1,6 +1,6 @@
 import { takeEvery, call, put, select } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
-import { FileSharingActions, OfferEnvelope, FileRequest } from "../../shared/actions/fileSharing";
+import { FileSharingActions, LinkMessageEnvelope, FileRequest } from "../../shared/actions/fileSharing";
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
 import { RpcClient } from "../../main/RpcClient";
@@ -13,7 +13,7 @@ export function* requestFileSaga() {
     yield takeEvery(getType(FileSharingActions.requestFile), function* (action: ActionType<typeof FileSharingActions.requestFile>) {
         const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         const offer: RTCSessionDescription = yield call(() => peer.createOffer())
-        const offerEnvelope: OfferEnvelope<FileRequest> = { sessionDescription: offer.toJSON(), payload: action.payload, id: uuid(), timestamp: Math.trunc((new Date()).getTime()) }
+        const offerEnvelope: LinkMessageEnvelope<FileRequest> = { sessionDescription: offer.toJSON(), payload: action.payload, id: uuid(), timestamp: Math.trunc((new Date()).getTime()) }
         yield put(FileSharingActions.sendOfferEnvelope(offerEnvelope))
 
     })

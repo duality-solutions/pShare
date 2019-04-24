@@ -1,5 +1,5 @@
-import { call, put, select, take } from "redux-saga/effects";
-import { FileSharingActions, OfferEnvelope, FileRequest } from "../../shared/actions/fileSharing";
+import { call, put, select, take, fork } from "redux-saga/effects";
+import { FileSharingActions, LinkMessageEnvelope, FileRequest } from "../../shared/actions/fileSharing";
 import { RpcClient } from "../RpcClient";
 import { MainRootState } from "../reducers";
 import { entries } from "../../shared/system/entries";
@@ -9,16 +9,33 @@ import { delay } from "redux-saga";
 import { BdapActions } from "../../shared/actions/bdap";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getType } from "typesafe-actions";
+import { Action } from "redux";
 //runs in main
 export function* scanForOffersSaga(rpcClient: RpcClient) {
     yield take(getType(BdapActions.initialize))
 
     console.log("scanForOfferSaga starting")
+
+    yield fork(() => scanForLinkMessages(rpcClient, "pshare-offer", function* (lm: LinkMessage) {
+        const offerEnvelope: LinkMessageEnvelope<FileRequest> = JSON.parse(lm.message);
+        yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
+    }))
+    // yield fork(() => scanForLinkMessages(rpcClient, "pshare-answer", function* (lm: LinkMessage) {
+    //     yield delay(0)
+
+    //     // const offerEnvelope: OfferEnvelope<FileRequest> = JSON.parse(lm.message);
+    //     // yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
+    // }))
+
     // if(true){
     //     return
     // }
+
+}
+
+function* scanForLinkMessages<T extends Action<any>>(rpcClient: RpcClient, messageType: string, messageHandler: (msg: LinkMessage) => IterableIterator<any>) {
     const userName: string = yield select((state: MainRootState) => state.user.userName);
-    const existingRecords: Enumerable<LinkMessage> = yield getOfferMessages(rpcClient, userName);
+    const existingRecords: Enumerable<LinkMessage> = yield getLinkMessages(rpcClient, userName, messageType);
     const processedMessages = new Set<string>();
     for (const r of existingRecords) {
         processedMessages.add(r.message_id);
@@ -27,23 +44,22 @@ export function* scanForOffersSaga(rpcClient: RpcClient) {
         yield delay(10000);
         let records: Enumerable<LinkMessage>;
         try {
-            records = yield getOfferMessages(rpcClient, userName);
+            records = yield getLinkMessages(rpcClient, userName, messageType);
         } catch (e) {
             console.log("error when getOfferMessages : ", e)
 
             continue
         }
-        for (const r of records) {
-            if (!processedMessages.has(r.message_id)) {
-                processedMessages.add(r.message_id);
-                const offerEnvelope: OfferEnvelope<FileRequest> = JSON.parse(r.message);
-                yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
+        for (const msg of records) {
+            if (!processedMessages.has(msg.message_id)) {
+                processedMessages.add(msg.message_id);
+                yield* messageHandler(msg)
             }
         }
         const expiredMessageIds = blinq(processedMessages)
             .leftOuterJoin(records, p => p, r => r.message_id, (p, r) => [p, r])
-            .where(([p, r]) => typeof r === 'undefined')
-            .select(([p, r]) => p);
+            .where(([, r]) => typeof r === 'undefined')
+            .select(([p,]) => p);
         for (const mess_id in expiredMessageIds) {
             processedMessages.delete(mess_id);
         }
@@ -59,13 +75,13 @@ interface LinkMessage {
     record_num: number;
 }
 type LinkGetAllMessagesResponse = Record<string, LinkMessage>;
-function getOfferMessages(rpcClient: RpcClient, userName: string) {
+function getLinkMessages(rpcClient: RpcClient, userName: string, messageType: string) {
     return call(function* () {
         const response: LinkGetAllMessagesResponse =
             yield unlockedCommandEffect(
                 rpcClient,
-                command => command("link", "getmessages", userName, "pshare-offer"))
-        console.log("getmessages success")
+                command => command("link", "getmessages", userName, messageType))
+        console.log(`getLinkMessages for ${messageType} : success`)
 
         const records = entries(response)
             .select(([, v]) => v);

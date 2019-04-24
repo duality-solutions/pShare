@@ -1,17 +1,17 @@
 import { RpcCommandFunc } from "../../../../RpcCommandFunc";
-export async function lockWallet(bitcoinCommand: RpcCommandFunc) {
+export async function lockWallet(rpcCommand: RpcCommandFunc) {
     for (let i = 0; ; ++i) {
         try {
-            await bitcoinCommand("walletlock");
+            await rpcCommand("walletlock");
         }
         catch (err) {
-            if (/^ETIMEDOUT$/.test(err.message)) {
+            if (/(^ETIMEDOUT$)|(^socket hang up$)/.test(err.message)) {
                 if (i < 5) {
-                    console.log("timeout waiting for walletlock, trying again");
+                    console.log("timeout/hangup waiting for walletlock, trying again");
                     continue;
                 }
             } else {
-                console.log("no timeout error : ", err.message)
+                console.log("no timeout error : ", err.message, err)
             }
             throw err;
         }
