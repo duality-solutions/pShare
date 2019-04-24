@@ -1,5 +1,5 @@
 import { call, put, select, take, fork } from "redux-saga/effects";
-import { FileSharingActions, LinkMessageEnvelope, FileRequest } from "../../shared/actions/fileSharing";
+import { FileSharingActions, LinkMessageEnvelope, FileRequest, FileInfo } from "../../shared/actions/fileSharing";
 import { RpcClient } from "../RpcClient";
 import { MainRootState } from "../reducers";
 import { entries } from "../../shared/system/entries";
@@ -20,16 +20,12 @@ export function* scanForLinkMessagesSaga(rpcClient: RpcClient) {
         const offerEnvelope: LinkMessageEnvelope<FileRequest> = JSON.parse(lm.message);
         yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
     }))
-    // yield fork(() => scanForLinkMessages(rpcClient, "pshare-answer", function* (lm: LinkMessage) {
-    //     yield delay(0)
+    yield delay(5000)
+    yield fork(() => scanForLinkMessages(rpcClient, "pshare-answer", function* (lm: LinkMessage) {
+        const answerEnvelope: LinkMessageEnvelope<FileInfo> = JSON.parse(lm.message);
+        yield put(FileSharingActions.answerEnvelopeReceived(answerEnvelope));
+    }))
 
-    //     // const offerEnvelope: OfferEnvelope<FileRequest> = JSON.parse(lm.message);
-    //     // yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
-    // }))
-
-    // if(true){
-    //     return
-    // }
 
 }
 
