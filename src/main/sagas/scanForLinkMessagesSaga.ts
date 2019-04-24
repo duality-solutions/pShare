@@ -11,7 +11,7 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getType } from "typesafe-actions";
 import { Action } from "redux";
 //runs in main
-export function* scanForOffersSaga(rpcClient: RpcClient) {
+export function* scanForLinkMessagesSaga(rpcClient: RpcClient) {
     yield take(getType(BdapActions.initialize))
 
     console.log("scanForOfferSaga starting")
