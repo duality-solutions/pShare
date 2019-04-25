@@ -1,4 +1,4 @@
-import { take, call, put, select } from "redux-saga/effects";
+import { take, call, put, select, all } from "redux-saga/effects";
 import { RpcClientWrapper } from "../../RpcClient";
 import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
@@ -8,6 +8,7 @@ import { round } from "./round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 import { getWalletIsEncrypted } from "../effects/getWalletIsEncrypted";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
+import { RtcActions } from "../../../shared/actions/rtc";
 
 const round0 = round(0)
 
@@ -18,7 +19,10 @@ export function* initializationSaga(rpcClientProvider: () => Promise<RpcClientWr
     // synchronize renderer state with our state
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
-    yield take(getType(RootActions.appInitialized))
+    yield all({
+        appInitialized: take(getType(RootActions.appInitialized)),
+        rtcStoreReady: take(getType(RtcActions.rtcStoreReady))
+    })
     // grab the current application state
     const state: MainRootState = yield select();
     // this property will eventually be persisted

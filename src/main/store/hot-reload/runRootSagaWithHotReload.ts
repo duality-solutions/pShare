@@ -42,7 +42,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
 
             yield fork(storeHydrationSaga)
             yield fork(() => actionLoggingSaga("Main Store"))
-            yield fork(remoteLoggingSaga)
+            
             rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
             if (!rpcClient) {
                 throw Error("rpcClient is unexpectedly undefined")

@@ -8,5 +8,5 @@ export function indexRtc() {
     if (!isDevelopment) {
         divertConsoleToStore(store, "rtc")
     }
-    store.dispatch(StoreActions.hydratePersistedData())
+    //store.dispatch(StoreActions.hydratePersistedData())
 }
