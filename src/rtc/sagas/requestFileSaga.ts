@@ -51,7 +51,7 @@ export function* requestFileSaga() {
         const otherEndUser = action.payload.ownerUserName
         const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoryForUser(otherEndUser);
         const tempPath = path.join(temp, `__${uuid()}`)
-        debugger
+        //debugger
         try {
             yield receiveFileFromRTCPeer(tempPath, peer, fileInfo)
         } catch (err) {
