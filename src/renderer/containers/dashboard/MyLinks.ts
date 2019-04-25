@@ -8,8 +8,9 @@ import { blinq } from "blinq";
 import { BdapUser } from "../../system/BdapUser";
 import { push } from "connected-react-router";
 import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
+import { FileSharingActions } from "../../../shared/actions/fileSharing";
 
-
+const getUserName = createSelector([(state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined], (user) => user)
 const getUserList = createSelector(
     [
         (state: RendererRootState) => state.bdap.users,
@@ -61,10 +62,11 @@ const getUserList = createSelector(
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateProps => {
     return {
-        users: getUserList(state)
+        users: getUserList(state),
+        userName: getUserName(state)!
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...BdapActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...FileSharingActions, ...BdapActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyLinks)

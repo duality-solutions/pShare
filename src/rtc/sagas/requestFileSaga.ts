@@ -1,6 +1,6 @@
 import { takeEvery, call, put, take } from "redux-saga/effects";
 import { getType, ActionType, isActionOf } from "typesafe-actions";
-import { FileSharingActions, LinkMessageEnvelope, FileRequest, FileInfo } from "../../shared/actions/fileSharing";
+import { FileSharingActions, LinkMessageEnvelope, FileRequest, FileInfo, LinkRouteEnvelope } from "../../shared/actions/fileSharing";
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
 import { v4 as uuid } from 'uuid';
@@ -20,13 +20,19 @@ export function* requestFileSaga() {
             timestamp: Math.trunc((new Date()).getTime()),
             type: "pshare-offer"
         }
-        yield put(FileSharingActions.sendLinkMessage(offerEnvelope))
-        const answerEnvelope: LinkMessageEnvelope<FileInfo> = yield take(
+        console.log("sending offerEnvelope : ", JSON.stringify(offerEnvelope))
+        const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileRequest>> = {
+            recipient: action.payload.ownerUserName,
+            payload: offerEnvelope
+        }
+        yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
+        const answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> = yield take(
             (action: Action<any>) =>
                 isActionOf(FileSharingActions.answerEnvelopeReceived, action)
                 && action.payload.id === offerEnvelope.id,
         )
-        const answerSdp = answerEnvelope.sessionDescription
+        const { payload: { sessionDescription: answerSdp } } = answerAction
+
         const answerSessionDescription = new RTCSessionDescription(answerSdp);
         yield call(() => peer.setRemoteDescription(answerSessionDescription))
         yield call(() => peer.waitForDataChannelOpen())
@@ -53,8 +59,13 @@ export function* processIncomingOfferSaga() {
                 type: "pshare-answer",
                 payload: { path: "foo", size: 1, type: "application/octet-stream" }
             }
+            const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileInfo>> = {
+                recipient: fileRequest.requestorUserName,
+                payload: answerEnvelope
+            }
 
-            yield put(FileSharingActions.sendLinkMessage(answerEnvelope))
+
+            yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
             yield call(() => answerPeer.waitForDataChannelOpen())
             console.log("answer side has open data channel")
 

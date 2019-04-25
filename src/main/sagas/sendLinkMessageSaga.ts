@@ -7,13 +7,15 @@ import { getType, ActionType } from "typesafe-actions";
 //runs in main
 export function* sendLinkMessageSaga(rpcClient: RpcClient) {
     yield takeEvery(getType(FileSharingActions.sendLinkMessage), function* (action: ActionType<typeof FileSharingActions.sendLinkMessage>) {
-        const { payload: linkMessage } = action;
-        const { payload: fileRequest } = linkMessage;
-        const { ownerUserName: recipientUserName } = fileRequest;
+        const { payload: {recipient,payload:linkMessage} } = action;
+        
+        // const { payload: fileRequest } = linkMessage;
+        // const { ownerUserName: recipientUserName } = fileRequest;
         const userName: string = yield select((state: MainRootState) => state.user.userName);
-        const response: LinkSendMessageResponse = yield unlockedCommandEffect(rpcClient, command => command("link", "sendmessage", userName, recipientUserName, linkMessage.type, JSON.stringify(linkMessage)));
+        const messageJson = JSON.stringify(linkMessage)
+        const response: LinkSendMessageResponse = yield unlockedCommandEffect(rpcClient, command => command("link", "sendmessage", userName, recipient, linkMessage.type, messageJson));
         // todo
-        console.log(response);
+        console.log("link sendmessage response:",response);
     });
 }
 interface LinkSendMessageResponse {
