@@ -1,6 +1,9 @@
 import { takeEvery, call, put, take } from "redux-saga/effects";
 import { getType, ActionType, isActionOf } from "typesafe-actions";
-import { FileSharingActions, LinkMessageEnvelope, FileRequest, LinkRouteEnvelope } from "../../shared/actions/fileSharing";
+import { FileSharingActions } from "../../shared/actions/fileSharing";
+import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
+import { LinkMessageEnvelope } from "../../shared/actions/payloadTypes/LinkMessageEnvelope";
+import { FileRequest } from "../../shared/actions/payloadTypes/FileRequest";
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
 import { v4 as uuid } from 'uuid';

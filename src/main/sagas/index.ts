@@ -5,7 +5,7 @@ import { setWalletPasswordSaga } from "./setWalletPasswordSaga";
 import { mnemonicSaga } from "./mnemonicSaga";
 import { saveMnemonicSaga } from "./saveMnemonicSaga";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
-import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./translateMnemonicFileSaveFailedActionsToValidationMessages";
+import { translateMnemonicFileSaveFailedActionsToValidationMessagesSaga } from "./translateMnemonicFileSaveFailedActionsToValidationMessagesSaga";
 import { bdapSaga } from "./bdapSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
@@ -25,7 +25,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => setWalletPasswordSaga(rpcClient, true),
     () => mnemonicSaga(rpcClient),
     () => saveMnemonicSaga(browserWindowProvider),
-    () => translateMnemonicFileSaveFailedActionsToValidationMessages(),
+    () => translateMnemonicFileSaveFailedActionsToValidationMessagesSaga(),
     () => bdapSaga(rpcClient),
     () => scanForLinkMessagesSaga(rpcClient),
     () => sendLinkMessageSaga(rpcClient)

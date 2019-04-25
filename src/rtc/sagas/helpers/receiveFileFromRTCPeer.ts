@@ -3,7 +3,8 @@ import { toBuffer } from "../../../shared/system/bufferConversion";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import * as util from 'util'
 import * as fs from 'fs'
-import { FileInfo, FileRequest } from "../../../shared/actions/fileSharing";
+import { FileInfo } from "../../../shared/actions/payloadTypes/FileInfo";
+import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { RtcActions } from "../../../shared/actions/rtc";
 
 const fsOpenAsync = util.promisify(fs.open)

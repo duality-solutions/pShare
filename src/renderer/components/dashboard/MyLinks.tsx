@@ -8,7 +8,7 @@ import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { FileRequest } from "../../../shared/actions/fileSharing";
+import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 
 export interface MyLinksStateProps {
     users: BdapUser[],

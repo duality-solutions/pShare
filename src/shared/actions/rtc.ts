@@ -1,5 +1,5 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { FileRequest } from './fileSharing';
+import { FileRequest } from "./payloadTypes/FileRequest";
 import { FileReceiveProgress } from './payloadTypes/FileReceiveProgress';
 import { FileReceiveFailure } from './payloadTypes/FileReceiveFailure';
 
