@@ -18,7 +18,6 @@ import MyLinks from '../containers/dashboard/MyLinks';
 import { Invites } from '../containers/dashboard/Invites';
 import AddLinks from "../containers/dashboard/AddLinks";
 import RestoreAccount from '../containers/onboarding_restore/RestoreAccount';
-import { RtcPlayground } from '../containers/RtcPlayground';
 import RestoreWithMnemonicFile from '../containers/onboarding_restore/RestoreWithMnemonicFile';
 import RestoreWithPassphrase from '../containers/onboarding_restore/RestoreWithPassphrase';
 import RestoreSyncProgress from '../containers/onboarding_restore/RestoreSyncProgress';
@@ -46,7 +45,6 @@ const routingTable = {
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
     dashboard: route("/Dashboard", Dashboard, false),
     passwordGet: route("/PasswordGet", PasswordGet),
-    rtcPlayground: route("/Rtc", RtcPlayground),
     restoreAccount: route('/RestoreAccount',RestoreAccount),
     restoreWithPassphrase: route('/RestoreWithPassphrase', RestoreWithPassphrase),
     restoreWithMnemonicFile: route('/RestoreWithMnemonicFile', RestoreWithMnemonicFile),

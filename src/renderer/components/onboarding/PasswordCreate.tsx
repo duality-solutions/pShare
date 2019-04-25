@@ -13,8 +13,6 @@ import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import LoadingSpinner from "../ui-elements/LoadingSpinner";
 import { H1, Text } from "../ui-elements/Text";
-import { Link } from "react-router-dom";
-import { appRoutes } from "../../../renderer/routes/appRoutes";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
 
@@ -90,7 +88,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                 transitionEnter={false}
                 transitionLeave={false}>
                 <H1 align="center" colored fontWeight="600">Create Account</H1>
-                <Link style={({ position: "absolute", top: 0, left: 0 })} to={appRoutes.rtcPlayground.path}>webrtc playground</Link>
+                {/* <Link style={({ position: "absolute", top: 0, left: 0 })} to={appRoutes.rtcPlayground.path}>webrtc playground</Link> */}
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
