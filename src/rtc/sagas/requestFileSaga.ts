@@ -18,9 +18,10 @@ export function* requestFileSaga() {
     yield takeEvery(getType(FileSharingActions.requestFile), function* (action: ActionType<typeof FileSharingActions.requestFile>) {
         const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         const offer: RTCSessionDescription = yield call(() => peer.createOffer())
+        const fileRequest: FileRequest = action.payload;
         const offerEnvelope: LinkMessageEnvelope<FileRequest> = {
             sessionDescription: offer.toJSON(),
-            payload: action.payload,
+            payload: fileRequest,
             id: uuid(),
             timestamp: Math.trunc((new Date()).getTime()),
             type: "pshare-offer"
@@ -47,15 +48,15 @@ export function* requestFileSaga() {
         const tempPath = path.join(temp, `__${uuid()}`)
         //debugger
         try {
-            yield receiveFileFromRTCPeer(tempPath, peer, fileInfo)
+            yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
         } catch (err) {
-            yield put(RtcActions.fileReceiveFailed(prepareErrorForSerialization(err)))
+            yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
             return
         }
 
         const safeName = path.basename(path.normalize(fileInfo.path))
         yield safeRename(tempPath, incoming, safeName)
-        yield put(RtcActions.fileReceiveSuccess())
+        yield put(RtcActions.fileReceiveSuccess(fileRequest))
 
     })
 }

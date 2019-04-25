@@ -1,9 +1,10 @@
-import { call } from "redux-saga/effects";
+import { call, put } from "redux-saga/effects";
 import { toBuffer } from "../../../shared/system/bufferConversion";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import * as util from 'util'
 import * as fs from 'fs'
-import { FileInfo } from "../../../shared/actions/fileSharing";
+import { FileInfo, FileRequest } from "../../../shared/actions/fileSharing";
+import { RtcActions } from "../../../shared/actions/rtc";
 
 const fsOpenAsync = util.promisify(fs.open)
 const fsCloseAsync = util.promisify(fs.close)
@@ -12,7 +13,7 @@ const fsUnlinkAsync = util.promisify(fs.unlink)
 
 export const receiveFileFromRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
-        (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo) => call(function* () {
+        (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo, fileRequest: FileRequest) => call(function* () {
             try {
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
@@ -28,6 +29,7 @@ export const receiveFileFromRTCPeer =
                         if (total === fileNameInfo.size) {
                             break;
                         }
+                        yield put(RtcActions.fileReceiveProgress({ fileRequest, totalBytes: fileNameInfo.size, downloadedBytes: total }))
                     }
                 }
                 finally {
