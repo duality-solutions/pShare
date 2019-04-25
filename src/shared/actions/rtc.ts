@@ -1,15 +1,7 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
 import { FileRequest } from './fileSharing';
-
-interface FileReceiveFailure{
-    error:any,
-    fileRequest:FileRequest
-}
-interface FileReceiveProgress{
-    totalBytes:number
-    downloadedBytes:number
-    fileRequest:FileRequest
-}
+import { FileReceiveProgress } from './payloadTypes/FileReceiveProgress';
+import { FileReceiveFailure } from './payloadTypes/FileReceiveFailure';
 
 // ensure this is added to ./index.ts RootActions
 export const RtcActions = {
