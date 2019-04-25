@@ -1,6 +1,7 @@
 import { httpRequestStringAsync } from "../http/httpRequestAsync"
 import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
 import { RpcClient } from "../../../main/RpcClient";
+const isDevelopment = process.env.NODE_ENV === 'development'
 
 export interface RpcClientOptions {
     host: string
@@ -37,7 +38,7 @@ export default class JsonRpcClient implements RpcClient {
     }
     private async call(method: string, ...params: any[]) {
         let body: JsonRpcRequestBody = this.createJsonRpcBody(method, params);
-        
+
         return await this.getJsonRpcResponse(body, this.cancellationToken);
     }
 
@@ -52,7 +53,9 @@ export default class JsonRpcClient implements RpcClient {
 
     private async getJsonRpcResponse(body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
         const timeoutToken = createCancellationToken(this.opts.timeout, cancellationToken);
-        console.log(`Starting RPC request : ${JSON.stringify(body)}`)
+        if (!isDevelopment) {
+            console.log(`Starting RPC request : ${JSON.stringify(body)}`)
+        }
         const response =
             await httpRequestStringAsync({
                 body: JSON.stringify(body),
@@ -69,8 +72,10 @@ export default class JsonRpcClient implements RpcClient {
 
             const output = rs.length > limit ? `${rs.substr(0, limit)}...` : rs;
 
-            const rpcDebugMsg=`RPC request : ${JSON.stringify(body)}\nRPC response : ${output}`
-            console.log(rpcDebugMsg)
+            if (!isDevelopment) {
+                const rpcDebugMsg = `RPC request : ${JSON.stringify(body)}\nRPC response : ${output}`
+                console.log(rpcDebugMsg)
+            }
 
         }
 

@@ -3,7 +3,6 @@ import { toArrayBuffer } from "../../../shared/system/bufferConversion";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
 import { delay } from "redux-saga";
-import { FilePathInfo } from "../../system/webRtc/FilePathInfo";
 import * as util from 'util'
 import * as fs from 'fs'
 
@@ -17,23 +16,23 @@ const fsOpenAsync = util.promisify(fs.open);
 
 export const copyFileToRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
-        (filePathInfo: FilePathInfo, peer: RTCPeer<T, TData>) => call(function* () {
+        (filePath: string, peer: RTCPeer<T, TData>) => call(function* () {
             const dataChannel = peer.dataChannel;
             dataChannel.bufferedAmountLowThreshold = sendBufferedAmountLowThreshold;
             let totalRead = 0;
             let totalSent = 0;
-            const filePath = filePathInfo.path;
+            const { size: fileSize }: fs.Stats = yield call(() => fs.promises.stat(filePath))
             var buffer = new Buffer(fileReadBufferSize);
             const fileDescriptor: number = yield call(() => fsOpenAsync(filePath, "r"));
             for (; ;) {
                 console.log("reading chunk");
-                const amtToRead = Math.min(filePathInfo.size - totalRead, fileReadBufferSize);
+                const amtToRead = Math.min(fileSize - totalRead, fileReadBufferSize);
                 const { bytesRead }: {
                     bytesRead: number;
                 } = yield call(() => fsReadAsync(fileDescriptor, buffer, 0, amtToRead, totalRead));
                 console.log("chunk read");
                 if (bytesRead === 0) {
-                    if (totalSent !== filePathInfo.size || totalSent !== totalRead) {
+                    if (totalSent !== fileSize || totalSent !== totalRead) {
                         throw Error("transfer length mismatch");
                     }
                     break;

@@ -10,9 +10,9 @@ export const RtcActions = {
     setAnswerFromRemote: createStandardAction('rtc/SET_ANSWER_FROM_REMOTE')<void>(),
 
     fileSendSuccess: createStandardAction('rtc/FILE_SEND_SUCCESS')<void>(),
-    fileSendFailed: createStandardAction('rtc/FILE_SEND_FAILED')<void>(),
+    fileSendFailed: createStandardAction('rtc/FILE_SEND_FAILED')<{}>(),
     fileReceiveSuccess: createStandardAction('rtc/FILE_RECEIVE_SUCCESS')<void>(),
-    fileReceiveFailed: createStandardAction('rtc/FILE_RECEIVE_FAILED')<void>(),
+    fileReceiveFailed: createStandardAction('rtc/FILE_RECEIVE_FAILED')<{}>(),
 
     textChanged: createStandardAction('rtc/TEXT_CHANGED')<string>(),
 
