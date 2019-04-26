@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import React from "react";
-import { H1, Text } from "../ui-elements/Text";
+import { H1 } from "../ui-elements/Text";
 import { InvitesIcon, UserListAvatar } from "../ui-elements/Image";
 import { UserList, InviteListItem } from "../ui-elements/Dashboard";
 import Container from "../ui-elements/Container";

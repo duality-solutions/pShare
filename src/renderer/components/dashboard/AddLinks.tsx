@@ -1,4 +1,4 @@
-import { Component, FunctionComponent } from "react";
+import { Component } from "react";
 import React from "react";
 import { H1, Text } from "../ui-elements/Text";
 import { AddLinksIcon, UserListAvatar, CloseIcon, BtnAddLinksIcon, RequestSentIcon } from "../ui-elements/Image";
