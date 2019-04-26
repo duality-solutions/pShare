@@ -3,7 +3,7 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
@@ -19,7 +19,7 @@ export interface EnterTokenStateProps {
     validationResult?: ValidationResult<string>
 }
 
-export type EnterTokenDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitToken">
+export type EnterTokenDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitToken" | "tokenCancelled">
 
 type EnterTokenProps = EnterTokenDispatchProps & EnterTokenStateProps
 
@@ -96,32 +96,6 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
 
     }
 
-    // handleBackspace = (e:any) => {
-    //     let index: number = parseInt(e.target.name)
-    //     let token = this.state.token
-    //     console.log(index)
-    //     if (e.keyCode === 8 && index === 1 && this.ref1.current){
-    //         if(this.ref0.current) this.ref0.current.focus()
-    //         token[index] = ''
-    //     }
-    //     if (e.keyCode === 8 && index === 2 && this.ref2.current){
-    //         if(this.ref1.current) this.ref1.current.focus()
-    //         token[index] = ''        
-    //     }
-    //     if (e.keyCode === 8 && index === 3 && this.ref3.current){
-    //         if(this.ref2.current) this.ref2.current.focus()
-    //         token[index] = ''
-    //     }
-    //     if (e.keyCode === 8 && index === 4 && this.ref4.current){
-    //         if(this.ref3.current) this.ref3.current.focus()
-    //         token[index] = ''
-    //     }
-    //     if (e.keyCode === 8 && index === 5 && this.ref5.current){
-    //         if(this.ref4.current) this.ref4.current.focus()
-    //         token[index] = ''
-    //     }
-    //     this.setState({ token })
-    // }
 
     handleSubmit = (e: FormEvent) => {
         console.log('submit token: ', this.state.token.join(""))
@@ -149,6 +123,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                             <Container height="50vh" margin="10% 0 0 0" >
                                 <Box direction="column" align="center" width="100%">
                                     <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                                    <BackButton onClick={() => this.props.tokenCancelled()} margin="90px 0 0 -120px"/>
                                         <Card width="100%" align="center" minHeight="225px" padding="2em 8em 2em 8em">
                                             <Text fontSize="14px">Enter Token</Text>
                                             <Input type="text" width="12%" margin="1em 0.5em 1em 0" fontSize="150%" ref={this.ref0} autoFocus

@@ -3,6 +3,7 @@ import { SidebarDispatchProps, SidebarStateProps, Sidebar as Sidebar_ } from "..
 import { MapPropsToDispatchObj } from "../../../renderer/system/MapPropsToDispatchObj";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
+import { DashboardActions } from "../../../shared/actions/dashboard";
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SidebarStateProps => {
     return {
@@ -10,6 +11,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SidebarStateP
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SidebarDispatchProps> = { push };
+const mapDispatchToProps: MapPropsToDispatchObj<SidebarDispatchProps> = { push, ...DashboardActions };
 
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(Sidebar_)

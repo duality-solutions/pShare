@@ -9,12 +9,14 @@ import { translateMnemonicFileSaveFailedActionsToValidationMessages } from "./tr
 import { bdapSaga } from "./bdapSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
+import { linkDeclineSaga } from "./linkDeclineSaga";
 import { RpcClientWrapper } from "../RpcClient";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
+    () => linkDeclineSaga(rpcClient),
     () => validationSaga(rpcClient),
     () => onboardingSaga(),
     () => createBdapAccountSaga(rpcClient),
