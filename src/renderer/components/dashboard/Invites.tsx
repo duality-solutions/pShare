@@ -23,10 +23,9 @@ export interface InvitesStateProps {
     invites: Invite[]
 }
 
-export type InvitesDispatchProps = PickedDispatchProps<typeof BdapActions, "beginAcceptLink">
+export type InvitesDispatchProps = PickedDispatchProps<typeof BdapActions, "beginAcceptLink" | "beginDeclineLink">
 export type InvitesProps = InvitesStateProps & InvitesDispatchProps
-
-export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptLink }: InvitesProps) =>
+export const Invites: FunctionComponent<InvitesProps> = ({ invites, beginAcceptLink, beginDeclineLink }: InvitesProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">

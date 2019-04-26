@@ -3,7 +3,7 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
@@ -18,7 +18,7 @@ export interface EnterUserNameStateProps {
     isValidating: boolean,
     validationResult?: ValidationResult<string>
 }
-export type EnterUserNameDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitUserName">
+export type EnterUserNameDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitUserName" | "accountCreationCancelled">
 
 type EnterUserNameProps = EnterUserNameDispatchProps & EnterUserNameStateProps
 
@@ -60,9 +60,8 @@ export class EnterUserName extends Component<EnterUserNameProps, EnterUserNameCo
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
-                            {/* <BackArrowButton onClick={this.props.backToCreateAccount} /> */}
-
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                            <BackButton onClick={()=> this.props.accountCreationCancelled()} margin="90px 0 0 -120px"/>
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a user name</Text>
                                     <Input value={this.state.userName} onChange={this.handleChange} placeholder="User name"

@@ -5,17 +5,19 @@ import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
 import { createSelector } from 'reselect'
 import { blinq } from "blinq";
+import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
 
 const getInvites = createSelector(
     [
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
+        (state: RendererRootState) => state.bdap.deniedLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined
 
     ],
-    (users, pendingAcceptLinks, currentFqUser, currentUserName) => {
-        return blinq(users)
+    (users, pendingAcceptLinks, deniedLinks, currentFqUser, currentUserName) => {
+        return filterDeniedUsers(blinq(users), deniedLinks)
             .leftOuterJoin(
                 pendingAcceptLinks,
                 user => user.object_full_path,

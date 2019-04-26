@@ -53,7 +53,7 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
                 yield put(BdapActions.createLinkRequestFailed("Link request or accept already exists for these accounts"))
                 return
             }
-            debugger
+            //debugger
             throw err
         }
 

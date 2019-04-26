@@ -4,9 +4,7 @@ import { RpcClient } from "../../../main/RpcClient";
 export function isCorrectPassword(rpcClient: RpcClient, password: string) {
     return call(function* () {
         try {
-            yield call(function* () {
-                return executeUnlockedCommandAsync(rpcClient, password, async () => { })
-            });
+            yield call(() => executeUnlockedCommandAsync(rpcClient, password, async () => { }));
         }
         catch (err) {
             if (/^Error\: The wallet passphrase entered was incorrect\.$/.test(err.message)) {
