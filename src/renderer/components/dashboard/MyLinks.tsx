@@ -34,9 +34,10 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, userName, push
                                 <UserListAvatar src={man} />
                                 <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
                             </div>
-                            {u.state === 'pending' ?
-                                <div style={{ fontSize: "0.8em" }}> Pending <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                : <Button onClick={() => { requestFile({ fileId: "foo", ownerUserName: u.userName, requestorUserName: userName }) }} primary width="102px" minHeight="30px" fontSize="0.8em" > Send File </Button>}
+                            {u.state === 'pending'
+                                ? <div style={{ fontSize: "0.8em" }}> Pending <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                                : <><Button primary width="102px" minHeight="30px" fontSize="0.8em" > Send File </Button>
+                                    <Button onClick={() => requestFile({ fileId: "foo", ownerUserName: u.userName, requestorUserName: userName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Request Test </Button></>}
                         </UserListItem>
                     )}
                 </UserList>
