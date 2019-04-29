@@ -4,11 +4,13 @@ import { app } from 'electron';
 import * as path from 'path'
 import * as fs from 'fs'
 import * as util from 'util'
+import * as fsExtra from 'fs-extra'
 import { call, take, cancelled, fork } from 'redux-saga/effects';
 import { createAsyncQueue } from '../../shared/system/createAsyncQueue';
 import { BdapActions } from '../../shared/actions/bdap';
 import mime from 'mime-types'
 import { blinq } from 'blinq';
+import { Enumerable } from 'blinq/dist/types/src/Enumerable';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
 }
@@ -17,12 +19,12 @@ interface FileWatchEvent extends SimpleFileWatchEvent {
 }
 interface File {
     sharedWith: string
-    userDirRelativePath: string
+    relativePath: string
     path: string
     size: number
-    contentType: string
+    contentType: string,
+    direction: "in" | "out"
 }
-const fsMkdirAsync = util.promisify(fs.mkdir)
 const fsStatAsync = util.promisify(fs.stat)
 //const isDirectory = (obj: DirectoryEntry): obj is Directory => obj.type === "directory"
 const isFileWatchEvent = (obj: SimpleFileWatchEvent): obj is FileWatchEvent => (<FileWatchEvent>obj).path !== undefined
@@ -30,13 +32,8 @@ const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
 const getRelativePath = (fqPath: string) => path.relative(pathToShareDirectory, fqPath)
 export function* fileWatchSaga() {
     yield take(BdapActions.bdapDataFetchSuccess)
-    try {
-        yield call(() => fsMkdirAsync(pathToShareDirectory, { recursive: true }))
-    } catch (err) {
-        if (!/^EEXIST/.test(err.message)) {
-            throw err
-        }
-    }
+    yield call(() => fsExtra.ensureDir(pathToShareDirectory))
+    console.log("starting file watcher")
     const watcher = watch(pathToShareDirectory, { awaitWriteFinish: true })
     const channel = eventChannel((emitter: (v: SimpleFileWatchEvent | FileWatchEvent | END) => void) => {
         const addHandler: (...args: any[]) => void = path => emitter({ type: "add", path });
@@ -70,10 +67,6 @@ export function* fileWatchSaga() {
     })
     const addedFiles: string[] = []
     const unlinkedFiles: string[] = []
-    const getTopDirectoryFromPath = (filePath: string) => {
-        const pathSegments = filePath.split(path.sep);
-        return pathSegments.length <= 1 ? undefined : pathSegments[0];
-    }
     for (; ;) {
         const ev: SimpleFileWatchEvent = yield call(() => q.receive())
         if (ev.type === "ready") {
@@ -90,8 +83,20 @@ export function* fileWatchSaga() {
             }
         }
     }
-    const filePromises: Iterable<Promise<File>> = blinq(addedFiles)
-        .except(unlinkedFiles)
+    const allFiles = blinq(addedFiles)
+        .except(unlinkedFiles);
+    const files: File[] = yield* getSharedFileInfo(allFiles);
+    //console.log(initialFiles)
+    console.log(files)
+
+}
+
+const getTopDirectoryFromPath = (filePath: string) => {
+    const pathSegments = filePath.split(path.sep);
+    return pathSegments.length <= 1 ? undefined : pathSegments[0];
+}
+function* getSharedFileInfo(allFiles: Enumerable<string>) {
+    const filePromises: Iterable<Promise<File>> = allFiles
         .selectMany(filePath => {
             const relPath = getRelativePath(filePath);
             const userDirName = getTopDirectoryFromPath(relPath); //represents linked user
@@ -99,30 +104,36 @@ export function* fileWatchSaga() {
                 return [];
             }
             const userDirRelativePath = path.relative(userDirName, relPath);
+            const inOrOut = getTopDirectoryFromPath(userDirRelativePath)
+            if (inOrOut !== "in" && inOrOut !== "out") {
+                return []
+            }
+            const dir: "in" | "out" = inOrOut
+            const inOutRelPath = path.relative(inOrOut, userDirRelativePath)
             return [{
+                direction: dir,
                 filePath,
                 userDirName,
-                userDirRelativePath
+                inOutRelPath
             }];
         })
         .select(async (fi): Promise<File> => {
-            const stats = await fsStatAsync(fi.filePath)
+            const stats = await fsStatAsync(fi.filePath);
             const contentType = mime.lookup(fi.filePath) || 'application/octet-stream';
             return ({
                 path: fi.filePath,
                 contentType,
-                userDirRelativePath: fi.userDirRelativePath,
+                relativePath: fi.inOutRelPath,
+                direction: fi.direction,
                 size: stats.size,
                 sharedWith: fi.userDirName
             });
         });
-
-    const files: File[] = []
+    const files: File[] = [];
     for (let filePromise of filePromises) {
-        const f: File = yield call(() => filePromise)
-        files.push(f)
+        const f: File = yield call(() => filePromise);
+        files.push(f);
     }
-    //console.log(initialFiles)
-    console.log(files)
-
+    return files;
 }
+
