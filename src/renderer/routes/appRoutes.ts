@@ -1,7 +1,7 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import { Dashboard } from "../components/dashboard";
+import  Dashboard  from "../containers/dashboard";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";

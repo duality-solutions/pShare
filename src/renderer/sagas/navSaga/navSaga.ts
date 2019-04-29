@@ -37,10 +37,20 @@ export function* navSaga() {
 
                 let returnedToCreateAccount = false
 
-
                 if (createAccount) {
                     yield put(pushRoute(appRoutes.enterUserName))
-                    yield* waitForUserDetails();
+                    const bdapAccountConfigNavMap = getNavMap();
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.accountCreationCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCancelled, appRoutes.enterUserName)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCancelled, appRoutes.enterCommonName)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
+                    //this will block until the navMap is complete
+                    yield bdapAccountConfigNavMap.runNav();
+                    if( returnedToCreateAccount ) continue;
                     yield* waitForWalletCredentials();
                 } else {
                     yield put(pushRoute(appRoutes.restoreAccount))
@@ -72,17 +82,18 @@ export function* navSaga() {
 }
 
 
-function* waitForUserDetails() {
-    const bdapAccountConfigNavMap = getNavMap();
-    //bdapAccountConfigNavMap.registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
-    bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName);
-    bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken);
-    bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount);
-    bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName);
-    bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true); //true parameter indicates stopping condition
-    //this will block until the navMap is complete
-    yield bdapAccountConfigNavMap.runNav();
-}
+// function* waitForUserDetails() {
+//     const bdapAccountConfigNavMap = getNavMap();
+//     //bdapAccountConfigNavMap.registerNavAction(RootActions.createAccount, appRoutes.enterUserName)
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName);
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.accountCreationCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken);
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount);
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName);
+//     bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true); //true parameter indicates stopping condition
+//     //this will block until the navMap is complete
+//     yield bdapAccountConfigNavMap.runNav();
+// }
 
 function* waitForWalletCredentials() {
     const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted);

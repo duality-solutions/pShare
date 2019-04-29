@@ -5,17 +5,23 @@ import { Route, Switch, RouteComponentProps } from 'react-router';
 import { dashboardRoutes } from "../../routes/appRoutes";
 import { FunctionComponent } from 'react';
 import { keys } from '../../../shared/system/entries';
+import LoadingSpinner from '../ui-elements/LoadingSpinner';
 
+export interface DashboardStateProps {
+    spinner: boolean
+}
 
-export const Dashboard: FunctionComponent<RouteComponentProps<any>> =
+export type DashboardProps =  FunctionComponent<RouteComponentProps<any> & DashboardStateProps>
 
-    (props) =>
+export const Dashboard: DashboardProps =
+    ({ spinner }) =>
         <>
             <DashboardContainer>
                 <SidebarContainer>
                     <Sidebar />
                 </SidebarContainer>
-                <MainContentContainer>
+                <MainContentContainer disabled={spinner}>
+                    <LoadingSpinner active={spinner}/>
                     <Switch>{
                         keys(dashboardRoutes)
                             .select((key, idx) =>

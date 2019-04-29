@@ -1,4 +1,6 @@
 import styled from 'styled-components'
+import * as React from 'react';
+import { Text } from './Text';
 
 const StyledDashboardContainer = styled('div')`
     height: 100vh;
@@ -21,9 +23,10 @@ const SidebarContainer = styled('div')`
     max-height:100vh;
     `;
 
-const MainContentContainer = styled('div')`
+const MainContentContainer = styled('div')<{ disabled?: boolean}>`
     display: flex;
     height:100%;
+    z-index: ${props => props.disabled ? -1 : 0}
     width: 100%;
     direction: column;
     background: white;
@@ -91,9 +94,45 @@ const FilesListItem = styled('li')`
 
 `;
 
+const StyledInviteListItem = styled('li')`
+    padding: 1em 0 1em 0;
+    border-bottom: solid 0.1px #d2d2d2;
+    cursor: pointer
+`
+
+interface InviteProps {
+    children: React.ReactNode,
+    msg: string
+}
+interface InviteComponentState {
+    active: boolean
+}
+
+class InviteListItem extends React.Component<InviteProps, InviteComponentState>{
+    constructor(props: InviteProps){
+        super(props)
+        this.state = {
+            active: false
+        }
+    }
+    render() {
+        const { children, msg } = this.props
+        const { active } = this.state
+        return(
+            <StyledInviteListItem onClick={()=> this.setState({ active: !active })}>
+                {children}
+                {active && 
+                    <Text fontSize="0.9em" fontWeight="400" color="#4a4a4a">
+                        {msg}
+                    </Text>}
+            </StyledInviteListItem>
+        )    
+    }
+}
+
 export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem, FilesList, FilesListItem,
+    UserList, UserListItem, FilesList, FilesListItem, InviteListItem
 }

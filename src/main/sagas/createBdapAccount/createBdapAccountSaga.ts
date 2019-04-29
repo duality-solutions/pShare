@@ -1,15 +1,15 @@
 import { call, takeEvery, put } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
-import { getRpcClient } from "../../getRpcClient";
 import { delay } from "../../../shared/system/delay";
 import { GetUserInfo } from "../../../dynamicdInterfaces/GetUserInfo";
 import { httpRequestStringAsync } from "../../system/http/httpRequestAsync";
 import { createCancellationToken } from "../../../shared/system/createCancellationToken";
 import { AccountActivationResponse } from "./AccountActivationResponse";
+import { RpcClient } from "../../../main/RpcClient";
 //import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 
-export function* createBdapAccountSaga(mock: boolean = false) {
+export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.createBdapAccount), function* (action: ActionType<typeof OnboardingActions.createBdapAccount>) {
         let { payload: { userName, commonName, token } } = action
         if (mock) {
@@ -18,7 +18,7 @@ export function* createBdapAccountSaga(mock: boolean = false) {
         }
         let rawHexTx: string
         try {
-            rawHexTx = yield call(createRawBdapAccount, userName, commonName);
+            rawHexTx = yield call(() => createRawBdapAccount(rpcClient, userName, commonName));
         } catch (err) {
             yield put(OnboardingActions.createBdapAccountFailed("createRawBdapAccount failed"))
             return;
@@ -35,7 +35,8 @@ export function* createBdapAccountSaga(mock: boolean = false) {
             }
             const regex2 = /^Unsuccessful: Activation service response/
             if (regex2.test(err.message)) {
-                yield put(OnboardingActions.createBdapAccountFailed(`Activation was unsuccessful : ${err.message}`))
+                // yield put(OnboardingActions.createBdapAccountFailed(`Activation was unsuccessful : ${err.message}`))
+                yield put(OnboardingActions.createBdapAccountFailed('Invalid Token'))
                 return;
             }
 
@@ -45,7 +46,7 @@ export function* createBdapAccountSaga(mock: boolean = false) {
 
         let userInfo: GetUserInfo;
         try {
-            userInfo = yield* waitForBdapAccountCreated(userName, txid)
+            userInfo = yield* waitForBdapAccountCreated(rpcClient, userName, txid)
         } catch (err) {
             if (/^txid of user does not match supplied value/.test(err.message)) {
                 yield put(OnboardingActions.createBdapAccountFailed("Try a different user name"))
@@ -63,11 +64,11 @@ export function* createBdapAccountSaga(mock: boolean = false) {
 
 }
 
-export const waitForBdapAccountCreated = function* (username: string, txid: string) {
+export const waitForBdapAccountCreated = function* (rpcClient: RpcClient, username: string, txid: string) {
     for (; ;) {
         //todo: consider a timeout or similar
         console.log("checking if bdap account has been created")
-        const [accountCreated, userInfo] = yield call(checkBdapAccountCreated, username, txid)
+        const [accountCreated, userInfo] = yield call(() => checkBdapAccountCreated(rpcClient, username, txid))
 
         if (accountCreated) {
             if (userInfo != null) {
@@ -83,8 +84,8 @@ export const waitForBdapAccountCreated = function* (username: string, txid: stri
     }
 }
 
-export const checkBdapAccountCreated = async (username: string, txId: string): Promise<[boolean, GetUserInfo | null]> => {
-    const client = await getRpcClient()
+export const checkBdapAccountCreated = async (client: RpcClient, username: string, txId: string): Promise<[boolean, GetUserInfo | null]> => {
+
     let userInfo: GetUserInfo;
     try {
         userInfo = await client.command("getuserinfo", username)
@@ -109,9 +110,9 @@ export const checkBdapAccountCreated = async (username: string, txId: string): P
     throw Error("txid of user does not match supplied value")
 }
 
-export const createRawBdapAccount = async (username: string, displayname: string) => {
-    const client = await getRpcClient()
-    const rawHexTx = await client.command("createrawbdapaccount", username, displayname)
+export const createRawBdapAccount = async (rpcClient: RpcClient, username: string, displayname: string) => {
+
+    const rawHexTx = await rpcClient.command("createrawbdapaccount", username, displayname)
     return rawHexTx
 }
 

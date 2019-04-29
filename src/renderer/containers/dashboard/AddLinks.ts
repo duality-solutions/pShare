@@ -1,5 +1,5 @@
 import { RendererRootState } from "../../reducers";
-import { AddLinksStateProps, AddLinksDispatchProps, AddLinks } from "../../components/dashboard/AddLinks";
+import { AddLinksStateProps,  AddLinks, AddLinksDispatchProps } from "../../components/dashboard/AddLinks";
 import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
@@ -7,6 +7,7 @@ import { createSelector } from 'reselect'
 import { BdapUser } from "../../system/BdapUser";
 import { blinq } from "blinq";
 import { push } from "connected-react-router";
+import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
 
 
 
@@ -22,13 +23,14 @@ const getUserList = createSelector(
         (state: RendererRootState) => state.bdap.pendingRequestLinks,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
         (state: RendererRootState) => state.bdap.completeLinks,
+        (state: RendererRootState) => state.bdap.deniedLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
 
     ],
-    (users, pendingRequestLinks, pendingAcceptLinks, completeLinks, currentFqUser) => {
+    (users, pendingRequestLinks, pendingAcceptLinks, completeLinks, deniedLinks, currentFqUser) => {
         //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
         const existingLinks = completeLinks.concat(pendingAcceptLinks)
-        return blinq(users)
+        return filterDeniedUsers(blinq(users), deniedLinks)
             .where(u => u.object_full_path !== currentFqUser)
             .leftOuterJoin(
                 existingLinks,

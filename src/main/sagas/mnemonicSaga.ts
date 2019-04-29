@@ -4,11 +4,12 @@ import { OnboardingActions } from "../../shared/actions/onboarding";
 import { RpcCommandFunc } from "../RpcCommandFunc";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { HdInfo } from "../../dynamicdInterfaces/HdInfo";
+import { RpcClient } from "../RpcClient";
 
-export function* mnemonicSaga() {
+export function* mnemonicSaga(rpcClient: RpcClient) {
     yield takeEvery(getType(OnboardingActions.walletPasswordSetSuccess), function* () {
 
-        const mnemonic: string = yield unlockedCommandEffect(async (command: RpcCommandFunc) => {
+        const mnemonic: string = yield unlockedCommandEffect(rpcClient, async (command: RpcCommandFunc) => {
             const hdInfo: HdInfo = await command("dumphdinfo");
             return hdInfo.mnemonic;
         })

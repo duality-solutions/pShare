@@ -3,14 +3,15 @@ import { CSSTransitionGroup } from 'react-transition-group';
 import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton } from "../ui-elements/Button";
+import { ArrowButton, BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
 import { H1, Text } from "../ui-elements/Text";
-import { NamedValue } from "../../../shared/system/validator/NamedValue";
 import { validationScopes } from "../../reducers/validationScopes";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { OnboardingActions } from "../../../shared/actions/onboarding";
 
 export interface EnterCommonNameStateProps {
     commonName: string
@@ -18,10 +19,7 @@ export interface EnterCommonNameStateProps {
     validationResult?: ValidationResult<string>
 
 }
-export interface EnterCommonNameDispatchProps {
-    submitCommonName: (commonName: string) => void,
-    resetValidationForField: (validationPayload: NamedValue<void>) => void
-}
+export type EnterCommonNameDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "submitCommonName" | "commonNameCancelled">
 type EnterCommonNameProps = EnterCommonNameDispatchProps & EnterCommonNameStateProps
 
 interface EnterCommonNameComponentState {
@@ -34,7 +32,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
     }
     handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         this.setState({ commonName: e.target.value })
-        this.props.resetValidationForField({scope:validationScopes.bdapAccount, name: "commonName" })
+        this.props.resetValidationForField({ scope: validationScopes.bdapAccount, name: "commonName" })
     }
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
@@ -62,6 +60,7 @@ export class EnterCommonName extends Component<EnterCommonNameProps, EnterCommon
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
+                            <BackButton onClick={() => this.props.commonNameCancelled()} margin="90px 0 0 -120px"/>
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
                                     <Text fontSize="14px">Enter a display name</Text>
                                     <Input value={this.state.commonName} onChange={this.handleChange} placeholder="Display name"

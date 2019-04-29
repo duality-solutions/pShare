@@ -9,10 +9,11 @@ import { delay } from "redux-saga";
 import { getWalletIsEncrypted } from "./effects/getWalletIsEncrypted";
 import { encryptWallet } from "./effects/encryptWallet";
 import { isCorrectPassword } from "./effects/isCorrectPassword";
+import { RpcClientWrapper } from "../RpcClient";
 
 
 
-export function* setWalletPasswordSaga(mock: boolean = false) {
+export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper, mock: boolean = false) {
     yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>) {
         //spoofing validation actions
         //the validation actions here are not processed by the validationsaga
@@ -40,11 +41,11 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
             }
         }
 
-        const walletIsEncrypted = yield getWalletIsEncrypted();
+        const walletIsEncrypted = yield getWalletIsEncrypted(rpcClient);
         if (walletIsEncrypted) {
             if (mock) {
 
-                const isCorrectPw = yield isCorrectPassword(password)
+                const isCorrectPw = yield isCorrectPassword(rpcClient,password)
                 if (isCorrectPw) {
                     const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
                     yield put(OnboardingActions.fieldValidated(payload))
@@ -61,7 +62,7 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
             yield put(OnboardingActions.fieldValidated(payload))
             return
         }
-        yield encryptWallet(password)
+        yield encryptWallet(rpcClient, password)
 
 
         // todo: this takes aaaaages. Skip for now

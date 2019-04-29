@@ -3,8 +3,8 @@ import { Box } from "../ui-elements/Box";
 import { Text } from "../ui-elements/Text";
 
 const blocks:number = 30
-const error: boolean = false
-const success: boolean = false
+// const error: boolean = false
+// const success: boolean = false
 
 export interface CreatingLinkProgressStateProps {
 }

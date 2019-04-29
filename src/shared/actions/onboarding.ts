@@ -68,6 +68,10 @@ export const OnboardingActions = {
     restoreWithMnemonicFileCancelled: createStandardAction('onboarding/RESTORE_WITH_MNEMONIC_FILE_CANCELLED')<void>(),
     secureFilePasswordCancelled: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD_CANCELLED')<void>(),
     restoreCancelled: createStandardAction('onboarding/RESTORE_CANCELLED')<void>(),
+
+    accountCreationCancelled: createStandardAction('onboarding/ACCOUNT_CREATION_CANCELLED')<void>(),
+    commonNameCancelled: createStandardAction('onboarding/COMMON_NAME_CANCELLED')<void>(),
+    tokenCancelled: createStandardAction('onboarding/TOKEN_CANCELLED')<void>(),
 }
 
 export type OnboardingActions = ActionType<typeof OnboardingActions>;

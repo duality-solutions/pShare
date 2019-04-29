@@ -1,6 +1,5 @@
 import { take, call, put, select } from "redux-saga/effects";
-import { getRpcClient } from "../../getRpcClient";
-import { RpcClient } from "../../RpcClient";
+import { RpcClientWrapper } from "../../RpcClient";
 import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { MainRootState } from "../../reducers";
@@ -14,7 +13,8 @@ const round0 = round(0)
 
 
 
-export function* initializationSaga() {
+export function* initializationSaga(rpcClientProvider: () => Promise<RpcClientWrapper>) {
+    console.log("starting initialization saga")
     // synchronize renderer state with our state
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
@@ -37,8 +37,8 @@ export function* initializationSaga() {
     yield put(RootActions.waitingForSync());
     // call getBitcoinClient... it's an async function (returns a Promise) so 
     // in a saga, we await for it as follows
-    const client: RpcClient = yield call(getRpcClient);
-
+    const client: RpcClientWrapper = yield call(() => rpcClientProvider());
+    console.log("got rpcClient")
     let currentCompletionPercent: number = -1000;
     for (; ;) {
         let syncState: SyncState;
@@ -68,7 +68,7 @@ export function* initializationSaga() {
 
 
         // if we've hit 100%, we're done
-        if (currentCompletionPercent === 100) {
+        if (currentCompletionPercent === 100 && syncState.fully_synced) {
             // complete
             break;
         }
@@ -77,12 +77,12 @@ export function* initializationSaga() {
         yield call(delay, 1000);
     }
     // let the user reducer know if the wallet is encrypted
-    const isEncrypted = yield getWalletIsEncrypted()
+    const isEncrypted = yield getWalletIsEncrypted(client)
     yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
 
     yield put(RootActions.syncComplete());
 
-
+    return client
 
 }
 

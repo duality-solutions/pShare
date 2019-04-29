@@ -6,24 +6,23 @@ import { LinkRequestResponse } from "../../dynamicdInterfaces/LinkRequestRespons
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { UserState } from "../../shared/reducers/user";
 import { RpcClient } from "../RpcClient";
-import { getRpcClient } from "../getRpcClient";
 import { entries } from "../../shared/system/entries";
 
-export function* linkRequestSaga() {
+export function* linkRequestSaga(rpcClient: RpcClient) {
 
     yield takeEvery(getType(BdapActions.beginCreateLinkRequest), function* (action: ActionType<typeof BdapActions.beginCreateLinkRequest>) {
-        const { requestor, recipient } = action.payload
+        const { requestor, recipient, inviteMessage } = action.payload
         console.log(`link request: requestor : ${requestor} , recipient : ${recipient}`)
 
-        const { common_name: commonName }: BdapAccount = yield getMyBdapAccount()
+        const { common_name: commonName }: BdapAccount = yield getMyBdapAccount(rpcClient)
         //console.log(`my common name : ${commonName}`)
 
         const userName: string | undefined = yield select((state: MainRootState) => state.user.userName)
         if (typeof userName === 'undefined') {
             throw Error("user.userName unexpectedly undefined")
         }
-        const inviteMessage = `${commonName} (${userName}) wants to link with you`
-        const requestAction = BdapActions.createLinkRequest({ ...action.payload, inviteMessage })
+        const inviteMessage_ = inviteMessage === '' ? `${commonName} (${userName}) wants to link with you` : inviteMessage
+        const requestAction = BdapActions.createLinkRequest({ ...action.payload, inviteMessage: inviteMessage_ })
         console.log(requestAction)
         yield put(requestAction)
     })
@@ -46,7 +45,7 @@ export function* linkRequestSaga() {
 
         try {
             response =
-                yield unlockedCommandEffect(command => command("link", "request", requestor, recipient, inviteMessage))
+                yield unlockedCommandEffect(rpcClient,command => command("link", "request", requestor, recipient, inviteMessage))
 
         } catch (err) {
             if (/^BDAP_SEND_LINK_RPC_ERROR\: ERRCODE\: 4001/.test(err.message)) {
@@ -54,7 +53,7 @@ export function* linkRequestSaga() {
                 yield put(BdapActions.createLinkRequestFailed("Link request or accept already exists for these accounts"))
                 return
             }
-            debugger
+            //debugger
             throw err
         }
 
@@ -86,8 +85,8 @@ interface BdapAccount {
     expired: boolean
 }
 
-const getMyBdapAccount = () => call(function* () {
-    const rpcClient: RpcClient = yield call(async () => getRpcClient())
+const getMyBdapAccount = (rpcClient: RpcClient) => call(function* () {
+    
     const myBdapAccountsResponse: Record<string, BdapAccount> = yield call(() => rpcClient.command("mybdapaccounts"))
     const myBdapAccounts = entries(myBdapAccountsResponse).select(([, v]) => v)
     const user: UserState = yield select((state: MainRootState) => state.user)
