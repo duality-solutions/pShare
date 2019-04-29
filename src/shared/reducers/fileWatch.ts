@@ -33,7 +33,7 @@ export const fileWatch = (state: FileWatchState = defaultState, action: FileWatc
                         out: action.payload.direction !== "out"
                             ? (state.users[action.payload.sharedWith] || {}).out
                             : {
-                                ...((state.users[action.payload.sharedWith] || {}).out || {}),
+                                ...((state.users[action.payload.sharedWith] || {}).out),
                                 [action.payload.relativePath]: action.payload
                             },
                     }
