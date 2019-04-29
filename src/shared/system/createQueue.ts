@@ -4,6 +4,7 @@ interface Queue<T> {
     enqueue: (item: T) => void;
     dequeue: () => T;
     readonly any: boolean;
+    dequeueAll: () => Iterable<T>
 }
 export const createQueue = <T>(): Queue<T> => {
     const q = new Q<T>()
@@ -15,6 +16,12 @@ export const createQueue = <T>(): Queue<T> => {
                 throw Error("queue is empty");
             }
             return item;
+        },
+        dequeueAll: function* () {
+            let item: T | undefined
+            while (typeof (item = q.dequeue()) !== 'undefined') {
+                yield item
+            }
         },
         get any(): boolean {
             return !q.isEmpty();
