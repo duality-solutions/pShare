@@ -1,7 +1,7 @@
 import { push } from 'connected-react-router';
 import { RouteComponentProps } from 'react-router';
 import { deepFreeze } from '../../shared/system/deepFreeze';
-import  Dashboard  from "../containers/dashboard";
+import Dashboard from "../containers/dashboard";
 import { CreatingBdapAccount } from "../components/onboarding/CreatingBdapAccount";
 import { PasswordGet } from '../components/onboarding/PasswordGet';
 import CreateAccount from "../containers/onboarding/CreateAccount";
@@ -22,8 +22,8 @@ import RestoreWithMnemonicFile from '../containers/onboarding_restore/RestoreWit
 import RestoreWithPassphrase from '../containers/onboarding_restore/RestoreWithPassphrase';
 import RestoreSyncProgress from '../containers/onboarding_restore/RestoreSyncProgress';
 import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassword';
-import { SharedFiles } from '../components/dashboard/SharedFiles';
-import { AddFile } from '../components/dashboard/AddFile';
+import SharedFiles from '../containers/dashboard/SharedFiles';
+import AddFile from '../containers/dashboard/AddFile';
 import { CreatingLinkProgress } from '../components/dashboard/CreatingLinkProgress';
 
 export interface RouteInfo {
@@ -48,7 +48,7 @@ const routingTable = {
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
     dashboard: route("/Dashboard", Dashboard, false),
     passwordGet: route("/PasswordGet", PasswordGet),
-    restoreAccount: route('/RestoreAccount',RestoreAccount),
+    restoreAccount: route('/RestoreAccount', RestoreAccount),
     restoreWithPassphrase: route('/RestoreWithPassphrase', RestoreWithPassphrase),
     restoreWithMnemonicFile: route('/RestoreWithMnemonicFile', RestoreWithMnemonicFile),
     restoreSyncProgress: route('/RestoreSyncProgress', RestoreSyncProgress),

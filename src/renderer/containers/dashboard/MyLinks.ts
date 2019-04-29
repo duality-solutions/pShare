@@ -1,13 +1,13 @@
 import { RendererRootState } from "../../reducers";
 import { MyLinksStateProps, MyLinksDispatchProps, MyLinks } from "../../components/dashboard/MyLinks";
 import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
-import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
 import { createSelector } from 'reselect'
 import { blinq } from "blinq";
 import { BdapUser } from "../../system/BdapUser";
 import { push } from "connected-react-router";
 import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
+import { DashboardActions } from "../../../shared/actions/dashboard";
 
 
 const getUserList = createSelector(
@@ -65,6 +65,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateP
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...BdapActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...DashboardActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyLinks)

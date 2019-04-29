@@ -5,6 +5,9 @@ import { RendererRootState } from "../../reducers";
 import { appRoutes, pushRoute, dashboardRoutes } from "../../routes/appRoutes";
 import { getNavMap } from "./getNavMap";
 import { BdapActions } from "../../../shared/actions/bdap";
+import { DashboardActions } from "../../../shared/actions/dashboard";
+import { SharedFilesActions } from "../../../shared/actions/sharedFiles";
+import { AddFileActions } from "../../../shared/actions/addFile";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -73,10 +76,13 @@ export function* navSaga() {
                     break;
                 }
             }
+
         }
 
 
     }
+
+    yield* dashboardNav()
 
 
 }
@@ -94,6 +100,16 @@ export function* navSaga() {
 //     //this will block until the navMap is complete
 //     yield bdapAccountConfigNavMap.runNav();
 // }
+
+function* dashboardNav(){
+    const navMap=getNavMap()
+    navMap.registerNavAction(DashboardActions.viewSharedFiles, dashboardRoutes.sharedFiles)
+    navMap.registerNavAction(DashboardActions.viewMyLinks, dashboardRoutes.myLinks)
+    navMap.registerNavAction(SharedFilesActions.close, dashboardRoutes.myLinks)
+    navMap.registerNavAction(SharedFilesActions.shareNewFile, dashboardRoutes.addFile)
+    navMap.registerNavAction(AddFileActions.close, dashboardRoutes.sharedFiles)
+    yield navMap.runNav()
+}
 
 function* waitForWalletCredentials() {
     const isEncrypted: boolean = yield select((state: RendererRootState) => state.user.walletEncrypted);
