@@ -5,25 +5,19 @@ import * as path from 'path'
 import * as fs from 'fs'
 import * as util from 'util'
 import * as fsExtra from 'fs-extra'
-import { call, take, cancelled, fork } from 'redux-saga/effects';
+import { call, take, cancelled, fork, put } from 'redux-saga/effects';
 import { createAsyncQueue } from '../../shared/system/createAsyncQueue';
 import { BdapActions } from '../../shared/actions/bdap';
 import mime from 'mime-types'
 import { blinq } from 'blinq';
 import { Enumerable } from 'blinq/dist/types/src/Enumerable';
+import { FileWatchActions } from "../../shared/actions/fileWatch";
+import { SharedFile } from '../../shared/types/SharedFile';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
 }
 interface FileWatchEvent extends SimpleFileWatchEvent {
     path: string
-}
-interface File {
-    sharedWith: string
-    relativePath: string
-    path: string
-    size: number
-    contentType: string,
-    direction: "in" | "out"
 }
 const fsStatAsync = util.promisify(fs.stat)
 //const isDirectory = (obj: DirectoryEntry): obj is Directory => obj.type === "directory"
@@ -85,7 +79,11 @@ export function* fileWatchSaga() {
     }
     const allFiles = blinq(addedFiles)
         .except(unlinkedFiles);
-    const files: File[] = yield* getSharedFileInfo(allFiles);
+    const files: SharedFile[] = yield* getSharedFileInfo(allFiles);
+    
+    for(const f of files){
+        yield put(FileWatchActions.fileAdded(f))
+    }
     //console.log(initialFiles)
     console.log(files)
 
@@ -96,7 +94,7 @@ const getTopDirectoryFromPath = (filePath: string) => {
     return pathSegments.length <= 1 ? undefined : pathSegments[0];
 }
 function* getSharedFileInfo(allFiles: Enumerable<string>) {
-    const filePromises: Iterable<Promise<File>> = allFiles
+    const filePromises: Iterable<Promise<SharedFile>> = allFiles
         .selectMany(filePath => {
             const relPath = getRelativePath(filePath);
             const userDirName = getTopDirectoryFromPath(relPath); //represents linked user
@@ -117,7 +115,7 @@ function* getSharedFileInfo(allFiles: Enumerable<string>) {
                 inOutRelPath
             }];
         })
-        .select(async (fi): Promise<File> => {
+        .select(async (fi): Promise<SharedFile> => {
             const stats = await fsStatAsync(fi.filePath);
             const contentType = mime.lookup(fi.filePath) || 'application/octet-stream';
             return ({
@@ -129,9 +127,9 @@ function* getSharedFileInfo(allFiles: Enumerable<string>) {
                 sharedWith: fi.userDirName
             });
         });
-    const files: File[] = [];
+    const files: SharedFile[] = [];
     for (let filePromise of filePromises) {
-        const f: File = yield call(() => filePromise);
+        const f: SharedFile = yield call(() => filePromise);
         files.push(f);
     }
     return files;

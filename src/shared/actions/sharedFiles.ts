@@ -1,5 +1,4 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-
 // ensure this is added to ./index.ts RootActions
 export const SharedFilesActions = {
     close: createStandardAction('shared_files/CLOSE')<void>(),
@@ -7,3 +6,6 @@ export const SharedFilesActions = {
 }
 
 export type SharedFilesActions = ActionType<typeof SharedFilesActions>;
+
+
+
