@@ -6,12 +6,9 @@ import { Text } from "../ui-elements/Text";
 import Container from "../ui-elements/Container";
 import { Card } from "../ui-elements/Card";
 import Button from "../ui-elements/Button";
+import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 
-export interface FilePathInfo {
-    path: string
-    type: string
-    size: number
-}
+
 
 export interface AddFileStateProps {
 
@@ -19,13 +16,14 @@ export interface AddFileStateProps {
 
 export interface AddFilesDispatchProps {
     close: () => void
+    filesSelected: (files: FilePathInfo[]) => void
 }
 
 export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 
 
-export const AddFile: FunctionComponent<AddFileProps> = ({ close }) => {
+export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected }) => {
     const error = false
     return <>
         <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
@@ -50,7 +48,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close }) => {
                         }} onDrop={e => {
                             e.preventDefault();
                             console.log(e.dataTransfer.files);
-                            // filesSelected([...e.dataTransfer.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                            filesSelected([...e.dataTransfer.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
                         }}>
                             {error ?
                                 <>
@@ -65,7 +63,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close }) => {
                             <input type="file" id="fileElem" multiple accept="*/*" onChange={e => {
                                 e.preventDefault();
                                 console.log(e.currentTarget.files);
-                                // e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                                e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
                             }} style={({ display: "none" })} />
                             <Button color="#0055c4" width="175px">
                                 <label style={{ width: "100%", height: "100%", display: "block", cursor: "pointer" }} className="button" htmlFor="fileElem">
