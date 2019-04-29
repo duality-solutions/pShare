@@ -68,7 +68,7 @@ export function* initializationSaga(rpcClientProvider: () => Promise<RpcClientWr
 
 
         // if we've hit 100%, we're done
-        if (currentCompletionPercent === 100) {
+        if (currentCompletionPercent === 100 && syncState.fully_synced) {
             // complete
             break;
         }

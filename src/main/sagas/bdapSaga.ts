@@ -11,10 +11,11 @@ import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
 import { delay } from "redux-saga";
+import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
-        
+
         let response: GetUserInfo[];
         try {
             response = yield call(() => rpcClient.command("getusers"))
@@ -39,7 +40,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingAcceptLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "accept"), BdapActions.getPendingAcceptLinksSuccess, BdapActions.getPendingAcceptLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getPendingRequestLinks), function* () {
         if (mock) {
@@ -48,7 +49,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getPendingRequestLinksSuccess(p))
             return
         }
-        yield* rpcLinkCommand(rpcClient,(command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
+        yield* rpcLinkCommand(rpcClient, (command) => command("link", "pending", "request"), BdapActions.getPendingRequestLinksSuccess, BdapActions.getPendingRequestLinksFailed)
     })
     yield takeEvery(getType(BdapActions.getCompleteLinks), function* () {
         if (mock) {
@@ -70,6 +71,35 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
     })
 
+
+    yield takeEvery(getType(BdapActions.getDeniedLinks), function* () {
+
+        const currentUser: GetUserInfo = yield getCurrentUser()
+        const userName = currentUser.object_id
+        let response: LinkDeniedResponse | {};
+
+        try {
+            response = yield unlockedCommandEffect(rpcClient, command => command("link", "denied", userName))
+
+        } catch (err) {
+            if (!/^DeniedLinkList: ERRCODE: 5604/.test(err.message)) {
+                yield put(BdapActions.getDeniedLinksFailed(err.message))
+                return
+            }
+            response = {}
+
+        }
+
+        if (isLinkDeniedResponse(response)) {
+            const deniedList = entries(response.denied_list).select(([, v]) => v).toArray()
+            yield put(BdapActions.getDeniedLinksSuccess(deniedList))
+        }
+        else {
+            yield put(BdapActions.getDeniedLinksSuccess([]))
+        }
+
+    })
+
     yield takeEvery(getType(BdapActions.initialize), function* () {
 
         for (; ;) {
@@ -78,7 +108,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinks())
             yield put(BdapActions.getPendingAcceptLinks())
             yield put(BdapActions.getPendingRequestLinks())
-
+            yield put(BdapActions.getDeniedLinks())
 
             const getResults = yield all({
                 users: race({
@@ -96,6 +126,11 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 pendingAccept: race({
                     success: take(getType(BdapActions.getPendingAcceptLinksSuccess)),
                     failure: take(getType(BdapActions.getPendingAcceptLinksFailed))
+                }),
+                denied: race({
+                    success: take(getType(BdapActions.getDeniedLinksSuccess)),
+                    failure: take(getType(BdapActions.getDeniedLinksFailed))
+
                 })
             })
 
@@ -103,6 +138,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 && getResults.completeLinks.success
                 && getResults.pendingRequest.success
                 && getResults.pendingAccept.success
+                && getResults.denied.success
             ) {
                 console.log("all user/link data successful retrieved")
                 yield put(BdapActions.bdapDataFetchSuccess())
@@ -131,16 +167,22 @@ const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>
 
 const getUserFqdn = () =>
     call(function* () {
-        let currentUser: GetUserInfo = yield select((state: MainRootState) => state.bdap.currentUser);
-        if (typeof currentUser === 'undefined') {
-            const a: ActionType<typeof BdapActions.currentUserReceived> = yield take(getType(BdapActions.currentUserReceived));
-            currentUser = a.payload
-        }
+        let currentUser: GetUserInfo = yield getCurrentUser();
         return currentUser.object_full_path;
     })
 
+const getCurrentUser = () =>
+    call(function* () {
+        let currentUser: GetUserInfo = yield select((state: MainRootState) => state.bdap.currentUser);
+        if (typeof currentUser === 'undefined') {
+            const a: ActionType<typeof BdapActions.currentUserReceived> = yield take(getType(BdapActions.currentUserReceived));
+            currentUser = a.payload;
+        }
+        return currentUser;
+    })
+
 function* rpcLinkCommand<T extends Link>(
-    rpcClient:RpcClient,
+    rpcClient: RpcClient,
     cmd: (c: RpcCommandFunc) => Promise<LinkResponse<T>>,
     successActionCreator: (entries: T[]) => any,
     failActionCreator: (message: string) => any
@@ -148,13 +190,17 @@ function* rpcLinkCommand<T extends Link>(
 
     let response: LinkResponse<T>;
     try {
-        response = yield unlockedCommandEffect(rpcClient,cmd)
+        response = yield unlockedCommandEffect(rpcClient, cmd)
     } catch (err) {
         yield put(failActionCreator(err.message))
         return;
     }
     const links = extractLinks(response)
     yield put(successActionCreator(links))
+}
+
+function isLinkDeniedResponse(obj: LinkDeniedResponse | {}): obj is LinkDeniedResponse {
+    return (<LinkDeniedResponse>obj).list_updated !== undefined;
 }
 
 const mockPendingAcceptLinks = [{

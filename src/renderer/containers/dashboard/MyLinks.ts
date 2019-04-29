@@ -7,6 +7,7 @@ import { createSelector } from 'reselect'
 import { blinq } from "blinq";
 import { BdapUser } from "../../system/BdapUser";
 import { push } from "connected-react-router";
+import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
 
 
 const getUserList = createSelector(
@@ -15,9 +16,10 @@ const getUserList = createSelector(
         (state: RendererRootState) => state.bdap.completeLinks,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
         (state: RendererRootState) => state.bdap.pendingRequestLinks,
+        (state: RendererRootState) => state.bdap.deniedLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
     ],
-    (users, completeLinks, pendingAcceptLinks, pendingRequestLinks, currentUserFqdn) => {
+    (users, completeLinks, pendingAcceptLinks, pendingRequestLinks, deniedLinks, currentUserFqdn) => {
         const linkedUsers = blinq(users)
             .join(
                 completeLinks,
@@ -28,7 +30,7 @@ const getUserList = createSelector(
                     commonName: u.common_name,
                     state: "linked"
                 } as BdapUser))
-        const pendingAcceptUsers = blinq(users)
+        const pendingAcceptUsers = filterDeniedUsers(blinq(users), deniedLinks)
             .join(
                 pendingAcceptLinks,
                 u => u.object_full_path,

@@ -2,20 +2,30 @@ import React, { FunctionComponent } from "react";
 import { UL, LI } from "../ui-elements/Dashboard";
 import { PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, InvitesIcon } from "../ui-elements/Image";
 import Text from "../ui-elements/Text";
+import { PickedDispatchProps } from "../../system/PickedDispatchProps";
+import { DashboardActions } from "../../../shared/actions/dashboard";
 
 export interface SidebarStateProps {
     location: string
 }
-export interface SidebarDispatchProps {
+export interface SidebarDispatchProp {
     push: (pathname: string) => void
 }
+
+export type SidebarDispatchProps = PickedDispatchProps<typeof DashboardActions, "toggleSpinner"> & SidebarDispatchProp
+
 
 export type SidebarProps = SidebarStateProps & SidebarDispatchProps
 
 
-export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location }) => <>
+export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location, toggleSpinner }) => <>
     <UL>
-        <div style={{ borderBottom: "solid 0.1px #d2d2d2 " }}><PlainAppLogo /></div>
+        <div 
+            style={{ borderBottom: "solid 0.1px #d2d2d2", cursor:'pointer' }}
+            onClick={()=> toggleSpinner()}
+        >
+            <PlainAppLogo />
+        </div>
         {
             tabs.map((t, idx) => {
                 const isSelected = t.isSelected(location);
