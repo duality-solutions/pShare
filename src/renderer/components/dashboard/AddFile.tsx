@@ -11,7 +11,7 @@ import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 
 
 export interface AddFileStateProps {
-
+    linkedUserCommonName: string
 }
 
 export interface AddFilesDispatchProps {
@@ -23,16 +23,20 @@ export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 
 
-export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected }) => {
+export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
     const error = false
+    const userNameParts = linkedUserCommonName.split(' ')
+    const lastName = (userNameParts.length > 1) ? userNameParts[userNameParts.length - 1] : ""
+    const firstName = userNameParts.length > 1 ? userNameParts.slice(0, -1).join(' ') : userNameParts[0]
     return <>
         <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
             <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
-                <Box margin="0" padding="10px" borderRadius="11px" height="56px" background="#efefef" width="200px">
+                <Box margin="0" padding="10px" borderRadius="11px" height="56px" background="#efefef" width="auto">
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em" fontWeight="600">Sending file to: </Text>
-                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em">&nbsp;Gail&nbsp;</Text>
-                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em" fontWeight="600">Allan</Text>
+                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em" fontWeight="600">Sending&nbsp;file&nbsp;to:&nbsp;</Text>
+                        {/* <LinkDisplayName fontSize="0.8em" displayName={linkedUserCommonName} /> */}
+                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em">&nbsp;{firstName}&nbsp;</Text>
+                        <Text margin="10px 0 0 0" align="center" fontSize="0.8em" fontWeight="600">{lastName}</Text>
                     </div>
                 </Box>
                 <Text margin="0" fontSize="0.9em">close <CloseIcon margin="0" onClick={() => close()} /> </Text>

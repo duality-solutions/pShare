@@ -9,7 +9,7 @@ import { AddFileActions } from "../../../shared/actions/addFile";
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddFileStateProps => {
     return {
-
+        linkedUserCommonName: state.sharedFiles.linkedCommonName || ""
     };
 };
 
