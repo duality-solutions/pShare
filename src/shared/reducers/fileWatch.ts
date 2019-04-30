@@ -1,6 +1,7 @@
 import { FileWatchActions } from "../actions/fileWatch";
 import { SharedFile } from "../types/SharedFile";
 import { getType } from "typesafe-actions";
+import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 
 interface InOutSharedFiles {
     in: Record<string, SharedFile>
@@ -36,6 +37,22 @@ export const fileWatch = (state: FileWatchState = defaultState, action: FileWatc
                                 ...((state.users[action.payload.sharedWith] || {}).out),
                                 [action.payload.relativePath]: action.payload
                             },
+                    }
+                }
+            }
+        case (getType(FileWatchActions.fileUnlinked)):
+            return {
+                ...state,
+                users: {
+                    ...state.users,
+                    [action.payload.sharedWith]: {
+                        ...state.users[action.payload.sharedWith],
+                        in: action.payload.direction !== "in"
+                            ? (state.users[action.payload.sharedWith] || {}).in
+                            : deleteOptionalProperty(((state.users[action.payload.sharedWith] || {}).in) || {}, action.payload.relativePath),
+                        out: action.payload.direction !== "out"
+                            ? (state.users[action.payload.sharedWith] || {}).out
+                            : deleteOptionalProperty(((state.users[action.payload.sharedWith] || {}).out) || {}, action.payload.relativePath),
                     }
                 }
             }
