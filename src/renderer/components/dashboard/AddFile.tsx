@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import React from "react";
 import { Box } from "../ui-elements/Box";
 import { CloseIcon, AddLinksIcon } from "../ui-elements/Image";
@@ -23,8 +23,10 @@ export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 
 
+const maximumFileSize = 3 * 1024 * 1024 * 1024;
 export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
-    const error = false
+    // react hooks FTW!!!!
+    const [error, setError] = useState(false)
     const userNameParts = linkedUserCommonName.split(' ')
     const lastName = (userNameParts.length > 1) ? userNameParts[userNameParts.length - 1] : ""
     const firstName = userNameParts.length > 1 ? userNameParts.slice(0, -1).join(' ') : userNameParts[0]
@@ -51,8 +53,14 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                             e.dataTransfer.dropEffect = "move";
                         }} onDrop={e => {
                             e.preventDefault();
-                            console.log(e.dataTransfer.files);
-                            filesSelected([...e.dataTransfer.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                            const files = [...e.dataTransfer.files];
+                            if (files.some(f => f.size > maximumFileSize)) {
+                                setError(true)
+                                return
+                            }
+                            setError(false)
+                            //console.log(e.dataTransfer.files);
+                            filesSelected(files.map(f => ({ path: f.path, type: f.type, size: f.size })))
                         }}>
                             {error ?
                                 <>
@@ -66,8 +74,17 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                                 </>}
                             <input type="file" id="fileElem" multiple accept="*/*" onChange={e => {
                                 e.preventDefault();
-                                console.log(e.currentTarget.files);
-                                e.currentTarget.files && filesSelected([...e.currentTarget.files].map(f => ({ path: f.path, type: f.type, size: f.size })))
+                                if (!e.currentTarget.files) {
+                                    return
+                                }
+
+                                const files = [...e.currentTarget.files];
+                                if (files.some(f => f.size > maximumFileSize)) {
+                                    setError(true)
+                                    return
+                                }
+                                setError(false)
+                                filesSelected(files.map(f => ({ path: f.path, type: f.type, size: f.size })))
                             }} style={({ display: "none" })} />
                             <Button color="#0055c4" width="175px">
                                 <label style={{ width: "100%", height: "100%", display: "block", cursor: "pointer" }} className="button" htmlFor="fileElem">
