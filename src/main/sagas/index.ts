@@ -12,9 +12,11 @@ import { linkAcceptSaga } from "./linkAcceptSaga";
 import { fileWatchSaga } from "./fileWatchSaga";
 import { linkDeclineSaga } from "./linkDeclineSaga";
 import { RpcClientWrapper } from "../RpcClient";
+import { addFileSaga } from "./addFileSaga";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
+    () => addFileSaga(),
     () => fileWatchSaga(),
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
