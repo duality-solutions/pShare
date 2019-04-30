@@ -12,6 +12,7 @@ import mime from 'mime-types'
 import { blinq } from 'blinq';
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
+import { maximumFileSize } from '../../shared/system/maximumFileSize';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
 }
@@ -27,7 +28,7 @@ export function* fileWatchSaga() {
     yield take(BdapActions.bdapDataFetchSuccess)
     yield call(() => fsExtra.ensureDir(pathToShareDirectory))
     console.log("starting file watcher")
-    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: false })
+    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: { stabilityThreshold: 300 } })
     const channel = eventChannel((emitter: (v: SimpleFileWatchEvent | FileWatchEvent | END) => void) => {
         const addHandler: (...args: any[]) => void = path => emitter({ type: "add", path });
         const changeHandler: (...args: any[]) => void = path => emitter({ type: "change", path });
@@ -71,6 +72,9 @@ export function* fileWatchSaga() {
                     {
                         const files: SharedFile[] = yield* getSharedFileInfo([ev.path], true);
                         for (const f of files) {
+                            if (f.size === undefined || f.size > maximumFileSize) {
+                                continue
+                            }
                             yield put(FileWatchActions.fileAdded(f))
                         }
                         break

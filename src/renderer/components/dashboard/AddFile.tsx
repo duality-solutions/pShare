@@ -7,6 +7,7 @@ import Container from "../ui-elements/Container";
 import { Card } from "../ui-elements/Card";
 import Button from "../ui-elements/Button";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
+import { maximumFileSize } from "../../../shared/system/maximumFileSize";
 
 
 
@@ -23,7 +24,6 @@ export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 
 
-const maximumFileSize = 3 * 1024 * 1024 * 1024;
 export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
     // react hooks FTW!!!!
     const [error, setError] = useState(false)
