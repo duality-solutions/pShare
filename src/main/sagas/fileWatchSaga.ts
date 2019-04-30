@@ -69,7 +69,7 @@ export function* fileWatchSaga() {
             switch (ev.type) {
                 case "add":
                     {
-                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path]);
+                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path], true);
                         for (const f of files) {
                             yield put(FileWatchActions.fileAdded(f))
                         }
@@ -77,7 +77,7 @@ export function* fileWatchSaga() {
                     }
                 case "unlink":
                     {
-                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path]);
+                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path], false);
                         for (const f of files) {
                             yield put(FileWatchActions.fileUnlinked(f))
                         }
@@ -102,7 +102,7 @@ const getTopDirectoryFromPath = (filePath: string) => {
     const pathSegments = filePath.split(path.sep);
     return pathSegments.length <= 1 ? undefined : pathSegments[0];
 }
-function* getSharedFileInfo(allFiles: Iterable<string>) {
+function* getSharedFileInfo(allFiles: Iterable<string>, gatherMetaData: boolean) {
     const filePromises: Iterable<Promise<SharedFile>> =
         blinq(allFiles)
             .selectMany(filePath => {
@@ -128,14 +128,8 @@ function* getSharedFileInfo(allFiles: Iterable<string>) {
             .select(async (fi): Promise<SharedFile> => {
                 let stats: fs.Stats | undefined;
                 let contentType: string | undefined
-                try {
+                if (gatherMetaData) {
                     stats = await fsStatAsync(fi.filePath);
-                } catch (err) {
-                    if (!/^ENOENT: no such file or directory/.test(err.message)) {
-                        throw err
-                    }
-                }
-                if (stats) {
                     contentType = mime.lookup(fi.filePath) || 'application/octet-stream'
                 };
                 return ({
