@@ -10,7 +10,6 @@ import { createAsyncQueue } from '../../shared/system/createAsyncQueue';
 import { BdapActions } from '../../shared/actions/bdap';
 import mime from 'mime-types'
 import { blinq } from 'blinq';
-import { Enumerable } from 'blinq/dist/types/src/Enumerable';
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
 interface SimpleFileWatchEvent {
@@ -59,33 +58,43 @@ export function* fileWatchSaga() {
             }
         }
     })
-    const addedFiles: string[] = []
-    const unlinkedFiles: string[] = []
+    //const addedFiles: string[] = []
+    //const unlinkedFiles: string[] = []
     for (; ;) {
         const ev: SimpleFileWatchEvent = yield call(() => q.receive())
-        if (ev.type === "ready") {
-            break;
-        }
+        // if (ev.type === "ready") {
+        //     break;
+        // }
         if (isFileWatchEvent(ev)) {
             switch (ev.type) {
                 case "add":
-                    addedFiles.push(ev.path)
-                    break
+                    {
+                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path]);
+                        for (const f of files) {
+                            yield put(FileWatchActions.fileAdded(f))
+                        }
+                        break
+                    }
                 case "unlink":
-                    unlinkedFiles.push(ev.path)
-                    break
+                    {
+                        const files: SharedFile[] = yield* getSharedFileInfo([ev.path]);
+                        for (const f of files) {
+                            yield put(FileWatchActions.fileUnlinked(f))
+                        }
+                        break
+                    }
             }
         }
     }
-    const allFiles = blinq(addedFiles)
-        .except(unlinkedFiles);
-    const files: SharedFile[] = yield* getSharedFileInfo(allFiles);
-    
-    for(const f of files){
-        yield put(FileWatchActions.fileAdded(f))
-    }
-    //console.log(initialFiles)
-    console.log(files)
+    // const allFiles = blinq(addedFiles)
+    //     .except(unlinkedFiles);
+    // const files: SharedFile[] = yield* getSharedFileInfo(allFiles);
+
+    // for (const f of files) {
+    //     yield put(FileWatchActions.fileAdded(f))
+    // }
+    // //console.log(initialFiles)
+    // console.log(files)
 
 }
 
@@ -93,40 +102,51 @@ const getTopDirectoryFromPath = (filePath: string) => {
     const pathSegments = filePath.split(path.sep);
     return pathSegments.length <= 1 ? undefined : pathSegments[0];
 }
-function* getSharedFileInfo(allFiles: Enumerable<string>) {
-    const filePromises: Iterable<Promise<SharedFile>> = allFiles
-        .selectMany(filePath => {
-            const relPath = getRelativePath(filePath);
-            const userDirName = getTopDirectoryFromPath(relPath); //represents linked user
-            if (!userDirName) {
-                return [];
-            }
-            const userDirRelativePath = path.relative(userDirName, relPath);
-            const inOrOut = getTopDirectoryFromPath(userDirRelativePath)
-            if (inOrOut !== "in" && inOrOut !== "out") {
-                return []
-            }
-            const dir: "in" | "out" = inOrOut
-            const inOutRelPath = path.relative(inOrOut, userDirRelativePath)
-            return [{
-                direction: dir,
-                filePath,
-                userDirName,
-                inOutRelPath
-            }];
-        })
-        .select(async (fi): Promise<SharedFile> => {
-            const stats = await fsStatAsync(fi.filePath);
-            const contentType = mime.lookup(fi.filePath) || 'application/octet-stream';
-            return ({
-                path: fi.filePath,
-                contentType,
-                relativePath: fi.inOutRelPath,
-                direction: fi.direction,
-                size: stats.size,
-                sharedWith: fi.userDirName
+function* getSharedFileInfo(allFiles: Iterable<string>) {
+    const filePromises: Iterable<Promise<SharedFile>> =
+        blinq(allFiles)
+            .selectMany(filePath => {
+                const relPath = getRelativePath(filePath);
+                const userDirName = getTopDirectoryFromPath(relPath); //represents linked user
+                if (!userDirName) {
+                    return [];
+                }
+                const userDirRelativePath = path.relative(userDirName, relPath);
+                const inOrOut = getTopDirectoryFromPath(userDirRelativePath)
+                if (inOrOut !== "in" && inOrOut !== "out") {
+                    return []
+                }
+                const dir: "in" | "out" = inOrOut
+                const inOutRelPath = path.relative(inOrOut, userDirRelativePath)
+                return [{
+                    direction: dir,
+                    filePath,
+                    userDirName,
+                    inOutRelPath
+                }];
+            })
+            .select(async (fi): Promise<SharedFile> => {
+                let stats: fs.Stats | undefined;
+                let contentType: string | undefined
+                try {
+                    stats = await fsStatAsync(fi.filePath);
+                } catch (err) {
+                    if (!/^ENOENT: no such file or directory/.test(err.message)) {
+                        throw err
+                    }
+                }
+                if (stats) {
+                    contentType = mime.lookup(fi.filePath) || 'application/octet-stream'
+                };
+                return ({
+                    path: fi.filePath,
+                    contentType,
+                    relativePath: fi.inOutRelPath,
+                    direction: fi.direction,
+                    size: stats ? stats.size : undefined,
+                    sharedWith: fi.userDirName
+                });
             });
-        });
     const files: SharedFile[] = [];
     for (let filePromise of filePromises) {
         const f: SharedFile = yield call(() => filePromise);

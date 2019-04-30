@@ -8,9 +8,11 @@ import { Text } from "../ui-elements/Text";
 import { SharedButton, DownloadButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
 import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
+import { SharedFile } from "../../../shared/types/SharedFile";
+import { blinq } from "blinq";
 
 export interface SharedFilesStateProps {
-    // users: BdapUser[]
+    outFiles: SharedFile[]
 }
 export interface SharedFilesDispatchProps {
     //push: (pathname: string) => void
@@ -18,7 +20,7 @@ export interface SharedFilesDispatchProps {
     shareNewFile: () => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareNewFile }) =>
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareNewFile, outFiles }) =>
     <>
         <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px"
             border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
@@ -43,14 +45,18 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareN
                 </Box>
                 <Box margin="0" >
                     <FilesList>
-                        <FilesListItem>
+                        {outFiles
+                            ? blinq(outFiles).select(f =>
+                                <FilesListItem key={f.relativePath}>
+                                    <DocumentSvg margin="0 1em 0 0" width="30px" />
+                                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
+                                </FilesListItem>)
+                            : []}
+
+                        {/* <FilesListItem>
                             <DocumentSvg margin="0 1em 0 0" width="30px" />
                             <Text margin="5px 0 0 0" color="#4f4f4f">p-share app icons_p-share-account-16</Text>
-                        </FilesListItem>
-                        <FilesListItem>
-                            <DocumentSvg margin="0 1em 0 0" width="30px" />
-                            <Text margin="5px 0 0 0" color="#4f4f4f">p-share app icons_p-share-account-16</Text>
-                        </FilesListItem>
+                        </FilesListItem> */}
                     </FilesList>
                 </Box>
             </Box>
