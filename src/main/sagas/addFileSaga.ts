@@ -21,8 +21,20 @@ export function* addFileSaga() {
         for (const fpi of filePathInfos) {
             console.log("filePathInfo : " + fpi.path)
             const fileName = path.basename(fpi.path)
-            const dest = path.join(targetDirectory, fileName)
-            yield call(() => fsExtra.copy(fpi.path, dest, { errorOnExist: true }))
+            const [firstSeg, ...remainingSegs] = fileName.split(".");
+            for (let i = 0; ; i++) {
+                const dest = path.join(targetDirectory, i === 0 ? fileName : `${firstSeg}(${i})${["", ...remainingSegs].join(".")}`);
+
+                try {
+                    yield call(() => fsExtra.copy(fpi.path, dest, { errorOnExist: true, overwrite: false }))
+                } catch (err) {
+                    if (/ already exists$/.test(err.message)) {
+                        continue
+                    }
+                    throw err
+                }
+                break
+            }
         }
         yield put(AddFileActions.close())
     })
