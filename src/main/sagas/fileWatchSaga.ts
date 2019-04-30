@@ -27,7 +27,7 @@ export function* fileWatchSaga() {
     yield take(BdapActions.bdapDataFetchSuccess)
     yield call(() => fsExtra.ensureDir(pathToShareDirectory))
     console.log("starting file watcher")
-    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: true })
+    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: false })
     const channel = eventChannel((emitter: (v: SimpleFileWatchEvent | FileWatchEvent | END) => void) => {
         const addHandler: (...args: any[]) => void = path => emitter({ type: "add", path });
         const changeHandler: (...args: any[]) => void = path => emitter({ type: "change", path });
