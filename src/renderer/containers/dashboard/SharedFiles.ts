@@ -14,7 +14,8 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
                 && state.fileWatch.users[state.sharedFiles.linkedUserName]
                 && state.fileWatch.users[state.sharedFiles.linkedUserName].out
                 ? Object.values(state.fileWatch.users[state.sharedFiles.linkedUserName].out)
-                : []
+                : [],
+        linkedUserCommonName: state.sharedFiles.linkedCommonName
     }
 };
 

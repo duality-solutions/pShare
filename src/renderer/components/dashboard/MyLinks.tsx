@@ -13,10 +13,10 @@ export interface MyLinksStateProps {
 }
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
-    viewSharedFiles: (userName: string) => void
+    startViewSharedFiles: (userName: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, viewSharedFiles }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles }: MyLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
@@ -33,7 +33,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, viewShar
                             </div>
                             {u.state === 'pending' ?
                                 <div style={{ fontSize: "0.8em" }}> Pending <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                : <div style={{ fontSize: "0.8em" }}> View <ViewBtnIcon onClick={() => viewSharedFiles(u.userName)} width="30px" height="30px" margin="0 0 0 1em" /></div>}
+                                : <div style={{ fontSize: "0.8em" }}> View <ViewBtnIcon onClick={() => startViewSharedFiles(u.userName)} width="30px" height="30px" margin="0 0 0 1em" /></div>}
                         </UserListItem>
                     )}
                 </UserList>

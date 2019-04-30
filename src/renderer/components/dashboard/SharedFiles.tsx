@@ -12,7 +12,8 @@ import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
 
 export interface SharedFilesStateProps {
-    outFiles: SharedFile[]
+    outFiles: SharedFile[],
+    linkedUserCommonName?: string
 }
 export interface SharedFilesDispatchProps {
     //push: (pathname: string) => void
@@ -20,13 +21,13 @@ export interface SharedFilesDispatchProps {
     shareNewFile: () => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareNewFile, outFiles }) =>
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareNewFile, outFiles, linkedUserCommonName }) =>
     <>
         <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px"
             border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
             <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                 <div style={{ display: 'flex' }}><UserListAvatar src={man} />
-                    <LinkDisplayName displayName="Walker Adranz" />
+                    <LinkDisplayName displayName={linkedUserCommonName || ""} />
                 </div>
                 <div style={{ display: 'flex', }}>
                     <SharedButton onClick={() => { }} />
