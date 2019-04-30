@@ -15,7 +15,7 @@ interface FileWatchState {
 const defaultState: FileWatchState = {
     users: {}
 }
-
+// todo: this is nasty. some sort of functional lense might be a way to tidy this up. shades.js is a possible candidate
 export const fileWatch = (state: FileWatchState = defaultState, action: FileWatchActions) => {
     switch (action.type) {
         case (getType(FileWatchActions.fileAdded)):
