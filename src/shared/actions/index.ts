@@ -7,6 +7,9 @@ import { UserActions } from './user';
 import { DashboardActions } from './dashboard';
 import { SharedFilesActions } from './sharedFiles';
 import { FileWatchActions } from './fileWatch';
+import { AddFileActions } from './addFile';
+import { BdapActions } from './bdap';
+import { FileListActions } from './fileList';
 
 export const RootActions = {
     ...StoreActions,
@@ -16,7 +19,10 @@ export const RootActions = {
     ...OnboardingActions,
     ...DashboardActions,
     ...SharedFilesActions,
-    ...FileWatchActions
+    ...FileWatchActions,
+    ...AddFileActions,
+    ...BdapActions,
+    ...FileListActions
 }
 
 export type RootActions = ActionType<typeof RootActions>

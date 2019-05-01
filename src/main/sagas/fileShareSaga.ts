@@ -11,14 +11,9 @@ import { BdapActions } from "../../shared/actions/bdap";
 import { getType } from "typesafe-actions";
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
+import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
 
 
-interface PublicSharedFile {
-    fileName: string
-    hash: string
-    size: number
-    contentType: string
-}
 export function* fileShareSaga(rpcClient: RpcClient) {
     yield all({
         bdapDataFetch: take(getType(BdapActions.bdapDataFetchSuccess)),
@@ -39,8 +34,9 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                 ([un]) => un,
                 n => n,
                 ([un, e]) => [un, e.out])
+            .where(([, sharedFiles]) => typeof sharedFiles !== 'undefined')
 
-
+    //console.log(`ENTRIES : ${JSON.stringify([...entriesWithMatchingCompleteLink])}`)
 
     const dataForLinks =
         entriesWithMatchingCompleteLink
