@@ -1,4 +1,4 @@
-import { encrypt as enc, decrypt as dec } from "sjcl-local"
+import { encrypt as enc, decrypt as dec } from "sjcl-git"
 import { Encryptor } from "./Encryptor";
 
 //aes with keysize 256, tag size 128 and 100000 iterations for password hashing

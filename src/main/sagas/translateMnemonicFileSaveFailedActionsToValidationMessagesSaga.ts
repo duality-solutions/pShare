@@ -4,7 +4,7 @@ import { OnboardingActions } from "../../shared/actions/onboarding";
 import { createValidatedFailurePayload } from "../../shared/system/validator/createValidatedFailurePayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
 
-export function* translateMnemonicFileSaveFailedActionsToValidationMessages() {
+export function* translateMnemonicFileSaveFailedActionsToValidationMessagesSaga() {
     yield takeEvery(
         getType(OnboardingActions.mnemonicFileSaveFailed),
         function* (action: ActionType<typeof OnboardingActions.mnemonicFileSaveFailed>) {

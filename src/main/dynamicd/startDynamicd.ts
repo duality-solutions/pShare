@@ -21,6 +21,7 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
         return {
             start: () => { },
             //dispose: async () => console.log("dispose does nothing in development"),
+            once: () => true,
             addEventListener: () => true,
             removeEventListener: () => true,
             rpcUser: "CWIXE4bsgA",
@@ -63,7 +64,7 @@ async function startDynamicdProcess(
     const { rpcUser, rpcPassword } = await initializeDynamicConfig({ pathToDynamicConf, pathToDataDir, pathToDynamicdDefaultConf }, cancellationToken);
     //const token = createCancellationToken(undefined, cancellationToken);
     let started = false;
-    const { addEventListener, dispatchEvent, removeEventListener } = createEventEmitter();
+    const { addEventListener, dispatchEvent, removeEventListener, once } = createEventEmitter();
     const processInfo = {
         start: () => {
             if (!started) {
@@ -71,7 +72,7 @@ async function startDynamicdProcess(
                     console.log(`${pathToPidFile} does not exist`)
                     const wasStarted = started;
                     started = true;
-                    const resolver = createPromiseResolver();
+                    const resolver = createPromiseResolver<string>();
                     childProcess.execFile(pathToDynamicd, sharedParameters, { encoding: "utf8" }, (err, stdout, ) => {
                         if (err) {
                             resolver.reject(err)
@@ -92,6 +93,7 @@ async function startDynamicdProcess(
             }
         },
         addEventListener,
+        once,
         removeEventListener,
         rpcUser,
         rpcPassword

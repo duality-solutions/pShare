@@ -24,6 +24,7 @@ export interface PasswordCreateStateProps {
 
 export type PasswordCreateDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "fieldValidated" | "submitPassword">
 
+
 type PasswordCreateProps = PasswordCreateDispatchProps & PasswordCreateStateProps
 
 interface PasswordCreateComponentState {
@@ -87,6 +88,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                 transitionEnter={false}
                 transitionLeave={false}>
                 <H1 align="center" colored fontWeight="600">Create Account</H1>
+                {/* <Link style={({ position: "absolute", top: 0, left: 0 })} to={appRoutes.rtcPlayground.path}>webrtc playground</Link> */}
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">

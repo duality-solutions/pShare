@@ -1,3 +1,0 @@
-[submodule "src/sjcl"]
-	path = src/sjcl
-	url = git@github.com:bitwiseshiftleft/sjcl.git

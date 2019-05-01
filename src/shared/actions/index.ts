@@ -4,6 +4,7 @@ import { OnboardingActions } from './onboarding';
 import { StoreActions } from './store';
 import { SyncActions } from './sync';
 import { UserActions } from './user';
+import { RtcActions } from './rtc';
 import { DashboardActions } from './dashboard';
 import { SharedFilesActions } from './sharedFiles';
 import { FileWatchActions } from './fileWatch';
@@ -22,7 +23,8 @@ export const RootActions = {
     ...FileWatchActions,
     ...AddFileActions,
     ...BdapActions,
-    ...FileListActions
+    ...FileListActions,
+    ...RtcActions
 }
 
 export type RootActions = ActionType<typeof RootActions>

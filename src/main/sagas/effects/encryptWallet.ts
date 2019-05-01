@@ -27,17 +27,14 @@ function* encryptWalletAndWaitForRestart(rpcClient: RpcClientWrapper, password: 
     const isDevelopment = process.env.NODE_ENV === 'development'
     if (!isDevelopment) {
         const promiseResolver = createPromiseResolver<void>();
-        const handler: (evtObj: any) => void = e => promiseResolver.resolve();
-        rpcClient.processInfo.addEventListener("restart", handler);
-
+        rpcClient.processInfo.once("restart", () => promiseResolver.resolve());
         yield call(() => rpcClient.command("encryptwallet", password));
-
         console.log("restart expected. waiting for restart event");
         yield call(async () => {
             await promiseResolver.promise;
         });
         console.log("rpcClient processInfo indicated a restart. safe to continue");
-        rpcClient.processInfo.removeEventListener("restart", handler);
+        
     } else {
         yield call(() => rpcClient.command("encryptwallet", password));
         yield call(() => delay(5000))

@@ -50,7 +50,7 @@ export function createCancellationToken(timeout?: number, parentToken?: Cancella
             })
             .then(v => callback(v))
             .catch(err => console.log("unregistered : " + err.message))
-        return { unregister: () => resolver.resolve({}) }
+        return { unregister: () => resolver.resolve() }
 
     };
     methods.createDependentToken = (timeout?: number) => createCancellationToken(timeout, token);

@@ -128,6 +128,7 @@ function* waitForWalletCredentials() {
         navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.myLinks, true);
         yield navMap.runNav();
     }
+    console.log("dispatching BdapActions.initialize")
     yield put(BdapActions.initialize());
 }
 
