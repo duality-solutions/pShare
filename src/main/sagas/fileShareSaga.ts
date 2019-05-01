@@ -10,6 +10,7 @@ import { SharedFile } from "../../shared/types/SharedFile";
 import { BdapActions } from "../../shared/actions/bdap";
 import { getType } from "typesafe-actions";
 import { FileWatchActions } from "../../shared/actions/fileWatch";
+import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 
 
 interface PublicSharedFile {
@@ -59,7 +60,13 @@ export function* fileShareSaga(rpcClient: RpcClient) {
     for (const [remoteUserName, publicSharedFiles] of dataForLinks) {
         const serialized = JSON.stringify([...publicSharedFiles])
         console.log(`shared with ${remoteUserName} : ${serialized}`)
-
+        // dht putlinkrecord hfchrissperry100 hfchrissperry101 pshare-filelist "<JSON>"
+        const result =
+            yield unlockedCommandEffect(
+                rpcClient,
+                command =>
+                    command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+        console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
     }
 
 }
