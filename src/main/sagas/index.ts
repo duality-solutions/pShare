@@ -14,12 +14,14 @@ import { linkDeclineSaga } from "./linkDeclineSaga";
 import { RpcClientWrapper } from "../RpcClient";
 import { addFileSaga } from "./addFileSaga";
 import { startViewSharedFilesSaga } from "./startViewSharedFilesSaga";
+import { fileShareSaga } from "./fileShareSaga";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
     () => startViewSharedFilesSaga(rpcClient),
     () => addFileSaga(),
     () => fileWatchSaga(),
+    () => fileShareSaga(rpcClient),
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
     () => linkDeclineSaga(rpcClient),

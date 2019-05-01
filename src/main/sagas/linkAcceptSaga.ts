@@ -7,6 +7,8 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { blinq } from "blinq";
 import { RpcClient } from "../RpcClient";
+import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
+
 export function* linkAcceptSaga(rpcClient: RpcClient) {
 
 
@@ -27,11 +29,7 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
 
         const pendingAcceptLinks: PendingLink[] = yield select((state: MainRootState) => state.bdap.pendingAcceptLinks);
 
-        const getUserNameFromFqdn = (fqName: string) => {
-            const r = /^(.*?)@/.exec(fqName);
 
-            return r ? r[1] : null;
-        }
 
         const linksToAccept = blinq(pendingAcceptLinks)
             .select(link => ({

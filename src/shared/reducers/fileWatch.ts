@@ -3,7 +3,7 @@ import { SharedFile } from "../types/SharedFile";
 import { getType } from "typesafe-actions";
 import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 
-interface InOutSharedFiles {
+export interface InOutSharedFiles {
     in: Record<string, SharedFile>
     out: Record<string, SharedFile>
 }
