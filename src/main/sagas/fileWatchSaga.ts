@@ -13,6 +13,7 @@ import { blinq } from 'blinq';
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
 import { maximumFileSize } from '../../shared/system/maximumFileSize';
+import { hashFile } from '../../shared/system/hashing/hashFile';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
 }
@@ -28,7 +29,7 @@ export function* fileWatchSaga() {
     yield take(BdapActions.bdapDataFetchSuccess)
     yield call(() => fsExtra.ensureDir(pathToShareDirectory))
     console.log("starting file watcher")
-    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: { stabilityThreshold: 300 } })
+    const watcher = watch(pathToShareDirectory, { awaitWriteFinish: { stabilityThreshold: 500 } })
     const channel = eventChannel((emitter: (v: SimpleFileWatchEvent | FileWatchEvent | END) => void) => {
         const addHandler: (...args: any[]) => void = path => emitter({ type: "add", path });
         const changeHandler: (...args: any[]) => void = path => emitter({ type: "change", path });
@@ -63,9 +64,11 @@ export function* fileWatchSaga() {
     //const unlinkedFiles: string[] = []
     for (; ;) {
         const ev: SimpleFileWatchEvent = yield call(() => q.receive())
-        // if (ev.type === "ready") {
-        //     break;
-        // }
+        if (ev.type === "ready") {
+            yield put(FileWatchActions.initialScanComplete())
+            continue
+        }
+
         if (isFileWatchEvent(ev)) {
             switch (ev.type) {
                 case "add":
@@ -75,10 +78,12 @@ export function* fileWatchSaga() {
                             if (f.size === undefined || f.size > maximumFileSize) {
                                 continue
                             }
+
                             yield put(FileWatchActions.fileAdded(f))
                         }
                         break
                     }
+
                 case "unlink":
                     {
                         const files: SharedFile[] = yield* getSharedFileInfo([ev.path], false);
@@ -132,9 +137,12 @@ function* getSharedFileInfo(allFiles: Iterable<string>, gatherMetaData: boolean)
             .select(async (fi): Promise<SharedFile> => {
                 let stats: fs.Stats | undefined;
                 let contentType: string | undefined
+                let hash: string | undefined
+
                 if (gatherMetaData) {
                     stats = await fsStatAsync(fi.filePath);
                     contentType = mime.lookup(fi.filePath) || 'application/octet-stream'
+                    hash = await hashFile(fi.filePath)
                 };
                 return ({
                     path: fi.filePath,
@@ -142,7 +150,8 @@ function* getSharedFileInfo(allFiles: Iterable<string>, gatherMetaData: boolean)
                     relativePath: fi.inOutRelPath,
                     direction: fi.direction,
                     size: stats ? stats.size : undefined,
-                    sharedWith: fi.userDirName
+                    sharedWith: fi.userDirName,
+                    hash
                 });
             });
     const files: SharedFile[] = [];
