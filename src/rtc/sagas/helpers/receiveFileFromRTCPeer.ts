@@ -6,6 +6,7 @@ import * as fs from 'fs'
 import { FileInfo } from "../../../shared/actions/payloadTypes/FileInfo";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { RtcActions } from "../../../shared/actions/rtc";
+import * as crypto from 'crypto'
 
 const fsOpenAsync = util.promisify(fs.open)
 const fsCloseAsync = util.promisify(fs.close)
@@ -19,15 +20,19 @@ export const receiveFileFromRTCPeer =
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
                     let total = 0;
+                    const shasum = crypto.createHash('sha256');
                     for (; ;) {
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
                         console.log(`answerpeer received : ${total}`);
-                        yield call(() => fsWriteAsync(fileDescriptor, toBuffer(msg)));
+                        const buffer = toBuffer(msg)
+                        shasum.update(buffer)
+                        yield call(() => fsWriteAsync(fileDescriptor, buffer));
                         if (total > fileNameInfo.size) {
                             throw Error("more data than expected");
                         }
                         if (total === fileNameInfo.size) {
+                            console.log("received file hash : " + shasum.digest("base64"))
                             break;
                         }
                         yield put(RtcActions.fileReceiveProgress({ fileRequest, totalBytes: fileNameInfo.size, downloadedBytes: total }))

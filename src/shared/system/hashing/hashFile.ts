@@ -14,7 +14,7 @@ export function hashFile(path: string, algorithm: HashAlgorithm = 'sha256'): Pro
         };
         const endHandler: (...args: any[]) => void = function () {
             unsubscribe();
-            var hash = shasum.digest('hex');
+            var hash = shasum.digest('base64');
             resolve(hash);
         };
         s.on('error', errorHandler);
