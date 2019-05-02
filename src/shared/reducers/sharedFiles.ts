@@ -6,13 +6,14 @@ import { PublicSharedFile } from "../types/PublicSharedFile";
 import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 import { RtcActions } from "../actions/rtc";
 import { blinq } from "blinq";
+import { FileSharingActions } from "../actions/fileSharing";
 
 export interface SharedFilesState {
     linkedUserName?: string,
     linkedCommonName?: string,
     downloadableFiles?: DownloadableFile[]
 }
-export type DownloadState = "ready" | "downloading" | "downloaded" | "failed"
+export type DownloadState = "ready" | "starting" | "downloading" | "downloaded" | "failed"
 export interface DownloadableFile {
     file: PublicSharedFile
     state: DownloadState
@@ -22,7 +23,7 @@ export interface DownloadableFile {
 const defaultState: SharedFilesState = {
 }
 
-export const sharedFiles = (state: SharedFilesState = defaultState, action: DashboardActions | SharedFilesActions | FileListActions | RtcActions): SharedFilesState => {
+export const sharedFiles = (state: SharedFilesState = defaultState, action: DashboardActions | SharedFilesActions | FileListActions | RtcActions| FileSharingActions): SharedFilesState => {
     switch (action.type) {
         case getType(DashboardActions.viewSharedFiles):
             return { ...state, linkedUserName: action.payload.object_id, linkedCommonName: action.payload.common_name }
@@ -50,6 +51,18 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
         case getType(SharedFilesActions.close):
             const { linkedUserName, ...rest } = state
             return rest
+
+        
+        case getType(FileSharingActions.requestFile):
+        {
+            const fileRequest = action.payload
+                const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
+                    .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
+                        && df.file.hash === fileRequest.fileId
+                        ? { state: "starting", progressPct: 100, file: df.file }
+                        : df)
+                return { ...state, downloadableFiles: mappedDownloadableFiles }
+        }
 
         case getType(RtcActions.fileReceiveSuccess):
             {

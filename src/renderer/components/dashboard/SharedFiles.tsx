@@ -84,6 +84,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                             return <>download failed</>
                                         case "downloaded":
                                             return <>download successful</>
+                                        case "starting":
+                                            return <>starting...</>
                                         default:
                                             return <></>
                                     }
