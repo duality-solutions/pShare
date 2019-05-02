@@ -23,7 +23,7 @@ const SidebarContainer = styled('div')`
     max-height:100vh;
     `;
 
-const MainContentContainer = styled('div')<{ disabled?: boolean}>`
+const MainContentContainer = styled('div') <{ disabled?: boolean }>`
     display: flex;
     height:100%;
     z-index: ${props => props.disabled ? -1 : 0}
@@ -44,7 +44,7 @@ const SidebarList = styled('ul')`
 `;
 
 
-const SidedbarListItem = styled('li')<{disabled?: boolean, dark?:boolean}>`
+const SidedbarListItem = styled('li') <{ disabled?: boolean, dark?: boolean }>`
     display: flex;
     flex-direction: column;
     justify-content:center;
@@ -53,7 +53,7 @@ const SidedbarListItem = styled('li')<{disabled?: boolean, dark?:boolean}>`
     max-height: 64px;
     border-bottom: solid 0.1px #d2d2d2;
     opacity: ${props => props.disabled ? 0.4 : 1};
-    background: ${props=> props.dark ? '#4f4f4f' : ''};
+    background: ${props => props.dark ? '#4f4f4f' : ''};
 `;
 
 const UserList = styled('ul')`
@@ -66,7 +66,7 @@ const UserList = styled('ul')`
     -webkit-padding-start: 0px;
 `;
 
-const UserListItem = styled('li')<{disabled?: boolean}>`
+const UserListItem = styled('li') <{ disabled?: boolean }>`
     display: flex;
     direction: row;
     justify-content: space-between;
@@ -89,8 +89,16 @@ const FilesList = styled('ul')`
 const FilesListItem = styled('li')`
     display: flex;
     direction: row;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: 1em 0 0em 0;
+
+`;
+const FilesListFile = styled('span')`
+    display: flex;
+    direction: row;
+    justify-content: flex-start;
+    padding: 0;
+    margin: 0;
 
 `;
 
@@ -109,7 +117,7 @@ interface InviteComponentState {
 }
 
 class InviteListItem extends React.Component<InviteProps, InviteComponentState>{
-    constructor(props: InviteProps){
+    constructor(props: InviteProps) {
         super(props)
         this.state = {
             active: false
@@ -118,15 +126,15 @@ class InviteListItem extends React.Component<InviteProps, InviteComponentState>{
     render() {
         const { children, msg } = this.props
         const { active } = this.state
-        return(
-            <StyledInviteListItem onClick={()=> this.setState({ active: !active })}>
+        return (
+            <StyledInviteListItem onClick={() => this.setState({ active: !active })}>
                 {children}
-                {active && 
+                {active &&
                     <Text fontSize="0.9em" fontWeight="400" color="#4a4a4a">
                         {msg}
                     </Text>}
             </StyledInviteListItem>
-        )    
+        )
     }
 }
 
@@ -134,5 +142,5 @@ export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem, FilesList, FilesListItem, InviteListItem
+    UserList, UserListItem, FilesList, FilesListItem, FilesListFile, InviteListItem
 }

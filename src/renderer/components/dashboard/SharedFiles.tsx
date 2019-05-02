@@ -7,7 +7,7 @@ import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg } from "../ui-e
 import { Text } from "../ui-elements/Text";
 import Button, { SharedButton, DownloadButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
-import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
+import { FilesList, FilesListItem, FilesListFile } from "../ui-elements/Dashboard";
 import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
@@ -66,28 +66,34 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
         </Box>
         <Box margin="0">
             <FilesList>
-                {blinq(downloadableFiles).select(f => <FilesListItem key={f.file.fileName}>
-                    <DocumentSvg margin="0 1em 0 0" width="30px" />
-                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
-                    {
-                        (() => {
-                            switch (f.state) {
-                                case "downloading":
-                                    return <>{f.progressPct}%</>
-                                case "ready":
-                                    return <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
-                                case "failed":
-                                    return <>download failed</>
-                                case "downloaded":
-                                    return <>download successful</>
-                                default:
-                                    return <></>
+                {blinq(downloadableFiles).select(f =>
+                    <FilesListItem key={f.file.fileName}>
+                        <FilesListFile>
+                            <DocumentSvg margin="0 1em 0 0" width="30px" />
+                            <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
+                        </FilesListFile>
+                        <div>
+                            {
+                                (() => {
+                                    switch (f.state) {
+                                        case "downloading":
+                                            return <>{f.progressPct}%</>
+                                        case "ready":
+                                            return <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
+                                        case "failed":
+                                            return <>download failed</>
+                                        case "downloaded":
+                                            return <>download successful</>
+                                        default:
+                                            return <></>
+                                    }
+                                })()
                             }
-                        })()
-                    }
+                        </div>
 
 
-                </FilesListItem>)}
+
+                    </FilesListItem>)}
             </FilesList>
         </Box>
     </Box>;
@@ -110,8 +116,10 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ outFiles, shareNewFile }
             <FilesList>
                 {outFiles
                     ? blinq(outFiles).select(f => <FilesListItem key={f.relativePath}>
-                        <DocumentSvg margin="0 1em 0 0" width="30px" />
-                        <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
+                        <FilesListFile>
+                            <DocumentSvg margin="0 1em 0 0" width="30px" />
+                            <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
+                        </FilesListFile>
                     </FilesListItem>)
                     : []}
 
