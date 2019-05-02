@@ -1,4 +1,4 @@
-import { takeEvery, call, put, select, actionChannel, flush, race } from "redux-saga/effects";
+import { takeEvery, call, put, select, actionChannel, flush } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { DashboardActions } from "../../shared/actions/dashboard";
 import { RpcClient } from "../RpcClient";
@@ -8,7 +8,6 @@ import { MainRootState } from "../reducers";
 import { FileListActions } from "../../shared/actions/fileList";
 import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
 import { SharedFilesActions } from "../../shared/actions/sharedFiles";
-import { take } from "rxjs/operators";
 import { delay } from "redux-saga";
 interface BdapLinkData {
     link_requestor: string,
