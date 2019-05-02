@@ -86,7 +86,7 @@ export function* fileShareSaga(rpcClient: RpcClient) {
             yield take(channel)
         allActions.push(action)
         for (; ;) {
-            yield delay(2000)
+            yield delay(5000)
             const actions: AddAndUnlinkActionTypes[] = yield flush(channel)
             if (!actions.some(x => true)) {
                 break
