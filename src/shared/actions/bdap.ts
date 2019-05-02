@@ -37,7 +37,7 @@ export const BdapActions = {
 
     currentUserReceived: createStandardAction('bdap/CURRENT_USER_RECEIVED')<GetUserInfo>(),
 
-    beginCreateLinkRequest: createStandardAction('bdap/BEGIN_CREATE_LINK_REQUEST')<LinkBase>(),
+    beginCreateLinkRequest: createStandardAction('bdap/BEGIN_CREATE_LINK_REQUEST')<LinkRequestOptions>(),
     createLinkRequest: createStandardAction('bdap/CREATE_LINK_REQUEST')<LinkRequestOptions>(),
     createLinkRequestFailed: createStandardAction('bdap/CREATE_LINK_REQUEST_FAILED')<string>(),
 

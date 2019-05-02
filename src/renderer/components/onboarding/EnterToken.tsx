@@ -146,7 +146,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                                 error={validationFailed} />
                                             {
                                                 validationFailed
-                                                    ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
+                                                    ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text margin="1em 0" color="#e30429" key={i}>{e}</Text>)
                                                     : <></>
                                             }
                                             <Box width="392px" background="#fafafa" padding="10px" borderRadius="5px">

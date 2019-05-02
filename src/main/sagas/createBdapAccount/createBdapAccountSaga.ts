@@ -35,7 +35,8 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
             }
             const regex2 = /^Unsuccessful: Activation service response/
             if (regex2.test(err.message)) {
-                yield put(OnboardingActions.createBdapAccountFailed(`Activation was unsuccessful : ${err.message}`))
+                // yield put(OnboardingActions.createBdapAccountFailed(`Activation was unsuccessful : ${err.message}`))
+                yield put(OnboardingActions.createBdapAccountFailed('Invalid Token'))
                 return;
             }
 

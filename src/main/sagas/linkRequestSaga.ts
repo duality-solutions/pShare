@@ -11,7 +11,7 @@ import { entries } from "../../shared/system/entries";
 export function* linkRequestSaga(rpcClient: RpcClient) {
 
     yield takeEvery(getType(BdapActions.beginCreateLinkRequest), function* (action: ActionType<typeof BdapActions.beginCreateLinkRequest>) {
-        const { requestor, recipient } = action.payload
+        const { requestor, recipient, inviteMessage } = action.payload
         console.log(`link request: requestor : ${requestor} , recipient : ${recipient}`)
 
         const { common_name: commonName }: BdapAccount = yield getMyBdapAccount(rpcClient)
@@ -21,8 +21,8 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
         if (typeof userName === 'undefined') {
             throw Error("user.userName unexpectedly undefined")
         }
-        const inviteMessage = `${commonName} (${userName}) wants to link with you`
-        const requestAction = BdapActions.createLinkRequest({ ...action.payload, inviteMessage })
+        const inviteMessage_ = inviteMessage === '' ? `${commonName} (${userName}) wants to link with you` : inviteMessage
+        const requestAction = BdapActions.createLinkRequest({ ...action.payload, inviteMessage: inviteMessage_ })
         console.log(requestAction)
         yield put(requestAction)
     })
