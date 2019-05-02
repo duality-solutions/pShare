@@ -5,6 +5,7 @@ import { FileListActions } from "../actions/fileList";
 import { PublicSharedFile } from "../types/PublicSharedFile";
 import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 import { RtcActions } from "../actions/rtc";
+import { blinq } from "blinq";
 
 export interface SharedFilesState {
     linkedUserName?: string,
@@ -25,13 +26,31 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
     switch (action.type) {
         case getType(DashboardActions.viewSharedFiles):
             return { ...state, linkedUserName: action.payload.object_id, linkedCommonName: action.payload.common_name }
+
         case getType(FileListActions.fileListFetchSuccess):
-            return { ...state, downloadableFiles: action.payload.map<DownloadableFile>(file => ({ file, isDownloading: false, progressPct: 0 })) }
+            const downloadableFiles =
+                blinq(action.payload)
+                    .leftOuterJoin(
+                        state.downloadableFiles || [],
+                        psf => (psf.hash + psf.fileName),
+                        df => (df.file.hash + df.file.fileName),
+                        (psf, df) =>
+                            typeof df === "undefined"
+                                ? { file: psf, isDownloading: false, progressPct: 0 }
+                                : { ...df, file: psf })
+                    .toArray()
+            return {
+                ...state,
+                downloadableFiles
+            }
+
         case getType(FileListActions.fileListFetchFailed):
             return deleteOptionalProperty(state, "downloadableFiles")
+
         case getType(SharedFilesActions.close):
             const { linkedUserName, ...rest } = state
             return rest
+
         case getType(RtcActions.fileReceiveSuccess):
             {
                 const fileRequest = action.payload
@@ -42,6 +61,7 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
+
         case getType(RtcActions.fileReceiveFailed):
             {
                 const { fileRequest } = action.payload
@@ -52,6 +72,7 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
+
         case getType(RtcActions.fileReceiveProgress):
             {
                 const { fileRequest, downloadedPct } = action.payload
@@ -62,6 +83,7 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
+
         default:
             return state
     }
