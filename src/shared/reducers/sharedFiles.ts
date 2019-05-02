@@ -12,10 +12,10 @@ export interface SharedFilesState {
     linkedCommonName?: string,
     downloadableFiles?: DownloadableFile[]
 }
-
+export type DownloadState = "ready" | "downloading" | "downloaded" | "failed"
 export interface DownloadableFile {
     file: PublicSharedFile
-    isDownloading: boolean
+    state: DownloadState
     progressPct: number
 }
 
@@ -30,13 +30,13 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
         case getType(FileListActions.fileListFetchSuccess):
             const downloadableFiles =
                 blinq(action.payload)
-                    .leftOuterJoin(
+                    .leftOuterJoin<PublicSharedFile, DownloadableFile, string, DownloadableFile>(
                         state.downloadableFiles || [],
                         psf => (psf.hash + psf.fileName),
                         df => (df.file.hash + df.file.fileName),
                         (psf, df) =>
                             typeof df === "undefined"
-                                ? { file: psf, isDownloading: false, progressPct: 0 }
+                                ? { file: psf, state: "ready" as DownloadState, progressPct: 0 }
                                 : { ...df, file: psf })
                     .toArray()
             return {
@@ -55,9 +55,9 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
             {
                 const fileRequest = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
-                    .map(df => df.file.fileName === fileRequest.fileName
+                    .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
                         && df.file.hash === fileRequest.fileId
-                        ? { isDownloading: false, progressPct: 100, file: df.file }
+                        ? { state: "downloaded", progressPct: 100, file: df.file }
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
@@ -66,9 +66,9 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
             {
                 const { fileRequest } = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
-                    .map(df => df.file.fileName === fileRequest.fileName
+                    .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
                         && df.file.hash === fileRequest.fileId
-                        ? { isDownloading: false, progressPct: 0, file: df.file }
+                        ? { state: "failed", progressPct: 0, file: df.file }
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
@@ -77,9 +77,9 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
             {
                 const { fileRequest, downloadedPct } = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
-                    .map(df => df.file.fileName === fileRequest.fileName
+                    .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
                         && df.file.hash === fileRequest.fileId
-                        ? { isDownloading: true, progressPct: downloadedPct, file: df.file }
+                        ? { state: "downloading", progressPct: downloadedPct, file: df.file }
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }

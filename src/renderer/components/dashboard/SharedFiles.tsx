@@ -70,10 +70,20 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                     <DocumentSvg margin="0 1em 0 0" width="30px" />
                     <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
                     {
-                        f.isDownloading
-                            ? <>{f.progressPct}%</>
-                            : <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
-                    }
++                        (() => {
+                                switch (f.state) {
+                                    case "downloading":
+                                        return <>{f.progressPct}%</>
+                                    case "ready":
+                                        return <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
+                                    case "failed":
+                                        return <>download failed</>
+                                    case "downloaded":
+                                        return <>download successful</>
+                                    default:
+                                        return <></>
+                                }
+                            })()                    }
 
 
                 </FilesListItem>)}
