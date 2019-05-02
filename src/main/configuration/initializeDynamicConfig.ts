@@ -38,7 +38,8 @@ export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathT
     //we need to ditch the daemon config
     if (confData.some(({ key }) => key === "daemon")) {
         confData = confData.filter(({ key }) => key !== "daemon")
-        const rewrittenConf = [...confData, ""].join("\n");
+        const confLines = confData.map(({ key, value }) => `${key}=${value}`);
+        const rewrittenConf = [...confLines, ""].join("\n");
         await asCancellable(fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" }), cancellationToken);
     }
     const blConfData = blinq(confData)
