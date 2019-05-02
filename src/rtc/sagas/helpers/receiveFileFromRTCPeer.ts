@@ -1,5 +1,4 @@
 import { call, put } from "redux-saga/effects";
-import { toBuffer } from "../../../shared/system/bufferConversion";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import * as util from 'util'
 import * as fs from 'fs'
@@ -16,27 +15,27 @@ const fsUnlinkAsync = util.promisify(fs.unlink)
 export const receiveFileFromRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
         (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo, fileRequest: FileRequest) => call(function* () {
+
             try {
+                const shasum = crypto.createHash('sha256');
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
                     let total = 0;
-                    const shasum = crypto.createHash('sha256');
                     let currentPct = -1
                     for (; ;) {
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
-                        console.log(`answerpeer received : ${total}`);
-                        const buffer = toBuffer(msg)
+                        //console.log(`answerpeer received : ${total}`);
+                        const buffer = Buffer.from(msg)
                         shasum.update(buffer)
                         yield call(() => fsWriteAsync(fileDescriptor, buffer));
                         if (total > fileNameInfo.size) {
                             throw Error("more data than expected");
                         }
                         if (total === fileNameInfo.size) {
-                            console.log("received file hash : " + shasum.digest("base64"))
                             break;
                         }
-                        const pct = Math.floor(total * 100 / fileNameInfo.size)
+                        const pct = (total * 100 / fileNameInfo.size) >> 0
                         if (currentPct !== pct) {
                             currentPct = pct
                             yield put(RtcActions.fileReceiveProgress({ fileRequest, totalBytes: fileNameInfo.size, downloadedBytes: total, downloadedPct: pct }))
@@ -46,6 +45,10 @@ export const receiveFileFromRTCPeer =
                 }
                 finally {
                     yield call(() => fsCloseAsync(fileDescriptor));
+                }
+                const computedHash = shasum.digest("base64")
+                if(computedHash!==fileRequest.fileId){
+                    throw Error("Checksum error: hash of downloaded data does not match that of requested data")
                 }
             }
             catch (err) {
@@ -58,4 +61,5 @@ export const receiveFileFromRTCPeer =
             finally {
                 peer.close();
             }
+
         });

@@ -50,6 +50,7 @@ export function* requestFileSaga() {
             const otherEndUser = action.payload.ownerUserName
             const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
             const tempPath = path.join(temp, `__${uuid()}`)
+            
             //debugger
             try {
                 yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
@@ -57,6 +58,7 @@ export function* requestFileSaga() {
                 yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
                 return
             }
+
 
             const safeName = path.basename(path.normalize(fileRequest.fileName))
             yield safeRename(tempPath, incoming, safeName)
