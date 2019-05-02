@@ -34,7 +34,13 @@ export async function initializeDynamicConfig({ pathToDynamicdDefaultConf, pathT
         await asCancellable(fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" }), cancellationToken);
     }
     const confDataIterator = await asCancellable(getKeyValuePairsFromConfFile(pathToDynamicConf), cancellationToken)
-    const confData = [...confDataIterator]
+    let confData = [...confDataIterator]
+    //we need to ditch the daemon config
+    if (confData.some(({ key }) => key === "daemon")) {
+        confData = confData.filter(({ key }) => key !== "daemon")
+        const rewrittenConf = [...confData, ""].join("\n");
+        await asCancellable(fsExtra.writeFile(pathToDynamicConf, rewrittenConf, { encoding: "utf8" }), cancellationToken);
+    }
     const blConfData = blinq(confData)
     const rpcUser = blConfData.single(x => x.key === "rpcuser").value;
     const rpcPassword = blConfData.single(x => x.key === "rpcpassword").value;
