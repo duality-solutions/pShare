@@ -1,8 +1,8 @@
-import { RpcCommandFunc } from "../../../../RpcCommandFunc";
 import { QueuedCommand } from "../../../../QueuedCommand";
-export const runQueuedCommand = async (command: RpcCommandFunc, { action, promiseResolver: { resolve, reject } }: QueuedCommand): Promise<void> => {
+import { RpcClient } from "../../../../RpcClient";
+export const runQueuedCommand = async (client: RpcClient, { action, promiseResolver: { resolve, reject } }: QueuedCommand): Promise<void> => {
     try {
-        resolve(await action(command));
+        resolve(await action(client));
     }
     catch (err) {
         reject(err);

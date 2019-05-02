@@ -13,7 +13,7 @@ export function* sendLinkMessageSaga(rpcClient: RpcClient) {
         // const { ownerUserName: recipientUserName } = fileRequest;
         const userName: string = yield select((state: MainRootState) => state.user.userName);
         const messageJson = JSON.stringify(linkMessage)
-        const response: LinkSendMessageResponse = yield unlockedCommandEffect(rpcClient, command => command("link", "sendmessage", userName, recipient, linkMessage.type, messageJson));
+        const response: LinkSendMessageResponse = yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, recipient, linkMessage.type, messageJson));
         // todo
         console.log("link sendmessage response:",response);
     });

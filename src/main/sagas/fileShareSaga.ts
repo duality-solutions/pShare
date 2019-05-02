@@ -62,8 +62,8 @@ export function* fileShareSaga(rpcClient: RpcClient) {
         const result =
             yield unlockedCommandEffect(
                 rpcClient,
-                command =>
-                    command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+                client =>
+                    client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
         console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
     }
 
@@ -133,8 +133,8 @@ export function* fileShareSaga(rpcClient: RpcClient) {
             const result =
                 yield unlockedCommandEffect(
                     rpcClient,
-                    command =>
-                        command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+                    client =>
+                        client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
             console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
         }
     }

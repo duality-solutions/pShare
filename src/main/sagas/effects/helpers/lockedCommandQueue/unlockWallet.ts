@@ -1,7 +1,7 @@
-import { RpcCommandFunc } from "../../../../RpcCommandFunc";
-export async function unlockWallet(command: RpcCommandFunc, walletPassphrase: string) {
+import { RpcClient } from "../../../../RpcClient";
+export async function unlockWallet(client: RpcClient, walletPassphrase: string) {
     try {
-        await command("walletpassphrase", walletPassphrase, 600000); //10mins
+        await client.command("walletpassphrase", walletPassphrase, 600000); //10mins
     }
     catch (err) {
         if (!(/^Error\: Wallet is already fully unlocked\.$/.test(err.message))) {

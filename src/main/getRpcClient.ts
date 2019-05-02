@@ -1,12 +1,11 @@
 import { startDynamicd } from './dynamicd/startDynamicd';
 import { delay } from '../shared/system/delay';
 import { RpcClient, RpcClientWrapper } from './RpcClient';
-import { createAsyncQueue } from '../shared/system/createAsyncQueue';
-import { QueuedCommand } from './QueuedCommand';
-import { createPromiseResolver } from '../shared/system/createPromiseResolver';
-import { createCancellationToken, CancellationToken } from '../shared/system/createCancellationToken';
+import { CancellationToken } from '../shared/system/createCancellationTokenSource';
 import { DynamicdProcessInfo } from './dynamicd/DynamicdProcessInfo';
 import JsonRpcClient, { RpcClientOptions } from './system/jsonRpc/JsonRpcClient';
+import { RpcCommandOptions } from './system/jsonRpc/RpcCommandOptions';
+import { asyncFuncWithMaxdop } from '../shared/system/asyncFuncWithMaxdop';
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -21,44 +20,17 @@ export function getRpcClient(cancellationToken: CancellationToken) {
 }
 
 async function createQueuedRpcClient(masterCancellationToken: CancellationToken): Promise<RpcClientWrapper> {
-    const cancellationToken = createCancellationToken(undefined, masterCancellationToken)
-    //cancellationToken.register(()=>console.warn("rpcClient cancellation was requested"))
-    const bb = createAsyncQueue<QueuedCommand>();
+    const cancellationTokenSource = masterCancellationToken.createLinkedTokenSource()
+    const cancellationToken = cancellationTokenSource.getToken()
     const { client: rpcClient, processInfo } = await createRpcClient(cancellationToken);
-    (async () => {
-        while (!cancellationToken.isCancellationRequested) {
-
-            let qc: QueuedCommand;
-            try {
-                qc = await bb.receive(cancellationToken)
-            } catch (err) {
-                if (cancellationToken.isCancellationRequested) {
-                    console.warn("queuedRpcClient was cancelled")
-                    break
-                }
-                else {
-                    throw err
-                }
-            }
-            const { action, promiseResolver: { resolve, reject } } = qc
-            try {
-                resolve(action(rpcClient.command))
-            }
-            catch (err) {
-                reject(err)
-            }
-
-        }
-        console.log("QueuedRpcClient cancelled")
-    })()
+    const queuedCommand = asyncFuncWithMaxdop(rpcClient.command)
     return {
-        command: <T>(command: string, ...args: any[]): Promise<T> => {
-            const promiseResolver = createPromiseResolver<T>()
-            bb.post({ action: cmd => cmd(command, ...args), promiseResolver });
-            return promiseResolver.promise
+        command<T>(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
+            const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
+            const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
+            const args = typeof methodOrOptions === "string" ? params : params.slice(1)
+            return queuedCommand(options, method, ...args)
         },
-        //cancel: () => cancellationToken.cancel(),
-
         processInfo
     }
 }
@@ -71,7 +43,7 @@ async function createRpcClient(cancellationToken: CancellationToken): Promise<{ 
         port: "33650",
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword,
-        timeout: 60000
+        timeout: 30000
     }, cancellationToken);
 
     return { client, processInfo }
@@ -82,7 +54,7 @@ async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: Ca
     //try every 2s until we get a non-error
     for (; ;) {
         try {
-            await client.command("getinfo");
+            await client.command({ timeout: 5000 }, "getinfo");
             break;
         }
         catch (err) {
@@ -100,7 +72,12 @@ async function createJsonRpcClient(opts: RpcClientOptions, cancellationToken: Ca
     console.log("rpc call successful. client is ready")
     //client is ready to be used
     return {
-        command: (command: string, ...args: any[]) => client.command(command, ...args),
+        command(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
+            const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
+            const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
+            const args = typeof methodOrOptions === "string" ? params : params.slice(1)
+            return client.command(options, method, ...args)
+        }
         //cancel: () => { },
         //dispose: () => { }
     }

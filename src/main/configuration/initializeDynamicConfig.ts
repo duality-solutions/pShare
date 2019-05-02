@@ -5,7 +5,7 @@ import { randomBytes as r } from 'crypto'
 import { DynamicConfigOptions } from './DynamicConfigOptions';
 import { getKeyValuePairsFromConfFile } from './getKeyValuePairsFromConf';
 import { blinq } from 'blinq'
-import { CancellationToken, asCancellable } from '../../shared/system/createCancellationToken';
+import { CancellationToken, asCancellable } from '../../shared/system/createCancellationTokenSource';
 
 const exists = promisify(e)
 const randomBytes = promisify(r)

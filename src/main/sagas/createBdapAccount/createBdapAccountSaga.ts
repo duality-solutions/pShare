@@ -4,7 +4,7 @@ import { OnboardingActions } from "../../../shared/actions/onboarding";
 import { delay } from "../../../shared/system/delay";
 import { GetUserInfo } from "../../../dynamicdInterfaces/GetUserInfo";
 import { httpRequestStringAsync } from "../../system/http/httpRequestAsync";
-import { createCancellationToken } from "../../../shared/system/createCancellationToken";
+import { createCancellationTokenSource } from "../../../shared/system/createCancellationTokenSource";
 import { AccountActivationResponse } from "./AccountActivationResponse";
 import { RpcClient } from "../../../main/RpcClient";
 //import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
@@ -119,8 +119,8 @@ export const createRawBdapAccount = async (rpcClient: RpcClient, username: strin
 export const activateAccount = async (rawHexTx: string, token: string) => {
     const serviceUrl = `https://pshare.duality.solutions/callback?token=${encodeURIComponent(token)}&tx=${encodeURIComponent(rawHexTx)}`
     console.log(serviceUrl)
-    const ct = createCancellationToken()
-    const { responseString, response } = await httpRequestStringAsync({ url: serviceUrl, method: "GET" }, ct)
+    const cts = createCancellationTokenSource()
+    const { responseString, response } = await httpRequestStringAsync({ url: serviceUrl, method: "GET" }, cts.getToken())
 
     let parsedResponse: AccountActivationResponse
 

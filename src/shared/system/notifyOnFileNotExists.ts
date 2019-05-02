@@ -1,8 +1,8 @@
-import { CancellationToken, createCancellationToken } from './createCancellationToken';
+import { CancellationToken, createCancellationTokenSource } from './createCancellationTokenSource';
 import { delay } from './delay';
 import { fileExists } from './fileExists';
 export const notifyOnFileNotExists = async (filepath: string, callback: () => Promise<void>, cancellationToken?: CancellationToken) => {
-    var ct = cancellationToken || createCancellationToken();
+    var ct = cancellationToken || createCancellationTokenSource().getToken();
     while (!ct.isCancellationRequested) {
         const exists = await fileExists(filepath);
         if (!exists && !ct.isCancellationRequested) {

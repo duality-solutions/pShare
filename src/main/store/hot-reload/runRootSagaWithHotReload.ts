@@ -13,7 +13,7 @@ import { LockedCommandQueueRunner } from "../../../main/sagas/effects/helpers/lo
 import { RpcClient, RpcClientWrapper } from "../../../main/RpcClient";
 import { initializationSaga } from "../../../main/sagas/initializationSaga";
 import { storeHydrationSaga } from "../../../main/sagas/storeHydrationSaga";
-import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
+import { createCancellationTokenSource, CancellationTokenSource } from "../../../shared/system/createCancellationTokenSource";
 import { getRpcClient } from "../../../main/getRpcClient";
 import { app } from "electron";
 import { actionLoggingSaga } from "../../sagas/actionLoggingSaga";
@@ -23,7 +23,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
     let rpcClient: RpcClientWrapper | undefined;
     const getSagaTask = () => sagaMw.run(function* () {
         yield takeEvery(getType(AppActions.shuttingDown), function* () {
-            yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationToken);
+            yield* orchestrateShutdown(rpcClient, rootSagaTask, cancellationTokenSource);
 
         })
         yield takeEvery(getType(AppActions.initializeApp), function* () {
@@ -34,10 +34,11 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
             orchestrateSleep(rpcClient, rootSagaTask)
             rootSagaTask = yield getRootSagaTask()
         })
-        const cancellationToken = createCancellationToken()
+        const cancellationTokenSource = createCancellationTokenSource()
+        const cancellationToken = cancellationTokenSource.getToken()
         yield take(getType(AppActions.initializeApp))
         const getRootSagaTask = (): ForkEffect => fork(function* () {
-            
+
             yield fork(remoteLoggingSaga)
 
             yield fork(storeHydrationSaga)
@@ -72,11 +73,11 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         });
     }
 }
-function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaTask: Task, cancellationToken: CancellationToken) {
+function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaTask: Task, cancellationTokenSource: CancellationTokenSource) {
     console.log("orchestrating shutdown");
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
-    cancellationToken.cancel();
+    yield call(() => cancellationTokenSource.cancel());
     app.quit()
 }
 

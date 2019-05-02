@@ -1,7 +1,8 @@
 import { httpRequestStringAsync } from "../http/httpRequestAsync"
-import { createCancellationToken, CancellationToken } from "../../../shared/system/createCancellationToken";
+import { CancellationToken } from "../../../shared/system/createCancellationTokenSource";
 import { RpcClient } from "../../../main/RpcClient";
 const isDevelopment = process.env.NODE_ENV === 'development'
+import { RpcCommandOptions } from "./RpcCommandOptions";
 
 export interface RpcClientOptions {
     host: string
@@ -16,6 +17,7 @@ interface JsonRpcRequestBody {
     method: string;
     params: any[];
 }
+
 export default class JsonRpcClient implements RpcClient {
     private id: number;
     private serviceUrl: string
@@ -31,15 +33,18 @@ export default class JsonRpcClient implements RpcClient {
         this.requestHeaders = { "Authorization": auth }
         this.id = 0;
     }
-    async command(method: string, ...params: any[]) {
-        const result = await this.call(method, ...params)
+    async command(methodOrOptions: string | RpcCommandOptions, ...params: any[]) {
+        const options = typeof methodOrOptions === "string" ? {} : methodOrOptions
+        const method = typeof methodOrOptions === "string" ? methodOrOptions : params[0]
+        const args = typeof methodOrOptions === "string" ? params : params.slice(1)
+        const result = await this.call(options, method, ...args)
 
         return result
     }
-    private async call(method: string, ...params: any[]) {
+    private async call(options: RpcCommandOptions, method: string, ...params: any[]) {
         let body: JsonRpcRequestBody = this.createJsonRpcBody(method, params);
 
-        return await this.getJsonRpcResponse(body, this.cancellationToken);
+        return await this.getJsonRpcResponse(options, body, this.cancellationToken);
     }
 
     private createJsonRpcBody(method: string, params: any[]): JsonRpcRequestBody {
@@ -51,8 +56,10 @@ export default class JsonRpcClient implements RpcClient {
         }
     }
 
-    private async getJsonRpcResponse(body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
-        const timeoutToken = createCancellationToken(this.opts.timeout, cancellationToken);
+    private async getJsonRpcResponse(options: RpcCommandOptions, body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
+
+        const timeout = options.timeout != null ? options.timeout : this.opts.timeout;
+        const timeoutToken = cancellationToken.createLinkedTokenSource(timeout).getToken();
         if (!isDevelopment) {
             console.log(`Starting RPC request : ${JSON.stringify(body)}`)
         }

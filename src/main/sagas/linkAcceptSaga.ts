@@ -45,10 +45,10 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
             let response: LinkAcceptResponse;
             try {
                 response =
-                    yield unlockedCommandEffect(rpcClient, command =>
+                    yield unlockedCommandEffect(rpcClient, client =>
                         typeof registrationDays === 'undefined'
-                            ? command("link", "accept", recipient, requestor)
-                            : command("link", "accept", recipient, requestor, registrationDays.toString()));
+                            ? client.command("link", "accept", recipient, requestor)
+                            : client.command("link", "accept", recipient, requestor, registrationDays.toString()));
             } catch (err) {
                 //debugger
                 throw err

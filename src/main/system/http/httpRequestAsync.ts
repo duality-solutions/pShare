@@ -4,7 +4,7 @@ import * as net from 'net'
 import * as http from 'http'
 import * as https from 'https'
 import { streamToBufferAsync } from './streamToBufferAsync'
-import { createCancellationToken, CancellationToken } from '../../../shared/system/createCancellationToken';
+import { createCancellationTokenSource, CancellationToken, CancellationTokenRegistration } from '../../../shared/system/createCancellationTokenSource';
 import { blinq } from 'blinq'
 import * as isInSubnet from 'is-in-subnet';
 import { Stream } from 'stream';
@@ -120,7 +120,7 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
     if (!options) {
         throw Error("no parameters supplied");
     }
-    cancellationToken = cancellationToken || createCancellationToken();
+    cancellationToken = cancellationToken || createCancellationTokenSource().getToken();
 
 
     let opts: RequestOpts;
@@ -137,33 +137,28 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
 
     const allowsBody = httpMethodAllowsBody(opts.method);
     const { requestOpts, httpLib } = await getRequestOptionsAsync(opts);
-    return await new Promise((resolve, reject) => {
-
-        const ro = { ...requestOpts, method: opts.method ? opts.method : "GET" }
+    let cancellationTokenRegistration: CancellationTokenRegistration | undefined
+    const prom = new Promise<http.IncomingMessage>((resolve, reject) => {
+        const ro = { ...requestOpts, method: opts.method ? opts.method : "GET" };
         //requestOpts.method = opts.method || "GET";
-
         const request = httpLib.request(ro, (response) => {
             //console.log("got response code " + response.statusCode);
             resolve(response);
         });
-
         if (cancellationToken) {
-            cancellationToken.register(() => {
+            cancellationTokenRegistration = cancellationToken.register(() => {
                 request.abort();
                 let error = Error("request was cancelled");
                 //error.cancelled = true;
                 reject(error);
             });
         }
-
         request.on("error", (err) => {
             if (!cancellationToken.isCancellationRequested) {
                 //console.log("got error");
             }
-
             reject(err);
         });
-
         if (!allowsBody || !opts.body) {
             //console.log("no body... ending request");
             request.end();
@@ -179,7 +174,11 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
             request.end();
         }
     });
-
+    try {
+        return await prom;
+    } finally {
+        cancellationTokenRegistration && cancellationTokenRegistration.unregister()
+    }
 
 }
 
@@ -190,7 +189,7 @@ interface RequestBufferResponse {
 
 export async function httpRequestBufferAsync(opts: RequestOpts, cancellationToken: CancellationToken): Promise<RequestBufferResponse> {
     const response = await httpRequestResponseAsync(opts, cancellationToken);
-    const buf = await streamToBufferAsync(response);
+    const buf = await streamToBufferAsync(response, cancellationToken);
     return { responseBuffer: buf, response };
 }
 
