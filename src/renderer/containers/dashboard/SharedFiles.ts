@@ -3,6 +3,7 @@ import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { connect } from "react-redux";
 import { SharedFiles, SharedFilesStateProps, SharedFilesDispatchProps } from "../../components/dashboard/SharedFiles";
 import { SharedFilesActions } from "../../../shared/actions/sharedFiles";
+import { FileSharingActions } from "../../../shared/actions/fileSharing";
 
 
 
@@ -16,10 +17,12 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
                 ? Object.values(state.fileWatch.users[state.sharedFiles.linkedUserName].out)
                 : [],
         linkedUserCommonName: state.sharedFiles.linkedCommonName,
+        linkedUserName: state.sharedFiles.linkedUserName,
+        userName: state.user.userName!,
         downloadableFiles: state.sharedFiles.downloadableFiles || []
     }
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...SharedFilesActions };
+const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...SharedFilesActions, ...FileSharingActions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SharedFiles)

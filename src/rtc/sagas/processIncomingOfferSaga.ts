@@ -1,4 +1,4 @@
-import { takeEvery, call, put } from "redux-saga/effects";
+import { takeEvery, call, put, select } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
@@ -9,8 +9,10 @@ import { getAnswerPeer } from "../system/webRtc/getAnswerPeer";
 import { copyFileToRTCPeer } from "./helpers/copyFileToRTCPeer";
 import { RtcActions } from "../../shared/actions/rtc";
 import { prepareErrorForSerialization } from "../../shared/proxy/prepareErrorForSerialization";
-import * as path from 'path'
-import * as fs from 'fs'
+import { FileRequest } from "../../shared/actions/payloadTypes/FileRequest";
+import { RtcRootState } from "../reducers";
+import { SharedFile } from "../../shared/types/SharedFile";
+import { blinq } from "blinq";
 
 export function* processIncomingOfferSaga() {
     yield takeEvery(getType(FileSharingActions.offerEnvelopeReceived), function* (action: ActionType<typeof FileSharingActions.offerEnvelopeReceived>) {
@@ -20,7 +22,11 @@ export function* processIncomingOfferSaga() {
         console.log(fileRequest);
         const offerSessionDescription = new RTCSessionDescription(offerSdp);
         const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription));
-        const internalFileInfo: InternalFileInfo = yield getFileInfo(fileRequest.fileId);
+        const internalFileInfo: InternalFileInfo | null = yield getFileInfo(fileRequest);
+        if (!internalFileInfo) {
+            console.warn("could not retrieve file info for file request")
+            return
+        }
         const { localPath, ...fileInfo } = internalFileInfo;
         const answerEnvelope: LinkMessageEnvelope<FileInfo> = {
             sessionDescription: answer.toJSON(),
@@ -54,15 +60,22 @@ interface InternalFileInfo {
     size: number;
     path: string;
 }
-function getFileInfo(fileId: string) {
+
+
+function getFileInfo(fileRequest: FileRequest) {
     return call(function* () {
-        const localPath = path.join(__static, "example.mp4");
-        const stats: fs.Stats = yield call(() => fs.promises.stat(localPath));
+        const sharedFiles: SharedFile[] =
+            yield select((s: RtcRootState) =>
+                (s.fileWatch.users[fileRequest.requestorUserName] && Object.values(s.fileWatch.users[fileRequest.requestorUserName].out)) || [])
+        const sharedFile = blinq(sharedFiles).firstOrDefault(f => f.hash === fileRequest.fileId)
+        if (typeof sharedFile === 'undefined') {
+            return null
+        }
         const output: InternalFileInfo = {
-            localPath: localPath,
-            type: "video/mp4",
-            size: stats.size,
-            path: "example.mp4"
+            localPath: sharedFile.path,
+            type: sharedFile.contentType!,
+            size: sharedFile.size!,
+            path: sharedFile.relativePath
         };
         return output;
     });

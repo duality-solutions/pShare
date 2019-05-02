@@ -7,7 +7,6 @@ import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 
 export interface MyLinksStateProps {
     users: BdapUser[],
@@ -16,10 +15,9 @@ export interface MyLinksStateProps {
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
     startViewSharedFiles: (userName: string) => void
-    requestFile: (req: FileRequest) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, requestFile, userName }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName }: MyLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links

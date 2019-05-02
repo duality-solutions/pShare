@@ -57,7 +57,7 @@ export function* requestFileSaga() {
             return
         }
 
-        const safeName = path.basename(path.normalize(fileInfo.path))
+        const safeName = path.basename(path.normalize(fileRequest.fileName))
         yield safeRename(tempPath, incoming, safeName)
         yield put(RtcActions.fileReceiveSuccess(fileRequest))
 

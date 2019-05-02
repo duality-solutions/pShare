@@ -5,25 +5,29 @@ import { Box } from "../ui-elements/Box";
 import { LinkDisplayName } from "./LinkDisplayName";
 import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg } from "../ui-elements/Image";
 import { Text } from "../ui-elements/Text";
-import { SharedButton, DownloadButton } from "../ui-elements/Button";
+import Button, { SharedButton, DownloadButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
 import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
 import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { PublicSharedFile } from "../../../shared/types/PublicSharedFile";
+import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 
 export interface SharedFilesStateProps {
     outFiles: SharedFile[],
     linkedUserCommonName?: string
+    linkedUserName?: string
     downloadableFiles: PublicSharedFile[]
+    userName: string
 }
 export interface SharedFilesDispatchProps {
     //push: (pathname: string) => void
     close: () => void
     shareNewFile: () => void
+    requestFile: (req: FileRequest) => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareNewFile, outFiles, linkedUserCommonName, downloadableFiles }) => {
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, requestFile, shareNewFile, outFiles, linkedUserName, userName, linkedUserCommonName, downloadableFiles }) => {
     const [currentView, setCurrentView] = useState<"shared" | "downloads">("shared")
     return <>
         <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
@@ -40,7 +44,7 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareN
             <Divider width="100%" height="1px" />
             {
                 currentView === "downloads"
-                    ? <DownloadView downloadableFiles={downloadableFiles} />
+                    ? <DownloadView downloadableFiles={downloadableFiles} requestFile={requestFile} ownerUserName={linkedUserName!} userName={userName} />
                     : <ShareView outFiles={outFiles} shareNewFile={shareNewFile} />
             }
         </Box>
@@ -50,9 +54,12 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, shareN
 
 interface DownloadViewState {
     downloadableFiles: PublicSharedFile[]
+    requestFile: (req: FileRequest) => void
+    userName: string
+    ownerUserName: string
 }
 
-const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles }) => {
+const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles, requestFile, userName, ownerUserName }) => {
     return <Box height="50vh" margin="0 auto" direction="column">
         <Box display="flex" direction="row" justifyContent="space-between" width="500px">
             <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Files shared with you</Text>
@@ -62,6 +69,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles 
                 {blinq(downloadableFiles).select(f => <FilesListItem key={f.fileName}>
                     <DocumentSvg margin="0 1em 0 0" width="30px" />
                     <Text margin="5px 0 0 0" color="#4f4f4f">{f.fileName}</Text>
+                    <Button onClick={() => requestFile({ fileId: f.hash, ownerUserName, requestorUserName: userName, fileName: f.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
+
                 </FilesListItem>)}
             </FilesList>
         </Box>
@@ -70,6 +79,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles 
 interface ShareViewProps {
     shareNewFile: () => void
     outFiles: SharedFile[]
+
 }
 const ShareView: FunctionComponent<ShareViewProps> = ({ outFiles, shareNewFile }) => {
     return <Box height="50vh" margin="0 auto" direction="column">
