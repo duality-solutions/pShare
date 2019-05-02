@@ -98,6 +98,9 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
             }
 
         },
-        close: () => dataChannel && dataChannel.close()
+        close: () => {
+            dataChannel && dataChannel.close();
+            peer.close()
+        }
     }
 }

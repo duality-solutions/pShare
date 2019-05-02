@@ -21,6 +21,7 @@ export const receiveFileFromRTCPeer =
                 try {
                     let total = 0;
                     const shasum = crypto.createHash('sha256');
+                    let currentPct = -1
                     for (; ;) {
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
@@ -35,7 +36,12 @@ export const receiveFileFromRTCPeer =
                             console.log("received file hash : " + shasum.digest("base64"))
                             break;
                         }
-                        yield put(RtcActions.fileReceiveProgress({ fileRequest, totalBytes: fileNameInfo.size, downloadedBytes: total }))
+                        const pct = Math.floor(total * 100 / fileNameInfo.size)
+                        if (currentPct !== pct) {
+                            currentPct = pct
+                            yield put(RtcActions.fileReceiveProgress({ fileRequest, totalBytes: fileNameInfo.size, downloadedBytes: total, downloadedPct: pct }))
+                        }
+
                     }
                 }
                 finally {

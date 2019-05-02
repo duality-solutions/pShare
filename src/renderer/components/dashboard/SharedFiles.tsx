@@ -10,14 +10,14 @@ import { Divider } from "../ui-elements/Divider";
 import { FilesList, FilesListItem } from "../ui-elements/Dashboard";
 import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
-import { PublicSharedFile } from "../../../shared/types/PublicSharedFile";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
+import { DownloadableFile } from "../../../shared/reducers/sharedFiles";
 
 export interface SharedFilesStateProps {
     outFiles: SharedFile[],
     linkedUserCommonName?: string
     linkedUserName?: string
-    downloadableFiles: PublicSharedFile[]
+    downloadableFiles: DownloadableFile[]
     userName: string
 }
 export interface SharedFilesDispatchProps {
@@ -53,7 +53,7 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, reques
 
 
 interface DownloadViewState {
-    downloadableFiles: PublicSharedFile[]
+    downloadableFiles: DownloadableFile[]
     requestFile: (req: FileRequest) => void
     userName: string
     ownerUserName: string
@@ -66,10 +66,15 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
         </Box>
         <Box margin="0">
             <FilesList>
-                {blinq(downloadableFiles).select(f => <FilesListItem key={f.fileName}>
+                {blinq(downloadableFiles).select(f => <FilesListItem key={f.file.fileName}>
                     <DocumentSvg margin="0 1em 0 0" width="30px" />
-                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.fileName}</Text>
-                    <Button onClick={() => requestFile({ fileId: f.hash, ownerUserName, requestorUserName: userName, fileName: f.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
+                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
+                    {
+                        f.isDownloading
+                            ? <>{f.progressPct}%</>
+                            : <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
+                    }
+
 
                 </FilesListItem>)}
             </FilesList>

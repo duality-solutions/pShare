@@ -68,6 +68,9 @@ export async function getOfferPeer<T extends string | Blob | ArrayBuffer | Array
         get incomingMessageQueue() { return queue },
         get dataChannel() { return dataChannel },
         send: (data: T) => dataChannel.send(data as any),
-        close: () => dataChannel && dataChannel.close()
+        close: () => {
+            dataChannel && dataChannel.close();
+            peer.close()
+        }
     };
 }

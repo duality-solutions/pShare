@@ -20,46 +20,51 @@ import { safeRename } from "./helpers/safeRename";
 export function* requestFileSaga() {
     yield takeEvery(getType(FileSharingActions.requestFile), function* (action: ActionType<typeof FileSharingActions.requestFile>) {
         const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
-        const offer: RTCSessionDescription = yield call(() => peer.createOffer())
-        const fileRequest: FileRequest = action.payload;
-        const offerEnvelope: LinkMessageEnvelope<FileRequest> = {
-            sessionDescription: offer.toJSON(),
-            payload: fileRequest,
-            id: uuid(),
-            timestamp: Math.trunc((new Date()).getTime()),
-            type: "pshare-offer"
-        }
-        const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileRequest>> = {
-            recipient: action.payload.ownerUserName,
-            payload: offerEnvelope
-        }
-        yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
-        const answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> = yield take(
-            (action: Action<any>) =>
-                isActionOf(FileSharingActions.answerEnvelopeReceived, action)
-                && action.payload.id === offerEnvelope.id,
-        )
-        const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerAction
-
-        const answerSessionDescription = new RTCSessionDescription(answerSdp);
-        yield call(() => peer.setRemoteDescription(answerSessionDescription))
-        yield call(() => peer.waitForDataChannelOpen())
-
-
-        const otherEndUser = action.payload.ownerUserName
-        const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
-        const tempPath = path.join(temp, `__${uuid()}`)
-        //debugger
         try {
-            yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
-        } catch (err) {
-            yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
-            return
+            const offer: RTCSessionDescription = yield call(() => peer.createOffer())
+            const fileRequest: FileRequest = action.payload;
+            const offerEnvelope: LinkMessageEnvelope<FileRequest> = {
+                sessionDescription: offer.toJSON(),
+                payload: fileRequest,
+                id: uuid(),
+                timestamp: Math.trunc((new Date()).getTime()),
+                type: "pshare-offer"
+            }
+            const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileRequest>> = {
+                recipient: action.payload.ownerUserName,
+                payload: offerEnvelope
+            }
+            yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
+            const answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> = yield take(
+                (action: Action<any>) =>
+                    isActionOf(FileSharingActions.answerEnvelopeReceived, action)
+                    && action.payload.id === offerEnvelope.id,
+            )
+            const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerAction
+
+            const answerSessionDescription = new RTCSessionDescription(answerSdp);
+            yield call(() => peer.setRemoteDescription(answerSessionDescription))
+            yield call(() => peer.waitForDataChannelOpen())
+
+
+            const otherEndUser = action.payload.ownerUserName
+            const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
+            const tempPath = path.join(temp, `__${uuid()}`)
+            //debugger
+            try {
+                yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
+            } catch (err) {
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
+                return
+            }
+
+            const safeName = path.basename(path.normalize(fileRequest.fileName))
+            yield safeRename(tempPath, incoming, safeName)
+            yield put(RtcActions.fileReceiveSuccess(fileRequest))
+
         }
-
-        const safeName = path.basename(path.normalize(fileRequest.fileName))
-        yield safeRename(tempPath, incoming, safeName)
-        yield put(RtcActions.fileReceiveSuccess(fileRequest))
-
+        finally {
+            peer.close()
+        }
     })
 }
