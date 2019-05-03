@@ -47,7 +47,7 @@ export function* requestFileSaga() {
             })
 
             if (!answerAction) {
-                RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") })
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
                 return
             }
 
