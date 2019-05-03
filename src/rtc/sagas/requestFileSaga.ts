@@ -1,4 +1,4 @@
-import { takeEvery, call, put, take } from "redux-saga/effects";
+import { takeEvery, call, put, take, race } from "redux-saga/effects";
 import { getType, ActionType, isActionOf } from "typesafe-actions";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
@@ -14,6 +14,7 @@ import { receiveFileFromRTCPeer } from "./helpers/receiveFileFromRTCPeer";
 import { prepareErrorForSerialization } from "../../shared/proxy/prepareErrorForSerialization";
 import { UserSharePaths, getOrCreateShareDirectoriesForUser } from "./helpers/getOrCreateShareDirectoriesForUser";
 import { safeRename } from "./helpers/safeRename";
+import { delay } from "redux-saga";
 
 
 //this runs in rtc
@@ -35,11 +36,21 @@ export function* requestFileSaga() {
                 payload: offerEnvelope
             }
             yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
-            const answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> = yield take(
-                (action: Action<any>) =>
-                    isActionOf(FileSharingActions.answerEnvelopeReceived, action)
-                    && action.payload.id === offerEnvelope.id,
-            )
+
+            const { answerAction }: { answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> } = yield race({
+                timeout: delay(90 * 1000),
+                answerAction: take(
+                    (action: Action<any>) =>
+                        isActionOf(FileSharingActions.answerEnvelopeReceived, action)
+                        && action.payload.id === offerEnvelope.id,
+                )
+            })
+
+            if (!answerAction) {
+                RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") })
+                return
+            }
+
             const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerAction
 
             const answerSessionDescription = new RTCSessionDescription(answerSdp);
@@ -50,7 +61,7 @@ export function* requestFileSaga() {
             const otherEndUser = action.payload.ownerUserName
             const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
             const tempPath = path.join(temp, `__${uuid()}`)
-            
+
             //debugger
             try {
                 yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
