@@ -18,12 +18,13 @@ export interface DownloadableFile {
     file: PublicSharedFile
     state: DownloadState
     progressPct: number
+    progressStatus?: string
 }
 
 const defaultState: SharedFilesState = {
 }
 
-export const sharedFiles = (state: SharedFilesState = defaultState, action: DashboardActions | SharedFilesActions | FileListActions | RtcActions| FileSharingActions): SharedFilesState => {
+export const sharedFiles = (state: SharedFilesState = defaultState, action: DashboardActions | SharedFilesActions | FileListActions | RtcActions | FileSharingActions): SharedFilesState => {
     switch (action.type) {
         case getType(DashboardActions.viewSharedFiles):
             return { ...state, linkedUserName: action.payload.object_id, linkedCommonName: action.payload.common_name }
@@ -52,17 +53,17 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
             const { linkedUserName, ...rest } = state
             return rest
 
-        
+
         case getType(FileSharingActions.requestFile):
-        {
-            const fileRequest = action.payload
+            {
+                const fileRequest = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
                     .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
                         && df.file.hash === fileRequest.fileId
                         ? { state: "starting", progressPct: 100, file: df.file }
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
-        }
+            }
 
         case getType(RtcActions.fileReceiveSuccess):
             {
@@ -88,11 +89,11 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
 
         case getType(RtcActions.fileReceiveProgress):
             {
-                const { fileRequest, downloadedPct } = action.payload
+                const { fileRequest, downloadedPct, status } = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
                     .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
                         && df.file.hash === fileRequest.fileId
-                        ? { state: "downloading", progressPct: downloadedPct, file: df.file }
+                        ? { state: "downloading", progressPct: downloadedPct, file: df.file, progressStatus: status }
                         : df)
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
