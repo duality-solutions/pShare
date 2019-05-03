@@ -38,7 +38,7 @@ export function* requestFileSaga() {
             yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
 
             const { answerAction }: { answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> } = yield race({
-                timeout: delay(90 * 1000),
+                timeout: delay(120 * 1000),
                 answerAction: take(
                     (action: Action<any>) =>
                         isActionOf(FileSharingActions.answerEnvelopeReceived, action)
@@ -47,7 +47,7 @@ export function* requestFileSaga() {
             })
 
             if (!answerAction) {
-                RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") })
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
                 return
             }
 
