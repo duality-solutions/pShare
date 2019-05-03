@@ -4,4 +4,5 @@ export interface FileReceiveProgress {
     downloadedBytes: number;
     downloadedPct: number
     fileRequest: FileRequest;
+    status?:string
 }

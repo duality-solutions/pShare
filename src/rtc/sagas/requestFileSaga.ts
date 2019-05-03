@@ -22,8 +22,10 @@ export function* requestFileSaga() {
     yield takeEvery(getType(FileSharingActions.requestFile), function* (action: ActionType<typeof FileSharingActions.requestFile>) {
         const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         try {
-            const offer: RTCSessionDescription = yield call(() => peer.createOffer())
             const fileRequest: FileRequest = action.payload;
+            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "negotiating connection" }))
+            const offer: RTCSessionDescription = yield call(() => peer.createOffer())
+            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "sending offer" }))
             const offerEnvelope: LinkMessageEnvelope<FileRequest> = {
                 sessionDescription: offer.toJSON(),
                 payload: fileRequest,
@@ -36,9 +38,10 @@ export function* requestFileSaga() {
                 payload: offerEnvelope
             }
             yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
+            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "waiting for answer" }))
 
             const { answerAction }: { answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> } = yield race({
-                timeout: delay(90 * 1000),
+                timeout: delay(60 * 1000),
                 answerAction: take(
                     (action: Action<any>) =>
                         isActionOf(FileSharingActions.answerEnvelopeReceived, action)
@@ -50,12 +53,14 @@ export function* requestFileSaga() {
                 yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
                 return
             }
+            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connecting to peer" }))
 
             const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerAction
 
             const answerSessionDescription = new RTCSessionDescription(answerSdp);
             yield call(() => peer.setRemoteDescription(answerSessionDescription))
             yield call(() => peer.waitForDataChannelOpen())
+            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connected to peer" }))
 
 
             const otherEndUser = action.payload.ownerUserName

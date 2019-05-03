@@ -77,7 +77,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                 (() => {
                                     switch (f.state) {
                                         case "downloading":
-                                            return <>{f.progressPct}%</>
+                                            return <>{`${f.progressStatus ? `${f.progressStatus} ` : ""}${f.progressPct}%`}</>
                                         case "ready":
                                             return <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
                                         case "failed":
