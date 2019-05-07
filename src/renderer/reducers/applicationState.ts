@@ -1,6 +1,6 @@
 import { getType } from 'typesafe-actions';
 import { DashboardActions } from '../../shared/actions/dashboard';
-import { FileListActions } from '../../shared/actions/fileList';
+import { BdapActions } from '../../shared/actions/bdap';
 
 interface ApplicationState {
     spinner: boolean
@@ -12,11 +12,11 @@ const defaultState: ApplicationState = {
     dashboardReady: false
 }
 
-export const applicationState = (state: ApplicationState = defaultState, action: DashboardActions | FileListActions): ApplicationState => {
+export const applicationState = (state: ApplicationState = defaultState, action: DashboardActions | BdapActions): ApplicationState => {
     switch (action.type) {
         case (getType(DashboardActions.toggleSpinner)):
             return { ...state, spinner: !state.spinner };
-        case getType(FileListActions.fileListPublished):
+        case getType(BdapActions.bdapDataFetchSuccess):
             return { ...state, dashboardReady: true }
         default:
             return state
