@@ -17,6 +17,7 @@ import { startViewSharedFilesSaga } from "./startViewSharedFilesSaga";
 import { scanForLinkMessagesSaga } from "./scanForLinkMessagesSaga";
 import { sendLinkMessageSaga } from "./sendLinkMessageSaga";
 import { fileShareSaga } from "./fileShareSaga";
+import { newLinkSaga } from "./newLinkSaga";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
@@ -36,7 +37,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => translateMnemonicFileSaveFailedActionsToValidationMessagesSaga(),
     () => bdapSaga(rpcClient),
     () => scanForLinkMessagesSaga(rpcClient),
-    () => sendLinkMessageSaga(rpcClient)
-
+    () => sendLinkMessageSaga(rpcClient),
+    () => newLinkSaga()
 ]
 

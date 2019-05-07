@@ -8,11 +8,9 @@ import { MainRootState } from "../reducers";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
-import { blinq, empty, fromSingleValue } from "blinq";
+import { blinq } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
-import { Enumerable } from "blinq/dist/types/src/Enumerable";
-import MapIterable from "blinq/dist/types/src/MapIterable";
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -59,7 +57,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksSuccess(p))
             return
         }
-        const currentCompleteLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
+
         //const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: LinkResponse<Link>;
         try {
@@ -72,11 +70,6 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
         const links = extractLinks(response);
 
-        const opsMap = getLinkListDiffMap(links, currentCompleteLinks)
-        const newLinks = extractLinkCategories("added", opsMap)
-        for (const link of newLinks) {
-            yield put(BdapActions.newCompleteLink(link))
-        }
 
         yield put(BdapActions.getCompleteLinksSuccess(links))
 
@@ -169,41 +162,6 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
     })
 }
-type LinkCategory = "added" | "removed" | "other"
-
-const extractLinkCategories = (category: LinkCategory, opsMap: MapIterable<LinkCategory, Enumerable<Link | undefined>>) =>
-    opsMap.has(category)
-        ? opsMap
-            .get(category)!
-            .selectMany(item =>
-                typeof item !== "undefined"
-                    ? fromSingleValue(item)
-                    : empty<Link>())
-        : empty<Link>()
-
-const getLinkListDiffMap = (newCompleteLinks: Link[], currentCompleteLinks: Link[]) =>
-    blinq(newCompleteLinks)
-        .fullOuterJoin(
-            currentCompleteLinks || [],
-            link => `${link.recipient_fqdn}|${link.requestor_fqdn}`,
-            link => `${link.recipient_fqdn}|${link.requestor_fqdn}`,
-            (newLink, oldLink) => ({ newLink, oldLink }))
-        .toLookup(({ newLink, oldLink }) =>
-            newLink && oldLink
-                ? "other"
-                : newLink
-                    ? "added"
-                    : oldLink
-                        ? "removed"
-                        : "other",
-            ({ newLink, oldLink }) =>
-                newLink && oldLink
-                    ? undefined
-                    : newLink
-                        ? newLink
-                        : oldLink
-                            ? oldLink
-                            : undefined)
 
 const reservedKeyNames = ["locked_links"]
 const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>
