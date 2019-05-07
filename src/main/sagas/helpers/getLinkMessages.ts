@@ -6,7 +6,7 @@ import { LinkMessage } from "../../../dynamicdInterfaces/LinkMessage";
 export function getLinkMessages(rpcClient: RpcClient, userName: string, messageType: string) {
     return call(function* () {
         const response: LinkGetAllMessagesResponse = yield unlockedCommandEffect(rpcClient, client => client.command("link", "getmessages", userName, messageType));
-        console.log(`getLinkMessages for ${messageType} : success`);
+        // console.log(`getLinkMessages for ${messageType} : success`);
         const records = entries(response)
             .select(([, v]) => v);
         return records;

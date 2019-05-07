@@ -1,5 +1,5 @@
 import { RpcClient } from "../RpcClient";
-import { select, take, actionChannel } from "redux-saga/effects";
+import { select, take, actionChannel, all } from "redux-saga/effects";
 import { MainRootState } from "../reducers";
 import { InOutSharedFiles } from "../../shared/reducers/fileWatch";
 import { Link, isLink } from "../../dynamicdInterfaces/links/Link";
@@ -37,7 +37,10 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                     return false
             }
         }, buffers.expanding())
-    yield take(getType(FileWatchActions.initialScanComplete))
+    yield all({
+        initialScan: take(getType(FileWatchActions.initialScanComplete)),
+        bdapFetchData: take(getType(BdapActions.bdapDataFetchSuccess))
+    })
     const userName: string = yield select((s: MainRootState) => s.user.userName)
 
 
