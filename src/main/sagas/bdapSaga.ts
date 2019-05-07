@@ -59,6 +59,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksSuccess(p))
             return
         }
+        const currentCompleteLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
         //const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: LinkResponse<Link>;
         try {
@@ -68,7 +69,16 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksFailed(err.message))
             return
         }
-        yield put(BdapActions.getCompleteLinksSuccess(extractLinks(response)))
+
+        const links = extractLinks(response);
+
+        const opsMap = getLinkListDiffMap(links, currentCompleteLinks)
+        const newLinks = extractLinkCategories("added", opsMap)
+        for (const link of newLinks) {
+            yield put(BdapActions.newCompleteLink(link))
+        }
+
+        yield put(BdapActions.getCompleteLinksSuccess(links))
 
     })
 
@@ -103,7 +113,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
         for (; ;) {
-            const currentCompleteLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
+
 
             yield put(BdapActions.getUsers())
 
@@ -143,12 +153,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 && getResults.denied.success
             ) {
                 console.log("all user/link data successful retrieved")
-                const newCompleteLinks: Link[] = getResults.completeLinks.success.payload
-                const opsMap = getLinkListDiffMap(newCompleteLinks, currentCompleteLinks)
-                const newLinks = extractLinkCategories("added", opsMap)
-                for (const link of newLinks) {
-                    yield put(BdapActions.newCompleteLink(link))
-                }
+
 
                 yield put(BdapActions.bdapDataFetchSuccess())
 
