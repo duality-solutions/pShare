@@ -9,19 +9,20 @@ import LoadingSpinner from '../ui-elements/LoadingSpinner';
 
 export interface DashboardStateProps {
     spinner: boolean
+    dashboardReady: boolean
 }
 
-export type DashboardProps =  FunctionComponent<RouteComponentProps<any> & DashboardStateProps>
+export type DashboardProps = FunctionComponent<RouteComponentProps<any> & DashboardStateProps>
 
 export const Dashboard: DashboardProps =
-    ({ spinner }) =>
+    ({ spinner, dashboardReady }) =>
         <>
             <DashboardContainer>
                 <SidebarContainer>
                     <Sidebar />
                 </SidebarContainer>
                 <MainContentContainer disabled={spinner}>
-                    <LoadingSpinner active={spinner}/>
+                    <LoadingSpinner active={spinner || !dashboardReady} />
                     <Switch>{
                         keys(dashboardRoutes)
                             .select((key, idx) =>

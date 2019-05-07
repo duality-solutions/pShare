@@ -1,5 +1,5 @@
 import { RpcClient } from "../RpcClient";
-import { select, take, actionChannel, all } from "redux-saga/effects";
+import { select, take, actionChannel, all, put } from "redux-saga/effects";
 import { MainRootState } from "../reducers";
 import { InOutSharedFiles } from "../../shared/reducers/fileWatch";
 import { Link, isLink } from "../../dynamicdInterfaces/links/Link";
@@ -15,6 +15,7 @@ import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
 import { RootActions } from "../../shared/actions";
 import { Channel, buffers } from "redux-saga";
 import { getChannelActionsUntilTimeOut } from "./helpers/getChannelActionsUntilTimeOut";
+import { FileListActions } from "../../shared/actions/fileList";
 
 type AddUnlinkAndNewLinkActionTypes =
     ActionType<typeof FileWatchActions.fileAdded>
@@ -97,6 +98,7 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                         client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
             console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
         }
+        yield put(FileListActions.fileListPublished())
     }
 
 }

@@ -6,7 +6,8 @@ import { connect } from "react-redux";
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): DashboardStateProps => {
     return {
-        spinner: state.applicationState.spinner
+        spinner: state.applicationState.spinner,
+        dashboardReady: state.applicationState.dashboardReady
     };
 };
 
