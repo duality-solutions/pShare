@@ -8,9 +8,11 @@ import { MainRootState } from "../reducers";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { entries } from "../../shared/system/entries";
-import { blinq } from "blinq";
+import { blinq, empty, fromSingleValue } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
+import { Enumerable } from "blinq/dist/types/src/Enumerable";
+import MapIterable from "blinq/dist/types/src/MapIterable";
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -100,8 +102,9 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     })
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
-
         for (; ;) {
+            const currentCompleteLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
+
             yield put(BdapActions.getUsers())
 
             yield put(BdapActions.getCompleteLinks())
@@ -140,7 +143,15 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 && getResults.denied.success
             ) {
                 console.log("all user/link data successful retrieved")
+                const newCompleteLinks: Link[] = getResults.completeLinks.success.payload
+                const opsMap = getLinkListDiffMap(newCompleteLinks, currentCompleteLinks)
+                const newLinks = extractLinkCategories("added", opsMap)
+                for (const link of newLinks) {
+                    yield put(BdapActions.newCompleteLink(link))
+                }
+
                 yield put(BdapActions.bdapDataFetchSuccess())
+
             }
             else {
                 console.warn("some user/link data was not successfully retrieved")
@@ -148,13 +159,46 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 yield put(BdapActions.bdapDataFetchFailed("some user/link data was not successfully retrieved"))
 
             }
-
             yield delay(60000)
         }
 
     })
 }
+type LinkCategory = "added" | "removed" | "other"
 
+const extractLinkCategories = (category: LinkCategory, opsMap: MapIterable<LinkCategory, Enumerable<Link | undefined>>) =>
+    opsMap.has(category)
+        ? opsMap
+            .get(category)!
+            .selectMany(item =>
+                typeof item !== "undefined"
+                    ? fromSingleValue(item)
+                    : empty<Link>())
+        : empty<Link>()
+
+const getLinkListDiffMap = (newCompleteLinks: Link[], currentCompleteLinks: Link[]) =>
+    blinq(newCompleteLinks)
+        .fullOuterJoin(
+            currentCompleteLinks || [],
+            link => `${link.recipient_fqdn}|${link.requestor_fqdn}`,
+            link => `${link.recipient_fqdn}|${link.requestor_fqdn}`,
+            (newLink, oldLink) => ({ newLink, oldLink }))
+        .toLookup(({ newLink, oldLink }) =>
+            newLink && oldLink
+                ? "other"
+                : newLink
+                    ? "added"
+                    : oldLink
+                        ? "removed"
+                        : "other",
+            ({ newLink, oldLink }) =>
+                newLink && oldLink
+                    ? undefined
+                    : newLink
+                        ? newLink
+                        : oldLink
+                            ? oldLink
+                            : undefined)
 
 const reservedKeyNames = ["locked_links"]
 const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>

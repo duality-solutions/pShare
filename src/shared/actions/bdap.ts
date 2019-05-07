@@ -31,8 +31,8 @@ export const BdapActions = {
     getPendingAcceptLinks: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS')<void>(),
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
-    
-    
+
+
     bdapDataFetchSuccess: createStandardAction('bdap/BDAP_DATA_FETCH_SUCCESS')<void>(),
     bdapDataFetchFailed: createStandardAction('bdap/BDAP_DATA_FETCH_FAILED')<string>(),
 
@@ -48,7 +48,7 @@ export const BdapActions = {
     beginDeclineLink: createStandardAction('bdap/BEGIN_DECLINE_LINK')<LinkBase>(),
     declineLink: createStandardAction('bdap/DECLINE_LINK')<LinkBase>(),
 
-
+    newCompleteLink: createStandardAction('bdap/NEW_COMPLETE_LINK')<Link>(),
 
 }
 
