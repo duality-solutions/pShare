@@ -33,31 +33,29 @@ const getUserList = createSelector(
     (query, users, pendingRequestLinks, pendingAcceptLinks, completeLinks, deniedLinks, currentFqUser) => {
         //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
         const existingLinks = completeLinks.concat(pendingAcceptLinks)
-        return filterDeniedUsers(blinq(users), deniedLinks)
+        const baseQuery = filterDeniedUsers(blinq(users), deniedLinks)
             .where(u => u.object_full_path !== currentFqUser)
-            .leftOuterJoin(
-                existingLinks,
-                u => u.object_full_path,
-                c => blinq([c.recipient_fqdn, c.requestor_fqdn]).first(n => n !== currentFqUser),
-                (user, link) => ({ user, link }))
+            .leftOuterJoin(existingLinks, u => u.object_full_path, c => blinq([c.recipient_fqdn, c.requestor_fqdn]).first(n => n !== currentFqUser), (user, link) => ({ user, link }))
             .where(({ link }) => typeof link === 'undefined')
             .select(({ user }) => user) //all users, minus those for whom we already have a complete/pending accept link
-            .leftOuterJoin(
-                pendingRequestLinks,
-                user => user.object_full_path,
-                link => blinq([link.recipient_fqdn, link.requestor_fqdn]).first(n => n !== currentFqUser),
-                (user, link) => ({
-                    userName: user.object_id,
-                    commonName: user.common_name,
-                    state: typeof link === 'undefined' ? "normal" : "pending"
-                } as BdapUser))
-            .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
-            .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
-            .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
-            .thenBy(x => x.bdapUser.commonName.toLowerCase())
-            .thenBy(x => x.bdapUser.userName.toLowerCase())
-            .select(x => x.bdapUser)
-            .toArray();
+            .leftOuterJoin(pendingRequestLinks, user => user.object_full_path, link => blinq([link.recipient_fqdn, link.requestor_fqdn]).first(n => n !== currentFqUser), (user, link) => ({
+                userName: user.object_id,
+                commonName: user.common_name,
+                state: typeof link === 'undefined' ? "normal" : "pending"
+            } as BdapUser));
+        return query.length > 0
+            ? baseQuery
+                .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
+                .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
+                .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
+                .thenBy(x => x.bdapUser.commonName.toLowerCase())
+                .thenBy(x => x.bdapUser.userName.toLowerCase())
+                .select(x => x.bdapUser)
+                .toArray()
+            : baseQuery
+                .orderBy(u => u.commonName)
+                .thenBy(u => u.userName)
+                .toArray()
     })
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksStateProps => {
@@ -70,6 +68,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksState
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = {...SearchActions, ...BdapActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = { ...SearchActions, ...BdapActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddLinks)

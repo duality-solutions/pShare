@@ -53,16 +53,22 @@ const getUserList = createSelector(
                     commonName: u.common_name,
                     state: "pending"
                 } as BdapUser))
-        return linkedUsers
+        const baseQuery = linkedUsers
             .concat(pendingAcceptUsers)
-            .concat(pendingRequestUsers)
-            .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
-            .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
-            .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
-            .thenBy(x => x.bdapUser.commonName.toLowerCase())
-            .thenBy(x => x.bdapUser.userName.toLowerCase())
-            .select(x => x.bdapUser)
-            .toArray()
+            .concat(pendingRequestUsers);
+        return query.length > 0
+            ? baseQuery
+                .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
+                .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
+                .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
+                .thenBy(x => x.bdapUser.commonName.toLowerCase())
+                .thenBy(x => x.bdapUser.userName.toLowerCase())
+                .select(x => x.bdapUser)
+                .toArray()
+            : baseQuery
+                .orderBy(u => u.commonName)
+                .thenBy(u => u.userName)
+                .toArray()
     }
 )
 
