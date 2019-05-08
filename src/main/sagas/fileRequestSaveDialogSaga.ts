@@ -1,7 +1,7 @@
 import { takeEvery, call, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
-import { dialog, app } from "electron";
+import { dialog, app, BrowserWindow } from "electron";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import * as path from "path"
 import { FileRequest } from "../../shared/actions/payloadTypes/FileRequest";
@@ -26,8 +26,8 @@ export function* requestFileSaveDialogSaga(browserWindowProvider: BrowserWindowP
     })
 }
 
-function* getSavePath(fileRequest: FileRequest, browserWindow: import("electron").BrowserWindow) {
-    const fileName = path.basename(fileRequest.fileName);
+function* getSavePath(fileRequest: FileRequest, browserWindow: BrowserWindow) {
+    const fileName = path.basename(path.normalize(fileRequest.fileName));
     const downloadsDir = app.getPath("downloads");
     const defaultSavePath = path.join(downloadsDir, fileName);
     const showDialog = () => new Promise<string>((resolve, reject) => {
