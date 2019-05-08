@@ -13,16 +13,17 @@ import { RtcActions } from "../../shared/actions/rtc";
 import { receiveFileFromRTCPeer } from "./helpers/receiveFileFromRTCPeer";
 import { prepareErrorForSerialization } from "../../shared/proxy/prepareErrorForSerialization";
 import { UserSharePaths, getOrCreateShareDirectoriesForUser } from "./helpers/getOrCreateShareDirectoriesForUser";
-import { safeRename } from "./helpers/safeRename";
 import { delay } from "redux-saga";
+import * as fs from 'fs'
+import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
 
 
 //this runs in rtc
 export function* requestFileSaga() {
-    yield takeEvery(getType(FileSharingActions.requestFile), function* (action: ActionType<typeof FileSharingActions.requestFile>) {
+    yield takeEvery(getType(FileSharingActions.requestFileWithSavePath), function* (action: ActionType<typeof FileSharingActions.requestFileWithSavePath>) {
         const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
         try {
-            const fileRequest: FileRequest = action.payload;
+            const fileRequest: FileRequestWithSavePath = action.payload;
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "negotiating connection" }))
             const offer: RTCSessionDescription = yield call(() => peer.createOffer())
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "sending offer" }))
@@ -64,7 +65,7 @@ export function* requestFileSaga() {
 
 
             const otherEndUser = action.payload.ownerUserName
-            const { incoming, temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
+            const { temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
             const tempPath = path.join(temp, `__${uuid()}`)
 
             //debugger
@@ -76,8 +77,7 @@ export function* requestFileSaga() {
             }
 
 
-            const safeName = path.basename(path.normalize(fileRequest.fileName))
-            yield safeRename(tempPath, incoming, safeName)
+            yield call(() => fs.promises.rename(tempPath, fileRequest.savePath));
             yield put(RtcActions.fileReceiveSuccess(fileRequest))
 
         }

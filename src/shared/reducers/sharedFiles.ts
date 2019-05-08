@@ -54,7 +54,7 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
             return rest
 
 
-        case getType(FileSharingActions.requestFile):
+        case getType(FileSharingActions.requestFileWithSavePath):
             {
                 const fileRequest = action.payload
                 const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
