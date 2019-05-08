@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import React from "react";
 import { H1 } from "../ui-elements/Text";
-import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon } from "../ui-elements/Image";
+import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon, CloseIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
@@ -27,7 +27,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
-                <input value={query} onChange={e => myLinksQueryChanged(e.target.value)} />
+                <input value={query} onChange={e => myLinksQueryChanged(e.target.value)} />{query.length > 0 ? <CloseIcon onClick={() => myLinksQueryChanged("")} /> : <></>}
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >

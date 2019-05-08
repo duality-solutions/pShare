@@ -81,7 +81,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
         }
     }
     render() {
-        const { users, beginCreateLinkRequest, currentUserName, push,addLinksQueryChanged,query } = this.props
+        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryChanged, query } = this.props
         return (
             <>
                 {this.state.requestModal &&
@@ -99,7 +99,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                         <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0" /> Add Links</H1>
-                        <input value={query} onChange={e => addLinksQueryChanged(e.target.value)} />
+                        <input value={query} onChange={e => addLinksQueryChanged(e.target.value)} />{query.length > 0 ? <CloseIcon onClick={() => addLinksQueryChanged("")} /> : <></>}
                         <UserList>
                             {users.map(u =>
                                 <>
