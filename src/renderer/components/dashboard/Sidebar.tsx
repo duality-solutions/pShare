@@ -64,7 +64,7 @@ interface TabInfo {
 }
 const tabs: TabInfo[] = [
     {
-        location: '/Dashboard/CreatingLinkProgress',
+        location: '/Dashboard/MyLinks',
         icon: ({ selected }) =>
             <MyLinksIcon
                 white={selected}
