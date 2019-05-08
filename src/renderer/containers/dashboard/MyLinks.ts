@@ -9,10 +9,12 @@ import { push } from "connected-react-router";
 import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
 import { DashboardActions } from "../../../shared/actions/dashboard";
 import { FileSharingActions } from "../../../shared/actions/fileSharing";
+import { SearchActions } from "../../../shared/actions/search";
 
 const getUserName = createSelector([(state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined], (user) => user)
 const getUserList = createSelector(
     [
+        (state: RendererRootState) => state.myLinksSearch.query,
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.completeLinks,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
@@ -20,7 +22,7 @@ const getUserList = createSelector(
         (state: RendererRootState) => state.bdap.deniedLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
     ],
-    (users, completeLinks, pendingAcceptLinks, pendingRequestLinks, deniedLinks, currentUserFqdn) => {
+    (query, users, completeLinks, pendingAcceptLinks, pendingRequestLinks, deniedLinks, currentUserFqdn) => {
         const linkedUsers = blinq(users)
             .join(
                 completeLinks,
@@ -54,8 +56,12 @@ const getUserList = createSelector(
         return linkedUsers
             .concat(pendingAcceptUsers)
             .concat(pendingRequestUsers)
-            .orderBy(u => u.commonName.toLowerCase())
-            .thenBy(u => u.userName.toLowerCase())
+            .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
+            .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
+            .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
+            .thenBy(x => x.bdapUser.commonName.toLowerCase())
+            .thenBy(x => x.bdapUser.userName.toLowerCase())
+            .select(x => x.bdapUser)
             .toArray()
     }
 )
@@ -63,10 +69,11 @@ const getUserList = createSelector(
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateProps => {
     return {
         users: getUserList(state),
-        userName: getUserName(state)!
+        userName: getUserName(state)!,
+        query: state.myLinksSearch.query
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...FileSharingActions, ...DashboardActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<MyLinksDispatchProps> = { ...SearchActions, ...FileSharingActions, ...DashboardActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(MyLinks)

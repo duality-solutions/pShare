@@ -1,5 +1,5 @@
 import { RendererRootState } from "../../reducers";
-import { AddLinksStateProps,  AddLinks, AddLinksDispatchProps } from "../../components/dashboard/AddLinks";
+import { AddLinksStateProps, AddLinks, AddLinksDispatchProps } from "../../components/dashboard/AddLinks";
 import { MapPropsToDispatchObj } from "../../system/MapPropsToDispatchObj";
 import { BdapActions } from "../../../shared/actions/bdap";
 import { connect } from "react-redux";
@@ -8,6 +8,7 @@ import { BdapUser } from "../../system/BdapUser";
 import { blinq } from "blinq";
 import { push } from "connected-react-router";
 import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
+import { SearchActions } from "../../../shared/actions/search";
 
 
 
@@ -19,6 +20,8 @@ const getCurrentUserName = createSelector((state: RendererRootState) => state.bd
 })
 const getUserList = createSelector(
     [
+        (state: RendererRootState) => state.myLinksSearch.query,
+
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.pendingRequestLinks,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
@@ -27,7 +30,7 @@ const getUserList = createSelector(
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
 
     ],
-    (users, pendingRequestLinks, pendingAcceptLinks, completeLinks, deniedLinks, currentFqUser) => {
+    (query, users, pendingRequestLinks, pendingAcceptLinks, completeLinks, deniedLinks, currentFqUser) => {
         //const allLinks = blinq(pendingRequestLinks).concat(pendingAcceptLinks)
         const existingLinks = completeLinks.concat(pendingAcceptLinks)
         return filterDeniedUsers(blinq(users), deniedLinks)
@@ -48,8 +51,12 @@ const getUserList = createSelector(
                     commonName: user.common_name,
                     state: typeof link === 'undefined' ? "normal" : "pending"
                 } as BdapUser))
-            .orderBy(u => u.commonName.toLowerCase())
-            .thenBy(u => u.userName.toLowerCase())
+            .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
+            .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
+            .orderBy(x => blinq([x.commonNameQueryPosition, x.userNameQueryPosition]).where(v => v >= 0).min())
+            .thenBy(x => x.bdapUser.commonName.toLowerCase())
+            .thenBy(x => x.bdapUser.userName.toLowerCase())
+            .select(x => x.bdapUser)
             .toArray();
     })
 
@@ -58,10 +65,11 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksState
 
     return {
         users: getUserList(state),
-        currentUserName
+        currentUserName,
+        query: state.addLinksSearch.query
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = { ...BdapActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = {...SearchActions, ...BdapActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddLinks)

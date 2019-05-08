@@ -11,6 +11,7 @@ import { FileWatchActions } from './fileWatch';
 import { AddFileActions } from './addFile';
 import { BdapActions } from './bdap';
 import { FileListActions } from './fileList';
+import { SearchActions } from './search';
 
 export const RootActions = {
     ...StoreActions,
@@ -24,7 +25,8 @@ export const RootActions = {
     ...AddFileActions,
     ...BdapActions,
     ...FileListActions,
-    ...RtcActions
+    ...RtcActions,
+    ...SearchActions
 }
 
 export type RootActions = ActionType<typeof RootActions>

@@ -10,14 +10,16 @@ import { LinkDisplayName } from "./LinkDisplayName";
 
 export interface MyLinksStateProps {
     users: BdapUser[],
-    userName: string
+    userName: string,
+    query: string
 }
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
     startViewSharedFiles: (userName: string) => void
+    myLinksQueryChanged: (value: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryChanged, query }: MyLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
@@ -25,6 +27,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
+                <input value={query} onChange={e => myLinksQueryChanged(e.target.value)} />
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >
