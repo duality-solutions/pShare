@@ -34,7 +34,7 @@ interface PasswordCreateComponentState {
     password: string,
     confirmPassword: string,
 }
-export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreateComponentState>{
+export class PasswordCreateOrLogin extends Component<PasswordCreateProps, PasswordCreateComponentState>{
     constructor(props: PasswordCreateProps) {
         super(props)
         this.state = { password: "", confirmPassword: "" }

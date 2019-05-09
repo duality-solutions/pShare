@@ -10,7 +10,7 @@ import EnterToken from "../containers/onboarding/EnterToken";
 import EnterUserName from "../containers/onboarding/EnterUserName";
 import MnemonicPage from '../containers/onboarding/MnemonicPage';
 import MnemonicWarning from '../containers/onboarding/MnemonicWarning';
-import PasswordCreate from '../containers/onboarding/PasswordCreate';
+import PasswordCreateOrLogin from '../containers/onboarding/PasswordCreateOrLogin';
 import SecureMnemonicFile from '../containers/onboarding/SecureMnemonicFile';
 import Sync from "../containers/syncing/Sync";
 import SyncAgree from "../containers/syncing/SyncAgree";
@@ -42,7 +42,7 @@ const routingTable = {
     enterCommonName: route("/EnterCommonName", EnterCommonName),
     enterToken: route("/EnterToken", EnterToken),
     creatingBdapAccount: route("/CreatingBdapAccount", CreatingBdapAccount),
-    passwordCreate: route("/PasswordCreate", PasswordCreate),
+    passwordCreateOrLogin: route("/PasswordCreateOrLogin", PasswordCreateOrLogin),
     mnemonicWarning: route("/MnemonicWarning", MnemonicWarning),
     mnemonicPage: route("/MnemoniPage", MnemonicPage),
     secureMnemonicFile: route("/SecureMnemonicFile", SecureMnemonicFile),
