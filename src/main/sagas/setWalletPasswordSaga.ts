@@ -53,7 +53,7 @@ export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper, mock: boolea
                     yield put(OnboardingActions.walletPasswordSetSuccess())
                     return
                 } else {
-                    const payload = createValidatedFailurePayload(validationScopes.password, "password", "Wallet is already encrypted. Could not unlock wallet with supplied password.", password, true)
+                    const payload = createValidatedFailurePayload(validationScopes.password, "password", "The supplied credentials are incorrect.", password, true)
                     yield put(OnboardingActions.fieldValidated(payload))
                     return
                 }

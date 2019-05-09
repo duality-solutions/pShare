@@ -8,7 +8,8 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): PasswordCreateStateProps => ({
     password: state.passwordCreateFormValues.fields.password.value,
     isValidating: state.passwordCreateFormValues.fields.password.isValidating,
-    validationResult: state.passwordCreateFormValues.fields.password.validationResult
+    validationResult: state.passwordCreateFormValues.fields.password.validationResult,
+    uiType: state.user.walletEncrypted ? "LOGIN" : "CREATE"
 });
 
 
