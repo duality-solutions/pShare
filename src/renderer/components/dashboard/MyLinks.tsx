@@ -27,8 +27,23 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
-                <input value={queryText} onChange={e => myLinksQueryTextChanged(e.target.value)} />
-                <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => myLinksQueryTextChanged("")} />
+                <input id="myLinksInput" value={queryText} onChange={e => myLinksQueryTextChanged(e.target.value)} />
+                {/* 
+                        
+                    NOTE
+
+                    adding and removing the element below with a ternary statement
+                    causes measurable performance issues 
+                    
+                    toggling css visibility below is an optimization that
+                    stops the renderer re-rendering the list below this element
+                        
+                        
+                */}
+                <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => {
+                    myLinksQueryTextChanged("");
+                    document.getElementById("myLinksInput")!.focus()
+                }} />
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >

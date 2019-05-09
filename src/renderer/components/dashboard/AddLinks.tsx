@@ -99,8 +99,23 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                         <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0" /> Add Links</H1>
-                        <input value={queryText} onChange={e => addLinksQueryTextChanged(e.target.value)} />
-                        <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => addLinksQueryTextChanged("")} />
+                        <input id="addLinksInput" value={queryText} onChange={e => addLinksQueryTextChanged(e.target.value)} />
+                        {/* 
+                        
+                            NOTE
+
+                            adding and removing the element below with a ternary statement
+                            causes measurable performance issues 
+                            
+                            toggling css visibility below is an optimization that
+                            stops the renderer re-rendering the list below this element
+                        
+                        
+                        */}
+                        <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => {
+                            addLinksQueryTextChanged("");
+                            document.getElementById("addLinksInput")!.focus()
+                        }} />
                         <UserList>
                             {users.map(u =>
                                 <UserListItem key={u.userName} >
