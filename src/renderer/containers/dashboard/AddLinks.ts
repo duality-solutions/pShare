@@ -66,7 +66,8 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksState
     return {
         users: getUserList(state),
         currentUserName,
-        queryText: state.addLinksSearch.queryText
+        queryText: state.addLinksSearch.queryText,
+        status: state.addLinksSearch.query.length < 3 ? "NO_SEARCH" : "SEARCH_RESULT"
     };
 };
 

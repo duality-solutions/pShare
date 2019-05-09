@@ -15,10 +15,12 @@ import Button from "../ui-elements/Button";
 import Input from "../ui-elements/Input";
 import { SearchActions } from "../../../shared/actions/search";
 
+type SearchStatus = "NO_SEARCH" | "SEARCH_RESULT"
 export interface AddLinksStateProps {
     users: BdapUser[]
     currentUserName: string
     queryText: string
+    status: SearchStatus
 
 }
 export type AddLinksDispatchProps = PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged"> & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
@@ -81,7 +83,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
         }
     }
     render() {
-        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryTextChanged, queryText } = this.props
+        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryTextChanged, queryText, status } = this.props
         return (
             <>
                 {this.state.requestModal &&
@@ -116,24 +118,9 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                             addLinksQueryTextChanged("");
                             document.getElementById("addLinksInput")!.focus()
                         }} />
-                        <UserList>
-                            {users.map(u =>
-                                <UserListItem key={u.userName} >
-                                    <div style={{ display: 'flex' }}>
-                                        <UserListAvatar src={man} />
-                                        <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
-                                    </div>
-                                    {u.state === 'pending' ?
-                                        <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                        : <div style={{ fontSize: "0.7em" }}
-                                            onClick={() => this.setState({ requestModal: true, recipent: u.userName })}>
-                                            Request
-                                            <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" />
-                                        </div>
-                                    }
-                                </UserListItem>
-                            )}
-                        </UserList>
+                        {
+                            renderResults(queryText, status, users, x => this.setState(x))
+                        }
                         <div style={{ padding: "2.5em" }} />
                     </Container>
                 </div>
@@ -141,5 +128,34 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
         )
     }
 
+}
+
+const renderResults = (queryText: string, status: string, users: BdapUser[], setState: (x: AddLinksComponentStateProps) => void) => {
+    switch (status) {
+        case "NO_SEARCH":
+
+            return queryText.length === 0
+                ? <p>Type some characters to find other users...</p>
+                : <p>Type some more characters to find other users...</p>
+        case "SEARCH_RESULT":
+            return users.length > 0
+                ? <UserList>
+                    {users.map(u => <UserListItem key={u.userName}>
+                        <div style={{ display: 'flex' }}>
+                            <UserListAvatar src={man} />
+                            <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
+                        </div>
+                        {u.state === 'pending' ?
+                            <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                            : <div style={{ fontSize: "0.7em" }} onClick={() => setState({ requestModal: true, recipent: u.userName })}>
+                                Request
+                                <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" />
+                            </div>}
+                    </UserListItem>)}
+                </UserList>
+                : <p>No results</p>;
+        default:
+            return <p>Encountered an unexpected condition</p>;
+    }
 }
 
