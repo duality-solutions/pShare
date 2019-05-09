@@ -35,8 +35,8 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                     adding and removing the element below with a ternary statement
                     causes measurable performance issues 
                     
-                    toggling css visibility below is an optimization that
-                    stops the renderer re-rendering the list below this element
+                    toggling css visibility below is an optimization that doesn't
+                    cause document reflow
                         
                         
                 */}
