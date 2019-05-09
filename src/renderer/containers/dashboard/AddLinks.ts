@@ -20,7 +20,7 @@ const getCurrentUserName = createSelector((state: RendererRootState) => state.bd
 })
 const getUserList = createSelector(
     [
-        (state: RendererRootState) => state.myLinksSearch.query,
+        (state: RendererRootState) => state.addLinksSearch.query,
 
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.pendingRequestLinks,
@@ -43,7 +43,7 @@ const getUserList = createSelector(
                 commonName: user.common_name,
                 state: typeof link === 'undefined' ? "normal" : "pending"
             } as BdapUser));
-        return query.length > 0
+        const retVal = query.length > 0
             ? baseQuery
                 .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
                 .where(x => x.commonNameQueryPosition >= 0 || x.userNameQueryPosition >= 0)
@@ -56,6 +56,8 @@ const getUserList = createSelector(
                 .orderBy(u => u.commonName)
                 .thenBy(u => u.userName)
                 .toArray()
+
+        return retVal
     })
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksStateProps => {
@@ -64,7 +66,7 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksState
     return {
         users: getUserList(state),
         currentUserName,
-        query: state.addLinksSearch.query
+        queryText: state.addLinksSearch.queryText
     };
 };
 

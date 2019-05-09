@@ -64,7 +64,7 @@ const templateUrl =
       })
 
 function createRtcWindow() {
-  const window = new BrowserWindow({ width: 1, height: 1, show: false })
+  const window = new BrowserWindow({ width: 1, height: 1, show: false})
   window.loadURL(`${templateUrl}?role=rtc`)
   return window
 }

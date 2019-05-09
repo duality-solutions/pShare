@@ -11,15 +11,15 @@ import { LinkDisplayName } from "./LinkDisplayName";
 export interface MyLinksStateProps {
     users: BdapUser[],
     userName: string,
-    query: string
+    queryText: string
 }
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
     startViewSharedFiles: (userName: string) => void
-    myLinksQueryChanged: (value: string) => void
+    myLinksQueryTextChanged: (value: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryChanged, query }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText }: MyLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
@@ -27,7 +27,8 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
-                <input value={query} onChange={e => myLinksQueryChanged(e.target.value)} />{query.length > 0 ? <CloseIcon onClick={() => myLinksQueryChanged("")} /> : <></>}
+                <input value={queryText} onChange={e => myLinksQueryTextChanged(e.target.value)} />
+                <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => myLinksQueryTextChanged("")} />
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >

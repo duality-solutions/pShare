@@ -76,7 +76,7 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateP
     return {
         users: getUserList(state),
         userName: getUserName(state)!,
-        query: state.myLinksSearch.query
+        queryText: state.myLinksSearch.queryText
     };
 };
 

@@ -18,10 +18,10 @@ import { SearchActions } from "../../../shared/actions/search";
 export interface AddLinksStateProps {
     users: BdapUser[]
     currentUserName: string
-    query: string
+    queryText: string
 
 }
-export type AddLinksDispatchProps = PickedDispatchProps<typeof SearchActions, "addLinksQueryChanged"> & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
+export type AddLinksDispatchProps = PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged"> & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
 
 interface AddLinksComponentStateProps {
@@ -81,7 +81,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
         }
     }
     render() {
-        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryChanged, query } = this.props
+        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryTextChanged, queryText } = this.props
         return (
             <>
                 {this.state.requestModal &&
@@ -99,25 +99,24 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                         <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0" /> Add Links</H1>
-                        <input value={query} onChange={e => addLinksQueryChanged(e.target.value)} />{query.length > 0 ? <CloseIcon onClick={() => addLinksQueryChanged("")} /> : <></>}
+                        <input value={queryText} onChange={e => addLinksQueryTextChanged(e.target.value)} />
+                        <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => addLinksQueryTextChanged("")} />
                         <UserList>
                             {users.map(u =>
-                                <>
-                                    <UserListItem key={u.userName} >
-                                        <div style={{ display: 'flex' }}>
-                                            <UserListAvatar src={man} />
-                                            <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
-                                        </div>
-                                        {u.state === 'pending' ?
-                                            <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                            : <div style={{ fontSize: "0.7em" }}
-                                                onClick={() => this.setState({ requestModal: true, recipent: u.userName })}>
-                                                Request
+                                <UserListItem key={u.userName} >
+                                    <div style={{ display: 'flex' }}>
+                                        <UserListAvatar src={man} />
+                                        <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
+                                    </div>
+                                    {u.state === 'pending' ?
+                                        <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                                        : <div style={{ fontSize: "0.7em" }}
+                                            onClick={() => this.setState({ requestModal: true, recipent: u.userName })}>
+                                            Request
                                             <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" />
-                                            </div>
-                                        }
-                                    </UserListItem>
-                                </>
+                                        </div>
+                                    }
+                                </UserListItem>
                             )}
                         </UserList>
                         <div style={{ padding: "2.5em" }} />

@@ -14,6 +14,7 @@ import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
 import { maximumFileSize } from '../../shared/system/maximumFileSize';
 import { hashFile } from '../../shared/system/hashing/hashFile';
+import { getType } from 'typesafe-actions';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
 }
@@ -26,7 +27,7 @@ const isFileWatchEvent = (obj: SimpleFileWatchEvent): obj is FileWatchEvent => (
 const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
 const getRelativePath = (fqPath: string) => path.relative(pathToShareDirectory, fqPath)
 export function* fileWatchSaga() {
-    yield take(BdapActions.bdapDataFetchSuccess)
+    yield take(getType(BdapActions.bdapDataFetchSuccess))
     yield call(() => fsExtra.ensureDir(pathToShareDirectory))
     console.log("starting file watcher")
     const watcher = watch(pathToShareDirectory, { awaitWriteFinish: { stabilityThreshold: 500 } })
