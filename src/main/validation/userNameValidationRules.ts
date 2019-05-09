@@ -3,7 +3,7 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { RpcClient } from "../RpcClient";
 
 const isLongEnough = (client: RpcClient, value: string) => value.length >= 3;
-const isValidCharacters = (client: RpcClient, value: string) => /^[A-Za-z0-9]$/.test(value);
+const isValidCharacters = (client: RpcClient, value: string) => /^[A-Za-z0-9]+$/.test(value);
 const userNameDoesNotExist = async (client: RpcClient, value: string) => {
 
     let userInfo: GetUserInfo;
