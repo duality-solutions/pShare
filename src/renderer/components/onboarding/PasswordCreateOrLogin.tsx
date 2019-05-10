@@ -124,7 +124,7 @@ export class PasswordCreateOrLogin extends Component<PasswordCreateProps, Passwo
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
                                 <ArrowButton label={uiType === "CREATE" ? "Continue" : "Log in"} type="submit" disabled={isValidating} />
                                 {
-                                    isValidating ? <LoadingSpinner active label="Encrypting your data ... " size={50} /> : <></>
+                                    isValidating ? <LoadingSpinner active label={uiType === "LOGIN" ? "Logging in..." : "Encrypting your data..."} size={50} /> : <></>
                                 }
                             </Box>
                         </Box>
