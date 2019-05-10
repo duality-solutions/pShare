@@ -8,3 +8,16 @@ export interface Link {
     expires_on: number;
     expired: boolean;
 }
+
+export function isLink(obj: any): obj is Link {
+    const requiredProps = [
+        "requestor_fqdn",
+        "recipient_fqdn",
+        "txid",
+        "time",
+        "expires_on",
+        "expired"
+    ]
+    if (obj == null || typeof obj !== "object") return false
+    return requiredProps.every(p => obj.hasOwnProperty(p))
+}

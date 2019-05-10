@@ -57,6 +57,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksSuccess(p))
             return
         }
+
         //const rpcClient: RpcClient = yield call(() => getRpcClient())
         let response: LinkResponse<Link>;
         try {
@@ -66,7 +67,11 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             yield put(BdapActions.getCompleteLinksFailed(err.message))
             return
         }
-        yield put(BdapActions.getCompleteLinksSuccess(extractLinks(response)))
+
+        const links = extractLinks(response);
+
+
+        yield put(BdapActions.getCompleteLinksSuccess(links))
 
     })
 
@@ -100,8 +105,9 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     })
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
-
         for (; ;) {
+
+
             yield put(BdapActions.getUsers())
 
             yield put(BdapActions.getCompleteLinks())
@@ -140,7 +146,10 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 && getResults.denied.success
             ) {
                 console.log("all user/link data successful retrieved")
+
+
                 yield put(BdapActions.bdapDataFetchSuccess())
+
             }
             else {
                 console.warn("some user/link data was not successfully retrieved")
@@ -148,13 +157,11 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 yield put(BdapActions.bdapDataFetchFailed("some user/link data was not successfully retrieved"))
 
             }
-
             yield delay(60000)
         }
 
     })
 }
-
 
 const reservedKeyNames = ["locked_links"]
 const extractLinks = <T extends Link>(response: LinkResponse<T>): T[] =>
