@@ -16,10 +16,13 @@ import { H1, Text } from "../ui-elements/Text";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
 
+type PasswordUiType = "LOGIN" | "CREATE"
+
 export interface PasswordCreateStateProps {
     password: string
     isValidating: boolean,
     validationResult?: ValidationResult<string>
+    uiType: PasswordUiType
 }
 
 export type PasswordCreateDispatchProps = PickedDispatchProps<typeof OnboardingActions, "resetValidationForField" | "fieldValidated" | "submitPassword">
@@ -31,7 +34,7 @@ interface PasswordCreateComponentState {
     password: string,
     confirmPassword: string,
 }
-export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreateComponentState>{
+export class PasswordCreateOrLogin extends Component<PasswordCreateProps, PasswordCreateComponentState>{
     constructor(props: PasswordCreateProps) {
         super(props)
         this.state = { password: "", confirmPassword: "" }
@@ -50,7 +53,12 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     handleSubmit = (e: FormEvent) => {
         console.log("submit", this.state)
         try {
-            if (this.state.password !== this.state.confirmPassword) {
+            if (this.props.uiType === "LOGIN") {
+                const payload = createValidatedSuccessPayload(validationScopes.password, "password", this.state.password);
+                this.props.fieldValidated(payload)
+                this.props.submitPassword(this.state.password)
+            }
+            else if (this.state.password !== this.state.confirmPassword) {
                 const payload = createValidatedFailurePayload(validationScopes.password, "password", "Passwords do not match", this.state.password);
                 this.props.fieldValidated(payload)
 
@@ -73,7 +81,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
     }
 
     render() {
-        const { isValidating, validationResult } = this.props
+        const { isValidating, validationResult, uiType } = this.props
         const validationFailed = typeof validationResult !== 'undefined' && !validationResult.success
         const showFieldErrors = (validationFailed && typeof validationResult !== 'undefined' && !validationResult.isError)
         return <>
@@ -87,19 +95,25 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                 transitionAppearTimeout={500}
                 transitionEnter={false}
                 transitionLeave={false}>
-                <H1 align="center" colored fontWeight="600">Create Account</H1>
+                <H1 align="center" colored fontWeight="600">{uiType === "LOGIN" ? "Log in" : "Create Account"}</H1>
                 {/* <Link style={({ position: "absolute", top: 0, left: 0 })} to={appRoutes.rtcPlayground.path}>webrtc playground</Link> */}
                 <Container height="50vh" margin="10% 0 0 0">
                     <form onSubmit={this.handleSubmit}>
                         <Box direction="column" align="center" width="100%">
                             <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                                 <Card width="100%" align="center" minHeight="225px" padding="2em 12em 2em 8em">
-                                    <Text fontSize="14px">Create a Password</Text>
+                                    <Text fontSize="14px">{uiType === "LOGIN" ? "Enter password" : "Create a Password"}</Text>
                                     <Input value={this.state.password} name="password" onChange={this.handleChange} placeholder="Password"
                                         type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" autoFocus={true} error={showFieldErrors} disabled={isValidating} />
-                                    <Text fontSize="14px">Confirm Password</Text>
-                                    <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
-                                        type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} disabled={isValidating} />
+                                    {
+                                        uiType === "LOGIN"
+                                            ? <></>
+                                            : <>
+                                                <Text fontSize="14px">Confirm Password</Text>
+                                                <Input value={this.state.confirmPassword} name="confirmPassword" onChange={this.handleChange} placeholder="Password"
+                                                    type="password" margin="1em 0 1em 0" padding="0 1em 0 1em" error={showFieldErrors} disabled={isValidating} />
+                                            </>
+                                    }
                                     {
                                         validationFailed
                                             ? (typeof validationResult !== 'undefined' ? validationResult.validationMessages : []).map((e, i) => <Text align="center" color="#e30429" key={i}>{e}</Text>)
@@ -108,7 +122,7 @@ export class PasswordCreate extends Component<PasswordCreateProps, PasswordCreat
                                 </Card>
                             </Box>
                             <Box direction="column" width="700px" align="right" margin="0 auto 0 auto">
-                                <ArrowButton label="Continue" type="submit" disabled={isValidating} />
+                                <ArrowButton label={uiType === "CREATE" ? "Continue" : "Log in"} type="submit" disabled={isValidating} />
                                 {
                                     isValidating ? <LoadingSpinner active label="Encrypting your data ... " size={50} /> : <></>
                                 }
