@@ -45,7 +45,7 @@ export function* fileShareSaga(rpcClient: RpcClient) {
     const userName: string = yield select((s: MainRootState) => s.user.userName)
 
 
-
+    let hasAnnouncedFirstPublish = false
     for (; ;) {
         const allActions: AddUnlinkAndNewLinkActionTypes[] = yield getChannelActionsUntilTimeOut(channel, 5000)
 
@@ -87,18 +87,42 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                                 .orderBy(x => x.hash)
                             : []
                     ])
-        for (const [remoteUserName, publicSharedFiles] of dataForLinks) {
+        const dataToPublish = [...dataForLinks]
+        for (const [remoteUserName, publicSharedFiles] of dataToPublish) {
             const serialized = JSON.stringify([...publicSharedFiles])
             console.log(`shared with ${remoteUserName} : ${serialized}`)
             //dht putlinkrecord hfchrissperry100 hfchrissperry101 pshare-filelist "<JSON>"
-            const result =
-                yield unlockedCommandEffect(
-                    rpcClient,
-                    client =>
-                        client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
-            console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
+            for (; ;) {
+                try {
+                    const result =
+                        yield unlockedCommandEffect(
+                            rpcClient,
+                            client =>
+                                client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+                    console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
+                } catch (err) {
+                    const r = /5505 \- DHT data entry is locked for another (\d+) seconds/.exec(err.message)
+                    if (r) {
+                        console.warn(err.message)
+                        const unlockTimeSecsStr = r[1]
+                        const unlockTimeSecs = parseInt(unlockTimeSecsStr, 10)
+                        if (!isNaN(unlockTimeSecs)) {
+                            console.warn(`waiting for ${unlockTimeSecs}s before trying again`)
+                            yield delay(1000 * (unlockTimeSecs + 1))
+                            continue
+                        }
+                        console.warn(`could not parse wait time from error message`)
+                    }
+                    throw err
+
+                }
+                break;
+            }
         }
-        yield put(FileListActions.fileListPublished())
+        if (dataToPublish.length > 0 || !hasAnnouncedFirstPublish) {
+            hasAnnouncedFirstPublish = true
+            yield put(FileListActions.fileListPublished())
+        }
     }
 
 }
