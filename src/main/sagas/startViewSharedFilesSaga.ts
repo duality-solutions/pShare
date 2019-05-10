@@ -41,8 +41,15 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
             yield put(FileListActions.fileListFetchFailed())
         }
         else {
-            const data: PublicSharedFile[] = JSON.parse(linkData.get_value);
-            yield put(FileListActions.fileListFetchSuccess(data))
+            let data: PublicSharedFile[];
+            try {
+                data = JSON.parse(linkData.get_value);
+                yield put(FileListActions.fileListFetchSuccess(data))
+            } catch (err) {
+                yield put(FileListActions.fileListFetchFailed())
+
+            }
+
         }
 
         yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
@@ -59,7 +66,13 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
                 yield put(FileListActions.fileListFetchFailed())
             }
             else {
-                const data: PublicSharedFile[] = JSON.parse(linkData.get_value);
+                let data: PublicSharedFile[];
+                try {
+                    data = JSON.parse(linkData.get_value);
+                } catch (err) {
+                    yield put(FileListActions.fileListFetchFailed())
+                    continue
+                }
                 yield put(FileListActions.fileListFetchSuccess(data))
             }
 
