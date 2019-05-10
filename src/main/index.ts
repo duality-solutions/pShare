@@ -123,7 +123,7 @@ app.on('before-quit', e => {
   //The when cleanup is complete this will cause a second app.quit() 
   //See function orchestrateShutdown in src/main/store/hot-reload/runRootSagaWithHotReload.ts
   console.log("not yet cleaned up, cancelling quit")
-  e.preventDefault() 
+  e.preventDefault()
   hasCleanedUpOnQuit = true;
   store.dispatch(AppActions.shuttingDown())
 
@@ -171,7 +171,16 @@ app.on('ready', async () => {
               mainWindow.webContents.openDevTools({ mode: "detach" });
               mainWindow.inspectElement(props.x, props.y);
             }
-          },
+          }
+        },
+        {
+          label: 'RTC devtools',
+          click() {
+            if (rtcWindow) {
+              rtcWindow.webContents.openDevTools({ mode: "detach" });
+
+            }
+          }
         },
       ]).popup(mainWindow);
     });
