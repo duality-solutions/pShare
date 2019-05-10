@@ -25,7 +25,7 @@ export function* navSaga() {
     }
     else {
         if (typeof currentState.user.userName !== 'undefined') {
-            yield put(pushRoute(appRoutes.passwordCreate))
+            yield put(pushRoute(appRoutes.passwordCreateOrLogin))
             yield* waitForWalletCredentials();
         }
         else {
@@ -50,7 +50,7 @@ export function* navSaga() {
                     bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCancelled, appRoutes.enterCommonName)
                     bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
                     bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreate, true) //true parameter indicates stopping condition
+                    bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
                     //this will block until the navMap is complete
                     yield bdapAccountConfigNavMap.runNav();
                     if( returnedToCreateAccount ) continue;

@@ -1,8 +1,8 @@
 import { RpcClient } from "../RpcClient";
-import { select, all, take, actionChannel, flush } from "redux-saga/effects";
+import { select, take, actionChannel, all, put } from "redux-saga/effects";
 import { MainRootState } from "../reducers";
 import { InOutSharedFiles } from "../../shared/reducers/fileWatch";
-import { Link } from "../../dynamicdInterfaces/links/Link";
+import { Link, isLink } from "../../dynamicdInterfaces/links/Link";
 import { blinq } from "blinq";
 import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
 import { entries } from "../../shared/system/entries";
@@ -13,118 +13,79 @@ import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
 import { RootActions } from "../../shared/actions";
-import { Channel, delay } from "redux-saga";
+import { Channel, buffers } from "redux-saga";
+import { getChannelActionsUntilTimeOut } from "./helpers/getChannelActionsUntilTimeOut";
+import { FileListActions } from "../../shared/actions/fileList";
+
+type AddUnlinkAndNewLinkActionTypes =
+    ActionType<typeof FileWatchActions.fileAdded>
+    | ActionType<typeof FileWatchActions.fileUnlinked>
+    | ActionType<typeof BdapActions.newCompleteLink>
+
 
 
 export function* fileShareSaga(rpcClient: RpcClient) {
-    yield all({
-        bdapDataFetch: take(getType(BdapActions.bdapDataFetchSuccess)),
-        initialScanComplete: take(getType(FileWatchActions.initialScanComplete))
-    })
-    const fileShareUsers: Record<string, InOutSharedFiles> = yield select((s: MainRootState) => s.fileWatch.users)
-    const completeLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
-    const userName: string = yield select((s: MainRootState) => s.user.userName)
-    const remoteUsers =
-        blinq(completeLinks)
-            .selectMany(l => [l.recipient_fqdn, l.requestor_fqdn])
-            .select(fqdn => getUserNameFromFqdn(fqdn)!)
-            .where(n => n !== userName);
-    const entriesWithMatchingCompleteLink =
-        entries(fileShareUsers)
-            .join<[string, InOutSharedFiles], string, string, [string, Record<string, SharedFile>]>(
-                remoteUsers,
-                ([un]) => un,
-                n => n,
-                ([un, e]) => [un, e.out])
-            .where(([, sharedFiles]) => typeof sharedFiles !== 'undefined')
-
-    //console.log(`ENTRIES : ${JSON.stringify([...entriesWithMatchingCompleteLink])}`)
-
-    const dataForLinks =
-        entriesWithMatchingCompleteLink
-            .select<[string, Record<string, SharedFile>], [string, Iterable<PublicSharedFile>]>(
-                ([userName, sharedFiles]) => [
-                    userName,
-                    entries(sharedFiles)
-                        .select(([fileName, sharedFile]) => ({
-                            fileName,
-                            hash: sharedFile.hash!,
-                            size: sharedFile.size!,
-                            contentType: sharedFile.contentType!
-                        }))
-                        .orderBy(x => x.hash)
-                ])
-
-    for (const [remoteUserName, publicSharedFiles] of dataForLinks) {
-        const serialized = JSON.stringify([...publicSharedFiles])
-        console.log(`shared with ${remoteUserName} : ${serialized}`)
-        // dht putlinkrecord hfchrissperry100 hfchrissperry101 pshare-filelist "<JSON>"
-        const result =
-            yield unlockedCommandEffect(
-                rpcClient,
-                client =>
-                    client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
-        console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
-    }
-
-    type AddAndUnlinkActionTypes = ActionType<typeof FileWatchActions.fileAdded> | ActionType<typeof FileWatchActions.fileUnlinked>
-    const channel: Channel<AddAndUnlinkActionTypes> =
+    const channel: Channel<AddUnlinkAndNewLinkActionTypes> =
         yield actionChannel((action: RootActions) => {
             switch (action.type) {
                 case getType(FileWatchActions.fileAdded):
                 case getType(FileWatchActions.fileUnlinked):
+                case getType(BdapActions.newCompleteLink):
+
+                    console.log("found AddAndUnlinkActionTypes")
                     return true
                 default:
                     return false
             }
-        })
+        }, buffers.expanding())
+    yield all({
+        initialScan: take(getType(FileWatchActions.initialScanComplete)),
+        bdapFetchData: take(getType(BdapActions.bdapDataFetchSuccess))
+    })
+    const userName: string = yield select((s: MainRootState) => s.user.userName)
+
+
 
     for (; ;) {
-        const allActions: AddAndUnlinkActionTypes[] = []
+        const allActions: AddUnlinkAndNewLinkActionTypes[] = yield getChannelActionsUntilTimeOut(channel, 5000)
 
-        const action: AddAndUnlinkActionTypes =
-            yield take(channel)
-        allActions.push(action)
-        for (; ;) {
-            yield delay(5000)
-            const actions: AddAndUnlinkActionTypes[] = yield flush(channel)
-            if (!actions.some(x => true)) {
-                break
-            }
-            allActions.concat(actions)
-        }
-
-        const fileUsers = blinq(allActions).select(a => a.payload.sharedWith).distinct()
-
-
-        const fileShareUsers: Record<string, InOutSharedFiles> = yield select((s: MainRootState) => s.fileWatch.users)
+        const usersThatNeedUpdating = blinq(allActions)
+            .select(a =>
+                isLink(a.payload)
+                    ? getRemoteLinkName(a.payload, userName)
+                    : a.payload.sharedWith)
+            .selectMany(x => x == null ? [] : [x])
+            .distinct()
+        const existingFileWatchUsers: Record<string, InOutSharedFiles> = yield select((s: MainRootState) => s.fileWatch.users)
         const completeLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks)
         const remoteUsers =
             blinq(completeLinks)
                 .selectMany(l => [l.recipient_fqdn, l.requestor_fqdn])
                 .select(fqdn => getUserNameFromFqdn(fqdn)!)
-                .intersect(fileUsers)
+                .intersect(usersThatNeedUpdating)
         const entriesWithMatchingCompleteLink =
-            entries(fileShareUsers)
-                .join<[string, InOutSharedFiles], string, string, [string, Record<string, SharedFile>]>(
-                    remoteUsers,
-                    ([un]) => un,
-                    n => n,
-                    ([un, e]) => [un, e.out])
+            remoteUsers
+                .leftOuterJoin<string, [string, InOutSharedFiles], string, [string, Record<string, SharedFile> | undefined]>(
+                    entries(existingFileWatchUsers),
+                    remoteUserName => remoteUserName,
+                    ([fileShareUserName]) => fileShareUserName,
+                    (remUn, x) => [remUn, x ? x[1].out || {} : {}])
                 .where(([, sharedFiles]) => typeof sharedFiles !== 'undefined')
         const dataForLinks =
             entriesWithMatchingCompleteLink
-                .select<[string, Record<string, SharedFile>], [string, Iterable<PublicSharedFile>]>(
+                .select<[string, Record<string, SharedFile> | undefined], [string, Iterable<PublicSharedFile>]>(
                     ([userName, sharedFiles]) => [
                         userName,
-                        entries(sharedFiles)
-                            .select(([fileName, sharedFile]) => ({
-                                fileName,
-                                hash: sharedFile.hash!,
-                                size: sharedFile.size!,
-                                contentType: sharedFile.contentType!
-                            }))
-                            .orderBy(x => x.hash)
+                        sharedFiles
+                            ? entries(sharedFiles)
+                                .select(([fileName, sharedFile]) => ({
+                                    fileName,
+                                    hash: sharedFile.hash!,
+                                    size: sharedFile.size!,
+                                    contentType: sharedFile.contentType!
+                                }))
+                                .orderBy(x => x.hash)
+                            : []
                     ])
         for (const [remoteUserName, publicSharedFiles] of dataForLinks) {
             const serialized = JSON.stringify([...publicSharedFiles])
@@ -137,6 +98,13 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                         client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
             console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
         }
+        yield put(FileListActions.fileListPublished())
     }
 
 }
+
+const getRemoteLinkName = (link: Link, localUserName: string) =>
+    blinq([link.recipient_fqdn, link.requestor_fqdn])
+        .select(getUserNameFromFqdn)
+        .single(n => n !== localUserName)
+

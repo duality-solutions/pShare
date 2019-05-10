@@ -81,11 +81,11 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                         case "ready":
                                             return <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download </Button>
                                         case "failed":
-                                            return <>download failed <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Try again? </Button></>
+                                            return <>Download failed <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Try again? </Button></>
                                         case "downloaded":
-                                            return <>download successful</>
+                                            return <>Success <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Download again </Button></>
                                         case "starting":
-                                            return <>starting...</>
+                                            return <>Starting...</>
                                         default:
                                             return <></>
                                     }

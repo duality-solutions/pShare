@@ -10,7 +10,7 @@ export function getOrCreateShareDirectoriesForUser(otherEndUser: string) {
         const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
         const userShareFolder = path.join(pathToShareDirectory, otherEndUser);
         const paths: UserSharePaths = {
-            incoming: path.join(userShareFolder, "in"),
+    
             outgoing: path.join(userShareFolder, "out"),
             temp: path.join(pathToShareDirectory, "temp")
         };
@@ -21,7 +21,6 @@ export function getOrCreateShareDirectoriesForUser(otherEndUser: string) {
     });
 }
 export interface UserSharePaths {
-    incoming: string;
     outgoing: string;
     temp: string;
 }

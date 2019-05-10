@@ -10,6 +10,7 @@ import { getWalletIsEncrypted } from "./effects/getWalletIsEncrypted";
 import { encryptWallet } from "./effects/encryptWallet";
 import { isCorrectPassword } from "./effects/isCorrectPassword";
 import { RpcClientWrapper } from "../RpcClient";
+import { waitForSync } from "./effects/waitForSync";
 
 
 
@@ -45,7 +46,7 @@ export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper, mock: boolea
         if (walletIsEncrypted) {
             if (mock) {
 
-                const isCorrectPw = yield isCorrectPassword(rpcClient,password)
+                const isCorrectPw = yield isCorrectPassword(rpcClient, password)
                 if (isCorrectPw) {
                     const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
                     yield put(OnboardingActions.fieldValidated(payload))
@@ -53,7 +54,7 @@ export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper, mock: boolea
                     yield put(OnboardingActions.walletPasswordSetSuccess())
                     return
                 } else {
-                    const payload = createValidatedFailurePayload(validationScopes.password, "password", "Wallet is already encrypted. Could not unlock wallet with supplied password.", password, true)
+                    const payload = createValidatedFailurePayload(validationScopes.password, "password", "The supplied credentials are incorrect.", password, true)
                     yield put(OnboardingActions.fieldValidated(payload))
                     return
                 }
@@ -64,9 +65,7 @@ export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper, mock: boolea
         }
         yield encryptWallet(rpcClient, password)
 
-
-        // todo: this takes aaaaages. Skip for now
-        // yield waitForSync();
+        yield waitForSync(rpcClient);
 
         const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
         yield put(OnboardingActions.fieldValidated(payload))
