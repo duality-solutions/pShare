@@ -1,17 +1,11 @@
-export function toBuffer(ab: ArrayBuffer) {
-    const buf = Buffer.alloc(ab.byteLength);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < buf.length; ++i) {
-        buf[i] = view[i];
-    }
-    return buf;
+export function toBuffer(ab: ArrayBuffer, offset: number, amt: number) {
+    const off = offset == null ? 0 : Math.min(offset, ab.byteLength)
+    const len = Math.min(typeof amt !== 'undefined' ? amt : ab.byteLength - off, ab.byteLength);
+    return Buffer.from(ab, off, len)
 }
-export function toArrayBuffer(buf: Buffer, amt?: number) {
-    const len = Math.min(typeof amt !== 'undefined' ? amt : buf.length, buf.length);
-    const ab = new ArrayBuffer(len);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < len; ++i) {
-        view[i] = buf[i];
-    }
+export function toArrayBuffer(buf: Buffer, offset: number, amt: number) {
+    const off = offset == null ? 0 : Math.min(offset, buf.length)
+    const len = Math.min(amt != null ? amt : buf.length - off, buf.length);
+    const ab = buf.buffer.slice(off, len);
     return ab;
 }
