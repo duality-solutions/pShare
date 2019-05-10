@@ -27,11 +27,11 @@ export const receiveFileFromRTCPeer =
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
                         //console.log(`answerpeer received : ${total}`);
-                        if (false) {
-                            const buffer = toBuffer(msg, 0, msg.byteLength)
-                            shasum.update(buffer)
-                            yield call(() => fsWriteAsync(fileDescriptor, buffer));
-                        }
+
+                        const buffer = toBuffer(msg, 0, msg.byteLength)
+                        shasum.update(buffer)
+                        yield call(() => fsWriteAsync(fileDescriptor, buffer));
+
                         if (total > fileNameInfo.size) {
                             throw Error("more data than expected");
                         }
