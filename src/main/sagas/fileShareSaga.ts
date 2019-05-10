@@ -13,7 +13,7 @@ import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
 import { RootActions } from "../../shared/actions";
-import { Channel, buffers } from "redux-saga";
+import { Channel, buffers, delay } from "redux-saga";
 import { getChannelActionsUntilTimeOut } from "./helpers/getChannelActionsUntilTimeOut";
 import { FileListActions } from "../../shared/actions/fileList";
 
