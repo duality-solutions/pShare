@@ -11,7 +11,7 @@ import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
-import { CompleteLink } from "../../dynamicdInterfaces/links/PendingLink";
+import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {

@@ -1,7 +1,8 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
 import { GetUserInfo } from '../../dynamicdInterfaces/GetUserInfo';
 import { Link } from '../../dynamicdInterfaces/links/Link';
-import { PendingLink, CompleteLink } from '../../dynamicdInterfaces/links/PendingLink';
+import { PendingLink } from '../../dynamicdInterfaces/links/PendingLink';
+import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
 import { LinkRequestOptions } from './payloadTypes/LinkRequestOptions';
 import { LinkAcceptOptions } from "./payloadTypes/LinkAcceptOptions";
 import { LinkBase } from './payloadTypes/LinkBase';
