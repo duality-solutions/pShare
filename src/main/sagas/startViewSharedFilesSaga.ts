@@ -86,7 +86,7 @@ function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string,
     try {
         linkData = yield unlockedCommandEffect(rpcClient, client => client.command("dht", "getlinkrecord", linkedUserName, userName, "pshare-filelist"))
     } catch (err) {
-        if (!/getbdaplinkdata: ERRCODE: 5626 - Failed to get record:/.test(err.message)) {
+        if (!/Failed to get record/.test(err.message)) {
             throw err
         }
     }
