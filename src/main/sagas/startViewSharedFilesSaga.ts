@@ -33,7 +33,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
             const closeActions: any[] = yield flush(chan)
             return closeActions.some(x => true)
         }
-        const linkData: BdapLinkData | undefined = yield call(() => readAndDispatchFileList(rpcClient, linkedUserInfo, userName))
+        const linkData: BdapLinkData | undefined = yield call(() => getSharedFileListForLink(rpcClient, linkedUserName, userName))
         if (yield* checkClosed()) {
             return
         }
@@ -58,7 +58,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
             if (yield* checkClosed()) {
                 break
             }
-            const linkData: BdapLinkData | undefined = yield call(() => readAndDispatchFileList(rpcClient, linkedUserInfo, userName))
+            const linkData: BdapLinkData | undefined = yield call(() => getSharedFileListForLink(rpcClient, linkedUserName, userName))
             if (yield* checkClosed()) {
                 break
             }
@@ -81,10 +81,10 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
     })
 }
 
-function* readAndDispatchFileList(rpcClient: RpcClient, linkedUserInfo: GetUserInfo, userName: string) {
+function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string, userName: string) {
     let linkData: BdapLinkData | undefined
     try {
-        linkData = yield unlockedCommandEffect(rpcClient, client => client.command("getbdaplinkdata", linkedUserInfo.object_id, userName, "pshare-filelist"))
+        linkData = yield unlockedCommandEffect(rpcClient, client => client.command("getbdaplinkdata", linkedUserName, userName, "pshare-filelist"))
     } catch (err) {
         if (!/getbdaplinkdata: ERRCODE: 5626 - Failed to get record:/.test(err.message)) {
             throw err
