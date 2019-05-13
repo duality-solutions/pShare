@@ -98,7 +98,7 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                         yield unlockedCommandEffect(
                             rpcClient,
                             client =>
-                                client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+                                client.command("dht", "putlinkrecord", userName, remoteUserName, "pshare-filelist", serialized, true))
                     console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
                 } catch (err) {
                     const r = /5505 \- DHT data entry is locked for another (\d+) seconds/.exec(err.message)

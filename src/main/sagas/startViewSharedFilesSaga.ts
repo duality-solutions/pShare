@@ -84,7 +84,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
 function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string, userName: string) {
     let linkData: BdapLinkData | undefined
     try {
-        linkData = yield unlockedCommandEffect(rpcClient, client => client.command("getbdaplinkdata", linkedUserName, userName, "pshare-filelist"))
+        linkData = yield unlockedCommandEffect(rpcClient, client => client.command("dht", "getlinkrecord", linkedUserName, userName, "pshare-filelist"))
     } catch (err) {
         if (!/getbdaplinkdata: ERRCODE: 5626 - Failed to get record:/.test(err.message)) {
             throw err
