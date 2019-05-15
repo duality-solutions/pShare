@@ -25,7 +25,6 @@ import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassw
 import SharedFiles from '../containers/dashboard/SharedFiles';
 import AddFile from '../containers/dashboard/AddFile';
 import { CreatingLinkProgress } from '../components/dashboard/CreatingLinkProgress';
-
 export interface RouteInfo {
     path: string;
     component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;

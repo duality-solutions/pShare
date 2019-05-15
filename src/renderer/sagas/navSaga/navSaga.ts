@@ -24,11 +24,17 @@ export function* navSaga() {
         yield put(pushRoute(appRoutes.dashboard))
     }
     else {
+
         if (typeof currentState.user.userName !== 'undefined') {
             yield put(pushRoute(appRoutes.passwordCreateOrLogin))
             yield* waitForWalletCredentials();
         }
         else {
+            // const walletIsEncrypted: boolean = yield select((s: RendererRootState) => s.user.walletEncrypted)
+            // if (walletIsEncrypted) {
+            //     yield put(pushRoute(appRoutes.configError))
+            //     return;
+            // }
             console.log("nav saga: navigating to Onboarding -- /CreateAccount")
             yield put(pushRoute(appRoutes.createAccount))
             console.log("nav saga navigating to /CreateAccount")
@@ -53,7 +59,7 @@ export function* navSaga() {
                     bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
                     //this will block until the navMap is complete
                     yield bdapAccountConfigNavMap.runNav();
-                    if( returnedToCreateAccount ) continue;
+                    if (returnedToCreateAccount) continue;
                     yield* waitForWalletCredentials();
                 } else {
                     yield put(pushRoute(appRoutes.restoreAccount))
@@ -101,8 +107,8 @@ export function* navSaga() {
 //     yield bdapAccountConfigNavMap.runNav();
 // }
 
-function* dashboardNav(){
-    const navMap=getNavMap()
+function* dashboardNav() {
+    const navMap = getNavMap()
     navMap.registerNavAction(DashboardActions.viewSharedFiles, dashboardRoutes.sharedFiles)
     navMap.registerNavAction(DashboardActions.viewMyLinks, dashboardRoutes.myLinks)
     navMap.registerNavAction(SharedFilesActions.close, dashboardRoutes.myLinks)
