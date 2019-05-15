@@ -71,6 +71,10 @@ export const OnboardingActions = {
     secureFilePasswordCancelled: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD_CANCELLED')<void>(),
     restoreCancelled: createStandardAction('onboarding/RESTORE_CANCELLED')<void>(),
 
+    restoreFailed: createStandardAction("onboarding/RESTORE_FAILED")<string>(),
+    restoreSuccess: createStandardAction("onboarding/RESTORE_SUCCESS")<string>(),
+    restoring: createStandardAction("onboarding/RESTORING")<void>(),
+
     accountCreationCancelled: createStandardAction('onboarding/ACCOUNT_CREATION_CANCELLED')<void>(),
     commonNameCancelled: createStandardAction('onboarding/COMMON_NAME_CANCELLED')<void>(),
     tokenCancelled: createStandardAction('onboarding/TOKEN_CANCELLED')<void>(),
