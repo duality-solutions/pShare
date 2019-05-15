@@ -33,8 +33,13 @@ export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileP
     const filesSelectedHandler = (files: FilePathInfo[]) => {
         if (files.length !== 1) {
             setError({ title: "More that one file selected", message: "Please select only one file" })
+            return
         }
         const file: FilePathInfo = files[0]
+        if (file.size > 131072) { //128KiB
+            setError({ title: "File is too large", message: "Please select a mnemonic recovery file" })
+            return
+        }
         mnemonicRestoreFilePathSubmitted(file.path)
         secureFilePassword()
     }

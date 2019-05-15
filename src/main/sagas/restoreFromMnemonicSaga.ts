@@ -22,11 +22,15 @@ export function* restoreFromMnemonicSaga(client: RpcClient) {
             const { payload: mnemonicFilePassphrase }: ActionType<typeof OnboardingActions.mnemonicRestoreFilePassphraseSubmitted> =
                 yield take(getType(OnboardingActions.mnemonicRestoreFilePassphraseSubmitted))
             //yield put({ type: "monkey", payload: { mnemonicFilePath, mnemonicFilePassphrase } })
-            const buf: Buffer = yield call(() => fs.promises.readFile(mnemonicFilePath))
-            const json = buf.toString()
-            const { decrypt } = getEncryptor(mnemonicFilePassphrase)
-            const mnemonic = decrypt(json)
-            yield put(OnboardingActions.mnemonicSubmittedForRestore(mnemonic))
+            try {
+                const buf: Buffer = yield call(() => fs.promises.readFile(mnemonicFilePath))
+                const json = buf.toString()
+                const { decrypt } = getEncryptor(mnemonicFilePassphrase)
+                const mnemonic = decrypt(json)
+                yield put(OnboardingActions.mnemonicSubmittedForRestore(mnemonic))
+            }catch(err){
+                yield put(OnboardingActions.mnemonicRestoreFileDecryptFailed())
+            }
 
 
         })
