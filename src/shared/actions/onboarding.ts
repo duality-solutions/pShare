@@ -75,6 +75,9 @@ export const OnboardingActions = {
     restoreSuccess: createStandardAction("onboarding/RESTORE_SUCCESS")<string>(),
     restoring: createStandardAction("onboarding/RESTORING")<void>(),
 
+    mnemonicFilePathSelected:createStandardAction("onboarding/MNEMONIC_FILE_PATH_SELECTED")<string>(),
+
+
     accountCreationCancelled: createStandardAction('onboarding/ACCOUNT_CREATION_CANCELLED')<void>(),
     commonNameCancelled: createStandardAction('onboarding/COMMON_NAME_CANCELLED')<void>(),
     tokenCancelled: createStandardAction('onboarding/TOKEN_CANCELLED')<void>(),

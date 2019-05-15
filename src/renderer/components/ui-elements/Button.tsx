@@ -15,6 +15,7 @@ interface ButtonProps {
   minHeight?: string,
   fontSize?: string,
   margin?: string,
+  type?:string
 }
 
 interface ArrowButtonProps {

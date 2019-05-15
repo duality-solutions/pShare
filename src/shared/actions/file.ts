@@ -1,5 +1,5 @@
 import { ActionType, createStandardAction } from 'typesafe-actions';
-import { FilePathInfo } from '../../rtc/system/webRtc/FilePathInfo';
+import { FilePathInfo } from '../types/FilePathInfo';
 
 
 
