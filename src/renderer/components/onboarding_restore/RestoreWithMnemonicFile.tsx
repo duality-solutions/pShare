@@ -3,7 +3,7 @@ import { CSSTransitionGroup } from 'react-transition-group';
 // import { ValidationResult } from "../../../shared/system/validator/ValidationResult";
 import logo from "../../assets/svgs/logo_without_text.svg";
 import Box from "../ui-elements/Box";
-import { ArrowButton, BackButton } from "../ui-elements/Button";
+import { BackButton } from "../ui-elements/Button";
 import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
@@ -21,21 +21,21 @@ export interface RestoreWithMnemonicFileStateProps {
     // validationResult?: ValidationResult<string>
 }
 
-export type RestoreWithMnemonicFileDispatchProps = PickedDispatchProps<typeof OnboardingActions, "restoreWithMnemonicFileCancelled" | "secureFilePassword" | "mnemonicFilePathSelected">
+export type RestoreWithMnemonicFileDispatchProps = PickedDispatchProps<typeof OnboardingActions, "restoreWithMnemonicFileCancelled" | "secureFilePassword" | "mnemonicRestoreFilePathSubmitted">
 
 
 type RestoreWithMnemonicFileProps = RestoreWithMnemonicFileDispatchProps & RestoreWithMnemonicFileStateProps
 
 
 
-export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileProps> = ({ restoreWithMnemonicFileCancelled, secureFilePassword, mnemonicFilePathSelected }) => {
+export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileProps> = ({ restoreWithMnemonicFileCancelled, secureFilePassword, mnemonicRestoreFilePathSubmitted }) => {
     const [error, setError] = useState<DropzoneError | undefined>(undefined)
     const filesSelectedHandler = (files: FilePathInfo[]) => {
         if (files.length !== 1) {
             setError({ title: "More that one file selected", message: "Please select only one file" })
         }
         const file: FilePathInfo = files[0]
-        mnemonicFilePathSelected(file.path)
+        mnemonicRestoreFilePathSubmitted(file.path)
         secureFilePassword()
     }
     return <>
