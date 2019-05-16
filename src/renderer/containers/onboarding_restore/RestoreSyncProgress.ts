@@ -8,7 +8,7 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): RestoreSyncPr
     return {
         isComplete:state.sync.isComplete,
         progressPercent:state.sync.progressPercent,
-        RestoreSyncProgressStarted:state.sync.syncStarted
+        restoreSyncProgressStarted:state.sync.syncStarted
     };
 };
 

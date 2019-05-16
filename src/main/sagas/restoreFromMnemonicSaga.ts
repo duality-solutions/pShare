@@ -1,4 +1,4 @@
-import { RpcClient } from "../RpcClient";
+import { RpcClientWrapper } from "../RpcClient";
 import { takeEvery, call, put, takeLatest } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
@@ -10,11 +10,12 @@ import { BdapAccount } from "../../dynamicdInterfaces/BdapAccount";
 import { getFirstBdapAccount } from "./helpers/getFirstBdapAccount";
 import * as fs from 'fs';
 import { getEncryptor } from "../../shared/system/encryption/getEncryptor";
+import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
 
 const round0 = round(0)
 
 
-export function* restoreFromMnemonicSaga(client: RpcClient) {
+export function* restoreFromMnemonicSaga(client: RpcClientWrapper) {
 
     yield takeLatest(
         getType(OnboardingActions.mnemonicRestoreFilePathSubmitted),
@@ -38,16 +39,27 @@ export function* restoreFromMnemonicSaga(client: RpcClient) {
         })
 
     yield takeEvery(getType(OnboardingActions.mnemonicSubmittedForRestore), function* ({ payload: mnemonic }: ActionType<typeof OnboardingActions.mnemonicSubmittedForRestore>) {
+        const isDevelopment = process.env.NODE_ENV === 'development'
+        const promiseResolver = createPromiseResolver<void>();
+        if (!isDevelopment) {
+            client.processInfo.once("restart", () => promiseResolver.resolve());
 
-        try{
+        }
+
+        try {
             yield call(() => client.command("importmnemonic", mnemonic))
-        }catch(err){
+        } catch (err) {
             yield put(OnboardingActions.restoreFailed("Mnemonic import failed"))
             return
         }
         yield put(OnboardingActions.restoring())
+        if (!isDevelopment) {
+            yield call(() => promiseResolver.promise)
+        } else {
+            yield delay(5000)
+        }
         let currentCompletionPercent: number = -1000;
-
+        yield put(SyncActions.waitingForSync())
         for (; ;) {
             let syncState: SyncState;
             try {
