@@ -91,6 +91,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     })
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
+        let allSourcesRetrievedAtLeastOnce = false
         for (; ;) {
 
 
@@ -133,17 +134,20 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             ) {
                 console.log("all user/link data successful retrieved")
 
-
+                allSourcesRetrievedAtLeastOnce = true
                 yield put(BdapActions.bdapDataFetchSuccess())
+                yield delay(60000)
+
 
             }
             else {
                 console.warn("some user/link data was not successfully retrieved")
                 //todo: report this, somehow
                 yield put(BdapActions.bdapDataFetchFailed("some user/link data was not successfully retrieved"))
-
+                if (allSourcesRetrievedAtLeastOnce) {
+                    yield delay(60000)
+                }
             }
-            yield delay(60000)
         }
 
     })
