@@ -16,6 +16,10 @@ export const mnemonicFileRestore = (state: MnemonicFileRestoreState = defaultSta
     switch (action.type) {
         case getType(OnboardingActions.mnemonicRestoreFileDecryptFailed):
             return { ...state, error: "Decryption failed" }
+        case getType(OnboardingActions.secureFilePasswordCancelled):
+        case getType(OnboardingActions.mnemonicRestoreFilePassphraseSubmitted):
+            const { error, ...rest } = state
+            return rest
         default:
             return state
     }

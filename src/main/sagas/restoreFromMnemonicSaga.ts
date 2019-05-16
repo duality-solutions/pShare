@@ -1,5 +1,5 @@
 import { RpcClient } from "../RpcClient";
-import { takeEvery, call, put, takeLatest, take } from "redux-saga/effects";
+import { takeEvery, call, put, takeLatest } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { delay } from "redux-saga";
@@ -19,25 +19,32 @@ export function* restoreFromMnemonicSaga(client: RpcClient) {
     yield takeLatest(
         getType(OnboardingActions.mnemonicRestoreFilePathSubmitted),
         function* ({ payload: mnemonicFilePath }: ActionType<typeof OnboardingActions.mnemonicRestoreFilePathSubmitted>) {
-            const { payload: mnemonicFilePassphrase }: ActionType<typeof OnboardingActions.mnemonicRestoreFilePassphraseSubmitted> =
-                yield take(getType(OnboardingActions.mnemonicRestoreFilePassphraseSubmitted))
-            //yield put({ type: "monkey", payload: { mnemonicFilePath, mnemonicFilePassphrase } })
-            try {
-                const buf: Buffer = yield call(() => fs.promises.readFile(mnemonicFilePath))
-                const json = buf.toString()
-                const { decrypt } = getEncryptor(mnemonicFilePassphrase)
-                const mnemonic = decrypt(json)
-                yield put(OnboardingActions.mnemonicSubmittedForRestore(mnemonic))
-            }catch(err){
-                yield put(OnboardingActions.mnemonicRestoreFileDecryptFailed())
-            }
-
-
+            yield takeLatest(
+                getType(OnboardingActions.mnemonicRestoreFilePassphraseSubmitted),
+                function* ({
+                    payload: mnemonicFilePassphrase
+                }: ActionType<typeof OnboardingActions.mnemonicRestoreFilePassphraseSubmitted>) {
+                    try {
+                        const buf: Buffer = yield call(() => fs.promises.readFile(mnemonicFilePath))
+                        const json = buf.toString()
+                        const { decrypt } = getEncryptor(mnemonicFilePassphrase)
+                        const mnemonic = decrypt(json)
+                        yield put(OnboardingActions.mnemonicSubmittedForRestore(mnemonic))
+                        yield put(OnboardingActions.restoreSync())
+                    } catch (err) {
+                        yield put(OnboardingActions.mnemonicRestoreFileDecryptFailed())
+                    }
+                })
         })
 
     yield takeEvery(getType(OnboardingActions.mnemonicSubmittedForRestore), function* ({ payload: mnemonic }: ActionType<typeof OnboardingActions.mnemonicSubmittedForRestore>) {
 
-        yield call(() => client.command("importmnemonic", mnemonic))
+        try{
+            yield call(() => client.command("importmnemonic", mnemonic))
+        }catch(err){
+            yield put(OnboardingActions.restoreFailed("Mnemonic import failed"))
+            return
+        }
         yield put(OnboardingActions.restoring())
         let currentCompletionPercent: number = -1000;
 

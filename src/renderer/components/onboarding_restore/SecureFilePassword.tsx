@@ -24,7 +24,7 @@ export type SecureFilePasswordDispatchProps = PickedDispatchProps<typeof Onboard
 type SecureFilePasswordProps = SecureFilePasswordDispatchProps & SecureFilePasswordStateProps
 
 
-export const SecureFilePassword: FunctionComponent<SecureFilePasswordProps> = ({ secureFilePasswordCancelled, mnemonicRestoreFilePassphraseSubmitted, error }) => {
+export const SecureFilePassword: FunctionComponent<SecureFilePasswordProps> = ({ secureFilePasswordCancelled, mnemonicRestoreFilePassphraseSubmitted, error,restoreSync }) => {
     const [passwordText, setPasswordText] = useState("")
 
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {

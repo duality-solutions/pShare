@@ -75,8 +75,14 @@ export function* navSaga() {
                     restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount)
                     restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount)
                     restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
-                    restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress, true)
+                    restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
+                    restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreAccount)
+                    restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+
                     yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
+                    if (returnedToCreateAccount) continue;
+                    yield* waitForWalletCredentials();
+
                 }
                 if (!returnedToCreateAccount) {
                     break;
