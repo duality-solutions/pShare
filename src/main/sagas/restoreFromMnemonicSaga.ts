@@ -48,7 +48,7 @@ export function* restoreFromMnemonicSaga(client: RpcClientWrapper) {
         }
 
         try {
-            yield call(() => client.command("importmnemonic", mnemonic))
+            yield call(() => client.command({ timeout: 60000 }, "importmnemonic", mnemonic))
         } catch (err) {
             yield put(OnboardingActions.restoreFailed("Mnemonic import failed"))
             return
