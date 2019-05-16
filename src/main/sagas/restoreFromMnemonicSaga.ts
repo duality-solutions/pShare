@@ -11,6 +11,7 @@ import { getFirstBdapAccount } from "./helpers/getFirstBdapAccount";
 import * as fs from 'fs';
 import { getEncryptor } from "../../shared/system/encryption/getEncryptor";
 import { createPromiseResolver } from "../../shared/system/createPromiseResolver";
+import { getWalletIsEncrypted } from "./effects/getWalletIsEncrypted";
 
 const round0 = round(0)
 
@@ -106,6 +107,8 @@ export function* restoreFromMnemonicSaga(client: RpcClientWrapper) {
             yield put(OnboardingActions.restoreFailed("could not find bdap user"))
             return
         }
+        const walletIsEncrypted: boolean = yield getWalletIsEncrypted(client)
+        yield put(OnboardingActions.walletIsEncrypted(walletIsEncrypted))
         yield put(OnboardingActions.restoreSuccess(bdapAccount.object_id))
     })
 }

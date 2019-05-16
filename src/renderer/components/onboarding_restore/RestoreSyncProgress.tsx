@@ -46,7 +46,7 @@ export const RestoreSyncProgress: React.FunctionComponent<RestoreSyncProgressPro
               <Text>RestoreSyncProgress is complete</Text> :
               <Text align="center">Waiting for RestoreSyncProgress to start...</Text>
             }   */}
-              <LoadingSpinner active={!restoreSyncProgressStarted} />
+              <LoadingSpinner active={!restoreSyncProgressStarted} label="Importing mnemonic and resetting..." />
               {
                 restoreSyncProgressStarted
                   ? <ProgressBar level={progressPercent} status="Restoring account" />
