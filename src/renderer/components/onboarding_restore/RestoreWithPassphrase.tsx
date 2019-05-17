@@ -8,7 +8,7 @@ import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 // import Input from "../ui-elements/Input";
-import { H1, H3 } from "../ui-elements/Text";
+import { H1, Text, H3 } from "../ui-elements/Text";
 import PsharePassphrase from "../../assets/svgs/p-share-pass-phrase-blue.svg";
 import { MnemonicInput } from "../ui-elements/Input";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
@@ -17,6 +17,7 @@ import { OnboardingActions } from "../../../shared/actions/onboarding";
 export interface RestoreWithPassphraseStateProps {
     // isValidating: boolean,
     // validationResult?: ValidationResult<string>
+    error?: string
 }
 
 export type RestoreWithPassphraseDispatchProps =
@@ -28,8 +29,9 @@ type RestoreWithPassphraseProps = RestoreWithPassphraseDispatchProps & RestoreWi
 
 
 
-export const RestoreWithPassphrase: FunctionComponent<RestoreWithPassphraseProps> = ({ restoreWithPassphraseCancelled, mnemonicSubmittedForRestore, restoreSync }) => {
+export const RestoreWithPassphrase: FunctionComponent<RestoreWithPassphraseProps> = ({ restoreWithPassphraseCancelled, mnemonicSubmittedForRestore, restoreSync, error }) => {
     const [mnemonic, setMnemonic] = useState("")
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         e.stopPropagation()
@@ -63,7 +65,12 @@ export const RestoreWithPassphrase: FunctionComponent<RestoreWithPassphraseProps
                                     <Box margin="1em 0 0 2em">
                                         <H3 margin="0 0 1em 0">Restore using passphrase </H3>
                                         <MnemonicInput placeholder="Enter passphrase" name="mnemonic-text" onChange={e => setMnemonic(e.target.value)} value={mnemonic} />
+                                        {error
+                                            ? <Text align="center" color="#e30429">{error}</Text>
+                                            : <></>}
+
                                     </Box>
+
                                 </Box>
                             </Card>
                         </Box>

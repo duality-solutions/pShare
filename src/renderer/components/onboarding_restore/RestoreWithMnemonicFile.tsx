@@ -9,7 +9,7 @@ import Container from "../ui-elements/Container";
 import PshareSecureFileSvg from "../../assets/svgs/p-share-secure-file.svg";
 import { AppLogo } from '../ui-elements/Image';
 // import Input from "../ui-elements/Input";
-import { H1, H3 } from "../ui-elements/Text";
+import { H1, Text, H3 } from "../ui-elements/Text";
 import { Dropzone, DropzoneError } from "../ui-elements/Dropzone";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
@@ -19,6 +19,7 @@ import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 export interface RestoreWithMnemonicFileStateProps {
     // isValidating: boolean,
     // validationResult?: ValidationResult<string>
+    error?: string
 }
 
 export type RestoreWithMnemonicFileDispatchProps = PickedDispatchProps<typeof OnboardingActions, "restoreWithMnemonicFileCancelled" | "secureFilePassword" | "mnemonicRestoreFilePathSubmitted">
@@ -28,7 +29,7 @@ type RestoreWithMnemonicFileProps = RestoreWithMnemonicFileDispatchProps & Resto
 
 
 
-export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileProps> = ({ restoreWithMnemonicFileCancelled, secureFilePassword, mnemonicRestoreFilePathSubmitted }) => {
+export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileProps> = ({ restoreWithMnemonicFileCancelled, secureFilePassword, mnemonicRestoreFilePathSubmitted, error: stateError }) => {
     const [error, setError] = useState<DropzoneError | undefined>(undefined)
     const filesSelectedHandler = (files: FilePathInfo[]) => {
         if (files.length !== 1) {
@@ -72,6 +73,7 @@ export const RestoreWithMnemonicFile: FunctionComponent<RestoreWithMnemonicFileP
                                     <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                                         <H3 margin="0 0 1em 0">Restore using Secure Restore File </H3>
                                         <Dropzone multiple={false} accept={".psh.json"} filesSelected={filesSelectedHandler} error={error}></Dropzone>
+                                        {stateError ? <Text align="center" color="#e30429">{stateError}</Text> : <></>}
                                     </Box>
                                 </Box>
                             </Card>

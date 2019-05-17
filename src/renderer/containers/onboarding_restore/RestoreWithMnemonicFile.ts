@@ -7,7 +7,7 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): RestoreWithMnemonicFileStateProps => {
     return {
-        
+        error: state.mnemonicFileRestore.error
     };
 };
 
