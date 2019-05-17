@@ -1,17 +1,14 @@
-export function toBuffer(ab: ArrayBuffer) {
-    const buf = Buffer.alloc(ab.byteLength);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < buf.length; ++i) {
-        buf[i] = view[i];
+export function toBuffer(ab: ArrayBuffer, offset: number, amt: number) {
+    if (offset > ab.byteLength || offset < 0 || amt > ab.byteLength - offset || amt < 0) {
+        throw Error("out of range parameters")
     }
-    return buf;
+    return Buffer.from(ab, offset, amt)
 }
-export function toArrayBuffer(buf: Buffer, amt?: number) {
-    const len = Math.min(typeof amt !== 'undefined' ? amt : buf.length, buf.length);
-    const ab = new ArrayBuffer(len);
-    const view = new Uint8Array(ab);
-    for (let i = 0; i < len; ++i) {
-        view[i] = buf[i];
+export function toArrayBuffer(buf: Buffer, offset: number, amt: number) {
+
+    if (offset > buf.length || offset < 0 || amt > buf.length - offset || amt < 0) {
+        throw Error("out of range parameters")
     }
+    const ab = buf.buffer.slice(offset, amt);
     return ab;
 }

@@ -213,8 +213,15 @@ function setAppMenu(mainWindow: BrowserWindow) {
         {
           label: 'Reset redux store',
           async click() {
-            console.log("reset");
+           
             mainWindow && await mainWindow.webContents.executeJavaScript("window.resetStore && window.resetStore()")
+          }
+        },
+        {
+          label: 'Toggle RTC window devtools',
+          click() {
+            
+            rtcWindow && rtcWindow.webContents.openDevTools({ mode: "detach" });
           }
         },
         { role: 'toggledevtools' },

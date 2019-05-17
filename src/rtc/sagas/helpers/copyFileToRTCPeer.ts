@@ -45,7 +45,7 @@ export const copyFileToRTCPeer =
                     yield call(() => pr.promise);
                     console.log("buffer emptied");
                 }
-                dataChannel.send(toArrayBuffer(buffer, bytesRead));
+                dataChannel.send(toArrayBuffer(buffer, 0, bytesRead));
                 totalSent += bytesRead;
                 yield delay(0);
             }

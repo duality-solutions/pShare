@@ -6,6 +6,7 @@ import { FileInfo } from "../../../shared/actions/payloadTypes/FileInfo";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { RtcActions } from "../../../shared/actions/rtc";
 import * as crypto from 'crypto'
+import { toBuffer } from "../../../shared/system/bufferConversion";
 
 const fsOpenAsync = util.promisify(fs.open)
 const fsCloseAsync = util.promisify(fs.close)
@@ -26,9 +27,11 @@ export const receiveFileFromRTCPeer =
                         const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
                         total += msg.byteLength;
                         //console.log(`answerpeer received : ${total}`);
-                        const buffer = Buffer.from(msg)
+
+                        const buffer = toBuffer(msg, 0, msg.byteLength)
                         shasum.update(buffer)
                         yield call(() => fsWriteAsync(fileDescriptor, buffer));
+
                         if (total > fileNameInfo.size) {
                             throw Error("more data than expected");
                         }
@@ -47,7 +50,7 @@ export const receiveFileFromRTCPeer =
                     yield call(() => fsCloseAsync(fileDescriptor));
                 }
                 const computedHash = shasum.digest("base64")
-                if(computedHash!==fileRequest.fileId){
+                if (computedHash !== fileRequest.fileId) {
                     throw Error("Checksum error: hash of downloaded data does not match that of requested data")
                 }
             }

@@ -2,6 +2,7 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 import { GetUserInfo } from '../../dynamicdInterfaces/GetUserInfo';
 import { Link } from '../../dynamicdInterfaces/links/Link';
 import { PendingLink } from '../../dynamicdInterfaces/links/PendingLink';
+import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
 import { LinkRequestOptions } from './payloadTypes/LinkRequestOptions';
 import { LinkAcceptOptions } from "./payloadTypes/LinkAcceptOptions";
 import { LinkBase } from './payloadTypes/LinkBase';
@@ -16,7 +17,7 @@ export const BdapActions = {
     getUsersFailed: createStandardAction('bdap/GET_USERS_FAILED')<string>(),
 
     getCompleteLinks: createStandardAction('bdap/GET_COMPLETE_LINKS')<void>(),
-    getCompleteLinksSuccess: createStandardAction('bdap/GET_COMPLETE_LINKS_SUCCESS')<Link[]>(),
+    getCompleteLinksSuccess: createStandardAction('bdap/GET_COMPLETE_LINKS_SUCCESS')<CompleteLink[]>(),
     getCompleteLinksFailed: createStandardAction('bdap/GET_COMPLETE_LINKS_FAILED')<string>(),
 
 

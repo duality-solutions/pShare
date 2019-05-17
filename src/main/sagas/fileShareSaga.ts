@@ -22,7 +22,10 @@ type AddUnlinkAndNewLinkActionTypes =
     | ActionType<typeof FileWatchActions.fileUnlinked>
     | ActionType<typeof BdapActions.newCompleteLink>
 
-
+const putErrorRegexes = [
+    /Put failed\. Record is locked\. You need to wait at least (\d+) seconds before updating the same record in the DHT\./,
+    /DHT data entry is locked for another (\d+) seconds/
+];
 
 export function* fileShareSaga(rpcClient: RpcClient) {
     const channel: Channel<AddUnlinkAndNewLinkActionTypes> =
@@ -98,10 +101,11 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                         yield unlockedCommandEffect(
                             rpcClient,
                             client =>
-                                client.command("putbdaplinkdata", userName, remoteUserName, "pshare-filelist", serialized))
+                                client.command("dht", "putlinkrecord", userName, remoteUserName, "pshare-filelist", serialized, true))
                     console.log(`putbdaplinkdata returned ${JSON.stringify(result, null, 2)}`)
                 } catch (err) {
-                    const r = /5505 \- DHT data entry is locked for another (\d+) seconds/.exec(err.message)
+                    const r = blinq(putErrorRegexes).select(regex => regex.exec(err.message)).firstOrDefault(result => result != null)
+                    //const r = /DHT data entry is locked for another (\d+) seconds/.exec(err.message)
                     if (r) {
                         console.warn(err.message)
                         const unlockTimeSecsStr = r[1]
