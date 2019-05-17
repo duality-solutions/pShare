@@ -64,25 +64,50 @@ export function* navSaga() {
                 } else {
                     yield put(pushRoute(appRoutes.restoreAccount))
 
-                    const restoreNavMap = getNavMap();
-                    //note that the last parameter (onNavigate) can be optionally supplied, and is called when that particular navAction happens
-                    //here, we're using this so that we can tell if the user has completely backed out of restore, in which case, we want to 
-                    //restart the loop that we're in
-                    restoreNavMap.registerNavAction(RootActions.restoreCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
-                    restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase)
-                    restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFile, appRoutes.restoreWithMnemonicFile)
-                    restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
-                    restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount)
-                    restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount)
-                    restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
-                    restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
-                    restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreAccount)
-                    restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
 
-                    yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
-                    if (returnedToCreateAccount) continue;
-                    yield* waitForWalletCredentials();
+                    for (; ;) {
+                        let returnedToRestoreAccount = false
+                        const { passphrase, mnemonicFile, cancelled } = yield race({
+                            passphrase: take(getType(RootActions.restoreWithPassphrase)),
+                            mnemonicFile: take(getType(RootActions.restoreWithMnemonicFile)),
+                            cancelled: take(getType(RootActions.restoreCancelled))
+                        })
 
+                        if (cancelled) {
+                            yield put(pushRoute(appRoutes.createAccount))
+                            returnedToCreateAccount = true
+                        }
+                        else if (passphrase) {
+                            yield put(pushRoute(appRoutes.restoreWithPassphrase))
+                            const restoreNavMap = getNavMap();
+                            restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase)
+                            restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
+                            restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
+                            restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithPassphrase)
+                            restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+
+                            yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
+                        }
+                        else if (mnemonicFile) {
+                            yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
+                            const restoreNavMap = getNavMap();
+                            restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
+                            restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
+                            restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
+                            restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
+                            restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithMnemonicFile)
+                            restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+
+                            yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
+                        }
+
+
+                        if (returnedToRestoreAccount) continue;
+                        if (returnedToCreateAccount) break
+                        yield* waitForWalletCredentials();
+                        break;
+
+                    }
                 }
                 if (!returnedToCreateAccount) {
                     break;
