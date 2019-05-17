@@ -100,8 +100,20 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                         <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
-                        <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0" /> Add Links</H1>
-                        <input id="addLinksInput" value={queryText} onChange={e => addLinksQueryTextChanged(e.target.value)} />
+                        <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0 0 0 0" /> Add Links</H1>
+                        <div style={{display:'flex'}}>
+                            <Input id="addLinksInput" value={queryText} 
+                                    onChange={e => addLinksQueryTextChanged(e.target.value)} 
+                                    margin="20px 0 20px 0" />
+                            <CloseIcon style={{ 
+                                                visibility: queryText.length > 0 ? "visible" : "hidden",
+                                                margin:'30px 0 0 0'
+                                            }} 
+                                onClick={() => {
+                                    addLinksQueryTextChanged("");
+                                    document.getElementById("addLinksInput")!.focus()
+                            }} />                            
+                        </div>
                         {/* 
                         
                             NOTE
@@ -114,10 +126,6 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                         
                         
                         */}
-                        <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => {
-                            addLinksQueryTextChanged("");
-                            document.getElementById("addLinksInput")!.focus()
-                        }} />
                         {
                             renderResults(queryText, status, users, x => this.setState(x))
                         }
