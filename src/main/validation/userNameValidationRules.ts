@@ -2,9 +2,10 @@ import { ValidationTest } from "../../shared/system/validator/ValidationTest";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { RpcClient } from "../RpcClient";
 
-const isValidUserName = (client:RpcClient,value: string) => /^[A-Za-z0-9]+$/.test(value);
-const userNameDoesNotExist = async (client:RpcClient,value: string) => {
-    
+const isLongEnough = (client: RpcClient, value: string) => value.length >= 3;
+const isValidCharacters = (client: RpcClient, value: string) => /^[A-Za-z0-9]+$/.test(value);
+const userNameDoesNotExist = async (client: RpcClient, value: string) => {
+
     let userInfo: GetUserInfo;
     try {
         userInfo = await client.command("getuserinfo", value)
@@ -28,12 +29,18 @@ const userNameDoesNotExist = async (client:RpcClient,value: string) => {
 
 export const userNameValidationRules: ValidationTest<string>[] = [
     {
-        test: isValidUserName,
-        message: "Value may only contain letters and numbers",
-        testsOnSuccess: [{
-            test: userNameDoesNotExist,
-            message: "User name is already taken"
-        }]
+        test: isLongEnough,
+        message: "User name must be at least 3 characters long",
+        testsOnSuccess: [
+            {
+                test: isValidCharacters,
+                message: "Value may only contain letters and numbers",
+                testsOnSuccess: [{
+                    test: userNameDoesNotExist,
+                    message: "User name is already taken"
+                }]
+            }
+        ]
     }
 ];
 

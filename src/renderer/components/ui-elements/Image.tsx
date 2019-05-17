@@ -19,62 +19,66 @@ import doc from "../../assets/svgs/p-share-doc.svg";
 
 
 interface ImageProps {
-    src? : string,
+    src?: string,
     width?: string,
     height?: string,
     margin?: string,
     white?: boolean,
-    onClick?: ()=> void,
+    onClick?: () => void,
     cursor?: string,
     float?: string,
+
+}
+interface Styleable {
+    style?: Record<string, any>
 }
 
-const SvgIcon = styled('img')<ImageProps>`
-    src: ${props => props.src };
+const SvgIcon = styled('img') <ImageProps>`
+    src: ${props => props.src};
     width: ${props => props.width ? props.width : '100%'};
-    height: ${props=> props.height ? props.height : '100px'};  
+    height: ${props => props.height ? props.height : '100px'};  
     margin: ${props => props.margin || '0'};  
     vertical-align: middle;
-    background: ${props=> props.white ? '#737373' : ''};
+    background: ${props => props.white ? '#737373' : ''};
     cursor: ${props => props.cursor};
-    float: ${props=> props.float};
+    float: ${props => props.float};
 `;
 
-const PlainAppLogo = () => <SvgIcon src={logosrc} height="70px"/>
+const PlainAppLogo = () => <SvgIcon src={logosrc} height="70px" />
 
-const UserListAvatar = styled('img')<ImageProps>`
+const UserListAvatar = styled('img') <ImageProps>`
     src: ${props => props.src}
     width: 20px;
     height: 30px;
 `;
 
-const MyLinksIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, white }) => <SvgIcon src={white ? mylinkswhite: mylinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
-const InboxIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, white }) => <SvgIcon src={white? inboxwhite: inbox} width={width || '50px'} height={height || "30px"}  margin={margin || "0 10px"}/>
-const OutboxIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, white }) => <SvgIcon src={white? outboxwhite: outbox} width={width || '50px'} height={height || "30px"}  margin={margin || "0 10px"}/>
-const InvitesIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, white }) => <SvgIcon src={white? inviteswhite: invites} width={width || '50px'} height={height || "30px"}  margin={margin || "0 10px"}/>
+const MyLinksIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, white }) => <SvgIcon src={white ? mylinkswhite : mylinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const InboxIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, white }) => <SvgIcon src={white ? inboxwhite : inbox} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const OutboxIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, white }) => <SvgIcon src={white ? outboxwhite : outbox} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const InvitesIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, white }) => <SvgIcon src={white ? inviteswhite : invites} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
-const PendingIcon:React.FunctionComponent<ImageProps> =
-    ({ width, height, margin }) => <SvgIcon src={pending} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
+const PendingIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin }) => <SvgIcon src={pending} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
 
-const BtnAddLinksIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, onClick }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer'}} src={addLinksBtn} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
-const AddLinksIcon:React.FunctionComponent<ImageProps> =
-    ({ width, height, margin }) =>  <SvgIcon src={addlinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
-const CloseIcon:React.FunctionComponent<ImageProps> =
-    ({ width, height, margin, onClick }) =>  <SvgIcon onClick={onClick} style={{ cursor: 'pointer'}} src={close} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
-const RequestSentIcon:React.FunctionComponent<ImageProps> =
-    ({ width, height, margin }) =>  <SvgIcon src={requestsent} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
+const BtnAddLinksIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, onClick }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer' }} src={addLinksBtn} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const AddLinksIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin }) => <SvgIcon src={addlinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const CloseIcon: React.FunctionComponent<ImageProps & Styleable> =
+    ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={close} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+const RequestSentIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin }) => <SvgIcon src={requestsent} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
-const ViewBtnIcon:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, onClick }) => <SvgIcon style={{ cursor: 'pointer'}} onClick={onClick} src={viewbtn} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
+const ViewBtnIcon: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, onClick }) => <SvgIcon style={{ cursor: 'pointer' }} onClick={onClick} src={viewbtn} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
-const DocumentSvg:React.FunctionComponent<ImageProps> = 
-    ({ width, height, margin, onClick }) => <SvgIcon onClick={onClick} src={doc} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"}/>
+const DocumentSvg: React.FunctionComponent<ImageProps> =
+    ({ width, height, margin, onClick }) => <SvgIcon onClick={onClick} src={doc} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
 export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,

@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import React from "react";
 import { H1 } from "../ui-elements/Text";
-import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon } from "../ui-elements/Image";
+import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon, CloseIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
@@ -10,14 +10,16 @@ import { LinkDisplayName } from "./LinkDisplayName";
 
 export interface MyLinksStateProps {
     users: BdapUser[],
-    userName: string
+    userName: string,
+    queryText: string
 }
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
     startViewSharedFiles: (userName: string) => void
+    myLinksQueryTextChanged: (value: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText }: MyLinksProps) =>
     <>
         <div style={{ width: "100%", display: 'block' }}>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
@@ -25,6 +27,23 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
+                <input id="myLinksInput" value={queryText} onChange={e => myLinksQueryTextChanged(e.target.value)} />
+                {/* 
+                        
+                    NOTE
+
+                    adding and removing the element below with a ternary statement
+                    causes measurable performance issues 
+                    
+                    toggling css visibility below is an optimization that doesn't
+                    cause document reflow
+                        
+                        
+                */}
+                <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => {
+                    myLinksQueryTextChanged("");
+                    document.getElementById("myLinksInput")!.focus()
+                }} />
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >

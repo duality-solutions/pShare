@@ -5,4 +5,5 @@ export { sharedFiles } from './sharedFiles'
 export { fileWatch } from './fileWatch'
 export { mnemonicFileRestore } from './mnemonicFileRestore'
 export { mnemonicPassphraseRestore } from './mnemonicPassphraseRestore'
-
+export { myLinksSearch } from './myLinksSearch'
+export { addLinksSearch } from './addLinksSearch'
