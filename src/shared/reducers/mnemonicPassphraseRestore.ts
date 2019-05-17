@@ -9,8 +9,9 @@ export const mnemonicPassphraseRestore = (state: MnemonicFileRestoreState = mpDe
     switch (action.type) {
         case getType(OnboardingActions.restoreFailed):
             return { ...state, error: `Restore failed: ${action.payload}` };
-        case getType(OnboardingActions.restoreWithPassphraseCancelled):
-        case getType(OnboardingActions.mnemonicSubmittedForRestore):
+            case getType(OnboardingActions.restoreWithMnemonicFileCancelled):
+            case getType(OnboardingActions.restoreWithPassphraseCancelled):
+            case getType(OnboardingActions.mnemonicSubmittedForRestore):
             const { error, ...rest } = state;
             return rest;
         default:
