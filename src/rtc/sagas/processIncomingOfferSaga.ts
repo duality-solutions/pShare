@@ -17,7 +17,8 @@ import { blinq } from "blinq";
 export function* processIncomingOfferSaga() {
     yield takeEvery(getType(FileSharingActions.offerEnvelopeReceived), function* (action: ActionType<typeof FileSharingActions.offerEnvelopeReceived>) {
         const { payload: offerEnvelope } = action;
-        const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer());
+        const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
+        const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer(rtcConfig));
         const { sessionDescription: offerSdp, id: transactionId, payload: fileRequest } = offerEnvelope;
         console.log(fileRequest);
         const offerSessionDescription = new RTCSessionDescription(offerSdp);

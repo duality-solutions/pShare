@@ -29,7 +29,7 @@ declare module 'electron' {
 }
 
 //defines paths into the store that will be persisted
-const persistencePaths = ['user.syncAgreed', 'user.userName'];
+const persistencePaths = ['user.syncAgreed', 'user.userName', 'rtcConfig'];
 let mainWindow: BrowserWindow | null
 let rtcWindow: BrowserWindow | null
 
@@ -64,7 +64,7 @@ const templateUrl =
       })
 
 function createRtcWindow() {
-  const window = new BrowserWindow({ width: 1, height: 1, show: false})
+  const window = new BrowserWindow({ width: 1, height: 1, show: false })
   window.loadURL(`${templateUrl}?role=rtc`)
   return window
 }
@@ -213,14 +213,14 @@ function setAppMenu(mainWindow: BrowserWindow) {
         {
           label: 'Reset redux store',
           async click() {
-           
+
             mainWindow && await mainWindow.webContents.executeJavaScript("window.resetStore && window.resetStore()")
           }
         },
         {
           label: 'Toggle RTC window devtools',
           click() {
-            
+
             rtcWindow && rtcWindow.webContents.openDevTools({ mode: "detach" });
           }
         },

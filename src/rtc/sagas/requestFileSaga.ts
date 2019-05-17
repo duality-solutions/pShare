@@ -1,4 +1,4 @@
-import { takeEvery, call, put, take, race } from "redux-saga/effects";
+import { takeEvery, call, put, take, race, select } from "redux-saga/effects";
 import { getType, ActionType, isActionOf } from "typesafe-actions";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
@@ -16,12 +16,15 @@ import { UserSharePaths, getOrCreateShareDirectoriesForUser } from "./helpers/ge
 import { delay } from "redux-saga";
 import * as fs from 'fs'
 import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
+import { RtcRootState } from "../reducers";
 
 
 //this runs in rtc
 export function* requestFileSaga() {
     yield takeEvery(getType(FileSharingActions.requestFileWithSavePath), function* (action: ActionType<typeof FileSharingActions.requestFileWithSavePath>) {
-        const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer())
+        const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
+
+        const peer: PromiseType<ReturnType<typeof getOfferPeer>> = yield call(() => getOfferPeer(rtcConfig))
         try {
             const fileRequest: FileRequestWithSavePath = action.payload;
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "negotiating connection" }))

@@ -4,12 +4,8 @@ import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 import { AnswerPeerEvents } from "./AnswerPeerEvents";
 import { RTCAnswerPeer } from "./RTCAnswerPeer";
 
-export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(): Promise<RTCAnswerPeer<T>> {
-    const peerConnectionConfig = {
-        iceServers: [
-            { urls: 'turn:45.77.158.163:3478', username: "test", credential: "Admin@123", }
-        ]
-    };
+export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(peerConnectionConfig: RTCConfiguration): Promise<RTCAnswerPeer<T>> {
+
     const eventDispatcher = createEventEmitter<AnswerPeerEvents>();
 
     const peer = new RTCPeerConnection(peerConnectionConfig);

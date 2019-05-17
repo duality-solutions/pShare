@@ -4,12 +4,8 @@ import { createPromiseResolver } from "../../../shared/system/createPromiseResol
 import { RTCOfferPeer } from "./RTCOfferPeer";
 import { OfferPeerEvents } from "./OfferPeerEvents";
 
-export async function getOfferPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(): Promise<RTCOfferPeer<T>> {
-    const peerConnectionConfig = {
-        iceServers: [
-            { urls: 'turn:45.77.158.163:3478', username: "test", credential: "Admin@123", }
-        ]
-    };
+export async function getOfferPeer<T extends string | Blob | ArrayBuffer | ArrayBufferView>(peerConnectionConfig: RTCConfiguration): Promise<RTCOfferPeer<T>> {
+
     const eventDispatcher = createEventEmitter<OfferPeerEvents>();
     const peer = new RTCPeerConnection(peerConnectionConfig);
     peer.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
