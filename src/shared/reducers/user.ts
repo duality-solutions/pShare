@@ -19,6 +19,7 @@ export const user = (state: UserState = defaultState, action: UserActions | Onbo
         case getType(UserActions.userAgreeSync):
             return { ...state, syncAgreed: true }
         case getType(OnboardingActions.bdapAccountCreated):
+        case getType(OnboardingActions.restoreSuccess):
             return { ...state, userName: action.payload }
         case getType(OnboardingActions.walletPasswordSetSuccess):
             return { ...state, walletEncrypted: true }

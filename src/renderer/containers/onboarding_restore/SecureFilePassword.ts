@@ -7,9 +7,8 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SecureFilePasswordStateProps => {
     return {
-        password: state.passwordCreateFormValues.fields.password.value,
-        isValidating: state.passwordCreateFormValues.fields.password.isValidating,
-        validationResult: state.passwordCreateFormValues.fields.password.validationResult    
+
+        error: state.mnemonicFileRestore.error
     };
 };
 

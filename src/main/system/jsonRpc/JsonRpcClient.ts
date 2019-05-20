@@ -1,8 +1,11 @@
-import { httpRequestStringAsync } from "../http/httpRequestAsync"
+// import { httpRequestStringAsync } from "../http/httpRequestAsync"
 import { CancellationToken } from "../../../shared/system/createCancellationTokenSource";
 import { RpcClient } from "../../../main/RpcClient";
 const isDevelopment = process.env.NODE_ENV === 'development'
 import { RpcCommandOptions } from "./RpcCommandOptions";
+import { post, Response } from 'got'
+
+
 
 export interface RpcClientOptions {
     host: string
@@ -63,38 +66,36 @@ export default class JsonRpcClient implements RpcClient {
         if (!isDevelopment) {
             console.log(`Starting RPC request : ${JSON.stringify(body)}`)
         }
-        const response =
-            await httpRequestStringAsync({
-                body: JSON.stringify(body),
-                url: this.serviceUrl,
+        let gotResponse: Response<string>;
+        try {
+            const postReq = post(this.serviceUrl, {
                 headers: this.requestHeaders,
-                method: "POST",
-                rejectUnsafeHosts:
-                    false
-            }, timeoutToken)
-
-        if (response && response.responseString) {
-            const rs = response.responseString
-            const limit = 2000
-
-            const output = rs.length > limit ? `${rs.substr(0, limit)}...` : rs;
-
-            if (!isDevelopment) {
-                const rpcDebugMsg = `RPC request : ${JSON.stringify(body)}\nRPC response : ${output}`
-                console.log(rpcDebugMsg)
+                timeout: timeout,
+                body: JSON.stringify(body),
+            });
+            const registration = timeoutToken.register(() => postReq.cancel())
+            try {
+                gotResponse = await postReq
+            } finally {
+                registration.unregister()
             }
-
+        } catch (err) {
+            if (err.name === "CancelError") {
+                throw err
+            }
+            if (err.headers["content-type"] === "application/json") {
+                const returnedErr = JSON.parse(err.body)
+                if (returnedErr.error) {
+                    throw Error(returnedErr.error.message)
+                }
+            }
+            throw err
+        }
+        if (gotResponse.headers["content-type"] === "application/json") {
+            return JSON.parse(gotResponse.body).result
         }
 
-        if (response.response.headers["content-type"] === "application/json") {
-            const resObj = JSON.parse(response.responseString)
-            if (resObj.error) {
-                throw Error(resObj.error.message)
-            } else if (typeof resObj.result !== 'undefined') {
-                return resObj.result
-            }
-        }
+        throw Error(`Unexpected content-type : ${gotResponse.headers["content-type"]}`)
 
-        throw Error(response.responseString)
     }
 }

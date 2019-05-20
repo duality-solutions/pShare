@@ -7,7 +7,8 @@ import { MapPropsToDispatchObj } from '../../system/MapPropsToDispatchObj';
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): RestoreWithPassphraseStateProps => {
     return {
-        
+        error: state.mnemonicPassphraseRestore.error
+
     };
 };
 

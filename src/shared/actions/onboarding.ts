@@ -52,11 +52,11 @@ export const OnboardingActions = {
 
     mnemonicFilePasswordSubmit: createStandardAction("onboarding/MNEMONIC_FILE_PASSWORD_SUBMIT")<string>(),
     mnemonicFilePasswordCancelled: createStandardAction("onboarding/MNEMONIC_FILE_PASSWORD_CANCELLED")<void>(),
-    
+
     // encryptAndSaveMnemonicWithPassword: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_WITH_PASSWORD')<string>(),
     mnemonicFileSaveSuccess: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_SUCCESS')<void>(),
     mnemonicFileSaveFailed: createStandardAction('onboarding/ENCRYPT_SAVE_MNEMONIC_FAIL')<string>(),
-    mnemonicFileSavePathSelected:createStandardAction('onboarding/MNEMONIC_FILE_SAVE_PATH_SELECTED')<string>(),
+    mnemonicFileSavePathSelected: createStandardAction('onboarding/MNEMONIC_FILE_SAVE_PATH_SELECTED')<string>(),
 
     restoreAccount: createStandardAction('onboarding/RESTORE_ACCOUNT')<void>(),
     restoreWithPassphrase: createStandardAction('onboarding/RESTORE_WITH_PASSPHRASE')<void>(),
@@ -64,10 +64,20 @@ export const OnboardingActions = {
     restoreSync: createStandardAction('onboarding/RESTORE_SYNC')<void>(),
     secureFilePassword: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD')<void>(),
 
+    mnemonicSubmittedForRestore: createStandardAction("onboarding/MNEMONIC_SUBMITTED_FOR_RESTORE")<string>(),
+
     restoreWithPassphraseCancelled: createStandardAction('onboarding/RESTORE_WITH_PASSPHRASE_CANCELLED')<void>(),
     restoreWithMnemonicFileCancelled: createStandardAction('onboarding/RESTORE_WITH_MNEMONIC_FILE_CANCELLED')<void>(),
     secureFilePasswordCancelled: createStandardAction('onboarding/RESTORE_SECURE_FILE_PASSWORD_CANCELLED')<void>(),
     restoreCancelled: createStandardAction('onboarding/RESTORE_CANCELLED')<void>(),
+
+    restoreFailed: createStandardAction("onboarding/RESTORE_FAILED")<string>(),
+    restoreSuccess: createStandardAction("onboarding/RESTORE_SUCCESS")<string>(),
+    restoring: createStandardAction("onboarding/RESTORING")<void>(),
+
+    mnemonicRestoreFilePathSubmitted:createStandardAction("onboarding/MNEMONIC_RESTORE_FILE_PATH_SELECTED")<string>(),
+    mnemonicRestoreFilePassphraseSubmitted:createStandardAction("onboarding/MNEMONIC_RESTORE_FILE_PASSPHRASE_SELECTED")<string>(),
+    mnemonicRestoreFileDecryptFailed:createStandardAction("onboarding/MNEMONIC_RESTORE_FILE_DECRYPT_FAILED")<void>(),
 
     accountCreationCancelled: createStandardAction('onboarding/ACCOUNT_CREATION_CANCELLED')<void>(),
     commonNameCancelled: createStandardAction('onboarding/COMMON_NAME_CANCELLED')<void>(),
