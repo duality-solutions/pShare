@@ -15,13 +15,13 @@ export function* scanForLinkMessagesSaga(rpcClient: RpcClient) {
 
     console.log("scanForOfferSaga starting")
 
-    yield fork(() => scanForLinkMessages(rpcClient, "pshare-offer", function* (lm: LinkMessage) {
+    yield fork(() => scanForLinkMessages(rpcClient, "pshare-offer", 10000, function* (lm: LinkMessage) {
         const offerEnvelope: LinkMessageEnvelope<FileRequest> = JSON.parse(lm.message);
         yield put(FileSharingActions.offerEnvelopeReceived(offerEnvelope));
     }))
     // this delay is to stagger the timings of the two (repeating) scanForLinkMessages tasks
     yield delay(5000)
-    yield fork(() => scanForLinkMessages(rpcClient, "pshare-answer", function* (lm: LinkMessage) {
+    yield fork(() => scanForLinkMessages(rpcClient, "pshare-answer", 10000, function* (lm: LinkMessage) {
         const answerEnvelope: LinkMessageEnvelope<FileInfo> = JSON.parse(lm.message);
         yield put(FileSharingActions.answerEnvelopeReceived(answerEnvelope));
     }))

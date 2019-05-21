@@ -16,7 +16,7 @@ import { addFileSaga } from "./addFileSaga";
 import { startViewSharedFilesSaga } from "./startViewSharedFilesSaga";
 import { scanForLinkMessagesSaga } from "./scanForLinkMessagesSaga";
 import { sendLinkMessageSaga } from "./sendLinkMessageSaga";
-import { fileShareSaga } from "./fileShareSaga";
+//import { fileShareSaga } from "./fileShareSaga";
 import { requestFileSaveDialogSaga } from "./fileRequestSaveDialogSaga";
 import { newLinkSaga } from "./newLinkSaga";
 import { restoreFromMnemonicSaga } from "./restoreFromMnemonicSaga";
@@ -26,7 +26,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => startViewSharedFilesSaga(rpcClient),
     () => addFileSaga(),
     () => fileWatchSaga(),
-    () => fileShareSaga(rpcClient),
+    //() => fileShareSaga(rpcClient),
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
     () => linkDeclineSaga(rpcClient),
