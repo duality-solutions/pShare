@@ -19,6 +19,7 @@ import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileR
 import { RtcRootState } from "../reducers";
 import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
+import { FileInfo } from "../../shared/actions/payloadTypes/FileInfo";
 
 
 //this runs in rtc
@@ -46,22 +47,30 @@ export function* requestFileSaga() {
             yield put(BdapActions.sendLinkMessage(routeEnvelope))
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "waiting for answer" }))
 
-            const { answerAction }: { answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> } = yield race({
+            const pred = (action: BdapActions) => {
+                switch (action.type) {
+                    case getType(BdapActions.linkMessageReceived):
+                        return action.payload.message.type === "pshare-answer" && action.payload.message.id === offerEnvelope.id
+                    default:
+                        return false;
+                }
+            }
+
+
+
+            const { linkMessage }: { linkMessage: ActionType<typeof BdapActions.linkMessageReceived> } = yield race({
                 timeout: delay(60 * 1000),
-                answerAction: take(
-                    (action: Action<any>) =>
-                        isActionOf(FileSharingActions.answerEnvelopeReceived, action)
-                        && action.payload.id === offerEnvelope.id,
-                )
+                linkMessage: take(pred)
             })
 
-            if (!answerAction) {
+            if (!linkMessage) {
                 yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
                 return
             }
+            const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = linkMessage.payload.message
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connecting to peer" }))
 
-            const { payload: { payload:{sessionDescription: answerSdp, payload: fileInfo }} } = answerAction
+            const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerEnvelope
 
             const answerSessionDescription = new RTCSessionDescription(answerSdp);
             yield call(() => peer.setRemoteDescription(answerSessionDescription))

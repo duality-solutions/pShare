@@ -17,8 +17,16 @@ import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 
 export function* processIncomingOfferSaga() {
-    yield takeEvery(getType(FileSharingActions.offerEnvelopeReceived), function* (action: ActionType<typeof FileSharingActions.offerEnvelopeReceived>) {
-        const { payload: offerEnvelope } = action;
+    const pred = (action: BdapActions) => {
+        switch (action.type) {
+            case getType(BdapActions.linkMessageReceived):
+                return action.payload.message.type === "pshare-offer"
+            default:
+                return false;
+        }
+    }
+    yield takeEvery(pred, function* (action: ActionType<typeof BdapActions.linkMessageReceived>) {
+        const offerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileRequest>> = action.payload.message
         const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
         const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer(rtcConfig));
         const { id: transactionId, payload: { sessionDescription: offerSdp, payload: fileRequest } } = offerEnvelope;

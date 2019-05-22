@@ -6,7 +6,7 @@ import { Enumerable } from "blinq/dist/types/src/Enumerable";
 import { delay } from "redux-saga";
 import { getLinkMessages } from "./getLinkMessages";
 import { LinkMessage } from "../../../dynamicdInterfaces/LinkMessage";
-export function* scanForLinkMessages(rpcClient: RpcClient, messageType: string, scanInterval: number, messageHandler: (msg: LinkMessage) => IterableIterator<any>) {
+export function* pollLinkMessages(rpcClient: RpcClient, messageType: string, scanInterval: number, messageHandler: (msg: LinkMessage) => IterableIterator<any>) {
     const userName: string = yield select((state: MainRootState) => state.user.userName);
     const existingRecords: Enumerable<LinkMessage> = yield getLinkMessages(rpcClient, userName, messageType);
     const processedMessages = new Set<string>();

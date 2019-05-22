@@ -9,6 +9,7 @@ import { LinkBase } from './payloadTypes/LinkBase';
 import { DeniedLink } from '../../dynamicdInterfaces/DeniedLink';
 import { LinkRouteEnvelope } from './payloadTypes/LinkRouteEnvelope';
 import { LinkMessageEnvelope } from './payloadTypes/LinkMessageEnvelope';
+import { LinkMessage } from '../../dynamicdInterfaces/LinkMessage';
 
 
 export const BdapActions = {
@@ -55,8 +56,8 @@ export const BdapActions = {
     newCompleteLink: createStandardAction('bdap/NEW_COMPLETE_LINK')<Link>(),
 
 
-    sendLinkMessage: createStandardAction('fileSharing/SEND_LINK_MESSAGE')<LinkRouteEnvelope<LinkMessageEnvelope<any>>>(),
-
+    sendLinkMessage: createStandardAction('bdap/SEND_LINK_MESSAGE')<LinkRouteEnvelope<LinkMessageEnvelope<any>>>(),
+    linkMessageReceived:createStandardAction('bdap/LINK_MESSAGE_RECEIVED')<{message:LinkMessageEnvelope<any>,rawMessage:LinkMessage}>(),
 
 }
 
