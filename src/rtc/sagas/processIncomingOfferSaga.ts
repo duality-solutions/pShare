@@ -13,6 +13,7 @@ import { FileRequest } from "../../shared/actions/payloadTypes/FileRequest";
 import { RtcRootState } from "../reducers";
 import { SharedFile } from "../../shared/types/SharedFile";
 import { blinq } from "blinq";
+import { BdapActions } from "../../shared/actions/bdap";
 
 export function* processIncomingOfferSaga() {
     yield takeEvery(getType(FileSharingActions.offerEnvelopeReceived), function* (action: ActionType<typeof FileSharingActions.offerEnvelopeReceived>) {
@@ -40,7 +41,7 @@ export function* processIncomingOfferSaga() {
             recipient: fileRequest.requestorUserName,
             payload: answerEnvelope
         };
-        yield put(FileSharingActions.sendLinkMessage(routeEnvelope));
+        yield put(BdapActions.sendLinkMessage(routeEnvelope));
         yield call(() => answerPeer.waitForDataChannelOpen());
         try {
             yield copyFileToRTCPeer(localPath, answerPeer);

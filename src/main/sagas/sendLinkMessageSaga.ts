@@ -1,12 +1,12 @@
 import { select, takeEvery } from "redux-saga/effects";
-import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { RpcClient } from "../RpcClient";
 import { MainRootState } from "../reducers";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getType, ActionType } from "typesafe-actions";
+import { BdapActions } from "../../shared/actions/bdap";
 //runs in main
 export function* sendLinkMessageSaga(rpcClient: RpcClient) {
-    yield takeEvery(getType(FileSharingActions.sendLinkMessage), function* (action: ActionType<typeof FileSharingActions.sendLinkMessage>) {
+    yield takeEvery(getType(BdapActions.sendLinkMessage), function* (action: ActionType<typeof BdapActions.sendLinkMessage>) {
         const { payload: {recipient,payload:linkMessage} } = action;
         
         // const { payload: fileRequest } = linkMessage;

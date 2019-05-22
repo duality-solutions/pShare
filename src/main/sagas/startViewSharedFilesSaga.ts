@@ -138,7 +138,7 @@ function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string,
     const requestMessage = JSON.stringify({ id: msgId })
     yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, linkedUserName, "pshare-filelist-request", requestMessage))
     const task = yield fork(function* () {
-        yield scanForLinkMessages(rpcClient, "pshare-filelist", 1000, function* (msg: LinkMessage) {
+        yield* scanForLinkMessages(rpcClient, "pshare-filelist", 1000, function* (msg: LinkMessage) {
             const fileListMsg: FileListMessage = JSON.parse(msg.message)
             yield put(FileListActions.fileListMessageFetchSuccess(fileListMsg))
         })

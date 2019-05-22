@@ -17,6 +17,7 @@ import { delay } from "redux-saga";
 import * as fs from 'fs'
 import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
 import { RtcRootState } from "../reducers";
+import { BdapActions } from "../../shared/actions/bdap";
 
 
 //this runs in rtc
@@ -41,7 +42,7 @@ export function* requestFileSaga() {
                 recipient: action.payload.ownerUserName,
                 payload: offerEnvelope
             }
-            yield put(FileSharingActions.sendLinkMessage(routeEnvelope))
+            yield put(BdapActions.sendLinkMessage(routeEnvelope))
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "waiting for answer" }))
 
             const { answerAction }: { answerAction: ActionType<typeof FileSharingActions.answerEnvelopeReceived> } = yield race({
