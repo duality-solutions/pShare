@@ -1,5 +1,5 @@
 import { takeEvery, call, put, take, race, select } from "redux-saga/effects";
-import { getType, ActionType, isActionOf } from "typesafe-actions";
+import { getType, ActionType } from "typesafe-actions";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
 import { LinkMessageEnvelope } from "../../shared/actions/payloadTypes/LinkMessageEnvelope";
@@ -7,7 +7,6 @@ import { FileRequest } from "../../shared/actions/payloadTypes/FileRequest";
 import { PromiseType } from "../../shared/system/generic-types/PromiseType";
 import { getOfferPeer } from "../system/webRtc/getOfferPeer";
 import { v4 as uuid } from 'uuid';
-import { Action } from "redux";
 import * as path from 'path'
 import { RtcActions } from "../../shared/actions/rtc";
 import { receiveFileFromRTCPeer } from "./helpers/receiveFileFromRTCPeer";

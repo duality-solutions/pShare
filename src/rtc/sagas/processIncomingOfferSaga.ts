@@ -1,6 +1,5 @@
 import { takeEvery, call, put, select } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
-import { FileSharingActions } from "../../shared/actions/fileSharing";
 import { LinkRouteEnvelope } from "../../shared/actions/payloadTypes/LinkRouteEnvelope";
 import { LinkMessageEnvelope } from "../../shared/actions/payloadTypes/LinkMessageEnvelope";
 import { FileInfo } from "../../shared/actions/payloadTypes/FileInfo";
