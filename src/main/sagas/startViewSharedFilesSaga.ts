@@ -4,7 +4,7 @@ import { getType, ActionType } from "typesafe-actions";
 import { DashboardActions } from "../../shared/actions/dashboard";
 import { RpcClient } from "../RpcClient";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
-import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
+//import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { MainRootState } from "../reducers";
 import { FileListActions } from "../../shared/actions/fileList";
 //import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
@@ -19,6 +19,7 @@ import { SharedFile } from '../../shared/types/SharedFile';
 import { entries } from '../../shared/system/entries';
 import { PublicSharedFile } from '../../shared/types/PublicSharedFile';
 import { BdapActions } from '../../shared/actions/bdap';
+import { LinkMessageEnvelope } from '../../shared/actions/payloadTypes/LinkMessageEnvelope';
 // interface BdapLinkData {
 //     link_requestor: string,
 //     link_acceptor: string,
@@ -62,9 +63,10 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
                     files: sharedFiles,
                     id: requestMessage.id
                 }
-                const fileListMessageJson = JSON.stringify(fileListMessage)
-                const userName: string = yield select((s: MainRootState) => s.user.userName)
-                yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, sender, "pshare-filelist", fileListMessageJson))
+                // const fileListMessageJson = JSON.stringify(fileListMessage)
+                // const userName: string = yield select((s: MainRootState) => s.user.userName)
+                yield put(BdapActions.sendLinkMessage({ recipient: sender, payload: { id: uuid(), timestamp: Math.trunc((new Date()).getTime()), type: "pshare-filelist", payload: fileListMessage } }))
+                //yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, sender, "pshare-filelist", fileListMessageJson))
             }
         })
     })
@@ -135,11 +137,13 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
 
 function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string, userName: string) {
     const msgId = uuid()
-    const requestMessage = JSON.stringify({ id: msgId })
-    yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, linkedUserName, "pshare-filelist-request", requestMessage))
+    //const requestMessage = JSON.stringify({ id: msgId })
+    yield put(BdapActions.sendLinkMessage({ recipient: linkedUserName, payload: { id: msgId, timestamp: Math.trunc((new Date()).getTime()), type: "pshare-filelist-request", payload: { id: msgId } } }))
+
+    //yield unlockedCommandEffect(rpcClient, client => client.command("link", "sendmessage", userName, linkedUserName, "pshare-filelist-request", requestMessage))
     const task = yield fork(function* () {
         yield* scanForLinkMessages(rpcClient, "pshare-filelist", 1000, function* (msg: LinkMessage) {
-            const fileListMsg: FileListMessage = JSON.parse(msg.message)
+            const { payload: fileListMsg }: LinkMessageEnvelope<FileListMessage> = JSON.parse(msg.message)
             yield put(FileListActions.fileListMessageFetchSuccess(fileListMsg))
         })
     })

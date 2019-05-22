@@ -18,6 +18,7 @@ import * as fs from 'fs'
 import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
 import { RtcRootState } from "../reducers";
 import { BdapActions } from "../../shared/actions/bdap";
+import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 
 
 //this runs in rtc
@@ -31,14 +32,14 @@ export function* requestFileSaga() {
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "negotiating connection" }))
             const offer: RTCSessionDescription = yield call(() => peer.createOffer())
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "sending offer" }))
-            const offerEnvelope: LinkMessageEnvelope<FileRequest> = {
-                sessionDescription: offer.toJSON(),
-                payload: fileRequest,
+            const offerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileRequest>> = {
+
+                payload: { payload: fileRequest, sessionDescription: offer.toJSON() },
                 id: uuid(),
                 timestamp: Math.trunc((new Date()).getTime()),
                 type: "pshare-offer"
             }
-            const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileRequest>> = {
+            const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<SessionDescriptionEnvelope<FileRequest>>> = {
                 recipient: action.payload.ownerUserName,
                 payload: offerEnvelope
             }
@@ -60,7 +61,7 @@ export function* requestFileSaga() {
             }
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connecting to peer" }))
 
-            const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerAction
+            const { payload: { payload:{sessionDescription: answerSdp, payload: fileInfo }} } = answerAction
 
             const answerSessionDescription = new RTCSessionDescription(answerSdp);
             yield call(() => peer.setRemoteDescription(answerSessionDescription))

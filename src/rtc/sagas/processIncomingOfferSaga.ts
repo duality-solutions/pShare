@@ -14,13 +14,14 @@ import { RtcRootState } from "../reducers";
 import { SharedFile } from "../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { BdapActions } from "../../shared/actions/bdap";
+import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 
 export function* processIncomingOfferSaga() {
     yield takeEvery(getType(FileSharingActions.offerEnvelopeReceived), function* (action: ActionType<typeof FileSharingActions.offerEnvelopeReceived>) {
         const { payload: offerEnvelope } = action;
         const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
         const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer(rtcConfig));
-        const { sessionDescription: offerSdp, id: transactionId, payload: fileRequest } = offerEnvelope;
+        const { id: transactionId, payload: { sessionDescription: offerSdp, payload: fileRequest } } = offerEnvelope;
         console.log(fileRequest);
         const offerSessionDescription = new RTCSessionDescription(offerSdp);
         const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription));
@@ -30,14 +31,14 @@ export function* processIncomingOfferSaga() {
             return
         }
         const { localPath, ...fileInfo } = internalFileInfo;
-        const answerEnvelope: LinkMessageEnvelope<FileInfo> = {
-            sessionDescription: answer.toJSON(),
+        const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = {
+
             id: transactionId,
             timestamp: Math.trunc((new Date()).getTime()),
             type: "pshare-answer",
-            payload: fileInfo
+            payload: { sessionDescription: answer.toJSON(), payload: fileInfo }
         };
-        const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<FileInfo>> = {
+        const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>> = {
             recipient: fileRequest.requestorUserName,
             payload: answerEnvelope
         };
