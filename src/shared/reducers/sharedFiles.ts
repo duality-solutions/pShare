@@ -8,10 +8,12 @@ import { RtcActions } from "../actions/rtc";
 import { blinq } from "blinq";
 import { FileSharingActions } from "../actions/fileSharing";
 
+export type SharedFilesFetchState = "initial" | "downloading" | "success" | "failed"
 export interface SharedFilesState {
     linkedUserName?: string,
     linkedCommonName?: string,
-    downloadableFiles?: DownloadableFile[]
+    downloadableFiles?: DownloadableFile[],
+    state: SharedFilesFetchState
 }
 export type DownloadState = "ready" | "starting" | "downloading" | "downloaded" | "failed"
 export interface DownloadableFile {
@@ -22,6 +24,7 @@ export interface DownloadableFile {
 }
 
 const defaultState: SharedFilesState = {
+    state: "initial"
 }
 
 export const sharedFiles = (state: SharedFilesState = defaultState, action: DashboardActions | SharedFilesActions | FileListActions | RtcActions | FileSharingActions): SharedFilesState => {
@@ -43,15 +46,19 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
                     .toArray()
             return {
                 ...state,
-                downloadableFiles
+                downloadableFiles,
+                state: "success"
             }
 
+
+        case getType(DashboardActions.startViewSharedFiles):
+            return { ...state, state: "downloading" }
         case getType(FileListActions.fileListFetchFailed):
-            return deleteOptionalProperty(state, "downloadableFiles")
+            return { ...deleteOptionalProperty(state, "downloadableFiles"), state: "failed" }
 
         case getType(SharedFilesActions.close):
-            const { linkedUserName, ...rest } = state
-            return rest
+            const { linkedUserName, ...rest } = { ...state }
+            return { ...rest, state: "initial" }
 
 
         case getType(FileSharingActions.requestFileWithSavePath):

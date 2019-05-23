@@ -1,5 +1,5 @@
 import { v4 as uuid } from 'uuid';
-import { takeEvery, call, put, select, actionChannel, flush, fork, take } from "redux-saga/effects";
+import { takeEvery, call, put, select, actionChannel, flush, fork, take, race } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { DashboardActions } from "../../shared/actions/dashboard";
 import { RpcClient } from "../RpcClient";
@@ -14,6 +14,7 @@ import { entries } from '../../shared/system/entries';
 import { PublicSharedFile } from '../../shared/types/PublicSharedFile';
 import { BdapActions } from '../../shared/actions/bdap';
 import { LinkMessageEnvelope } from '../../shared/actions/payloadTypes/LinkMessageEnvelope';
+import { delay } from 'redux-saga';
 
 export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
     yield fork(function* () {
@@ -21,15 +22,15 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
         const pred = (action: BdapActions) => {
             switch (action.type) {
                 case getType(BdapActions.linkMessageReceived):
-                    return action.payload.message.type==="pshare-filelist-request";
+                    return action.payload.message.type === "pshare-filelist-request";
                 default:
                     return false;
             }
         }
 
-        yield takeEvery(pred,function*(action: ActionType<typeof BdapActions.linkMessageReceived>){
-            const msg=action.payload
-            const {id}=msg.message
+        yield takeEvery(pred, function* (action: ActionType<typeof BdapActions.linkMessageReceived>) {
+            const msg = action.payload
+            const { id } = msg.message
             const senderFqdn = msg.rawMessage.sender_fqdn
             const sender = getUserNameFromFqdn(senderFqdn)
             if (sender) {
@@ -62,16 +63,23 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
 
     })
     yield takeEvery(getType(DashboardActions.startViewSharedFiles), function* (action: ActionType<typeof DashboardActions.startViewSharedFiles>) {
+        
         const linkedUserName = action.payload
         const linkedUserInfo: GetUserInfo = yield call(() => rpcClient.command("getuserinfo", linkedUserName))
-        const userName: string = yield select((s: MainRootState) => s.user.userName)
-
+        yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
         const chan = yield actionChannel(getType(SharedFilesActions.close))
         const checkClosed = function* () {
             const closeActions: any[] = yield flush(chan)
             return closeActions.some(x => true)
         }
-        const fileListMessage: FileListMessage = yield call(() => getSharedFileListForLink(rpcClient, linkedUserName, userName))
+        let fileListMessage: FileListMessage;
+        try {
+            fileListMessage = yield call(() => getSharedFileListForLink(linkedUserName))
+        } catch (err) {
+            yield put(FileListActions.fileListFetchFailed())
+            
+            return
+        }
         if (yield* checkClosed()) {
             return
         }
@@ -79,15 +87,15 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
         yield put(FileListActions.fileListFetchSuccess(fileList))
 
 
-        yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
-       
+        //yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
+
     })
 }
 
 
 
 
-function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string, userName: string) {
+function* getSharedFileListForLink(linkedUserName: string) {
     const msgId = uuid()
     yield put(BdapActions.sendLinkMessage({ recipient: linkedUserName, payload: { id: msgId, timestamp: Math.trunc((new Date()).getTime()), type: "pshare-filelist-request", payload: { id: msgId } } }))
 
@@ -95,15 +103,26 @@ function* getSharedFileListForLink(rpcClient: RpcClient, linkedUserName: string,
     const pred = (action: BdapActions) => {
         switch (action.type) {
             case getType(BdapActions.linkMessageReceived):
-                return action.payload.message.payload.id === msgId && action.payload.message.type==="pshare-filelist";
+                return action.payload.message.payload.id === msgId && action.payload.message.type === "pshare-filelist";
             default:
                 return false;
         }
     }
-    const action: ActionType<typeof BdapActions.linkMessageReceived> = yield take(pred)
+    const { action, timeout }: { action: ActionType<typeof BdapActions.linkMessageReceived>, timeout: unknown } = yield race({
+        timeout: delay(10000),
+        action: take(pred)
+    })
 
-    const {payload:fileListMessage}:LinkMessageEnvelope<FileListMessage>=action.payload.message
-    
+    if (timeout) {
+        throw Error("timeout")
+    }
+
+
+
+    //const action: ActionType<typeof BdapActions.linkMessageReceived> = yield take(pred)
+
+    const { payload: fileListMessage }: LinkMessageEnvelope<FileListMessage> = action.payload.message
+
 
     return fileListMessage
 

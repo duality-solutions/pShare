@@ -11,7 +11,7 @@ import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { AppLogo } from '../ui-elements/Image';
 import Input from "../ui-elements/Input";
-import LoadingSpinner from "../ui-elements/LoadingSpinner";
+import { LoadingSpinner } from "../ui-elements/LoadingSpinner";
 import { H1, Text } from "../ui-elements/Text";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 import { OnboardingActions } from "../../../shared/actions/onboarding";

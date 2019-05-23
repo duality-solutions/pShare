@@ -6,7 +6,7 @@ import Container from '../ui-elements/Container';
 import { AppLogo } from '../ui-elements/Image';
 import ProgressBar from '../ui-elements/ProgressBar';
 import { H1 } from '../ui-elements/Text';
-import LoadingSpinner from '../ui-elements/LoadingSpinner';
+import { LoadingSpinner } from '../ui-elements/LoadingSpinner';
 
 
 export interface RestoreSyncProgressStateProps {

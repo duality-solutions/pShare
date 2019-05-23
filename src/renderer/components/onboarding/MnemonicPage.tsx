@@ -10,7 +10,7 @@ import { Card } from "../ui-elements/Card";
 import Container from "../ui-elements/Container";
 import { Divider } from "../ui-elements/Divider";
 import { AppLogo } from '../ui-elements/Image';
-import LoadingSpinner from "../ui-elements/LoadingSpinner";
+import { LoadingSpinner } from "../ui-elements/LoadingSpinner";
 import { H1, H3, Text } from "../ui-elements/Text";
 import { PickedDispatchProps } from "../../system/PickedDispatchProps";
 import { OnboardingActions } from "../../../shared/actions/onboarding";

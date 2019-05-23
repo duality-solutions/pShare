@@ -19,7 +19,8 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
         linkedUserCommonName: state.sharedFiles.linkedCommonName,
         linkedUserName: state.sharedFiles.linkedUserName,
         userName: state.user.userName!,
-        downloadableFiles: state.sharedFiles.downloadableFiles || []
+        downloadableFiles: state.sharedFiles.downloadableFiles || [],
+        sharedFilesFetchState: state.sharedFiles.state
     }
 };
 

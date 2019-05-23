@@ -91,32 +91,35 @@ const StyledPolygon3 = styled('polygon')`
         fill: black;
         opacity: 0.05;
 `
-
-const LoadingSpinner: React.FunctionComponent<{ active?: boolean, label?: string, size?: number, opaque?: boolean, position?: string }> = ({ active, label, size, opaque, position }) =>
+export const InlineSpinner: React.FunctionComponent<{ active?: boolean, label?: string, size?: number }> = ({ active, label, size }) => <>
+        {
+                active && <Container margin="25% 0 auto 0">
+                        <StyledPshareSpinner width={size || 100}>
+                                <StyledPshareSpinnerContainer>
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167 239" preserveAspectRatio="xMidYMid meet">
+                                                <StyledPath1 d="M 83,0 0,48 v 96 c 83,47 0,0 83,48 l 83,-48 V 48 Z M 123,119 83,142 43,119 V 73 L 83,50 123,73 Z" />
+                                                <StyledPolygon1 points="249,179 209,202 209,249 249,272 289,249 289,202 " transform="translate(-166,-129)" />
+                                                <StyledPath2 d="M 0,238 43,213 V 167 L 0,143 Z" />
+                                                <StyledPolygon2 points="250,226 333,177 333,274 250,322 " transform="translate(-166,-129)" />
+                                                <StyledPolygon3 points="250,129 333,177 250,226 166,177 " transform="translate(-166,-129)" />
+                                        </svg>
+                                </StyledPshareSpinnerContainer>
+                        </StyledPshareSpinner>
+                        <Box display="flex" width="100%" align="center" direction="row">
+                                {label &&
+                                        <Box display="flex" direction="column" background="#f2f2f2" width="0" minWidth="30%" borderRadius="4px" padding="0.5em">
+                                                <Text align="center" margin="0">
+                                                        {label}
+                                                </Text>
+                                        </Box>}
+                        </Box>
+                </Container>
+        }
+</>
+export const LoadingSpinner: React.FunctionComponent<{ active?: boolean, label?: string, size?: number, opaque?: boolean, position?: string }> = ({ active, label, size, opaque, position }) =>
         <> {active &&
                 <StyledOverlay opaque={opaque} position={position}>
-                        <Container margin="25% 0 auto 0">
-                                <StyledPshareSpinner width={size || 100}>
-                                        <StyledPshareSpinnerContainer>
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 167 239" preserveAspectRatio="xMidYMid meet">
-                                                        <StyledPath1 d="M 83,0 0,48 v 96 c 83,47 0,0 83,48 l 83,-48 V 48 Z M 123,119 83,142 43,119 V 73 L 83,50 123,73 Z" />
-                                                        <StyledPolygon1 points="249,179 209,202 209,249 249,272 289,249 289,202 " transform="translate(-166,-129)" />
-                                                        <StyledPath2 d="M 0,238 43,213 V 167 L 0,143 Z" />
-                                                        <StyledPolygon2 points="250,226 333,177 333,274 250,322 " transform="translate(-166,-129)" />
-                                                        <StyledPolygon3 points="250,129 333,177 250,226 166,177 " transform="translate(-166,-129)" />
-                                                </svg>
-                                        </StyledPshareSpinnerContainer>
-                                </StyledPshareSpinner>
-                                <Box display="flex" width="100%" align="center" direction="row">
-                                        {label && 
-                                                <Box display="flex" direction="column" background="#f2f2f2" width="0" minWidth="30%" borderRadius="4px" padding="0.5em">
-                                                        <Text align="center" margin="0">
-                                                                {label}
-                                                        </Text>
-                                                </Box>}
-                                </Box>
-                        </Container>
+                        <InlineSpinner active={active} label={label} size={size}></InlineSpinner>
                 </StyledOverlay>}
         </>
 
-export default LoadingSpinner

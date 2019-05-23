@@ -5,7 +5,7 @@ import { Route, Switch, RouteComponentProps } from 'react-router';
 import { dashboardRoutes } from "../../routes/appRoutes";
 import { FunctionComponent } from 'react';
 import { keys } from '../../../shared/system/entries';
-import LoadingSpinner from '../ui-elements/LoadingSpinner';
+import { LoadingSpinner } from '../ui-elements/LoadingSpinner';
 
 export interface DashboardStateProps {
     spinner: boolean
