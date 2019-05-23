@@ -36,7 +36,7 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                                             <DocumentSvg margin="0 1em 0 0" width="30px" />
                                             <Text margin="5px 0 0 0" color="#4f4f4f">{downloadState.requestorUserName} - {downloadState.fileName}</Text>
                                         </FilesListFile><div>
-                                            <>{`${downloadState.status} ${downloadState.progressPct}%`}</>
+                                            <>{`${downloadState.progressPct}%`}</>
                                         </div>
                                     </FilesListItem>
                                 })
