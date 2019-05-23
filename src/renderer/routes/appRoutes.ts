@@ -25,6 +25,7 @@ import SecureFilePassword from '../containers/onboarding_restore/SecureFilePassw
 import SharedFiles from '../containers/dashboard/SharedFiles';
 import AddFile from '../containers/dashboard/AddFile';
 import { CreatingLinkProgress } from '../components/dashboard/CreatingLinkProgress';
+import { ClientDownloads } from '../containers/dashboard/ClientDownloads';
 export interface RouteInfo {
     path: string;
     component: React.ComponentType<RouteComponentProps<any>> | React.ComponentType<any>;
@@ -60,7 +61,8 @@ const dashboardRoutingTable = {
     addLinks: route("/Dashboard/AddLinks", AddLinks),
     sharedFiles: route("/Dashboard/SharedFiles", SharedFiles),
     addFile: route("/Dashboard/AddFile", AddFile),
-    creatingLinkProgress: route("/Dashboard/CreatingLinkProgress", CreatingLinkProgress)
+    creatingLinkProgress: route("/Dashboard/CreatingLinkProgress", CreatingLinkProgress),
+    clientDownloads: route("/Dashboard/Outbox", ClientDownloads)
 }
 export const pushRoute = (route: RouteInfo) => push(route.path)
 

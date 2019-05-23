@@ -6,7 +6,7 @@ interface ClientDownloadsState {
     currentSessions: Record<string, FileRequestDownloadState>
 }
 type FileRequestDownloadStatus = "not started" | "downloading"
-interface FileRequestDownloadState extends FileRequest {
+export interface FileRequestDownloadState extends FileRequest {
     status: FileRequestDownloadStatus
     progressPct: number
     key: string
