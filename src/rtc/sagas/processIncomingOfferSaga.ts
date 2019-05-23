@@ -14,6 +14,7 @@ import { SharedFile } from "../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
+import { ClientDownloadActions } from "../../shared/actions/clientDownload";
 
 export function* processIncomingOfferSaga() {
     const pred = (action: BdapActions) => {
@@ -26,42 +27,48 @@ export function* processIncomingOfferSaga() {
     }
     yield takeEvery(pred, function* (action: ActionType<typeof BdapActions.linkMessageReceived>) {
         const offerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileRequest>> = action.payload.message
+        const { id: transactionId, payload: { sessionDescription: offerSdp, payload: fileRequest } } = offerEnvelope;
         const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
         const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer(rtcConfig));
-        const { id: transactionId, payload: { sessionDescription: offerSdp, payload: fileRequest } } = offerEnvelope;
-        console.log(fileRequest);
-        const offerSessionDescription = new RTCSessionDescription(offerSdp);
-        const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription));
-        const internalFileInfo: InternalFileInfo | null = yield getFileInfo(fileRequest);
-        if (!internalFileInfo) {
-            console.warn("could not retrieve file info for file request")
-            return
-        }
-        const { localPath, ...fileInfo } = internalFileInfo;
-        const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = {
-
-            id: transactionId,
-            timestamp: Math.trunc((new Date()).getTime()),
-            type: "pshare-answer",
-            payload: { sessionDescription: answer.toJSON(), payload: fileInfo }
-        };
-        const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>> = {
-            recipient: fileRequest.requestorUserName,
-            payload: answerEnvelope
-        };
-        yield put(BdapActions.sendLinkMessage(routeEnvelope));
-        yield call(() => answerPeer.waitForDataChannelOpen());
+        yield put(ClientDownloadActions.clientDownloadStarted(fileRequest))
         try {
-            yield copyFileToRTCPeer(localPath, answerPeer);
+            console.log(fileRequest);
+            const offerSessionDescription = new RTCSessionDescription(offerSdp);
+            const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription));
+            const internalFileInfo: InternalFileInfo | null = yield getFileInfo(fileRequest);
+            if (!internalFileInfo) {
+                console.warn("could not retrieve file info for file request")
+
+                return
+            }
+            const { localPath, ...fileInfo } = internalFileInfo;
+            const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = {
+
+                id: transactionId,
+                timestamp: Math.trunc((new Date()).getTime()),
+                type: "pshare-answer",
+                payload: { sessionDescription: answer.toJSON(), payload: fileInfo }
+            };
+            const routeEnvelope: LinkRouteEnvelope<LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>> = {
+                recipient: fileRequest.requestorUserName,
+                payload: answerEnvelope
+            };
+            yield put(BdapActions.sendLinkMessage(routeEnvelope));
+            yield call(() => answerPeer.waitForDataChannelOpen());
+            try {
+                yield copyFileToRTCPeer(localPath, answerPeer, progressPct => put(ClientDownloadActions.clientDownloadProgress({ fileRequest, progressPct })));
+            }
+            catch (err) {
+                yield put(RtcActions.fileSendFailed(prepareErrorForSerialization(err)));
+                return;
+            }
+            finally {
+                answerPeer.dataChannel.close();
+            }
+        } finally {
+            yield put(ClientDownloadActions.clientDownloadComplete(fileRequest))
+
         }
-        catch (err) {
-            yield put(RtcActions.fileSendFailed(prepareErrorForSerialization(err)));
-            return;
-        }
-        finally {
-            answerPeer.dataChannel.close();
-        }
-        yield put(RtcActions.fileSendSuccess());
     });
 }
 interface InternalFileInfo {
