@@ -7,6 +7,7 @@ import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
+import Input from "../ui-elements/Input";
 
 export interface MyLinksStateProps {
     users: BdapUser[],
@@ -27,7 +28,12 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
-                <input id="myLinksInput" value={queryText} onChange={e => myLinksQueryTextChanged(e.target.value)} />
+                <div style={{display:'flex'}}>                
+                <Input id="myLinksInput" value={queryText} 
+                    onChange={e => myLinksQueryTextChanged(e.target.value)} 
+                    margin="20px 0 20px 0"
+                    padding="0 20px"
+                />
                 {/* 
                         
                     NOTE
@@ -40,10 +46,15 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                         
                         
                 */}
-                <CloseIcon style={{ visibility: queryText.length > 0 ? "visible" : "hidden" }} onClick={() => {
+                <CloseIcon style={{ 
+                                    visibility: queryText.length > 0 ? "visible" : "hidden",
+                                    margin:'30px 0 0 0'
+                                 }} 
+                    onClick={() => {
                     myLinksQueryTextChanged("");
                     document.getElementById("myLinksInput")!.focus()
                 }} />
+                </div>
                 <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >
