@@ -109,7 +109,7 @@ function* getSharedFileListForLink(linkedUserName: string) {
         }
     }
     const { action, timeout }: { action: ActionType<typeof BdapActions.linkMessageReceived>, timeout: unknown } = yield race({
-        timeout: delay(10000),
+        timeout: delay(20000),
         action: take(pred)
     })
 
