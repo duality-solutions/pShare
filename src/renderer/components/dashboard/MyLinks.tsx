@@ -32,6 +32,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                 <Input id="myLinksInput" value={queryText} 
                     onChange={e => myLinksQueryTextChanged(e.target.value)} 
                     margin="20px 0 20px 0"
+                    padding="0 20px"
                 />
                 {/* 
                         

@@ -104,7 +104,9 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                         <div style={{display:'flex'}}>
                             <Input id="addLinksInput" value={queryText} 
                                     onChange={e => addLinksQueryTextChanged(e.target.value)} 
-                                    margin="20px 0 20px 0" />
+                                    margin="20px 0 20px 0" 
+                                    padding="0 20px"
+                    />
                             <CloseIcon style={{ 
                                                 visibility: queryText.length > 0 ? "visible" : "hidden",
                                                 margin:'30px 0 0 0'
