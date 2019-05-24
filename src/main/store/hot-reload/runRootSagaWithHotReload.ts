@@ -2,7 +2,7 @@ import {
     SagaMiddleware, Task,
 } from "redux-saga";
 
-import { fork, take, call, cancel, ForkEffect, takeEvery } from "redux-saga/effects";
+import { fork, take, call, cancel, ForkEffect, takeEvery, put } from "redux-saga/effects";
 
 import { getRootSaga } from "../../sagas";
 import { BrowserWindowProvider } from "../../../shared/system/BrowserWindowProvider";
@@ -30,10 +30,10 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
             yield* orchestrateRestart(rpcClient, rootSagaTask);
             rootSagaTask = yield getRootSagaTask()
         })
-        yield takeEvery(getType(AppActions.sleep), function* () {
-            orchestrateSleep(rpcClient, rootSagaTask)
-            rootSagaTask = yield getRootSagaTask()
-        })
+        // yield takeEvery(getType(AppActions.sleep), function* () {
+        //     orchestrateSleep(rpcClient, rootSagaTask)
+        //     rootSagaTask = yield getRootSagaTask()
+        // })
         const cancellationTokenSource = createCancellationTokenSource()
         const cancellationToken = cancellationTokenSource.getToken()
         yield take(getType(AppActions.initializeApp))
@@ -43,7 +43,7 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
 
             yield fork(storeHydrationSaga)
             yield fork(() => actionLoggingSaga("Main Store"))
-            
+
             rpcClient = yield* initializationSaga(async () => rpcClient || (await getRpcClient(cancellationToken)))
             if (!rpcClient) {
                 throw Error("rpcClient is unexpectedly undefined")
@@ -75,9 +75,11 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
 }
 function* orchestrateShutdown(rpcClient: RpcClientWrapper | undefined, rootSagaTask: Task, cancellationTokenSource: CancellationTokenSource) {
     console.log("orchestrating shutdown");
+    yield put(AppActions.terminated())
     yield cancelEverything(rpcClient, rootSagaTask);
     console.log("quitting application");
     yield call(() => cancellationTokenSource.cancel());
+
     app.quit()
 }
 
@@ -92,15 +94,15 @@ function* orchestrateRestart(rpcClient: RpcClient | undefined, rootSagaTask: Tas
 
 }
 
-function* orchestrateSleep(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
-    console.log("orchestrating shutdown")
-    const restartable: Restartable | undefined = yield cancelEverything(rpcClient, rootSagaTask);
-    yield take(getType(AppActions.initializeApp))
-    if (restartable) {
-        yield call(() => restartable.restart());
+// function* orchestrateSleep(rpcClient: RpcClient | undefined, rootSagaTask: Task) {
+//     console.log("orchestrating shutdown")
+//     const restartable: Restartable | undefined = yield cancelEverything(rpcClient, rootSagaTask);
+//     yield take(getType(AppActions.initializeApp))
+//     if (restartable) {
+//         yield call(() => restartable.restart());
 
-    }
-}
+//     }
+// }
 interface Restartable {
     restart: () => Promise<void>
 }
