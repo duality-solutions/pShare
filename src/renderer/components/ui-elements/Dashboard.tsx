@@ -90,7 +90,11 @@ const FilesListItem = styled('li')`
     display: flex;
     direction: row;
     justify-content: space-between;
-    padding: 1em 0 0em 0;
+    padding: 0.5em 0.25em;
+    &:hover {
+        border-radius: 7px;
+        border: solid 2px #e7e7e7;
+    };
 
 `;
 const FilesListFile = styled('span')`
