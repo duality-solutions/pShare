@@ -1,5 +1,5 @@
 import { RendererRootState } from "../../../renderer/reducers";
-import { SidebarDispatchProps, SidebarStateProps, Sidebar as Sidebar_ } from "../../../renderer/components/dashboard/Sidebar";
+import { SidebarDispatchProp, SidebarStateProps, Sidebar as Sidebar_ } from "../../../renderer/components/dashboard/Sidebar";
 import { MapPropsToDispatchObj } from "../../../renderer/system/MapPropsToDispatchObj";
 import { push } from "connected-react-router";
 import { connect } from "react-redux";
@@ -11,6 +11,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SidebarStateP
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SidebarDispatchProps> = { push, ...DashboardActions };
+const mapDispatchToProps: MapPropsToDispatchObj<SidebarDispatchProp> = { push, ...DashboardActions };
 
 export const Sidebar = connect(mapStateToProps, mapDispatchToProps)(Sidebar_)
