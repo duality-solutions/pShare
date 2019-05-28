@@ -145,8 +145,8 @@ const renderResults = (queryText: string, status: string, users: BdapUser[], set
         case "NO_SEARCH":
 
             return queryText.length === 0
-                ? <p>Type some characters to find other users...</p>
-                : <p>Type some more characters to find other users...</p>
+                ? <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some characters to find other users...</Text>
+                : <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some more characters to find other users...</Text>
         case "SEARCH_RESULT":
             return users.length > 0
                 ? <UserList>
@@ -163,9 +163,9 @@ const renderResults = (queryText: string, status: string, users: BdapUser[], set
                             </div>}
                     </UserListItem>)}
                 </UserList>
-                : <p>No results</p>;
+                : <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">No results</Text>;
         default:
-            return <p>Encountered an unexpected condition</p>;
+            return <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Encountered an unexpected condition</Text>;
     }
 }
 

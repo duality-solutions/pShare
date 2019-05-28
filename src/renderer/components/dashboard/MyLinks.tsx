@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 import React from "react";
-import { H1 } from "../ui-elements/Text";
+import { H1, Text } from "../ui-elements/Text";
 import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon, CloseIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
@@ -28,6 +28,8 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
+                {users.length>0 ?
+                <>
                 <div style={{display:'flex'}}>                
                 <Input id="myLinksInput" value={queryText} 
                     onChange={e => myLinksQueryTextChanged(e.target.value)} 
@@ -55,7 +57,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                     document.getElementById("myLinksInput")!.focus()
                 }} />
                 </div>
-                <UserList>
+                    <UserList>
                     {users.map(u =>
                         <UserListItem key={u.userName} >
                             <div style={{ display: 'flex' }}>
@@ -68,7 +70,13 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                             {/* <Button onClick={() => requestFile({ fileId: "foo", ownerUserName: u.userName, requestorUserName: userName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Request Test </Button></> */}
                         </UserListItem>
                     )}
-                </UserList>
+                    </UserList>
+                    </> :
+                    <>
+                    <Text color="#4a4a4a" margin="100px 5px 0 5px" fontSize="1.2em" fontWeight="400" align="center">You don't have any links yet . </Text>
+                    <Text color="#4a4a4a" margin="5px 10px" fontSize="1.2em" fontWeight="400" align="center"> Go ahead, add someone to your list by clicking <strong>Add Links</strong> at the top-right. </Text>
+                    </>
+                }
                 <div style={{ padding: "2.5em" }} />
             </Container>
         </div>
