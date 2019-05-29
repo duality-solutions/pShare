@@ -8,6 +8,8 @@ import { Text } from "../ui-elements/Text";
 import { Box } from "../ui-elements/Box";
 import man from "../../assets/man.svg";
 import { LinkDisplayName } from "./LinkDisplayName";
+import { round } from "../../../main/sagas/initializationSaga/round";
+import { blinq } from "blinq";
 
 export interface ClientDownloadsDispatchProps {
 
@@ -23,12 +25,12 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                 <OutboxIcon width="40px" height="35px" margin="0 10px 0 0" />
                 Downloads from you
             </Text>
-            <div style={{ 
-                    border: 'solid 0.2px #d2d2d2',
-                    height: '0.2px',
-                    margin: '25px 0 10px 0',
-                    width: '100%'
-            }}/>
+            <div style={{
+                border: 'solid 0.2px #d2d2d2',
+                height: '0.2px',
+                margin: '25px 0 10px 0',
+                width: '100%'
+            }} />
             <FilesList>
                 {
                     (() => {
@@ -40,39 +42,39 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                             return sessionEntries
                                 .select(([key, downloadState]) => {
                                     return (
-                                    <Box key={key} width="100%" margin="30px 0 0 0" >
-                                    <div style={{display:'flex'}}>
-                                        <UserListAvatar src={man} />
-                                        <LinkDisplayName displayName={downloadState.requestorUserName} />
-                                    </div>
-                                        <FilesListItem >
-                                            <FilesListFile>
-                                                <Text color="#4a4a4a" margin="0"> {downloadState.fileName}</Text>
-                                            </FilesListFile>
+                                        <Box key={key} width="100%" margin="30px 0 0 0" >
+                                            <div style={{ display: 'flex' }}>
+                                                <UserListAvatar src={man} />
+                                                <LinkDisplayName displayName={downloadState.requestorUserName} />
+                                            </div>
+                                            <FilesListItem >
+                                                <FilesListFile>
+                                                    <Text color="#4a4a4a" margin="0"> {downloadState.fileName}</Text>
+                                                </FilesListFile>
+                                                <div style={{
+                                                    border: 'solid 0.2px #d2d2d2',
+                                                    height: '20px',
+                                                    margin: '0',
+                                                    width: '1px'
+                                                }} />
+                                                <Text margin="0" color="#4a4a4a" fontSize="0.9em" ><strong>{prettySize(downloadState.size)}</strong></Text>
+                                                <div style={{
+                                                    border: 'solid 0.2px #d2d2d2',
+                                                    height: '20px',
+                                                    margin: '0',
+                                                    width: '0.4px'
+                                                }} />
+                                                <Text color="#4a4a4a" margin="0" fontSize="0.8em">
+                                                    <>{`${downloadState.progressPct}%`}</> <ProgressSpinner margin="0" height="25px" />
+                                                </Text>
+                                            </FilesListItem>
                                             <div style={{
-                                                border: 'solid 0.2px #d2d2d2',
-                                                height: '20px',
-                                                margin: '0',
-                                                width: '1px'
-                                            }}/>
-                                            <Text margin="0" color="#4a4a4a" fontSize="0.9em" ><strong>241 Mb</strong></Text>
-                                            <div style={{
-                                                border: 'solid 0.2px #d2d2d2',
-                                                height: '20px',
-                                                margin: '0',
-                                                width: '0.4px'
-                                            }}/>
-                                            <Text color="#4a4a4a" margin="0" fontSize="0.8em">
-                                                <>{`${downloadState.progressPct}%`}</> <ProgressSpinner margin="0" height="25px"/>
-                                            </Text>
-                                        </FilesListItem>
-                                    <div style={{ 
-                                            border: 'solid 0.4px #d2d2d2',
-                                            height: '0.4px',
-                                            margin: '20px 0 10px 0',
-                                            width: '100%'
-                                    }}/>
-                                    </Box>
+                                                border: 'solid 0.4px #d2d2d2',
+                                                height: '0.4px',
+                                                margin: '20px 0 10px 0',
+                                                width: '100%'
+                                            }} />
+                                        </Box>
                                     )
                                 })
                         }
@@ -84,3 +86,18 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
     </div>
 
 </>
+
+
+const prettySize = (() => {
+    const sizeUnits = ["B", "KB", "MB", "GB", "TB", "PB", "EB"];
+    const sizes = sizeUnits.map((u, i) => ({ unit: u, size: 1024 ** i }));
+    const round2 = round(2);
+    const prettySize = (inputSize: number) => {
+        const chosenSize = blinq(sizes)
+            .takeWhile(({ size }) => size <= inputSize)
+            .lastOrDefault();
+        const cs = chosenSize || sizes[0];
+        return `${round2(inputSize / cs.size)} ${cs.unit}`;
+    };
+    return prettySize
+})();

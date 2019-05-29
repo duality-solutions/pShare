@@ -16,7 +16,7 @@ const fsOpenAsync = util.promisify(fs.open);
 
 export const copyFileToRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
-        (filePath: string, peer: RTCPeer<T, TData>, progressHandler?: ((progress: number) => any)) => call(function* () {
+        (filePath: string, peer: RTCPeer<T, TData>, progressHandler?: ((progress: number, downloadedBytes: number, size: number) => any)) => call(function* () {
             const dataChannel = peer.dataChannel;
             dataChannel.bufferedAmountLowThreshold = sendBufferedAmountLowThreshold;
             let totalRead = 0;
@@ -53,7 +53,7 @@ export const copyFileToRTCPeer =
                 if (progressPct != currentProgressPct) {
                     currentProgressPct = progressPct
                     if (progressHandler) {
-                        yield progressHandler(currentProgressPct)
+                        yield progressHandler(currentProgressPct, totalSent, fileSize)
                     }
                 }
                 yield delay(0);

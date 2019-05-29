@@ -9,6 +9,8 @@ type FileRequestDownloadStatus = "not started" | "downloading"
 export interface FileRequestDownloadState extends FileRequest {
     status: FileRequestDownloadStatus
     progressPct: number
+    downloadedBytes: number
+    size: number
     key: string
 }
 const defaultState: ClientDownloadsState = {
@@ -17,13 +19,18 @@ const defaultState: ClientDownloadsState = {
 export const clientDownloads = (state: ClientDownloadsState = defaultState, action: ClientDownloadActions): ClientDownloadsState => {
     switch (action.type) {
         case getType(ClientDownloadActions.clientDownloadStarted): {
-            const fileRequest = action.payload
-            const rec: FileRequestDownloadState = { ...fileRequest, status: "not started", progressPct: 0, key: createKey(fileRequest) }
+            const { fileRequest, fileInfo } = action.payload
+            const rec: FileRequestDownloadState = { ...fileRequest, status: "not started", progressPct: 0, key: createKey(fileRequest), size: fileInfo.size, downloadedBytes: 0 }
             return { ...state, currentSessions: { ...state.currentSessions, [rec.key]: rec } }
         }
         case getType(ClientDownloadActions.clientDownloadProgress): {
-            const { fileRequest, progressPct } = action.payload
-            const rec: FileRequestDownloadState = { ...fileRequest, status: "downloading", progressPct, key: createKey(fileRequest) }
+            const { fileRequest, progressPct, downloadedBytes, size } = action.payload
+            const key = createKey(fileRequest)
+            const currentRec = state.currentSessions[key]
+            if (currentRec == null) {
+                return state
+            }
+            const rec: FileRequestDownloadState = { ...currentRec, ...fileRequest, status: "downloading", progressPct, key, downloadedBytes, size }
             return { ...state, currentSessions: { ...state.currentSessions, [rec.key]: rec } }
         }
         case getType(ClientDownloadActions.clientDownloadComplete): {
