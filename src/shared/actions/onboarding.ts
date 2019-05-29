@@ -42,6 +42,7 @@ export const OnboardingActions = {
 
     setSessionWalletPassword: createStandardAction('onboarding/SET_WALLET_SESSION_PASSWORD')<string>(),
     walletPasswordSetSuccess: createStandardAction('onboarding/WALLET_PASSWORD_SET_SUCCESS')<void>(),
+    walletPasswordVerified: createStandardAction('onboarding/WALLET_PASSWORD_VERIFIED')<void>(),
     walletPasswordSetFailed: createStandardAction('onboarding/WALLET_PASSWORD_SET_FAILED')<void>(),
     walletIsEncrypted: createStandardAction('onboarding/WALLET_IS_ENCRYPTED')<boolean>(),
 

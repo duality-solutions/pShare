@@ -162,7 +162,7 @@ function* waitForWalletCredentials() {
     }
     else {
         const navMap = getNavMap();
-        navMap.registerNavAction(RootActions.walletPasswordSetSuccess, dashboardRoutes.myLinks, true);
+        navMap.registerNavAction(RootActions.walletPasswordVerified, dashboardRoutes.myLinks, true);
         yield navMap.runNav();
     }
     console.log("dispatching BdapActions.initialize")
