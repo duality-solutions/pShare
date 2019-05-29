@@ -16,7 +16,7 @@ import requestsent from "../../assets/svgs/request-sent-32.svg";
 import close from "../../assets/svgs/close-32.svg";
 import viewbtn from "../../assets/svgs/viewbtn.svg";
 import doc from "../../assets/svgs/p-share-doc.svg";
-
+import progressSpinner from "../../assets/svgs/progress-spinner.svg"
 
 interface ImageProps {
     src?: string,
@@ -52,6 +52,9 @@ const UserListAvatar = styled('img') <ImageProps>`
     height: 30px;
 `;
 
+const ProgressSpinner: React.FunctionComponent<ImageProps> = 
+    ({ width, height, margin }) => <SvgIcon src={progressSpinner} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
 const MyLinksIcon: React.FunctionComponent<ImageProps> =
     ({ width, height, margin, white }) => <SvgIcon src={white ? mylinkswhite : mylinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 const InboxIcon: React.FunctionComponent<ImageProps> =
@@ -82,5 +85,5 @@ const DocumentSvg: React.FunctionComponent<ImageProps> =
 
 export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
-    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg
+    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg, ProgressSpinner
 }
