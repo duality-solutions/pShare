@@ -13,6 +13,7 @@ import { blinq } from "blinq";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { DownloadableFile, SharedFilesFetchState } from "../../../shared/reducers/sharedFiles";
 import { InlineSpinner } from "../ui-elements/LoadingSpinner";
+// import { prettySize } from "../../../shared/system/prettySize";
 
 export interface SharedFilesStateProps {
     outFiles: SharedFile[],
@@ -80,6 +81,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                 <div>
                                     {
                                         (() => {
+                                            // const sizeString = prettySize(f.file.size)
                                             switch (f.state) {
                                                 case "downloading":
                                                     return <>{`${f.progressStatus ? `${f.progressStatus} ` : ""}${f.progressPct}%`}</>
