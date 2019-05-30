@@ -17,6 +17,9 @@ import close from "../../assets/svgs/close-32.svg";
 import viewbtn from "../../assets/svgs/viewbtn.svg";
 import doc from "../../assets/svgs/p-share-doc.svg";
 import progressSpinner from "../../assets/svgs/progress-spinner.svg"
+import deleteicon from "../../assets/delete.svg";
+import checkicon from "../../assets/check.svg";
+import cancelicon from "../../assets/cancel.svg";
 
 interface ImageProps {
     src?: string,
@@ -83,7 +86,17 @@ const ViewBtnIcon: React.FunctionComponent<ImageProps> =
 const DocumentSvg: React.FunctionComponent<ImageProps> =
     ({ width, height, margin, onClick }) => <SvgIcon onClick={onClick} src={doc} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
+const DeleteIcon: React.FunctionComponent<ImageProps & Styleable> = 
+    ({ width, height, margin, onClick, style }) => <SvgIcon style={{ cursor: 'pointer', ...style }} onClick={onClick} src={deleteicon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
+const CheckIcon: React.FunctionComponent<ImageProps & Styleable> =
+    ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={checkicon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
+const CancelIcon: React.FunctionComponent<ImageProps & Styleable> =
+    ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={cancelicon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
 export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
-    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg, ProgressSpinner
+    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg, ProgressSpinner, DeleteIcon,
+    CheckIcon, CancelIcon
 }

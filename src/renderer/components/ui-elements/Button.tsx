@@ -15,7 +15,9 @@ interface ButtonProps {
   minHeight?: string,
   fontSize?: string,
   margin?: string,
-  type?:string
+  type?:string,
+  background?: string,
+  color?:string
 }
 
 interface ArrowButtonProps {
@@ -40,6 +42,21 @@ const StyledButton = styled('button') <ButtonProps>`
   padding: 0.5em 1em;
   cursor: pointer;
 `
+const CustomButton = styled('button') <ButtonProps>`
+  align-self: ${(props) => props.align ? props.align : 'center'};
+  justify-content: center;
+  min-width: ${(props)=> props.width || '218px'};
+  min-height: ${(props)=> props.minHeight || '2em'};
+  font-size: ${(props)=> props.fontSize || '1em'};
+  background: ${(props)=> props.background};
+  border-radius: 3px;
+  border: 1px solid ${(props) => props.primary ? '#0073e6' : '#d2d2d2'};
+  color: ${props => props.color};
+  margin: ${props=> props.margin || '0 0 0 0'};
+  padding: 0.5em 1em;
+  cursor: pointer;
+`
+
 const LightButton = styled('button')<ButtonProps>`
   align-self: ${(props) => props.align ? props.align : 'center'};
   justify-content: center;
@@ -94,7 +111,7 @@ const BackButton:React.FunctionComponent<{margin?: string, onClick?: ()=> void }
 
 const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolean, margin?: string, }> = ({ onClick, white, margin }) => (
   <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
-    <InboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/> 
+    <OutboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/> 
     <Divider margin="0 5px 0 0" height="42px" background={white? "#e9e9e9": "white"} opacity="0.1"/> 
     <Text fontWeight="bold" margin="12px 0 0 16px" fontSize="0.7em" color={white?  "#4a4a4a": "white"}>
         SHARED
@@ -104,7 +121,7 @@ const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolea
 
 const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: boolean,  margin?: string, }> = ({ onClick, white, margin }) => (
   <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
-    <OutboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/>
+    <InboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/>
        <Divider margin="0 5px 0 0" background={white? "#e9e9e9": "white"} height="42px" width="0.5px" opacity="0.1" /> 
         <Text margin="12px 0 0 8px" fontSize="0.7em" color={white ? "#4a4a4a" : "white"} fontWeight="bold">
             DOWNLOADS
@@ -113,6 +130,6 @@ const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: bool
 )
 export default StyledButton
 
-export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton, BackButton };
+export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton, BackButton, CustomButton };
 
 

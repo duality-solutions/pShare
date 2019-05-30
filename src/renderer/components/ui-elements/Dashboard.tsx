@@ -86,13 +86,26 @@ const FilesList = styled('ul')`
     -webkit-padding-start: 0px;
 `;
 
+const Hovered = styled('div')`
+    visibility:hidden;
+`;
+
 const FilesListItem = styled('li')`
     display: flex;
     direction: row;
     justify-content: space-between;
-    padding: 1em 0 0em 0;
+    padding: 0.5em 0.25em;
+    &:hover {
+        border-radius: 7px;
+        border: solid 2px #e7e7e7;
+    };
+    &:hover ${Hovered} {
+        visibility: visible;
+    }
 
 `;
+
+
 const FilesListFile = styled('span')`
     display: flex;
     direction: row;
@@ -142,5 +155,5 @@ export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem, FilesList, FilesListItem, FilesListFile, InviteListItem
+    UserList, UserListItem, FilesList, FilesListItem, FilesListFile, InviteListItem, Hovered
 }
