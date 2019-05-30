@@ -4,7 +4,7 @@ import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { delay } from "redux-saga";
 import { SyncState } from "../../dynamicdInterfaces/SyncState";
-import { round } from "./initializationSaga/round";
+import { round } from "../../shared/system/round";
 import { SyncActions } from "../../shared/actions/sync";
 import { BdapAccount } from "../../dynamicdInterfaces/BdapAccount";
 import { getFirstBdapAccount } from "./helpers/getFirstBdapAccount";

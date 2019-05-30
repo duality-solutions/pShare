@@ -8,6 +8,7 @@ import { BdapActions } from "../../../shared/actions/bdap";
 import { DashboardActions } from "../../../shared/actions/dashboard";
 import { SharedFilesActions } from "../../../shared/actions/sharedFiles";
 import { AddFileActions } from "../../../shared/actions/addFile";
+import { AppActions } from "../../../shared/actions/app";
 
 //const delay = (time: number) => new Promise(r => setTimeout(r, time));
 
@@ -145,6 +146,7 @@ function* dashboardNav() {
     navMap.registerNavAction(SharedFilesActions.close, dashboardRoutes.myLinks)
     navMap.registerNavAction(SharedFilesActions.shareNewFile, dashboardRoutes.addFile)
     navMap.registerNavAction(AddFileActions.close, dashboardRoutes.sharedFiles)
+    navMap.registerNavAction(AppActions.shutdownAborted, dashboardRoutes.clientDownloads)
     yield navMap.runNav()
 }
 

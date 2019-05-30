@@ -4,7 +4,6 @@ import { validationScopes } from "../../renderer/reducers/validationScopes";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 export function* onboardingSaga() {
 
-
     yield takeEvery(getType(OnboardingActions.submitUserName), function* (action: ActionType<typeof OnboardingActions.submitUserName>) {
         yield* runForField(validationScopes.bdapAccount, "userName", action.payload, OnboardingActions.userNameCaptured())
     });
