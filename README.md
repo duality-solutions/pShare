@@ -1,16 +1,29 @@
 ## Private Share
 
-### Software Objectives: 
+### Software Objectives:
 - Privately and securely share data with friends, family, and business associates.
 - Integrated with the operating system's file explorer.  
 - Run as a distributed system without centralized adminstrators and prying eyes monitoring your activity and data.
 
-### Development Scripts
+### Prerequisite
+
+* `npm` - Strongly suggest using NVM outside of containers to manage multiple node versions
+* `Node v8.12.0+`
+* `yarn v1.16.0+`
+
+### Development
 
 ```bash
+# install any new dependencies
+yarn install
+
 # run application in development mode
 yarn dev
+```
 
+### Building
+
+```bash
 # compile source code and create webpack output
 yarn compile
 
@@ -22,6 +35,23 @@ yarn dist-linux
 
 # `yarn compile` & create unpacked build with electron-builder
 yarn dist:dir
+```
+
+### Bundling pShare's Dynamicd
+
+To distribute pShare with a specific Dynamicd version, you must place the binaries in the specific OS folder and then build as described above.
+
+```
+   src/
+   └── static/
+       └── dynamicd
+           ├── darwin
+               └── dynamicd (mac binary)
+           ├── linux
+               └── dynamicd (linux binary)
+           └── win32
+               └── dynamicd (windows binary)
+
 ```
 
 ### Building pShare Dynamicd
@@ -47,4 +77,3 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 ### Application architecture
 
 Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
-

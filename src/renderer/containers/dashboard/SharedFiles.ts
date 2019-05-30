@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import { SharedFiles, SharedFilesStateProps, SharedFilesDispatchProps } from "../../components/dashboard/SharedFiles";
 import { SharedFilesActions } from "../../../shared/actions/sharedFiles";
 import { FileSharingActions } from "../../../shared/actions/fileSharing";
+import { RemoveFileActions } from "../../../shared/actions/removeFile";
 
 
 
@@ -24,6 +25,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
     }
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...SharedFilesActions, ...FileSharingActions };
+const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...SharedFilesActions, ...FileSharingActions, ...RemoveFileActions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SharedFiles)
