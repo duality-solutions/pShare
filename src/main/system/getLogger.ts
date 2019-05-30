@@ -6,11 +6,16 @@ import { createPromiseResolver } from '../../shared/system/createPromiseResolver
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
-const loggerProm = isDevelopment ? Promise.resolve(undefined as winston.Logger | undefined) : _createLogger();
+let loggerProm: Promise<winston.Logger | undefined>;
 
 
 
-export const getLogger = () => loggerProm
+export const getLogger = () => {
+    if (!loggerProm) {
+        loggerProm = isDevelopment ? Promise.resolve(undefined as winston.Logger | undefined) : _createLogger()
+    }
+    return loggerProm;
+}
 
 async function _createLogger() {
     const logPath = path.join(app.getPath("home"), ".pshare", "logs", "pshare.log");

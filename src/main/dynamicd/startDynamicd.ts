@@ -78,7 +78,9 @@ async function startDynamicdProcess(
                             resolver.resolve(stdout)
                         }
                     });
+                    // console.log("making registration")
                     const registration = cancellationToken.register(async () => {
+                        // console.log("dynamicd cancellationtoken fired")
                         const timeoutPromise = delay(15000)
                         let r: PromiseResolver<string>;
 
