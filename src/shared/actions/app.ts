@@ -13,7 +13,9 @@ export const AppActions = {
     shutdownAborted: createStandardAction('app/SHUTDOWN_ABORTED')<void>(),
     terminated: createStandardAction('app/TERMINATED')<void>(),
 
-    log:createStandardAction('app/LOG')<LogMessage>()
+    log:createStandardAction('app/LOG')<LogMessage>(),
+
+    sagaError:createStandardAction('app/SAGA_ERROR')<{}>()
     
 }
 

@@ -2,7 +2,7 @@
 import { CancellationToken } from "../../../shared/system/createCancellationTokenSource";
 import { RpcClient } from "../../../main/RpcClient";
 const isDevelopment = process.env.NODE_ENV === 'development'
-import { RpcCommandOptions } from "./RpcCommandOptions";
+import { RpcCommandOptions, TimeoutOptions, RetryOptions } from "./RpcCommandOptions";
 import { post, Response } from 'got'
 
 
@@ -12,7 +12,8 @@ export interface RpcClientOptions {
     port: string
     username: string
     password: string
-    timeout?: number
+    timeout?: number | TimeoutOptions
+    retry?: number | RetryOptions
 }
 interface JsonRpcRequestBody {
     jsonrpc: string;
@@ -60,9 +61,19 @@ export default class JsonRpcClient implements RpcClient {
     }
 
     private async getJsonRpcResponse(options: RpcCommandOptions, body: JsonRpcRequestBody, cancellationToken: CancellationToken) {
-
-        const timeout = options.timeout != null ? options.timeout : this.opts.timeout;
-        const timeoutToken = cancellationToken.createLinkedTokenSource(timeout).getToken();
+        const timeout =
+            options.timeout == null && this.opts.timeout == null
+                ? undefined
+                : options.timeout != null
+                    ? options.timeout
+                    : this.opts.timeout
+        const retry =
+            options.retry == null && this.opts.retry == null
+                ? undefined
+                : options.retry != null
+                    ? options.retry
+                    : this.opts.retry
+        // const timeoutToken = cancellationToken.createLinkedTokenSource(timeout).getToken();
         if (!isDevelopment) {
             console.log(`Starting RPC request : ${JSON.stringify(body)}`)
         }
@@ -72,8 +83,9 @@ export default class JsonRpcClient implements RpcClient {
                 headers: this.requestHeaders,
                 timeout: timeout,
                 body: JSON.stringify(body),
+                retry: retry
             });
-            const registration = timeoutToken.register(() => postReq.cancel())
+            const registration = cancellationToken.register(() => postReq.cancel())
             try {
                 gotResponse = await postReq
             } finally {
@@ -83,7 +95,7 @@ export default class JsonRpcClient implements RpcClient {
             if (err.name === "CancelError") {
                 throw err
             }
-            if (err.headers["content-type"] === "application/json") {
+            if (err.headers && err.headers["content-type"] === "application/json") {
                 const returnedErr = JSON.parse(err.body)
                 if (returnedErr.error) {
                     throw Error(returnedErr.error.message)
