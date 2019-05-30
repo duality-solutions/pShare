@@ -63,7 +63,7 @@ export function* requestFileSaga() {
             })
 
             if (!linkMessage) {
-                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(Error("timeout")) }))
                 yield delay(10000)
                 yield put(RtcActions.fileReceiveReset(fileRequest))
                 return
