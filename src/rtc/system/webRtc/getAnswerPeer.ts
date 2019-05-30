@@ -37,8 +37,6 @@ export async function getAnswerPeer<T extends string | Blob | ArrayBuffer | Arra
     }
 
 
-
-
     let dataChannel: RTCDataChannel | undefined;
 
     return {

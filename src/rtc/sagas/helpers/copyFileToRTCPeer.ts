@@ -1,4 +1,4 @@
-import { call } from "redux-saga/effects";
+import { call, race } from "redux-saga/effects";
 import { toArrayBuffer } from "../../../shared/system/bufferConversion";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
@@ -41,9 +41,35 @@ export const copyFileToRTCPeer =
                 totalRead += bytesRead;
                 if (dataChannel.bufferedAmount > maxSendBuffered) {
                     console.log("buffer high");
-                    const pr = createPromiseResolver();
-                    dataChannel.onbufferedamountlow = () => pr.resolve();
-                    yield call(() => pr.promise);
+                    const pr = createPromiseResolver<boolean>();
+                    dataChannel.onbufferedamountlow = () => pr.resolve(true);
+
+                    const { success } = yield race({
+                        timeout: call(function* () {
+                            let currBufAmt = dataChannel.bufferedAmount
+                            let now = performance.now()
+                            let moved = false
+                            for (; ;) {
+                                yield delay(250)
+                                moved = moved || dataChannel.bufferedAmount !== currBufAmt
+                                currBufAmt = dataChannel.bufferedAmount
+                                if (moved) {
+                                    now = performance.now()
+                                    moved = false
+                                } else {
+                                    if ((performance.now() - now) > 120000) {
+                                        break
+                                    }
+                                }
+                            }
+                        }),
+                        success: call(() => pr.promise)
+                    })
+                    if (!success) {
+                        throw Error("timeout")
+                    }
+
+
                     console.log("buffer emptied");
                 }
                 dataChannel.send(toArrayBuffer(buffer, 0, bytesRead));
@@ -59,8 +85,21 @@ export const copyFileToRTCPeer =
                 yield delay(0);
             }
             yield call(() => fsCloseAsync(fileDescriptor));
-            while (dataChannel.bufferedAmount > 0) {
+            let bufferedAmt = dataChannel.bufferedAmount
+            let now = performance.now()
+            let moved = false
+            while (bufferedAmt > 0) {
                 yield delay(250);
+                moved = moved || dataChannel.bufferedAmount !== bufferedAmt
+                bufferedAmt = dataChannel.bufferedAmount
+                if (moved) {
+                    now = performance.now()
+                    moved = false
+                } else {
+                    if ((performance.now() - now) > 120000) {
+                        throw Error("timeout")
+                    }
+                }
             }
         });
 

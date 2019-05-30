@@ -1,4 +1,4 @@
-import { call, put } from "redux-saga/effects";
+import { call, put, race } from "redux-saga/effects";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
 import * as util from 'util'
 import * as fs from 'fs'
@@ -7,6 +7,7 @@ import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { RtcActions } from "../../../shared/actions/rtc";
 import * as crypto from 'crypto'
 import { toBuffer } from "../../../shared/system/bufferConversion";
+import { delay } from "redux-saga";
 
 const fsOpenAsync = util.promisify(fs.open)
 const fsCloseAsync = util.promisify(fs.close)
@@ -16,7 +17,7 @@ const fsUnlinkAsync = util.promisify(fs.unlink)
 export const receiveFileFromRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
         (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo, fileRequest: FileRequest) => call(function* () {
-
+            
             try {
                 const shasum = crypto.createHash('sha256');
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
@@ -24,7 +25,13 @@ export const receiveFileFromRTCPeer =
                     let total = 0;
                     let currentPct = -1
                     for (; ;) {
-                        const msg: ArrayBuffer = yield call(() => peer.incomingMessageQueue.receive());
+                        const { msg, timeout }: { msg: ArrayBuffer, timeout: any } = yield race({
+                            msg: call(() => peer.incomingMessageQueue.receive()),
+                            timeout: delay(120000)
+                        })
+                        if (timeout) {
+                            throw Error("timeout")
+                        }
                         total += msg.byteLength;
                         //console.log(`answerpeer received : ${total}`);
 

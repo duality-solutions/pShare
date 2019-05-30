@@ -83,14 +83,22 @@ export function* requestFileSaga() {
 
             //debugger
             try {
-                yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
-            } catch (err) {
-                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
-                return
+                try {
+                    yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
+                } catch (err) {
+                    yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
+                    return
+                }
+
+
+                yield call(() => fs.promises.rename(tempPath, fileRequest.savePath));
+            } finally {
+                try {
+                    yield call(() => fs.promises.unlink(tempPath))
+                } catch (err) {
+                    //do nothing
+                }
             }
-
-
-            yield call(() => fs.promises.rename(tempPath, fileRequest.savePath));
             yield put(RtcActions.fileReceiveSuccess(fileRequest))
 
         }
