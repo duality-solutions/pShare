@@ -30,18 +30,20 @@ export function* processIncomingOfferSaga() {
         const { id: transactionId, payload: { sessionDescription: offerSdp, payload: fileRequest } } = offerEnvelope;
         const rtcConfig: RTCConfiguration = yield select((s: RtcRootState) => s.rtcConfig)
         const answerPeer: PromiseType<ReturnType<typeof getAnswerPeer>> = yield call(() => getAnswerPeer(rtcConfig));
-        yield put(ClientDownloadActions.clientDownloadStarted(fileRequest))
+        const internalFileInfo: InternalFileInfo | null = yield getFileInfo(fileRequest);
+        if (!internalFileInfo) {
+            console.warn("could not retrieve file info for file request")
+
+            return
+        }
+        const { localPath, ...fileInfo } = internalFileInfo;
+        yield put(ClientDownloadActions.clientDownloadStarted({ fileRequest, fileInfo }))
         try {
             console.log(fileRequest);
             const offerSessionDescription = new RTCSessionDescription(offerSdp);
             const answer: RTCSessionDescription = yield call(() => answerPeer.getAnswer(offerSessionDescription));
-            const internalFileInfo: InternalFileInfo | null = yield getFileInfo(fileRequest);
-            if (!internalFileInfo) {
-                console.warn("could not retrieve file info for file request")
 
-                return
-            }
-            const { localPath, ...fileInfo } = internalFileInfo;
+
             const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = {
 
                 id: transactionId,
@@ -56,7 +58,7 @@ export function* processIncomingOfferSaga() {
             yield put(BdapActions.sendLinkMessage(routeEnvelope));
             yield call(() => answerPeer.waitForDataChannelOpen());
             try {
-                yield copyFileToRTCPeer(localPath, answerPeer, progressPct => put(ClientDownloadActions.clientDownloadProgress({ fileRequest, progressPct })));
+                yield copyFileToRTCPeer(localPath, answerPeer, (progressPct, downloadedBytes, size) => put(ClientDownloadActions.clientDownloadProgress({ fileRequest, progressPct, downloadedBytes, size })));
             }
             catch (err) {
                 yield put(RtcActions.fileSendFailed(prepareErrorForSerialization(err)));
