@@ -11,3 +11,6 @@ export const FileSharingActions = {
     answerEnvelopeReceived: createStandardAction('fileSharing/ANSWER_ENVELOPE_RECEIVED')<LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>>()
 };
 export type FileSharingActions = ActionType<typeof FileSharingActions>;
+
+
+

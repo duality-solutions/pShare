@@ -16,6 +16,7 @@ import requestsent from "../../assets/svgs/request-sent-32.svg";
 import close from "../../assets/svgs/close-32.svg";
 import viewbtn from "../../assets/svgs/viewbtn.svg";
 import doc from "../../assets/svgs/p-share-doc.svg";
+import progressSpinner from "../../assets/svgs/progress-spinner.svg"
 import deleteicon from "../../assets/delete.svg";
 import checkicon from "../../assets/check.svg";
 import cancelicon from "../../assets/cancel.svg";
@@ -53,6 +54,9 @@ const UserListAvatar = styled('img') <ImageProps>`
     width: 20px;
     height: 30px;
 `;
+
+const ProgressSpinner: React.FunctionComponent<ImageProps> = 
+    ({ width, height, margin }) => <SvgIcon src={progressSpinner} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
 const MyLinksIcon: React.FunctionComponent<ImageProps> =
     ({ width, height, margin, white }) => <SvgIcon src={white ? mylinkswhite : mylinks} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
@@ -93,6 +97,6 @@ const CancelIcon: React.FunctionComponent<ImageProps & Styleable> =
 
 export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
-    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg, DeleteIcon,
+    InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg, ProgressSpinner, DeleteIcon,
     CheckIcon, CancelIcon
 }
