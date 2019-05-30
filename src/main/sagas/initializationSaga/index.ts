@@ -4,7 +4,7 @@ import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { MainRootState } from "../../reducers";
 import { delay } from "../../../shared/system/delay";
-import { round } from "./round";
+import { round } from "../../../shared/system/round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
 import { getWalletIsEncrypted } from "../effects/getWalletIsEncrypted";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
