@@ -20,9 +20,9 @@ export type SidebarProps = SidebarStateProps & SidebarDispatchProps
 
 export const Sidebar: FunctionComponent<SidebarProps> = ({ push, location, toggleSpinner }) => <>
     <UL>
-        <div 
-            style={{ borderBottom: "solid 0.1px #d2d2d2", cursor:'pointer' }}
-            onClick={()=> toggleSpinner()}
+        <div
+            style={{ borderBottom: "solid 0.1px #d2d2d2", cursor: 'pointer' }}
+            onClick={() => toggleSpinner()}
         >
             <PlainAppLogo />
         </div>
@@ -72,8 +72,8 @@ const tabs: TabInfo[] = [
                 height="36px"
                 margin="0 0 0 1em" />,
         text: "My Links",
-        isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks' 
-                                          || pathname === '/Dashboard/SharedFiles' || pathname === '/Dashboard/AddFile'
+        isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks'
+            || pathname === '/Dashboard/SharedFiles' || pathname === '/Dashboard/AddFile'
     },
     {
         location: '/Dashboard/Inbox',
@@ -88,14 +88,15 @@ const tabs: TabInfo[] = [
     },
     {
         location: '/Dashboard/Outbox',
-        icon: () =>
+        icon: ({ selected }) =>
             <OutboxIcon
+                white={selected}
                 width="36px"
                 height="36px"
                 margin="0 0 0 0.9em" />,
         text: "Outbox",
         isSelected: (pathname: string) => pathname === '/Dashboard/Outbox',
-        disabled: true
+        disabled: false
     },
     {
         location: '/Dashboard/Invites',

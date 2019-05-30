@@ -10,12 +10,12 @@ export const AppActions = {
     initializeApp: createStandardAction('app/INITIALIZE')<void>(),
     appInitialized: createStandardAction('app/INITIALIZED')<void>(),
     shuttingDown: createStandardAction('app/SHUTTING_DOWN')<void>(),
-    shutdown: createStandardAction('app/SHUTDOWN')<void>(),
+    shutdownAborted: createStandardAction('app/SHUTDOWN_ABORTED')<void>(),
+    terminated: createStandardAction('app/TERMINATED')<void>(),
 
-    sleep:createStandardAction('app/SLEEP')<void>(),
-    wake:createStandardAction('app/WAKE')<void>(),
+    log:createStandardAction('app/LOG')<LogMessage>(),
 
-    log:createStandardAction('app/LOG')<LogMessage>()
+    sagaError:createStandardAction('app/SAGA_ERROR')<{}>()
     
 }
 

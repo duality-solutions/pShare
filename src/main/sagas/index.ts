@@ -20,11 +20,13 @@ import { sendLinkMessageSaga } from "./sendLinkMessageSaga";
 import { requestFileSaveDialogSaga } from "./fileRequestSaveDialogSaga";
 import { newLinkSaga } from "./newLinkSaga";
 import { restoreFromMnemonicSaga } from "./restoreFromMnemonicSaga";
+import { removeFileSaga } from "./removeFileSaga";
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
     () => startViewSharedFilesSaga(rpcClient),
     () => addFileSaga(),
+    () => removeFileSaga(),
     () => fileWatchSaga(),
     //() => fileShareSaga(rpcClient),
     () => linkRequestSaga(rpcClient),
@@ -33,7 +35,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => validationSaga(rpcClient),
     () => onboardingSaga(),
     () => createBdapAccountSaga(rpcClient),
-    () => setWalletPasswordSaga(rpcClient, true),
+    () => setWalletPasswordSaga(rpcClient),
     () => mnemonicSaga(rpcClient),
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessagesSaga(),
