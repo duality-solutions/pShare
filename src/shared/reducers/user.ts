@@ -21,7 +21,7 @@ export const user = (state: UserState = defaultState, action: UserActions | Onbo
         case getType(UserActions.userAgreeSync):
             return { ...state, syncAgreed: true }
         case getType(OnboardingActions.restoreSuccess):
-            return { ...state, userName: action.payload }
+            return { ...state, userName: action.payload, accountCreated: true }
         case getType(OnboardingActions.createBdapAccount):
             const { userName } = action.payload
             return { ...state, userName }
