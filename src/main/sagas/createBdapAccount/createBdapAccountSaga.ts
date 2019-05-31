@@ -20,7 +20,7 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
         try {
             rawHexTx = yield call(() => createRawBdapAccount(rpcClient, userName, commonName));
         } catch (err) {
-            yield put(OnboardingActions.createBdapAccountFailed("createRawBdapAccount failed"))
+            yield put(OnboardingActions.createBdapAccountFailed("createRawBDAPAccount failed"))
             return;
         }
         let txid: string
@@ -67,18 +67,18 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
 export const waitForBdapAccountCreated = function* (rpcClient: RpcClient, username: string, txid: string) {
     for (; ;) {
         //todo: consider a timeout or similar
-        console.log("checking if bdap account has been created")
+        console.log("checking if BDAP account has been created")
         const [accountCreated, userInfo] = yield call(() => checkBdapAccountCreated(rpcClient, username, txid))
 
         if (accountCreated) {
             if (userInfo != null) {
-                console.log("bdap account has been created")
+                console.log("BDAP account has been created")
 
                 return userInfo
             }
             throw Error("expected userInfo to be non-null")
         }
-        console.log("bdap account has not yet been created, waiting 5s")
+        console.log("BDAP account has not yet been created, waiting 5s")
 
         yield call(delay, 5000)
     }
