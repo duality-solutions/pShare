@@ -3,17 +3,18 @@ import React from "react";
 import man from "../../assets/man.svg";
 import { Box } from "../ui-elements/Box";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon, ErrorIcon } from "../ui-elements/Image";
 import { Text } from "../ui-elements/Text";
 import Button, { SharedButton, DownloadButton, CustomButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
-import { FilesList, FilesListItem, FilesListFile, Hovered, Unhovered } from "../ui-elements/Dashboard";
+import { FilesList, FilesListItem, FilesListFile, Hovered } from "../ui-elements/Dashboard";
 import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
 import { DownloadableFile, SharedFilesFetchState } from "../../../shared/reducers/sharedFiles";
 import { InlineSpinner } from "../ui-elements/LoadingSpinner";
 import { prettySize } from "../../../shared/system/prettySize";
+import CircularProgress from "../ui-elements/CircularProgress";
 
 
 export interface SharedFilesStateProps {
@@ -92,9 +93,10 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                             switch (f.state) {
                                                 case "downloading": //download progress bars
                                                     return <div style={{display: 'flex'}}>
-                                                                <Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">
-                                                                {f.progressStatus ? `${f.progressStatus} ${f.progressPct} ` : ""}
+                                                                <Text fontSize="0.6em" margin="8px 4px 0 0" color="#4a4a4a">
+                                                                    downloading 
                                                                 </Text>
+                                                                <CircularProgress size={30} progress={f.progressPct}/>
                                                             </div>
                                                 case "ready":
                                                     return (<Hovered>
@@ -105,13 +107,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                                                             </Hovered>)
                                                 case "failed":  // try again cancel buttons 
                                                     return <>
-                                                            <Unhovered>
-                                                                error
-                                                            </Unhovered>
-                                                            <Hovered>
-                                                                Download failed 
-                                                            <Button onClick={() => requestFile({ fileId: f.file.hash, ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Try again? </Button>
-                                                            </Hovered>
+                                                            <ErrorIcon />
                                                             </>
                                                 case "downloaded": 
                                                     return <DoneIcon margin="0" />

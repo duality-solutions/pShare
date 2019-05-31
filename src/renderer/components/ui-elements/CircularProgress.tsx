@@ -1,15 +1,18 @@
-// import * as React from 'react'
+import * as React from 'react'
 import styled from 'styled-components'
 
-// interface CircularProgressProps {
-//     height: string,
-//     width: string
-// }
-const CircularProgress = styled('div')`
-    height:30px;
-    width: 30px;
-    background:red;
+const Svg = styled('svg')`
+    transform: rotate(-90deg);
 `;
 
-export default CircularProgress
 
+
+const CircularProgress:React.FunctionComponent<{ progress: number, size: number }> = ({ progress, size }) =>
+        <Svg width={`${size}`} height={`${size}`} viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#e7e7e7" stroke-width="12" />
+            <circle cx="60" cy="60" r="54" fill="none" stroke="#2775d3" stroke-width="12"
+                stroke-dasharray="339.292" stroke-dashoffset={339.292 * (1 - (progress * 0.01))} /> 
+        </Svg>
+
+
+export default CircularProgress

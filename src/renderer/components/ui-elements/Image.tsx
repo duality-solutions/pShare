@@ -22,6 +22,7 @@ import checkicon from "../../assets/check.svg";
 import cancelicon from "../../assets/cancel.svg";
 import downloadicon from "../../assets/svgs/download.svg";
 import doneicon from "../../assets/svgs/done.svg";
+import erroricon from "../../assets/svgs/error.svg";
 
 interface ImageProps {
     src?: string,
@@ -103,8 +104,12 @@ const DownloadIcon: React.FunctionComponent<ImageProps & Styleable> =
 const DoneIcon: React.FunctionComponent<ImageProps & Styleable> =
     ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={doneicon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
-    export {
+const ErrorIcon: React.FunctionComponent<ImageProps & Styleable> =
+    ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={erroricon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
+
+export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
     InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg,
-    ProgressSpinner, DeleteIcon, CheckIcon, CancelIcon, DownloadIcon, DoneIcon
+    ProgressSpinner, DeleteIcon, CheckIcon, CancelIcon, DownloadIcon, DoneIcon, ErrorIcon
 }
