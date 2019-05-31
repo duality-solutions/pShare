@@ -13,7 +13,7 @@ const loggerProm = isDevelopment ? Promise.resolve(undefined as winston.Logger |
 export const getLogger = () => loggerProm
 
 async function _createLogger() {
-    const logPath = path.join(app.getPath("home"), ".pshare", "logs", "pshare.log");
+    const logPath = path.join(app.getPath("home"), ".pShare", "logs", "pShare.log");
     const resolver = createPromiseResolver<void>();
     fs.unlink(logPath, (err) => {
         if (err) {

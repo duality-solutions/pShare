@@ -7,7 +7,7 @@ import { remote } from "electron";
 export const { app } = remote
 export function getOrCreateShareDirectoriesForUser(otherEndUser: string) {
     return call(function* () {
-        const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
+        const pathToShareDirectory = path.join(app.getPath("home"), ".pShare", "share");
         const userShareFolder = path.join(pathToShareDirectory, otherEndUser);
         const paths: UserSharePaths = {
     
