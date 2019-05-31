@@ -18,7 +18,7 @@ export const getLogger = () => {
 }
 
 async function _createLogger() {
-    const logPath = path.join(app.getPath("home"), ".pShare", "logs", "pShare.log");
+    const logPath = path.join(app.getPath("home"), ".pshare", "logs", "pshare.log");
     const resolver = createPromiseResolver<void>();
     fs.unlink(logPath, (err) => {
         if (err) {

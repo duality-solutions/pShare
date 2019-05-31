@@ -8,7 +8,7 @@ import { deepMerge } from "../../../shared/system/deepMerge";
 
 
 export function createStoreWithHotReload(middlewares: Middleware<Action<any>>[], persistencePaths: string[] | undefined = undefined) {
-    const persistenceKey = ".pShare.settings";
+    const persistenceKey = ".pshare.settings";
     const persistenceEnhancer = getPersistenceEnhancer(persistencePaths, persistenceKey);
     const enhancers = compose(applyMiddleware(...middlewares), persistenceEnhancer)
     const reducer: Reducer<MainRootState, RootActions> = getPersistingReducer();

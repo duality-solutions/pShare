@@ -6,7 +6,7 @@ import * as path from 'path'
 import { app } from "electron";
 import { MainRootState } from "../reducers";
 
-const pathToShareDirectory = path.join(app.getPath("home"), ".pShare", "share");
+const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
 
 export function* addFileSaga() {
     yield takeEvery(getType(AddFileActions.filesSelected), function* (action: ActionType<typeof AddFileActions.filesSelected>) {

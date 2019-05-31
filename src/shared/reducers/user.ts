@@ -5,6 +5,8 @@ import { deleteOptionalProperty, deleteOptionalProperties } from '../system/dele
 import { AppActions } from '../actions/app';
 
 export interface UserState {
+    accountCreated: boolean
+    accountCreationTxId?: string
     syncAgreed: boolean
     isOnboarded: boolean
     userName?: string
@@ -12,15 +14,17 @@ export interface UserState {
     sessionWalletPassword?: string //this should not be persisted. EVER
     sessionWalletMnemonic?: string //nor this
 }
-const defaultState: UserState = { syncAgreed: false, isOnboarded: false, walletEncrypted: false }
+const defaultState: UserState = { syncAgreed: false, isOnboarded: false, walletEncrypted: false, accountCreated: false }
 
 export const user = (state: UserState = defaultState, action: UserActions | OnboardingActions | AppActions): UserState => {
     switch (action.type) {
         case getType(UserActions.userAgreeSync):
             return { ...state, syncAgreed: true }
-        case getType(OnboardingActions.bdapAccountCreated):
         case getType(OnboardingActions.restoreSuccess):
             return { ...state, userName: action.payload }
+        case getType(OnboardingActions.createBdapAccount):
+            const { userName } = action.payload
+            return { ...state, userName }
         case getType(OnboardingActions.walletPasswordSetSuccess):
             return { ...state, walletEncrypted: true }
         case getType(OnboardingActions.walletIsEncrypted):
@@ -33,6 +37,10 @@ export const user = (state: UserState = defaultState, action: UserActions | Onbo
             return deleteOptionalProperty(state, "sessionWalletMnemonic")
         case (getType(AppActions.initializeApp)):
             return deleteOptionalProperties(state, "sessionWalletMnemonic", "sessionWalletPassword")
+        case (getType(OnboardingActions.createBdapAccountTxIdReceived)):
+            return { ...state, accountCreationTxId: action.payload }
+        case (getType(OnboardingActions.bdapAccountCreated)):
+            return deleteOptionalProperty({ ...state, accountCreated: true,userName: action.payload }, "accountCreationTxId")
         default:
             return state;
 

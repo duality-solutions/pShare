@@ -24,7 +24,7 @@ interface FileWatchEvent extends SimpleFileWatchEvent {
 const fsStatAsync = util.promisify(fs.stat)
 //const isDirectory = (obj: DirectoryEntry): obj is Directory => obj.type === "directory"
 const isFileWatchEvent = (obj: SimpleFileWatchEvent): obj is FileWatchEvent => (<FileWatchEvent>obj).path !== undefined
-const pathToShareDirectory = path.join(app.getPath("home"), ".pShare", "share");
+const pathToShareDirectory = path.join(app.getPath("home"), ".pshare", "share");
 const getRelativePath = (fqPath: string) => path.relative(pathToShareDirectory, fqPath)
 export function* fileWatchSaga() {
     yield take(getType(BdapActions.bdapDataFetchSuccess))

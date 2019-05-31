@@ -26,7 +26,7 @@ export function* navSaga() {
     }
     else {
 
-        if (typeof currentState.user.userName !== 'undefined') {
+        if (currentState.user.accountCreated) {
             yield put(pushRoute(appRoutes.passwordCreateOrLogin))
             yield* waitForWalletCredentials();
         }
@@ -36,86 +36,101 @@ export function* navSaga() {
             //     yield put(pushRoute(appRoutes.configError))
             //     return;
             // }
-            console.log("nav saga: navigating to Onboarding -- /CreateAccount")
-            yield put(pushRoute(appRoutes.createAccount))
-            console.log("nav saga navigating to /CreateAccount")
-            for (; ;) {
-                const { createAccount } = yield race({
-                    createAccount: take(getType(RootActions.createAccount)),
-                    restoreAccount: take(getType(RootActions.restoreAccount))
-                })
-
-                let returnedToCreateAccount = false
-
-                if (createAccount) {
-                    yield put(pushRoute(appRoutes.enterUserName))
-                    const bdapAccountConfigNavMap = getNavMap();
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.accountCreationCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCancelled, appRoutes.enterUserName)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCancelled, appRoutes.enterCommonName)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
-                    bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
-                    //this will block until the navMap is complete
-                    yield bdapAccountConfigNavMap.runNav();
-                    if (returnedToCreateAccount) continue;
-                    yield* waitForWalletCredentials();
-                } else {
-                    yield put(pushRoute(appRoutes.restoreAccount))
+            const currentState: RendererRootState = yield select()
 
 
-                    for (; ;) {
-                        let returnedToRestoreAccount = false
-                        const { passphrase, mnemonicFile, cancelled } = yield race({
-                            passphrase: take(getType(RootActions.restoreWithPassphrase)),
-                            mnemonicFile: take(getType(RootActions.restoreWithMnemonicFile)),
-                            cancelled: take(getType(RootActions.restoreCancelled))
-                        })
 
-                        if (cancelled) {
-                            yield put(pushRoute(appRoutes.createAccount))
-                            returnedToCreateAccount = true
-                        }
-                        else if (passphrase) {
-                            yield put(pushRoute(appRoutes.restoreWithPassphrase))
-                            const restoreNavMap = getNavMap();
-                            restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase)
-                            restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
-                            restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
-                            restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithPassphrase)
-                            restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
-
-                            yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
-                        }
-                        else if (mnemonicFile) {
-                            yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
-                            const restoreNavMap = getNavMap();
-                            restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
-                            restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
-                            restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
-                            restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
-                            restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithMnemonicFile)
-                            restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
-
-                            yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
-                        }
-
-
-                        if (returnedToRestoreAccount) continue;
-                        if (returnedToCreateAccount) break
+            if (currentState.user.accountCreationTxId) {
+                yield put(pushRoute(appRoutes.creatingBdapAccount))
+                const bdapAccountConfigNavMap = getNavMap();
+                bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+                //this will block until the navMap is complete
+                yield bdapAccountConfigNavMap.runNav();
+                yield* waitForWalletCredentials();
+            }
+            else{
+                console.log("nav saga: navigating to Onboarding -- /CreateAccount")
+                yield put(pushRoute(appRoutes.createAccount))
+                console.log("nav saga navigating to /CreateAccount")
+                for (; ;) {
+                    const { createAccount } = yield race({
+                        createAccount: take(getType(RootActions.createAccount)),
+                        restoreAccount: take(getType(RootActions.restoreAccount))
+                    })
+    
+                    let returnedToCreateAccount = false
+    
+                    if (createAccount) {
+                        yield put(pushRoute(appRoutes.enterUserName))
+                        const bdapAccountConfigNavMap = getNavMap();
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.accountCreationCancelled, appRoutes.createAccount, true, () => returnedToCreateAccount = true)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.userNameCaptured, appRoutes.enterCommonName)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCancelled, appRoutes.enterUserName)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.commonNameCaptured, appRoutes.enterToken)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCancelled, appRoutes.enterCommonName)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.tokenCaptured, appRoutes.creatingBdapAccount)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.resetOnboarding, appRoutes.enterUserName)
+                        bdapAccountConfigNavMap.registerNavAction(RootActions.createBdapAccountComplete, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+                        //this will block until the navMap is complete
+                        yield bdapAccountConfigNavMap.runNav();
+                        if (returnedToCreateAccount) continue;
                         yield* waitForWalletCredentials();
+                    } else {
+                        yield put(pushRoute(appRoutes.restoreAccount))
+    
+    
+                        for (; ;) {
+                            let returnedToRestoreAccount = false
+                            const { passphrase, mnemonicFile, cancelled } = yield race({
+                                passphrase: take(getType(RootActions.restoreWithPassphrase)),
+                                mnemonicFile: take(getType(RootActions.restoreWithMnemonicFile)),
+                                cancelled: take(getType(RootActions.restoreCancelled))
+                            })
+    
+                            if (cancelled) {
+                                yield put(pushRoute(appRoutes.createAccount))
+                                returnedToCreateAccount = true
+                            }
+                            else if (passphrase) {
+                                yield put(pushRoute(appRoutes.restoreWithPassphrase))
+                                const restoreNavMap = getNavMap();
+                                restoreNavMap.registerNavAction(RootActions.restoreWithPassphrase, appRoutes.restoreWithPassphrase)
+                                restoreNavMap.registerNavAction(RootActions.restoreWithPassphraseCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
+                                restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
+                                restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithPassphrase)
+                                restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+    
+                                yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
+                            }
+                            else if (mnemonicFile) {
+                                yield put(pushRoute(appRoutes.restoreWithMnemonicFile))
+                                const restoreNavMap = getNavMap();
+                                restoreNavMap.registerNavAction(RootActions.secureFilePassword, appRoutes.secureFilePassword)
+                                restoreNavMap.registerNavAction(RootActions.restoreWithMnemonicFileCancelled, appRoutes.restoreAccount, true, () => returnedToRestoreAccount = true)
+                                restoreNavMap.registerNavAction(RootActions.secureFilePasswordCancelled, appRoutes.restoreWithMnemonicFile)
+                                restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
+                                restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithMnemonicFile)
+                                restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
+    
+                                yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
+                            }
+    
+    
+                            if (returnedToRestoreAccount) continue;
+                            if (returnedToCreateAccount) break
+                            yield* waitForWalletCredentials();
+                            break;
+    
+                        }
+                    }
+                    if (!returnedToCreateAccount) {
                         break;
-
                     }
                 }
-                if (!returnedToCreateAccount) {
-                    break;
-                }
+    
             }
-
-        }
+            }
+            
 
 
     }

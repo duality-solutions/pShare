@@ -53,7 +53,7 @@ if (!hasLock) {
 
 
   //defines paths into the store that will be persisted
-  const persistencePaths = ['user.syncAgreed', 'user.userName', 'rtcConfig'];
+  const persistencePaths = ['user.syncAgreed', 'user.userName', 'user.accountCreationTxId', 'user.accountCreated', 'rtcConfig'];
   let mainWindow: BrowserWindow | null
   let rtcWindow: BrowserWindow | null
 

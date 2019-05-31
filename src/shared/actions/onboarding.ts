@@ -38,7 +38,9 @@ export const OnboardingActions = {
     createBdapAccount: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT')<CreateBdapAccountConfig>(),
     bdapAccountCreated: createStandardAction('onboarding/BDAP_ACCOUNT_CREATED')<string>(),
     createBdapAccountFailed: createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_FAILED')<string>(),
+    createBdapAccountTxIdReceived:createStandardAction('onboarding/CREATE_BDAP_ACCOUNT_TXID_RECEIVED')<string>(),
     resetOnboarding: createStandardAction("onboarding/RESET_ONBOARDING")<void>(),
+    waitingForBdapAccountCreation:createStandardAction('onboarding/WAITING_FOR_BDAP_ACCOUNT_CREATION')<void>(),
 
     setSessionWalletPassword: createStandardAction('onboarding/SET_WALLET_SESSION_PASSWORD')<string>(),
     walletPasswordSetSuccess: createStandardAction('onboarding/WALLET_PASSWORD_SET_SUCCESS')<void>(),

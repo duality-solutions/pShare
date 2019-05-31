@@ -1,4 +1,4 @@
-import { put, select, takeEvery, take, race } from "redux-saga/effects";
+import { put, select, takeEvery } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 import { RendererRootState } from "../reducers";
 import { OnboardingActions } from "../../shared/actions/onboarding";
@@ -24,10 +24,21 @@ export function* beginCreateBdapAccountSaga() {
         } = onboardingValidationState.fields
         yield put(OnboardingActions.tokenCaptured())
         yield put(OnboardingActions.createBdapAccount({ commonName, userName, token }))
-        const { success } = yield race({
-            success: take(getType(OnboardingActions.bdapAccountCreated)),
-            failure: take(getType(OnboardingActions.createBdapAccountFailed))
-        })
+
+    })
+    const predicate = (action: OnboardingActions) =>
+        action.type === getType(OnboardingActions.bdapAccountCreated)
+        || action.type === getType(OnboardingActions.createBdapAccountFailed)
+    yield takeEvery(predicate, function* (action: OnboardingActions) {
+        const success = (() => {
+            switch (action.type) {
+                case getType(OnboardingActions.bdapAccountCreated):
+                    return true
+                default:
+                    return false
+            }
+        })();
+
         if (typeof success !== 'undefined') {
             yield put(OnboardingActions.createBdapAccountComplete())
 

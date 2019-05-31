@@ -1,4 +1,4 @@
-import { call, takeEvery, put } from "redux-saga/effects";
+import { call, takeEvery, put, select } from "redux-saga/effects";
 import { ActionType, getType } from "typesafe-actions";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
 import { delay } from "../../../shared/system/delay";
@@ -7,6 +7,8 @@ import { httpRequestStringAsync } from "../../system/http/httpRequestAsync";
 import { createCancellationTokenSource } from "../../../shared/system/createCancellationTokenSource";
 import { AccountActivationResponse } from "./AccountActivationResponse";
 import { RpcClient } from "../../../main/RpcClient";
+import { UserState } from "../../../shared/reducers/user";
+import { MainRootState } from "../../../main/reducers";
 //import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 
 export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = false) {
@@ -43,10 +45,29 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
             throw err;
 
         }
+        yield put(OnboardingActions.createBdapAccountTxIdReceived(txid))
 
-        let userInfo: GetUserInfo;
+        yield put(OnboardingActions.waitingForBdapAccountCreation())
+
+
+
+    })
+
+
+    yield takeEvery(getType(OnboardingActions.waitingForBdapAccountCreation), function* (action: ActionType<typeof OnboardingActions.waitingForBdapAccountCreation>) {
+        const userState: UserState = yield select((s: MainRootState) => s.user)
+        if (!userState.accountCreationTxId) {
+            throw Error("unexpected state. user should have property accountCreationTxId")
+        }
+
+        const txid = userState.accountCreationTxId
+        const userName = userState.userName
+        if(!userName){
+            throw Error("userName is unexpectedly undefined")
+        }
+        //let userInfo: GetUserInfo;
         try {
-            userInfo = yield* waitForBdapAccountCreated(rpcClient, userName, txid)
+            yield* waitForBdapAccountCreated(rpcClient, userName, txid)
         } catch (err) {
             if (/^txid of user does not match supplied value/.test(err.message)) {
                 yield put(OnboardingActions.createBdapAccountFailed("Try a different user name"))
@@ -54,13 +75,18 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
             }
             throw err
         }
-        if (userInfo.common_name !== commonName) {
-            throw Error("common_name of GetUserInfo does not match supplied commonName")
-        }
+        // if (userInfo.common_name !== commonName) {
+        //     throw Error("common_name of GetUserInfo does not match supplied commonName")
+        // }
         const accountCreatedAction = OnboardingActions.bdapAccountCreated(userName);
         yield put(accountCreatedAction)
-
     })
+
+
+    const userState: UserState = yield select((s: MainRootState) => s.user)
+    if (!userState.accountCreated && userState.accountCreationTxId != null) {
+        yield put(OnboardingActions.waitingForBdapAccountCreation())
+    }
 
 }
 
