@@ -100,11 +100,11 @@ export function* restoreFromMnemonicSaga(client: RpcClientWrapper) {
             bdapAccount = yield getFirstBdapAccount(client)
         }
         catch (err) {
-            yield put(OnboardingActions.restoreFailed("account contains many bdap users"))
+            yield put(OnboardingActions.restoreFailed("account contains many BDAP users"))
             return
         }
         if (!bdapAccount) {
-            yield put(OnboardingActions.restoreFailed("could not find bdap user"))
+            yield put(OnboardingActions.restoreFailed("could not find BDAP user"))
             return
         }
         const walletIsEncrypted: boolean = yield getWalletIsEncrypted(client)
