@@ -160,7 +160,7 @@ export class EnterToken extends Component<EnterTokenProps, EnterTokenComponentSt
                                                         require("electron").shell.openExternal(link);
                                                     }}
                                                         style={{ cursor: 'pointer', color: '#2e77d0' }}
-                                                    >pshare.duality.solutions/register</span></Text>
+                                                    >pShare.duality.solutions/register</span></Text>
                                             </Box>
                                         </Card>
                                     </Box>

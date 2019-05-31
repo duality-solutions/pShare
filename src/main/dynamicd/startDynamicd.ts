@@ -34,7 +34,7 @@ export async function startDynamicd(cancellationToken: CancellationToken): Promi
     const pathToDynamicd = path.join(platformSpecificStaticPath, `dynamicd${osPlaform === "win32" ? ".exe" : ""}`)
     const pathToDynamicCli = path.join(platformSpecificStaticPath, `dynamic-cli${osPlaform === "win32" ? ".exe" : ""}`)
     const pathToDynamicdDefaultConf = path.join(topLevelDynamicdDirectory, "dynamic.default.conf")
-    const pathToDataDir = path.join(app.getPath("home"), ".pshare", ".dynamic")
+    const pathToDataDir = path.join(app.getPath("home"), ".pShare", ".dynamic")
     const pathToDynamicConf = path.join(pathToDataDir, "dynamic.conf")
     const sharedParameters = [`-conf=${pathToDynamicConf}`, `-datadir=${pathToDataDir}`]
     const opts = {
