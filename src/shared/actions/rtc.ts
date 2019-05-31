@@ -11,6 +11,7 @@ export const RtcActions = {
     fileReceiveProgress: createStandardAction('rtc/FILE_RECEIVE_PROGRESS')<FileReceiveProgress>(),
     fileReceiveSuccess: createStandardAction('rtc/FILE_RECEIVE_SUCCESS')<FileRequest>(),
     fileReceiveFailed: createStandardAction('rtc/FILE_RECEIVE_FAILED')<FileReceiveFailure>(),
+    fileReceiveReset:createStandardAction('rtc/FILE_RECEIVE_RESET')<FileRequest>(),
 }
 
 export type RtcActions = ActionType<typeof RtcActions>;

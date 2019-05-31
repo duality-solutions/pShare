@@ -89,6 +89,9 @@ const FilesList = styled('ul')`
 const Hovered = styled('div')`
     visibility:hidden;
 `;
+const Unhovered = styled('div')`
+    visibility: visible;
+`;
 
 const FilesListItem = styled('li')`
     display: flex;
@@ -102,6 +105,9 @@ const FilesListItem = styled('li')`
     &:hover ${Hovered} {
         visibility: visible;
     }
+    &:hover ${Unhovered} {
+        visibility: hidden;
+    }
 
 `;
 
@@ -112,6 +118,9 @@ const FilesListFile = styled('span')`
     justify-content: flex-start;
     padding: 0;
     margin: 0;
+    &:hover ${Hovered} {
+        visibility: visible;
+    }
 
 `;
 
@@ -155,5 +164,5 @@ export {
     StyledDashboardContainer as DashboardContainer,
     SidebarContainer, MainContentContainer,
     SidebarList as UL, SidedbarListItem as LI,
-    UserList, UserListItem, FilesList, FilesListItem, FilesListFile, InviteListItem, Hovered
+    UserList, UserListItem, FilesList, FilesListItem, FilesListFile, InviteListItem, Hovered, Unhovered
 }

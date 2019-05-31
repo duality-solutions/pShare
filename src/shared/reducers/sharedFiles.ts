@@ -83,6 +83,17 @@ export const sharedFiles = (state: SharedFilesState = defaultState, action: Dash
                 return { ...state, downloadableFiles: mappedDownloadableFiles }
             }
 
+        case getType(RtcActions.fileReceiveReset):
+            {
+                const fileRequest = action.payload
+                const mappedDownloadableFiles: DownloadableFile[] = (state.downloadableFiles || [])
+                    .map<DownloadableFile>(df => df.file.fileName === fileRequest.fileName
+                        && df.file.hash === fileRequest.fileId
+                        ? { state: "ready", progressPct: 0, file: df.file }
+                        : df)
+                return { ...state, downloadableFiles: mappedDownloadableFiles }
+            }
+
         case getType(RtcActions.fileReceiveFailed):
             {
                 const { fileRequest } = action.payload

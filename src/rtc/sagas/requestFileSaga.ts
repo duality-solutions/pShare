@@ -63,7 +63,9 @@ export function* requestFileSaga() {
             })
 
             if (!linkMessage) {
-                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: Error("timeout") }))
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(Error("timeout")) }))
+                yield delay(10000)
+                yield put(RtcActions.fileReceiveReset(fileRequest))
                 return
             }
             const answerEnvelope: LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>> = linkMessage.payload.message
@@ -83,23 +85,19 @@ export function* requestFileSaga() {
 
             //debugger
             try {
-                try {
-                    yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
-                } catch (err) {
-                    yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
-                    return
-                }
-
-
-                yield call(() => fs.promises.rename(tempPath, fileRequest.savePath));
-            } finally {
-                try {
-                    yield call(() => fs.promises.unlink(tempPath))
-                } catch (err) {
-                    //do nothing
-                }
+                yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
+            } catch (err) {
+                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
+                yield delay(10000)
+                yield put(RtcActions.fileReceiveReset(fileRequest))
+                return
             }
+
+
+            yield call(() => fs.promises.rename(tempPath, fileRequest.savePath));
             yield put(RtcActions.fileReceiveSuccess(fileRequest))
+            yield delay(10000)
+            yield put(RtcActions.fileReceiveReset(fileRequest))
 
         }
         finally {
