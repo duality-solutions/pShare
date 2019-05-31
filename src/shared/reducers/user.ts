@@ -40,7 +40,9 @@ export const user = (state: UserState = defaultState, action: UserActions | Onbo
         case (getType(OnboardingActions.createBdapAccountTxIdReceived)):
             return { ...state, accountCreationTxId: action.payload }
         case (getType(OnboardingActions.bdapAccountCreated)):
-            return deleteOptionalProperty({ ...state, accountCreated: true,userName: action.payload }, "accountCreationTxId")
+            return deleteOptionalProperty({ ...state, accountCreated: true, userName: action.payload }, "accountCreationTxId")
+        case (getType(OnboardingActions.createBdapAccountFailed)):
+            return deleteOptionalProperty({ ...state, accountCreated: false }, "accountCreationTxId")
         default:
             return state;
 

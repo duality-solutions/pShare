@@ -26,25 +26,6 @@ export function* beginCreateBdapAccountSaga() {
         yield put(OnboardingActions.createBdapAccount({ commonName, userName, token }))
 
     })
-    const predicate = (action: OnboardingActions) =>
-        action.type === getType(OnboardingActions.bdapAccountCreated)
-        || action.type === getType(OnboardingActions.createBdapAccountFailed)
-    yield takeEvery(predicate, function* (action: OnboardingActions) {
-        const success = (() => {
-            switch (action.type) {
-                case getType(OnboardingActions.bdapAccountCreated):
-                    return true
-                default:
-                    return false
-            }
-        })();
-
-        if (typeof success !== 'undefined') {
-            yield put(OnboardingActions.createBdapAccountComplete())
-
-        } else {
-            yield put(OnboardingActions.resetOnboarding())
-        }
-    })
+   
 
 }

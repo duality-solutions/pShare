@@ -62,7 +62,7 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
 
         const txid = userState.accountCreationTxId
         const userName = userState.userName
-        if(!userName){
+        if (!userName) {
             throw Error("userName is unexpectedly undefined")
         }
         //let userInfo: GetUserInfo;
@@ -82,6 +82,26 @@ export function* createBdapAccountSaga(rpcClient: RpcClient, mock: boolean = fal
         yield put(accountCreatedAction)
     })
 
+    const predicate = (action: OnboardingActions) =>
+        action.type === getType(OnboardingActions.bdapAccountCreated)
+        || action.type === getType(OnboardingActions.createBdapAccountFailed)
+    yield takeEvery(predicate, function* (action: OnboardingActions) {
+        const success = (() => {
+            switch (action.type) {
+                case getType(OnboardingActions.bdapAccountCreated):
+                    return true
+                default:
+                    return false
+            }
+        })();
+
+        if (success) {
+            yield put(OnboardingActions.createBdapAccountComplete())
+
+        } else {
+            yield put(OnboardingActions.resetOnboarding())
+        }
+    })
 
     const userState: UserState = yield select((s: MainRootState) => s.user)
     if (!userState.accountCreated && userState.accountCreationTxId != null) {
