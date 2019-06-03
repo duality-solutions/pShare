@@ -1,1 +1,1 @@
-export const maximumFileSize = 3 * 1024 * 1024 * 1024;
+export const maximumFileSize = 10 * 1024 * 1024 * 1024;
