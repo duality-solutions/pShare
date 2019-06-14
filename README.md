@@ -77,3 +77,7 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 ### Application architecture
 
 Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
+
+### License
+
+See LICENSE.md file for copying and use information.
