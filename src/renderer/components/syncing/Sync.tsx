@@ -34,14 +34,14 @@ export const Sync: React.FunctionComponent<SyncProps> =
       transitionLeaveTimeout={500}>
 
         <H1 align="center" colored>Syncing</H1>
-        <Container height="60vh">
+        <Container height="50vh" margin="150px 0 0 0">
           <Box direction="column" width="100%" align="center">
             <Box direction="row" width="100%" align="center">
-            { 
+            {
               syncStarted ?
               !isComplete ?
               <ProgressBar level={progressPercent} status="Syncing blocks" /> :
-              <Text>Sync is complete</Text> :
+              <Text align="center">Sync is complete</Text> :
               <Text align="center">Waiting for sync to start...</Text>
             }  
             </Box>

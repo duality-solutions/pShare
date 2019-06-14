@@ -11,11 +11,15 @@ interface BoxProps {
     background?: string,
     borderRadius?: string,
     padding?: string,
+    alignContents?: string,
+    minHeight?: string,
+    border?: string,
+    justifyContent?: string,
 }
 
 const StyledBox = styled('div')<BoxProps>`
     display: ${props => props.display || 'block'};
-    justify-content:center;
+    justify-content:${props => props.justifyContent || 'center'};
     background: ${props => props.background};
     text-align: ${props => props.align || 'start'}; 
     width: ${props => props.width ? props.width: '500px'};    
@@ -24,7 +28,10 @@ const StyledBox = styled('div')<BoxProps>`
     min-width: ${props => props.minWidth || '10px'};
     height: ${props => props.height };
     border-radius: ${props => props.borderRadius };
-    padding: ${props => props.padding}
+    padding: ${props => props.padding};
+    align-items: ${props => props.alignContents};
+    min-height: ${props => props.minHeight};
+    border: ${props => props.border}
 `
 
 export default StyledBox

@@ -6,11 +6,12 @@ import { validateCommonName } from "../validation/validateCommonName";
 import { validateToken } from "../validation/validateToken";
 import { validateUserName } from "../validation/validateUserName";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
+import { RpcClient } from "../RpcClient";
 
-export function* validationSaga() {
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "userName", validateUserName)
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "commonName", validateCommonName)
-    yield takeEveryValidationAction(validationScopes.bdapAccount, "token", validateToken)
+export function* validationSaga(rpcClient: RpcClient) {
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "userName", v => validateUserName(rpcClient, v))
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "commonName", v => validateCommonName(rpcClient, v))
+    yield takeEveryValidationAction(validationScopes.bdapAccount, "token", v => validateToken(rpcClient, v))
 }
 
 function takeEveryValidationAction(

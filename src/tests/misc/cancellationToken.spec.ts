@@ -1,0 +1,31 @@
+import { createCancellationTokenSource } from "../../shared/system/createCancellationTokenSource";
+test("isCancellationRequested", () => {
+    const cts = createCancellationTokenSource()
+    const ct = cts.getToken()
+    expect(cts.isCancellationRequested).toBe(false)
+    expect(ct.isCancellationRequested).toBe(false)
+    cts.cancel()
+    expect(cts.isCancellationRequested).toBe(true)
+    expect(ct.isCancellationRequested).toBe(true)
+})
+test("isCancellationRequested is get only", () => {
+    const cts: any = createCancellationTokenSource()
+    const ct: any = cts.getToken()
+    expect(cts.isCancellationRequested).toBe(false)
+    expect(ct.isCancellationRequested).toBe(false)
+    expect(() => cts.isCancellationRequested = true).toThrow()
+    expect(() => ct.isCancellationRequested = true).toThrow()
+})
+test("register", done => {
+    const cts = createCancellationTokenSource()
+    const ct = cts.getToken()
+    ct.register(_ => done())
+    cts.cancel()
+})
+test("createDependentToken", done => {
+    const cts = createCancellationTokenSource()
+    const dt = cts.createLinkedTokenSource()
+    const et = dt.getToken().createLinkedTokenSource()
+    et.getToken().register(_ => done())
+    cts.cancel()
+})

@@ -1,4 +1,5 @@
 export const validationScopes = {
     bdapAccount: "bdapAccount",
-    password: "password"
+    password: "password",
+    mnemonicFilePassword: "mnemonicFilePassword"
 }

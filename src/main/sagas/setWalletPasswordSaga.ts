@@ -1,19 +1,19 @@
-import { takeEvery, put, call } from "redux-saga/effects";
+import { takeEvery, put } from "redux-saga/effects";
 import { getType, ActionType } from "typesafe-actions";
 import { OnboardingActions } from "../../shared/actions/onboarding";
 import { createValidatedFailurePayload } from "../../shared/system/validator/createValidatedFailurePayload";
 import { createValidateFieldPayload } from "../../shared/system/validator/createValidateFieldPayload";
 import { createValidatedSuccessPayload } from "../../shared/system/validator/createValidatedSuccessPayload";
 import { validationScopes } from "../../renderer/reducers/validationScopes";
-import { delay } from "redux-saga";
-import { getBitcoinClient } from "../getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
-import { SyncState } from "../../dynamicdInterfaces/SyncState";
-import { getWalletIsEncrypted } from "./getWalletIsEncrypted";
+import { getWalletIsEncrypted } from "./effects/getWalletIsEncrypted";
+import { encryptWallet } from "./effects/encryptWallet";
+import { isCorrectPassword } from "./effects/isCorrectPassword";
+import { RpcClientWrapper } from "../RpcClient";
+import { waitForSync } from "./effects/waitForSync";
 
 
 
-export function* setWalletPasswordSaga(mock: boolean = false) {
+export function* setWalletPasswordSaga(rpcClient: RpcClientWrapper) {
     yield takeEvery(getType(OnboardingActions.submitPassword), function* (action: ActionType<typeof OnboardingActions.submitPassword>) {
         //spoofing validation actions
         //the validation actions here are not processed by the validationsaga
@@ -22,72 +22,31 @@ export function* setWalletPasswordSaga(mock: boolean = false) {
         const password = action.payload
 
         yield put(OnboardingActions.validateField(createValidateFieldPayload(validationScopes.password, "password", password)))
-        if (action.payload === '666666') {
-            yield delay(10000)
 
-            const payload = createValidatedFailurePayload(validationScopes.password, "password", "Could not set password", password, true)
 
-            yield put(OnboardingActions.fieldValidated(payload))
-            return
-        }
-
-        const walletIsEncrypted = yield getWalletIsEncrypted();
+        const walletIsEncrypted = yield getWalletIsEncrypted(rpcClient);
         if (walletIsEncrypted) {
-            const payload = createValidatedFailurePayload(validationScopes.password, "password", "Wallet is already encrypted. Please contact support.", password, true)
-            yield put(OnboardingActions.fieldValidated(payload))
+            const isCorrectPw = yield isCorrectPassword(rpcClient, password)
+            if (isCorrectPw) {
+                const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
+                yield put(OnboardingActions.fieldValidated(payload))
+                yield put(OnboardingActions.setSessionWalletPassword(password))
+                yield put(OnboardingActions.walletPasswordVerified())
+                return
+            } else {
+                const payload = createValidatedFailurePayload(validationScopes.password, "password", "The supplied credentials are incorrect.", password, true)
+                yield put(OnboardingActions.fieldValidated(payload))
+                return
+            }
+
         }
-        yield encryptWallet(password)
+        yield encryptWallet(rpcClient, password)
 
-
-        // todo: this takes aaaaages. Skip for now
-        // yield waitForSync();
+        yield waitForSync(rpcClient);
 
         const payload = createValidatedSuccessPayload(validationScopes.password, "password", action.payload)
         yield put(OnboardingActions.fieldValidated(payload))
         yield put(OnboardingActions.setSessionWalletPassword(password))
         yield put(OnboardingActions.walletPasswordSetSuccess())
-    })
-}
-
-
-
-function encryptWallet(password: string) {
-    return call(function* () {
-        const bitcoinClient: BitcoinClient = yield call(() => getBitcoinClient())
-        yield call(() => bitcoinClient.command("encryptwallet", password))
-        for (; ;) {
-            let walletIsEncrypted: boolean;
-            try {
-                walletIsEncrypted = yield getWalletIsEncrypted()
-            } catch{
-                walletIsEncrypted = false
-            }
-            if (walletIsEncrypted) {
-                break;
-            }
-            yield call(() => delay(2000))
-        }
-    })
-}
-
-// @ts-ignore
-function waitForSync() {
-    return call(function* () {
-        const bitcoinClient: BitcoinClient = yield call(() => getBitcoinClient())
-        for (; ;) {
-            try {
-                const syncState: SyncState = yield call(() => bitcoinClient.command("syncstatus"));
-                console.log(`sync progress : ${syncState.sync_progress}`)
-                if (syncState.sync_progress === 1) {
-                    break;
-                }
-            } catch(err){ 
-                console.warn("error calling syncstatus",err)
-                console.log("waiting 5s")
-                yield delay(4000)
-            }
-            yield delay(1000)
-        }
-
     })
 }

@@ -1,30 +1,28 @@
-import { take, call, put, select } from "redux-saga/effects";
-import { getBitcoinClient } from "../../../main/getBitcoinClient";
-import BitcoinClient from 'bitcoin-core';
+import { take, call, put, select, all } from "redux-saga/effects";
+import { RpcClientWrapper } from "../../RpcClient";
 import { RootActions } from "../../../shared/actions";
 import { getType } from 'typesafe-actions';
 import { MainRootState } from "../../reducers";
 import { delay } from "../../../shared/system/delay";
-import { round } from "./round";
+import { round } from "../../../shared/system/round";
 import { SyncState } from "../../../dynamicdInterfaces/SyncState";
-import { getWalletIsEncrypted } from "../getWalletIsEncrypted";
+import { getWalletIsEncrypted } from "../effects/getWalletIsEncrypted";
 import { OnboardingActions } from "../../../shared/actions/onboarding";
+import { RtcActions } from "../../../shared/actions/rtc";
 
 const round0 = round(0)
 
 
 
-export function* initializationSaga() {
-    const initializeAppAction = getType(RootActions.initializeApp);
-    // wait for "app/INITIALIZE"
-    yield take(initializeAppAction);
+export function* initializationSaga(rpcClientProvider: () => Promise<RpcClientWrapper>) {
+    console.log("starting initialization saga")
     // synchronize renderer state with our state
     yield put(RootActions.hydratePersistedData())
     //...and wait for complete initialization
-    yield take(getType(RootActions.appInitialized))
-    // let the user reducer know if the wallet is encrypted
-    const isEncrypted = yield getWalletIsEncrypted()
-    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
+    yield all({
+        appInitialized: take(getType(RootActions.appInitialized)),
+        rtcStoreReady: take(getType(RtcActions.rtcStoreReady))
+    })
     // grab the current application state
     const state: MainRootState = yield select();
     // this property will eventually be persisted
@@ -43,13 +41,14 @@ export function* initializationSaga() {
     yield put(RootActions.waitingForSync());
     // call getBitcoinClient... it's an async function (returns a Promise) so 
     // in a saga, we await for it as follows
-    const client: BitcoinClient = yield call(getBitcoinClient);
+    const client: RpcClientWrapper = yield call(() => rpcClientProvider());
+    console.log("got rpcClient")
     let currentCompletionPercent: number = -1000;
     for (; ;) {
         let syncState: SyncState;
         try {
             // fetch the state from dynamicd
-            syncState = yield call(() => client.command("syncstatus"));
+            syncState = yield call(() => client.command({ timeout: 5000 }, "syncstatus"));
         }
         catch (e) {
             // oh no, something bad
@@ -73,15 +72,21 @@ export function* initializationSaga() {
 
 
         // if we've hit 100%, we're done
-        if (currentCompletionPercent === 100) {
+        if (currentCompletionPercent === 100 && syncState.fully_synced) {
             // complete
-            yield put(RootActions.syncComplete());
             break;
         }
 
         //wait, then go again
         yield call(delay, 1000);
     }
+    // let the user reducer know if the wallet is encrypted
+    const isEncrypted = yield getWalletIsEncrypted(client)
+    yield put(OnboardingActions.walletIsEncrypted(isEncrypted))
+
+    yield put(RootActions.syncComplete());
+
+    return client
 
 }
 

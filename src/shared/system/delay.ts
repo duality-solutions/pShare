@@ -1,4 +1,4 @@
-import { CancellationToken } from "./createCancellationToken";
+import { CancellationToken } from "./createCancellationTokenSource";
 
 export const delay = (time: number, cancellationToken?: CancellationToken) => {
 

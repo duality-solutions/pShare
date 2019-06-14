@@ -6,4 +6,3 @@ export interface DynodeSyncState {
     IsSynced?: boolean;
     IsFailed: boolean;
 }
-

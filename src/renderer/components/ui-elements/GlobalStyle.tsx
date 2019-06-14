@@ -7,6 +7,8 @@ import { createGlobalStyle } from 'styled-components';
     font-family: 'Open Sans', sans-serif;
     background: white;
     opacity:0.9;
+    margin: 0; padding:0;
+
   }
   
   .fadeContainerIn-appear {

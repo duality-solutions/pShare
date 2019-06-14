@@ -1,5 +1,7 @@
+import { RpcClient } from "../../../main/RpcClient";
+
 export interface ValidationTest<T> {
-    test: (value: T) => boolean | Promise<boolean>;
+    test: (client:RpcClient,value: T) => boolean | Promise<boolean>;
     message: string;
     testsOnSuccess?: ValidationTest<T>[];
 }

@@ -16,8 +16,9 @@ export default
             <Switch>
                 {(Object.keys(appRoutes) as Array<keyof typeof appRoutes>)
                     .map((key, idx) =>
-                        <Route key={idx} exact path={appRoutes[key].path} component={appRoutes[key].component} />
+                        <Route key={idx} exact={appRoutes[key].exact} path={appRoutes[key].path} component={appRoutes[key].component} />
                     )}
+                {/* <Route path="/Rtc" exact component={RtcPlayground} /> */}
             </Switch>
         </ThemeProvider>
     </>

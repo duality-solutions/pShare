@@ -6,6 +6,8 @@ interface CardProps {
     padding? : string,
     minHeight?: string,
     minWidth?: string,
+    border?: string,
+    background?: string,
 }
 
 const StyledCard = styled('div')<CardProps>`
@@ -15,15 +17,15 @@ const StyledCard = styled('div')<CardProps>`
     min-height: ${props => props.minHeight || '5em'};
     min-width: ${props => props.minWidth || '200px'};
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
-    border: solid 1px #f1f1f1;
+    border: ${props => props.border || 'solid 1px #f1f1f1'};
     border-radius: 4px;
-    background-color: #ffffff;
+    background-color: ${props => props.background || '#ffffff'};
     padding: ${props => props.padding || '2em 4em'};
     margin: 1em 0 ;
     box-sizing: border-box;
 `
 
-const SquareCard = styled('div')<{}>`
+const SquareCard = styled('div')<{padding?:string, height?: string, width?: string}>`
     display: flex;  
     flex-direction:column;
     align-items: center;
@@ -32,11 +34,10 @@ const SquareCard = styled('div')<{}>`
     box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.05);
         border: solid 2px #f7f6f6;
         border-radius: 6px;
-    min-height: 10em;
-    max-width: 750px;
-    width: 250px;
-    height: 200px;
-    padding: 0.25em 1em;
+    // min-height: 10em;
+    width: ${props => props.width ||'200px'};
+    height: ${props => props.height ||'200px'};
+    padding: ${props => props.padding || '0.25em 1em'};
     margin: 0 0.5em 0 0.5em;
     cursor: pointer
 `
