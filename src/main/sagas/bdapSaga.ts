@@ -93,14 +93,14 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.initialize), function* () {
         let allSourcesRetrievedAtLeastOnce = false
         for (; ;) {
-
+            /** TODO: Add a timer here so it doesn't get stuck in an infinate loop */
 
             yield put(BdapActions.getUsers())
 
             yield put(BdapActions.getCompleteLinks())
             yield put(BdapActions.getPendingAcceptLinks())
             yield put(BdapActions.getPendingRequestLinks())
-            yield put(BdapActions.getDeniedLinks())
+            /** yield put(BdapActions.getDeniedLinks()) */
 
             const getResults = yield all({
                 users: race({
@@ -118,19 +118,19 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 pendingAccept: race({
                     success: take(getType(BdapActions.getPendingAcceptLinksSuccess)),
                     failure: take(getType(BdapActions.getPendingAcceptLinksFailed))
-                }),
-                denied: race({
+                })/**,
+                 denied: race({
                     success: take(getType(BdapActions.getDeniedLinksSuccess)),
                     failure: take(getType(BdapActions.getDeniedLinksFailed))
 
-                })
+                })*/
             })
 
             if (getResults.users.success
                 && getResults.completeLinks.success
                 && getResults.pendingRequest.success
                 && getResults.pendingAccept.success
-                && getResults.denied.success
+                /** && getResults.denied.success */
             ) {
                 console.log("all user/link data successful retrieved")
 
