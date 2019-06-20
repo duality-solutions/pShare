@@ -78,7 +78,7 @@ const tabs: TabInfo[] = [
                 width="36px"
                 height="36px"
                 margin="0 0 0 0.9em" />,
-        text: "Inbox",
+        text: "Downloads",
         isSelected: (pathname: string) => pathname === '/Dashboard/Inbox',
         disabled: true
     },
@@ -90,7 +90,7 @@ const tabs: TabInfo[] = [
                 width="36px"
                 height="36px"
                 margin="0 0 0 0.9em" />,
-        text: "Outbox",
+        text: "Uploads",
         isSelected: (pathname: string) => pathname === '/Dashboard/Outbox',
         disabled: false
     },
