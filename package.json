@@ -1,12 +1,12 @@
 {
   "name": "pshare",
-  "version": "0.5.4",
+  "version": "0.5.5",
   "description": "Secure and private peer to peer file sharing",
   "license": "UNLICENSED",
   "author": {
     "name": "HiddenField",
     "email": "info@hiddenfield.com",
-    "url": "https://duality.solutions"
+    "url": "https://duality.solutions/pshare"
   },
   "build": {
     "appId": "solutions.duality.pshare",

@@ -114,7 +114,7 @@ const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolea
     <OutboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/> 
     <Divider margin="0 5px 0 0" height="42px" background={white? "#e9e9e9": "white"} opacity="0.1"/> 
     <Text fontWeight="bold" margin="12px 0 0 16px" fontSize="0.7em" color={white?  "#4a4a4a": "white"}>
-        SHARED
+        YOUR FILES
     </Text>
   </StyledSharedButton>
 )
@@ -124,7 +124,7 @@ const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: bool
     <InboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/>
        <Divider margin="0 5px 0 0" background={white? "#e9e9e9": "white"} height="42px" width="0.5px" opacity="0.1" /> 
         <Text margin="12px 0 0 8px" fontSize="0.7em" color={white ? "#4a4a4a" : "white"} fontWeight="bold">
-            DOWNLOADS
+            THEIR FILES
         </Text>
   </StyledSharedButton>
 )
