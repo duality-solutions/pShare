@@ -1,4 +1,4 @@
-## Private Share
+## pShare
 
 ### Software Objectives:
 - Privately and securely share data with friends, family, and business associates.
