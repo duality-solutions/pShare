@@ -16,6 +16,12 @@ export function* remoteLoggingSaga() {
         if (typeof logger === 'undefined') {
             return;
         }
+        let flag = false 
+        action.payload.args.map(item => {
+            if (item && typeof item === 'string' && item.includes('password')) flag = true
+            if (item && typeof item === 'object' && Object.keys(item).includes('password')) flag = true
+        })
+        if (flag) return;
         const timestamp = new Date().toUTCString()
         switch (action.payload.level) {
             case "error":
