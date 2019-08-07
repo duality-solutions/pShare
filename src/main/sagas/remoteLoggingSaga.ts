@@ -6,6 +6,11 @@ import winston from 'winston'
 
 const isDevelopment = process.env.NODE_ENV === 'development'
 
+const passwordRegex = new RegExp('password','i')
+const passphraseRegex = new RegExp('passphrase','i')
+const mnemonicRegex = new RegExp('mnemonic','i')
+
+const tokenTester = (item: string) => (passwordRegex.test(item) || passphraseRegex.test(item) || mnemonicRegex.test(item))
 
 export function* remoteLoggingSaga() {
     if (isDevelopment) {
@@ -18,8 +23,8 @@ export function* remoteLoggingSaga() {
         }
         let flag = false 
         action.payload.args.map(item => {
-            if (item && typeof item === 'string' && item.includes('password')) flag = true
-            if (item && typeof item === 'object' && Object.keys(item).includes('password')) flag = true
+            if (item && typeof item === 'string' && tokenTester(item) ) flag = true
+            if (item && typeof item === 'object' && Object.keys(item).some(ele => tokenTester(ele))) flag = true
         })
         if (flag) return;
         const timestamp = new Date().toUTCString()

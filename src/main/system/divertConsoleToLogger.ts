@@ -1,6 +1,12 @@
 import { prepareErrorForSerialization } from '../../shared/proxy/prepareErrorForSerialization';
 import { getLogger } from './getLogger';
 
+const passwordRegex = new RegExp('password','i')
+const passphraseRegex = new RegExp('passphrase','i')
+const mnemonicRegex = new RegExp('mnemonic','i')
+
+const tokenTester = (item: string) => (passwordRegex.test(item) || passphraseRegex.test(item) || mnemonicRegex.test(item))
+
 export async function divertConsoleToLogger() {
   const logger = await getLogger()
   if (typeof logger === 'undefined') {
@@ -13,9 +19,8 @@ export async function divertConsoleToLogger() {
   console.log = (...args: any) => {
     const timestamp = new Date().toUTCString()
     let flag = false
-    args.map((item:string) => {
-      if (item && typeof item === 'string' && 
-         (item.includes('password') || item.includes('PASSWORD') || item.includes('PASSPHRASE') ))
+    args.map((item:any) => {
+      if (item && typeof item === 'string' && tokenTester(item))
         flag = true;
     })
     originalConsoleLog(...args);
@@ -25,9 +30,8 @@ export async function divertConsoleToLogger() {
   console.warn = (...args: any) => {
     const timestamp = new Date().toUTCString()
     let flag = false
-    args.map((item:string) => {
-      if (item && typeof item === 'string' && 
-         (item.includes('password') || item.includes('PASSWORD') || item.includes('PASSPHRASE') ))
+    args.map((item:any) => {
+      if (item && typeof item === 'string' && tokenTester(item))
         flag = true;
     })
     originalConsoleWarn(...args);
@@ -37,9 +41,8 @@ export async function divertConsoleToLogger() {
   console.info = (...args: any) => {
     const timestamp = new Date().toUTCString()
     let flag = false
-    args.map((item:string) => {
-      if (item && typeof item === 'string' && 
-         (item.includes('password') || item.includes('PASSWORD') || item.includes('PASSPHRASE') ))
+    args.map((item:any) => {
+      if (item && typeof item === 'string' && tokenTester(item))
         flag = true;
     })
     originalConsoleInfo(...args);
@@ -49,9 +52,8 @@ export async function divertConsoleToLogger() {
   console.error = (...args: any) => {
     const timestamp = new Date().toUTCString()
     let flag = false
-    args.map((item:string) => {
-      if (item && typeof item === 'string' && 
-         (item.includes('password') || item.includes('PASSWORD') || item.includes('PASSPHRASE') ))
+    args.map((item:any) => {
+      if (item && typeof item === 'string' && tokenTester(item))
         flag = true;
     })
     originalConsoleError(...args);
