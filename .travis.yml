@@ -1,0 +1,36 @@
+language: node_js
+node_js:
+  - 8.16.1
+os:
+  - linux
+dist: bionic
+before_install:
+  - curl -sL https://raw.githubusercontent.com/nvm-sh/nvm/master/install.sh -o install_nvm.sh
+  - bash install_nvm.sh
+  - command -v nvm
+  - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+  - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+  - sudo apt-get update && sudo apt-get install --no-install-recommends yarn
+  - nvm install 8.15.0 && nvm use 8.15.0  && npm install -g yarn
+  - yarn install
+cache:
+  apt: true
+jobs:
+  include:
+      # Linux
+      - stage: build
+        name: 'pShare Ubuntu Package'
+        script:
+          - yarn dist --linux
+      # Windows
+      - stage: build
+        name: 'pShare Windows Installer'
+        install:
+          - sudo dpkg --add-architecture i386
+          - wget -nc https://dl.winehq.org/wine-builds/winehq.key
+          - sudo apt-key add winehq.key
+          - sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
+          - sudo apt-get update
+          - sudo apt-get install --install-recommends winehq-stable
+        script:
+          - yarn dist --win
