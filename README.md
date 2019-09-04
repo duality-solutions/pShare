@@ -46,12 +46,25 @@ To distribute pShare with a specific Dynamicd version, you must place the binari
    └── static/
        └── dynamicd
            ├── darwin
-               └── dynamicd (mac binary)
+           |   └── dynamicd (mac binary)
+           |   └── dynamic-cli (mac binary)
            ├── linux
-               └── dynamicd (linux binary)
+           |   └── dynamicd (linux binary)
+           |   └── dynamic-cli (linux binary)
            └── win32
                └── dynamicd (windows binary)
+               └── dynamic-cli (windows binary)
 
+```
+
+Platform examples:
+```bash
+# Windows installer (.exe)
+yarn dist --win
+# Ubuntu package (Debian package)
+yarn dist --linux
+# MacOS Disk Image (DMG)
+yarn dist --mac --x64
 ```
 
 ### Building pShare Dynamicd
@@ -77,3 +90,7 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 ### Application architecture
 
 Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
+
+### License
+
+See LICENSE.md file for copying and use information.
