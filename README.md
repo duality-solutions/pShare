@@ -95,7 +95,7 @@ Information about the architecture of the application can be found in [this docu
 
 #### Linux *.deb*-based installation from `bash`
 
-In the terminal, it is possible to make an alias `dyncli` to point to thr running dynamicd:
+In the terminal, it is possible to make an alias `dyncli` to point to the running dynamicd:
 
 ```shell
 $ alias dyncli='/opt/pShare/resources/static/dynamicd/linux/dynamic-cli "-conf=$HOME/.pshare/.dynamic/dynamic.conf" "-datadir=$HOME/.pshare/.dynamic"'
