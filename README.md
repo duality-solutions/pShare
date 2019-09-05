@@ -107,7 +107,7 @@ then we can use it to issue RPC commands against the running `dynamicd` as follo
 $ dyncli syncstatus
 ```
 
-#### Windows installation from `cmd`
+#### Windows-based installation from `cmd`
 
 In windows, we can use the following:
 
