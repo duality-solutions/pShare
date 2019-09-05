@@ -91,6 +91,32 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 
 Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
 
+### Talking to an installed pShare's instance of dynamicd
+
+#### Linux (bash)
+
+In the terminal, it is possible to make an alias `dyncli` to point to thr running dynamicd:
+
+```shell
+$ alias dyncli='/opt/pShare/resources/static/dynamicd/linux/dynamic-cli "-conf=$HOME/.pshare/.dynamic/dynamic.conf" "-datadir=$HOME/.pshare/.dynamic"'
+```
+
+then we can use it to issue RPC commands against the running `dynamicd` as follows:
+
+```shell
+$ dyncli syncstatus
+```
+
+#### Windows (cmd)
+
+In windows, we can use the following:
+
+```shell
+> "%LOCALAPPDATA%\Programs\pshare\resources\static\dynamicd\win32\dynamic-cli.exe" "-conf=%USERPROFILE%\.pshare\.dynamic\dynamic.conf" "-datadir=%USERPROFILE%\.pshare\.dynamic" syncstatus
+```
+
+to do the same thing. No `alias` command to ease usage, unfortunately.
+
 ### License
 
 See LICENSE.md file for copying and use information.
