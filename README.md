@@ -93,7 +93,7 @@ Information about the architecture of the application can be found in [this docu
 
 ### Talking to an installed pShare's instance of dynamicd
 
-#### Linux (bash)
+#### Linux *.deb*-based installation from `bash`
 
 In the terminal, it is possible to make an alias `dyncli` to point to thr running dynamicd:
 
@@ -107,7 +107,7 @@ then we can use it to issue RPC commands against the running `dynamicd` as follo
 $ dyncli syncstatus
 ```
 
-#### Windows (cmd)
+#### Windows installation from `cmd`
 
 In windows, we can use the following:
 
