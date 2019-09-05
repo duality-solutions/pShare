@@ -20,6 +20,9 @@
         "AppImage",
         "deb",
         "tar.gz"
+      ],
+      "target": [
+        "deb"
       ]
     }
   },
