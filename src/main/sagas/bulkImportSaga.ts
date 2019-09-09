@@ -1,8 +1,7 @@
-import { takeEvery, call, select } from "redux-saga/effects";
+import { takeEvery, call, select, put } from "redux-saga/effects";
 import { getType } from "typesafe-actions";
 
 import { RpcClient } from "../RpcClient";
-import { delay } from "../../shared/system/delay";
 import { BdapActions } from "../../shared/actions/bdap";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { app, BrowserWindow, dialog } from "electron";
@@ -13,17 +12,19 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { DeniedLink } from "../../dynamicdInterfaces/DeniedLink";
+import { LinkRequestResponse } from "../../dynamicdInterfaces/LinkRequestResponse";
+import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
+import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
 
 export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
     yield takeEvery(getType(BdapActions.beginBulkImport), function* () {
-        yield call(() => delay(1000))
         const browserWindow = browserWindowProvider();
         if (!browserWindow) {
             return;
         }
         const filePath = getFilePathSync(browserWindow);
         const data = yield call(() => readFile(filePath[0]))
-        const userFqdnsFromFile = blinq(splitLines(data));
+        const userFqdnsFromFile = [...blinq(splitLines(data))];
 
         const allUsers: GetUserInfo[] = yield select((s: MainRootState) => s.bdap.users);
         const completeLinks: Link[] = yield select((s: MainRootState) => s.bdap.completeLinks);
@@ -52,7 +53,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
                 .concat([currentUserFqdn])
                 .distinct();
 
-        const usersThatExist = userFqdnsFromFile.join(allUsers, x => x, u => u.object_full_path, (_, u) => u);
+        const usersThatExist = blinq(userFqdnsFromFile).join(allUsers, x => x, u => u.object_full_path, (_, u) => u);
 
         const usersToRequestLink =
             usersThatExist
@@ -62,9 +63,26 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
         console.log(usersToRequestLink.toArray());
 
+        const userName = getUserNameFromFqdn(currentUserFqdn);
+        const inviteMessage = `${userName} wants to link with you`;
+        const failedUsers: GetUserInfo[] = [];
+        for (const user of usersToRequestLink) {
+            console.log("inviting " + user.object_id)
+            let response: LinkRequestResponse;
+            try {
+                response =
+                    yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
+                console.log("response", response);
+
+            } catch (err) {
+                failedUsers.push(user);
+                continue;
+            }
 
 
-
+        }
+        console.log("failed users", failedUsers);
+        yield put(BdapActions.getPendingRequestLinks());
 
     });
 }
