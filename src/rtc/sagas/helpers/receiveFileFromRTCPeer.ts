@@ -19,7 +19,7 @@ export const receiveFileFromRTCPeer =
         (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo, fileRequest: FileRequest) => call(function* () {
             
             try {
-                const shasum = crypto.createHash('sha256');
+                const shasum = crypto.createHash('md5');
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
                     let total = 0;

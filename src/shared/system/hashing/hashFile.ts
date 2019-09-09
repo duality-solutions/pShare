@@ -1,7 +1,7 @@
 import * as crypto from 'crypto'
 import * as fs from 'fs'
 
-export function hashFile(path: string, algorithm: HashAlgorithm = 'sha256'): Promise<string> {
+export function hashFile(path: string, algorithm: HashAlgorithm = 'md5'): Promise<string> {
     return new Promise<string>((resolve, reject) => {
         const shasum = crypto.createHash(algorithm);
         const s = fs.createReadStream(path);
