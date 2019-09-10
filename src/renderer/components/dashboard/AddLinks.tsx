@@ -14,6 +14,7 @@ import Modal from "../ui-elements/Modal";
 import Button from "../ui-elements/Button";
 import Input from "../ui-elements/Input";
 import { SearchActions } from "../../../shared/actions/search";
+import { BulkImportActions } from "../../../shared/actions/bulkImport";
 
 type SearchStatus = "NO_SEARCH" | "SEARCH_RESULT"
 export interface AddLinksStateProps {
@@ -25,7 +26,7 @@ export interface AddLinksStateProps {
 }
 export type AddLinksDispatchProps =
     PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged">
-    & PickedDispatchProps<typeof BdapActions, "beginBulkImport">
+    & PickedDispatchProps<typeof BulkImportActions, "beginBulkImport">
     & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest">
     & { push: (pathname: string) => void }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps

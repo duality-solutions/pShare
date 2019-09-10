@@ -12,18 +12,22 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
 import { PendingLink } from "../../dynamicdInterfaces/links/PendingLink";
 import { DeniedLink } from "../../dynamicdInterfaces/DeniedLink";
-import { LinkRequestResponse } from "../../dynamicdInterfaces/LinkRequestResponse";
 import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
+import { BulkImportActions } from "../../shared/actions/bulkImport";
 
 export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
-    yield takeEvery(getType(BdapActions.beginBulkImport), function* () {
+    yield takeEvery(getType(BulkImportActions.beginBulkImport), function* () {
         const browserWindow = browserWindowProvider();
         if (!browserWindow) {
             return;
         }
         const filePath = getFilePathSync(browserWindow);
-        const data = yield call(() => readFile(filePath[0]))
+        if (filePath == null) {
+            yield put(BulkImportActions.bulkImportAborted());
+            return;
+        }
+        const data = yield call(() => readFile(filePath))
         const userFqdnsFromFile = [...blinq(splitLines(data))];
 
         const allUsers: GetUserInfo[] = yield select((s: MainRootState) => s.bdap.users);
@@ -53,35 +57,94 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
                 .concat([currentUserFqdn])
                 .distinct();
 
-        const usersThatExist = blinq(userFqdnsFromFile).join(allUsers, x => x, u => u.object_full_path, (_, u) => u);
+        const totalListItems = userFqdnsFromFile.length;
+
+        const fqdnListToUsers = blinq(userFqdnsFromFile)
+            .fullOuterJoin(allUsers, x => x, u => u.object_full_path, (listUser, user) => ({ listUser, user }));
+
+        const usersThatExist = fqdnListToUsers.where(x => x.user != null && x.listUser != null).select(x => x.user!);
+        const listFqdnsThatDontExist = fqdnListToUsers.where(x => x.listUser != null && x.user == null).select(x => x.listUser!);
+
+        let successCount = 0;
+        let failCount = 0;
+
+        for (const userFqdn of listFqdnsThatDontExist) {
+            failCount++;
+            yield put(BulkImportActions.bulkImportProgress({
+                totalItems: totalListItems,
+                failed: failCount,
+                successful: successCount,
+                currentItem: {
+                    linkFqdn: userFqdn,
+                    err: "User does not exist",
+                    success: false
+                }
+            }))
+        }
+
+        const usersToExclusions = usersThatExist
+            .leftOuterJoin(exclusions, u => u.object_full_path, e => e, (user, excludedUserFqdn) => ({ user, excludedUserFqdn }));
+        const excludedUserFqdns = usersToExclusions.where(x=>x.excludedUserFqdn!=null).select(x=>x.user.object_full_path);
+        for (const userFqdn of excludedUserFqdns) {
+            failCount++;
+            yield put(BulkImportActions.bulkImportProgress({
+                totalItems: totalListItems,
+                failed: failCount,
+                successful: successCount,
+                currentItem: {
+                    linkFqdn: userFqdn,
+                    err: "Link already requested/complete/denied",
+                    success: false
+                }
+            }))
+        }
 
         const usersToRequestLink =
-            usersThatExist
-                .leftOuterJoin(exclusions, u => u.object_full_path, e => e, (user, excludedUserFqdn) => ({ user, excludedUserFqdn }))
+            usersToExclusions
                 .where(x => x.excludedUserFqdn == null)
                 .select(x => x.user);
 
-        console.log(usersToRequestLink.toArray());
+
 
         const userName = getUserNameFromFqdn(currentUserFqdn);
         const inviteMessage = `${userName} wants to link with you`;
-        const failedUsers: GetUserInfo[] = [];
+        //const failedUsers: GetUserInfo[] = [];
         for (const user of usersToRequestLink) {
             console.log("inviting " + user.object_id)
-            let response: LinkRequestResponse;
+            //let response: LinkRequestResponse;
             try {
-                response =
-                    yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
-                console.log("response", response);
+                yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
+                successCount++;
+
 
             } catch (err) {
-                failedUsers.push(user);
+                failCount++;
+                yield put(BulkImportActions.bulkImportProgress({
+                    totalItems: totalListItems,
+                    failed: failCount,
+                    successful: successCount,
+                    currentItem: {
+                        linkFqdn: user.object_full_path,
+                        success: false,
+                        err: err.message
+                    }
+                }))
                 continue;
             }
+            yield put(BulkImportActions.bulkImportProgress({
+                totalItems: totalListItems,
+                failed: failCount,
+                successful: successCount,
+                currentItem: {
+                    linkFqdn: user.object_full_path,
+                    success: true
+                }
+            }))
 
 
         }
-        console.log("failed users", failedUsers);
+        yield put(BulkImportActions.bulkImportSuccess());
+        //console.log("failed users", failedUsers);
         yield put(BdapActions.getPendingRequestLinks());
 
     });
@@ -107,9 +170,16 @@ function getFilePathSync(window: BrowserWindow) {
         // ],
         defaultPath: homeDir,
         title: "Bulk import file",
+        properties: ["multiSelections", "openFile"]
 
     });
-    return path;
+    if (path == null) {
+        return undefined;
+    }
+    if (Array.isArray(path) && path.length > 0) {
+        return path[0];
+    }
+    return undefined;
 }
 
 function* readFile(path: string) {
