@@ -72,25 +72,26 @@ export function* requestFileSaga() {
             yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connecting to peer" }))
 
             const { payload: { sessionDescription: answerSdp, payload: fileInfo } } = answerEnvelope
-
-            const answerSessionDescription = new RTCSessionDescription(answerSdp);
-            yield call(() => peer.setRemoteDescription(answerSessionDescription))
-            yield call(() => peer.waitForDataChannelOpen())
-            yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connected to peer" }))
-
-
             const otherEndUser = action.payload.ownerUserName
             const { temp }: UserSharePaths = yield getOrCreateShareDirectoriesForUser(otherEndUser);
             const tempPath = path.join(temp, `__${uuid()}`)
+            if (fileInfo.size > 0) {
 
-            //debugger
-            try {
-                yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
-            } catch (err) {
-                yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
-                yield delay(10000)
-                yield put(RtcActions.fileReceiveReset(fileRequest))
-                return
+                const answerSessionDescription = new RTCSessionDescription(answerSdp);
+                yield call(() => peer.setRemoteDescription(answerSessionDescription))
+                yield call(() => peer.waitForDataChannelOpen())
+                yield put(RtcActions.fileReceiveProgress({ fileRequest, downloadedBytes: 0, totalBytes: 0, downloadedPct: 0, status: "connected to peer" }))
+                //debugger
+                try {
+                    yield receiveFileFromRTCPeer(tempPath, peer, fileInfo, fileRequest)
+                } catch (err) {
+                    yield put(RtcActions.fileReceiveFailed({ fileRequest, error: prepareErrorForSerialization(err) }))
+                    yield delay(10000)
+                    yield put(RtcActions.fileReceiveReset(fileRequest))
+                    return
+                }
+            } else {
+                yield call(() => touchFile(tempPath));
             }
 
 
@@ -104,4 +105,26 @@ export function* requestFileSaga() {
             peer.close()
         }
     })
+}
+
+function touchFile(filePath: string) {
+    const time = new Date();
+    return new Promise<void>((resolve, reject) =>
+        fs.utimes(filePath, time, time, err => {
+            if (err) {
+                fs.open(filePath, 'w', (err, fd) => {
+                    if (err) {
+                        reject(err);
+                    }
+                    fs.close(fd, err => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve();
+                        }
+                    });
+                });
+            }
+        }));
 }
