@@ -46,12 +46,25 @@ To distribute pShare with a specific Dynamicd version, you must place the binari
    └── static/
        └── dynamicd
            ├── darwin
-               └── dynamicd (mac binary)
+           |   └── dynamicd (mac binary)
+           |   └── dynamic-cli (mac binary)
            ├── linux
-               └── dynamicd (linux binary)
+           |   └── dynamicd (linux binary)
+           |   └── dynamic-cli (linux binary)
            └── win32
                └── dynamicd (windows binary)
+               └── dynamic-cli (windows binary)
 
+```
+
+Platform examples:
+```bash
+# Windows installer (.exe)
+yarn dist --win
+# Ubuntu package (Debian package)
+yarn dist --linux
+# MacOS Disk Image (DMG)
+yarn dist --mac --x64
 ```
 
 ### Building pShare Dynamicd
@@ -77,3 +90,33 @@ New binaries can be created by following https://github.com/HiddenField/dynamic-
 ### Application architecture
 
 Information about the architecture of the application can be found in [this document](documentation/electron-redux-architecture.md)
+
+### Talking to an installed pShare's instance of dynamicd
+
+#### Linux *.deb*-based installation from `bash`
+
+In the terminal, it is possible to make an alias `dyncli` to point to the running dynamicd:
+
+```shell
+$ alias dyncli='/opt/pShare/resources/static/dynamicd/linux/dynamic-cli "-conf=$HOME/.pshare/.dynamic/dynamic.conf" "-datadir=$HOME/.pshare/.dynamic"'
+```
+
+then we can use it to issue RPC commands against the running `dynamicd` as follows:
+
+```shell
+$ dyncli syncstatus
+```
+
+#### Windows-based installation from `cmd`
+
+In windows, we can use the following:
+
+```shell
+> "%LOCALAPPDATA%\Programs\pshare\resources\static\dynamicd\win32\dynamic-cli.exe" "-conf=%USERPROFILE%\.pshare\.dynamic\dynamic.conf" "-datadir=%USERPROFILE%\.pshare\.dynamic" syncstatus
+```
+
+to do the same thing. No `alias` command to ease usage, unfortunately.
+
+### License
+
+See LICENSE.md file for copying and use information.
