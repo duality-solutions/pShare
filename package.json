@@ -17,11 +17,6 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "tar.gz"
-      ],
-      "target": [
         "deb"
       ]
     }
