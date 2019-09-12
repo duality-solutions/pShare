@@ -81,3 +81,13 @@ test("treats arrays as unmergeable", () => expect(deepMerge([1, 2], [3, 4])).toE
 test("treats numbers as unmergeable", () => expect(deepMerge(1, 2)).toEqual(2))
 test("throws with mixed mergeable/unmergeable items", () => expect(() => deepMerge({ a: 1 }, 2 as any)).toThrow())
 test("throws with mixed mergeable/unmergeable items, deep in graph", () => expect(() => deepMerge({ a: { b: 2 } }, { a: 1 })).toThrow())
+
+const badData = [{ "in": undefined, "out": { "emptyfile": { "contentType": "application/octet-stream", "direction": "out", "hash": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", "path": "/home/spender/.pshare/share/hfchrissperry1001/out/emptyfile", "relativePath": "emptyfile", "sharedWith": "hfchrissperry1001", "size": 0 } } }, { "out": { "emptyfile": { "contentType": "application/octet-stream", "direction": "out", "hash": "47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=", "path": "/home/spender/.pshare/share/hfchrissperry1001/out/emptyfile", "relativePath": "emptyfile", "sharedWith": "hfchrissperry1001", "size": 0 } } }];
+
+test("works with badData", () => {
+    console.log(badData[0])
+    console.log(badData[1])
+    const merged=deepMerge(badData[0], badData[1]);
+    console.log(merged)
+    expect(merged).toBeDefined();
+})

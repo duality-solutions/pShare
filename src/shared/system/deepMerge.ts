@@ -14,6 +14,7 @@ import { entriesToObject, entries } from "./entries";
  */
 export const deepMerge =
     <T>(...items: T[]): T => {
+        //onsole.log("mergeItems", items)
         const itms = blinq(items).groupBy(i => i).select(g => g.key)
         const numItms = itms.count()
         let areMergable: boolean
@@ -52,6 +53,7 @@ const getLatestEntries = <T, TK extends keyof T, TV extends T[TK], TEntry extend
 
 const mergeMergeableChildEntries = <T, TK extends keyof T, TV extends T[TK]>(entries: Enumerable<[TK, TV]>, items: Enumerable<T>): Enumerable<[TK, TV]> =>
     entries
+        .where(([propName, value]): boolean => items.any(i => typeof i[propName] !== 'undefined'))
         .select(([propName, value]): [TK, TV] => [propName, mergeObjectPropertyFromItems(propName, items)]);
 
 const mergeObjectPropertyFromItems = <T, TK extends keyof T, TV extends T[TK]>(propName: TK, items: Enumerable<T>): TV =>
