@@ -17,11 +17,6 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "tar.gz"
-      ],
-      "target": [
         "deb"
       ]
     }
@@ -103,10 +98,10 @@
     "electron-builder": "^20.36.2",
     "electron-webpack": "^2.6.1",
     "electron-webpack-ts": "^3.1.0",
-    "jest": "^23.6.0",
+    "jest": "^24.9.0",
     "redux-saga-test-plan": "^3.7.0",
     "spectron": "^5.0.0",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.11.0",
     "webdriverio": "^4.14.1",
     "webpack": "^4.26.0",
