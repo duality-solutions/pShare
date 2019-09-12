@@ -46,7 +46,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
                     entries(filesRecord)
                         .select(([fileName, v]) => ({
                             fileName,
-                            hash: v.hash!,
+                            //hash: v.hash!,
                             size: v.size!,
                             contentType: v.contentType!
                         }))

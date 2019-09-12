@@ -56,10 +56,10 @@ export const receiveFileFromRTCPeer =
                 finally {
                     yield call(() => fsCloseAsync(fileDescriptor));
                 }
-                const computedHash = shasum.digest("base64")
-                if (computedHash !== fileRequest.fileId) {
-                    throw Error("Checksum error: hash of downloaded data does not match that of requested data")
-                }
+                // const computedHash = shasum.digest("base64")
+                // if (computedHash !== fileRequest.fileId) {
+                //     throw Error("Checksum error: hash of downloaded data does not match that of requested data")
+                // }
             }
             catch (err) {
                 try {

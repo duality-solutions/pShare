@@ -83,11 +83,11 @@ export function* fileShareSaga(rpcClient: RpcClient) {
                             ? entries(sharedFiles)
                                 .select(([fileName, sharedFile]) => ({
                                     fileName,
-                                    hash: sharedFile.hash!,
+                                    //hash: sharedFile.hash!,
                                     size: sharedFile.size!,
                                     contentType: sharedFile.contentType!
                                 }))
-                                .orderBy(x => x.hash)
+                                .orderBy(x => x.fileName)
                             : []
                     ])
         const dataToPublish = [...dataForLinks]
