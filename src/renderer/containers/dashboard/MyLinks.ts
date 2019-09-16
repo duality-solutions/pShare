@@ -12,6 +12,7 @@ import { FileSharingActions } from "../../../shared/actions/fileSharing";
 import { SearchActions } from "../../../shared/actions/search";
 
 const getUserName = createSelector([(state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined], (user) => user)
+const getBalance = createSelector([(state: RendererRootState) => state.bdap.balance], (b) => b)
 const getUserList = createSelector(
     [
         (state: RendererRootState) => state.myLinksSearch.query,
@@ -76,7 +77,8 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateP
     return {
         users: getUserList(state),
         userName: getUserName(state)!,
-        queryText: state.myLinksSearch.queryText
+        queryText: state.myLinksSearch.queryText,
+        balance: getBalance(state)
     };
 };
 

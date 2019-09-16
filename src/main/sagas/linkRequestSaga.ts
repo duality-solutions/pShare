@@ -60,6 +60,7 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
 
         console.log(response)
         yield put(BdapActions.getPendingRequestLinks())
+        yield put(BdapActions.getBalance())
 
     })
 

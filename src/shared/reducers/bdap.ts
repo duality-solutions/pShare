@@ -15,9 +15,10 @@ export interface BdapState {
     pendingRequestLinks: PendingLink[]
     completeLinks: Link[]
     deniedLinks: DeniedLink[]
-    currentUser?: GetUserInfo
+    currentUser?: GetUserInfo,
+    balance: number
 }
-const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [] };
+const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [], balance: 0 };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
 // export interface BdapUser {
 //     userName: string
@@ -50,6 +51,8 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions | AppA
         case getType(BdapActions.getDeniedLinksSuccess):
             const deniedLinks = action.payload
             return { ...state, deniedLinks }
+        case getType(BdapActions.getBalanceSuccess):
+            return { ...state, balance: action.payload }
         case getType(AppActions.initializeApp):
             return {
                 ...deleteOptionalProperty(state, "currentUser"),

@@ -40,6 +40,11 @@ const operations: Record<string, BdapOperation> = {
         action: () => BdapActions.getDeniedLinks(),
         successAction: BdapActions.getDeniedLinksSuccess,
         failureAction: BdapActions.getDeniedLinksFailed,
+    },
+    balance: {
+        action: () => BdapActions.getBalance(),
+        successAction: BdapActions.getBalanceSuccess,
+        failureAction: BdapActions.getBalanceFailed,
     }
 }
 
@@ -62,6 +67,17 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             }
         }
         yield put(BdapActions.getUsersSuccess(response))
+    })
+    yield takeEvery(getType(BdapActions.getBalance), function* () {
+        let balance: number;
+        try {
+            balance = yield unlockedCommandEffect(rpcClient, client => client.command("getbalance"));
+        }
+        catch (err) {
+            yield put(BdapActions.getBalanceFailed(err.message))
+            return;
+        }
+        yield put(BdapActions.getBalanceSuccess(balance))
     })
     yield takeEvery(getType(BdapActions.getPendingAcceptLinks), function* () {
 

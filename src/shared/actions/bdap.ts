@@ -37,6 +37,10 @@ export const BdapActions = {
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
+    getBalance: createStandardAction('bdap/GET_BALANCE')<void>(),
+    getBalanceSuccess: createStandardAction('bdap/GET_BALANCE_SUCCESS')<number>(),
+    getBalanceFailed: createStandardAction('bdap/GET_BALANCE_FAILED')<string>(),
+
 
     bdapDataFetchSuccess: createStandardAction('bdap/BDAP_DATA_FETCH_SUCCESS')<void>(),
     bdapDataFetchFailed: createStandardAction('bdap/BDAP_DATA_FETCH_FAILED')<string>(),
