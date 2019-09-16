@@ -12,6 +12,36 @@ import { blinq } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
 import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
+import { tuple } from "../../shared/system/tuple";
+
+interface BdapOperation { action: any, successAction: any, failureAction: any }
+const operations: Record<string, BdapOperation> = {
+    users: {
+        action: () => BdapActions.getUsers(),
+        successAction: BdapActions.getUsersSuccess,
+        failureAction: BdapActions.getUsersFailed,
+    },
+    completeLinks: {
+        action: () => BdapActions.getCompleteLinks(),
+        successAction: BdapActions.getCompleteLinksSuccess,
+        failureAction: BdapActions.getCompleteLinksFailed,
+    },
+    pendingAcceptLinks: {
+        action: () => BdapActions.getPendingAcceptLinks(),
+        successAction: BdapActions.getPendingRequestLinksSuccess,
+        failureAction: BdapActions.getPendingRequestLinksFailed,
+    },
+    pendingRequestLinks: {
+        action: () => BdapActions.getPendingRequestLinks(),
+        successAction: BdapActions.getPendingAcceptLinksSuccess,
+        failureAction: BdapActions.getPendingAcceptLinksFailed,
+    },
+    deniedLinks: {
+        action: () => BdapActions.getDeniedLinks(),
+        successAction: BdapActions.getDeniedLinksSuccess,
+        failureAction: BdapActions.getDeniedLinksFailed,
+    }
+}
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -90,65 +120,58 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     })
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
+
+
+
         let allSourcesRetrievedAtLeastOnce = false
+
         for (; ;) {
-
-
-            yield put(BdapActions.getUsers())
-
-            yield put(BdapActions.getCompleteLinks())
-            yield put(BdapActions.getPendingAcceptLinks())
-            yield put(BdapActions.getPendingRequestLinks())
-            yield put(BdapActions.getDeniedLinks())
-
-            const getResults = yield all({
-                users: race({
-                    success: take(getType(BdapActions.getUsersSuccess)),
-                    failure: take(getType(BdapActions.getUsersFailed))
-                }),
-                completeLinks: race({
-                    success: take(getType(BdapActions.getCompleteLinksSuccess)),
-                    failure: take(getType(BdapActions.getCompleteLinksFailed))
-                }),
-                pendingRequest: race({
-                    success: take(getType(BdapActions.getPendingRequestLinksSuccess)),
-                    failure: take(getType(BdapActions.getPendingRequestLinksFailed))
-                }),
-                pendingAccept: race({
-                    success: take(getType(BdapActions.getPendingAcceptLinksSuccess)),
-                    failure: take(getType(BdapActions.getPendingAcceptLinksFailed))
-                }),
-                denied: race({
-                    success: take(getType(BdapActions.getDeniedLinksSuccess)),
-                    failure: take(getType(BdapActions.getDeniedLinksFailed))
-
-                })
-            })
-
-            if (getResults.users.success
-                && getResults.completeLinks.success
-                && getResults.pendingRequest.success
-                && getResults.pendingAccept.success
-                && getResults.denied.success
-            ) {
-                console.log("all user/link data successful retrieved")
-
-                allSourcesRetrievedAtLeastOnce = true
-                yield put(BdapActions.bdapDataFetchSuccess())
-                yield delay(60000)
-
-
-            }
-            else {
-                console.warn("some user/link data was not successfully retrieved")
-                //todo: report this, somehow
-                yield put(BdapActions.bdapDataFetchFailed("some user/link data was not successfully retrieved"))
-                if (allSourcesRetrievedAtLeastOnce) {
-                    yield delay(60000)
+            let remainingEntries = entries(operations);
+            for (let attempts = 0; remainingEntries.any(); attempts++) {
+                if (attempts >= 3) {
+                    if (allSourcesRetrievedAtLeastOnce) {
+                        break;
+                    } else {
+                        throw Error(`Could not retrieve ${[...remainingEntries.select(([k]) => k)].join(", ")} lists from dynamicd`)
+                    }
                 }
-            }
-        }
+                const launchEffects = remainingEntries.select(([k, v]) => put(v.action()));
 
+                const resultEffect = all(remainingEntries
+                    .select(([k, v]) => tuple(k, race({ success: take(getType(v.successAction)), failure: take(getType(v.failureAction)) })))
+                    .aggregate({}, (prev, [k, v]) => ({ ...prev, [k]: v })));
+
+
+                for (const e of launchEffects) {
+                    yield e;
+                }
+
+                type Report = { success: any, failure: any };
+                type ResultsReport = Record<keyof typeof operations, Report>
+
+                const getResults: ResultsReport = yield resultEffect;
+
+                const resultEntries = entries(getResults);
+
+                const entriesWithResults = remainingEntries
+                    .join(resultEntries, ([k]) => k, ([k]) => k, ([k, vo], [, vr]) => ({ key: k, operation: vo, result: vr }))
+
+                const failedEntries = entriesWithResults.where(({ result: { failure } }) => failure)
+
+
+                remainingEntries = failedEntries.select(e => tuple(e.key, e.operation))
+
+            }
+            allSourcesRetrievedAtLeastOnce = true;
+            if (!remainingEntries.any()) {
+                yield put(BdapActions.bdapDataFetchSuccess())
+            } else {
+                const msg = `some user/link data was not successfully retrieved [${[...remainingEntries.select(([k]) => k)].join(", ")}]`
+                yield put(BdapActions.bdapDataFetchFailed(msg))
+            }
+
+            yield delay(60000)
+        }
     })
 }
 
