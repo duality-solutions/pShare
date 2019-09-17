@@ -99,7 +99,6 @@ function getFileInfo(fileRequest: FileRequest) {
         const sharedFiles: SharedFile[] =
             yield select((s: RtcRootState) =>
                 (s.fileWatch.users[fileRequest.requestorUserName] && Object.values(s.fileWatch.users[fileRequest.requestorUserName].out)) || [])
-        debugger;
         const sharedFile = blinq(sharedFiles).firstOrDefault(f => f.relativePath === fileRequest.fileName)
         if (typeof sharedFile === 'undefined') {
             return null
