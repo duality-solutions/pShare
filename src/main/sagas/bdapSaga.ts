@@ -71,7 +71,13 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getBalance), function* () {
         let balance: number;
         try {
-            balance = yield unlockedCommandEffect(rpcClient, client => client.command("getbalance"));
+            balance = yield unlockedCommandEffect(rpcClient, async client => {
+                const b: number = await client.command("getbalance");
+                const cr: { total_credits: number } = await client.command("getcredits");
+                const tc = cr.total_credits;
+                const bc = Math.trunc(b / 0.00100001);
+                return tc + bc;
+            });
         }
         catch (err) {
             yield put(BdapActions.getBalanceFailed(err.message))
