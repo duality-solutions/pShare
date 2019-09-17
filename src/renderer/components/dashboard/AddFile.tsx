@@ -25,15 +25,18 @@ export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
     // react hooks FTW!!!!
-    const [error, setError] = useState<DropzoneError | undefined>(undefined)
+    const [
+        error,
+        //setError
+    ] = useState<DropzoneError | undefined>(undefined)
     const userNameParts = linkedUserCommonName.split(' ')
     const lastName = (userNameParts.length > 1) ? userNameParts[userNameParts.length - 1] : ""
     const firstName = userNameParts.length > 1 ? userNameParts.slice(0, -1).join(' ') : userNameParts[0]
     const filesSelectedHandler = (files: FilePathInfo[]) => {
-        if (files.some(f => f.size > maximumFileSize)) {
-            setError({ title: "File too large!", message: "please select or drag a file that is no larger than 3gb" })
-            return
-        }
+        // if (files.some(f => f.size > maximumFileSize)) {
+        //     setError({ title: "File too large!", message: "please select or drag a file that is no larger than 3gb" })
+        //     return
+        // }
         filesSelected(files)
     }
     return <>

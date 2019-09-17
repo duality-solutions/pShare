@@ -77,9 +77,9 @@ export function* fileWatchSaga() {
                     {
                         const files: SharedFile[] = yield* getSharedFileInfo([ev.path], true);
                         for (const f of files) {
-                            if (f.size === undefined || f.size > maximumFileSize) {
-                                continue
-                            }
+                            // if (f.size === undefined || f.size > maximumFileSize) {
+                            //     continue
+                            // }
 
                             yield put(FileWatchActions.fileAdded(f))
                         }
