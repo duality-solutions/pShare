@@ -14,6 +14,7 @@ import Modal from "../ui-elements/Modal";
 import Button from "../ui-elements/Button";
 import Input from "../ui-elements/Input";
 import { SearchActions } from "../../../shared/actions/search";
+import { BulkImportActions } from "../../../shared/actions/bulkImport";
 
 type SearchStatus = "NO_SEARCH" | "SEARCH_RESULT"
 export interface AddLinksStateProps {
@@ -23,7 +24,11 @@ export interface AddLinksStateProps {
     status: SearchStatus
 
 }
-export type AddLinksDispatchProps = PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged"> & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
+export type AddLinksDispatchProps =
+    PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged">
+    & PickedDispatchProps<typeof BulkImportActions, "beginBulkImport">
+    & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest">
+    & { push: (pathname: string) => void }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
 
 interface AddLinksComponentStateProps {
@@ -83,7 +88,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
         }
     }
     render() {
-        const { users, beginCreateLinkRequest, currentUserName, push, addLinksQueryTextChanged, queryText, status } = this.props
+        const { users, beginCreateLinkRequest, beginBulkImport, currentUserName, push, addLinksQueryTextChanged, queryText, status } = this.props
         return (
             <>
                 {this.state.requestModal &&
@@ -130,7 +135,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                         
                         */}
                         {
-                            renderResults(queryText, status, users, x => this.setState(x))
+                            renderResults(queryText, status, users, x => this.setState(x), beginBulkImport)
                         }
                         <div style={{ padding: "2.5em" }} />
                     </Container>
@@ -141,12 +146,22 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
 
 }
 
-const renderResults = (queryText: string, status: string, users: BdapUser[], setState: (x: AddLinksComponentStateProps) => void) => {
+const renderResults = (queryText: string, status: string, users: BdapUser[], setState: (x: AddLinksComponentStateProps) => void, beginBulkImport: () => void) => {
     switch (status) {
         case "NO_SEARCH":
 
             return queryText.length === 0
-                ? <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some characters to find other users...</Text>
+                ? <>
+                    <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some characters to find other users...</Text>
+                    <Text>
+                        <span onClick={(event) => {
+                            event.preventDefault();
+                            console.log("bulk invite");
+                            beginBulkImport();
+                        }}
+                            style={{ cursor: 'pointer', color: '#2e77d0' }}
+                        >Bulk invite from file...</span></Text>
+                </>
                 : <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some more characters to find other users...</Text>
         case "SEARCH_RESULT":
             return users.length > 0

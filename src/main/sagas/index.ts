@@ -7,6 +7,7 @@ import { saveMnemonicSaga } from "./saveMnemonicSaga";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { translateMnemonicFileSaveFailedActionsToValidationMessagesSaga } from "./translateMnemonicFileSaveFailedActionsToValidationMessagesSaga";
 import { bdapSaga } from "./bdapSaga";
+import { bulkImportSaga } from "./bulkImportSaga";
 import { linkRequestSaga } from "./linkRequestSaga";
 import { linkAcceptSaga } from "./linkAcceptSaga";
 import { fileWatchSaga } from "./fileWatchSaga";
@@ -40,6 +41,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => saveMnemonicSaga(browserWindowProvider),
     () => translateMnemonicFileSaveFailedActionsToValidationMessagesSaga(),
     () => bdapSaga(rpcClient),
+    () => bulkImportSaga(rpcClient, browserWindowProvider),
     () => scanForLinkMessagesSaga(rpcClient),
     () => sendLinkMessageSaga(rpcClient),
     () => requestFileSaveDialogSaga(browserWindowProvider),

@@ -9,6 +9,7 @@ import { blinq } from "blinq";
 import { push } from "connected-react-router";
 import { filterDeniedUsers } from "./helpers/filterDeniedUsers";
 import { SearchActions } from "../../../shared/actions/search";
+import { BulkImportActions } from "../../../shared/actions/bulkImport";
 
 
 
@@ -71,6 +72,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): AddLinksState
     };
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = { ...SearchActions, ...BdapActions, push };
+const mapDispatchToProps: MapPropsToDispatchObj<AddLinksDispatchProps> = { ...SearchActions, ...BdapActions, ...BulkImportActions, push };
 
 export default connect(mapStateToProps, mapDispatchToProps)(AddLinks)
