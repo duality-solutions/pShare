@@ -55,5 +55,7 @@ export function* linkDeclineSaga(rpcClient: RpcClient) {
 
         yield put(BdapActions.getCompleteLinks())
         yield put(BdapActions.getPendingAcceptLinks())
+        yield put(BdapActions.getBalance())
+
     });
 }

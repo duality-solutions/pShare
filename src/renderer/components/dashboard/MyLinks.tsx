@@ -13,7 +13,8 @@ export interface MyLinksStateProps {
     users: BdapUser[],
     allUsers: BdapUser[],
     userName: string,
-    queryText: string
+    queryText: string,
+    balance: number
 }
 export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
@@ -21,9 +22,10 @@ export interface MyLinksDispatchProps {
     myLinksQueryTextChanged: (value: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers }: MyLinksProps) =>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers, balance }: MyLinksProps) =>
     <>
-        <div style={{ width: "100%", display: 'block' }}>
+        <div style={{ width: "100%", display: 'block', position:"relative" }}>
+            <div style={{ padding: '6px', display: "block", position: "absolute", top: 0, left: 0 }}>Balance : {balance}</div>
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
             <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
             </div>

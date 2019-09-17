@@ -20,6 +20,8 @@ import { actionLoggingSaga } from "../../sagas/actionLoggingSaga";
 import { remoteLoggingSaga } from "../../sagas/remoteLoggingSaga";
 import { EventDispatcher } from "../../../shared/system/events/EventDispatcher";
 import { createStoreWithHotReload } from "./createStoreWithHotReload";
+import * as path from 'path'
+
 
 export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWindowProvider: BrowserWindowProvider, sagaMonitor: EventDispatcher, store: ReturnType<typeof createStoreWithHotReload>) {
     let rpcClient: RpcClientWrapper | undefined;
@@ -39,13 +41,15 @@ export function runRootSagaWithHotReload(sagaMw: SagaMiddleware<{}>, browserWind
         const cancellationTokenSource = createCancellationTokenSource()
         sagaMonitor.addEventListener("error", e => {
             console.log("sagamonitor error")
+
             cancellationTokenSource.cancel().then(() => {
                 store.dispatch(AppActions.terminated());
+                const logPath = path.join(app.getPath("home"), ".pshare", "logs", "pshare.log");
                 const messageBoxOptions: MessageBoxOptions = {
                     type: "error",
                     title: "Error",
-                    message: `Oops, it looks like something's gone wrong`,
-                    detail: `Sorry, the application will now close.\nMaybe restarting will help.${e.message ? `\nThe error was : ${e.message}` : ""}`,
+                    message: `An unrecoverable error has occurred`,
+                    detail: `Sorry, the application will now close.${e.message ? `\n\nThe error was\n\n"${e.message}"` : ""}\n\nA log file can be found at\n\n${logPath}\n\nIf the problem persists, please get in touch with us at\n\nhttps://discord.gg/87be63e`,
                     normalizeAccessKeys: true,
                     buttons: ["&Ok"],
                     noLink: true,
