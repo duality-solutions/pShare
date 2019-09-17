@@ -123,17 +123,13 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
 
 
-        let allSourcesRetrievedAtLeastOnce = false
+        //let allSourcesRetrievedAtLeastOnce = false
 
         for (; ;) {
             let remainingEntries = entries(operations);
             for (let attempts = 0; remainingEntries.any(); attempts++) {
                 if (attempts >= 3) {
-                    if (allSourcesRetrievedAtLeastOnce) {
-                        break;
-                    } else {
-                        throw Error(`Could not retrieve ${[...remainingEntries.select(([k]) => k)].join(", ")} lists from dynamicd`)
-                    }
+                    throw Error(`Could not retrieve ${[...remainingEntries.select(([k]) => k)].join(", ")} lists from dynamicd`)
                 }
                 const launchEffects = remainingEntries.select(([k, v]) => put(v.action()));
 
@@ -162,7 +158,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 remainingEntries = failedEntries.select(e => tuple(e.key, e.operation))
 
             }
-            allSourcesRetrievedAtLeastOnce = true;
+            //allSourcesRetrievedAtLeastOnce = true;
             if (!remainingEntries.any()) {
                 yield put(BdapActions.bdapDataFetchSuccess())
             } else {
