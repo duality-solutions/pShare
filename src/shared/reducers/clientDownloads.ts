@@ -41,6 +41,6 @@ export const clientDownloads = (state: ClientDownloadsState = defaultState, acti
     return state;
 };
 function createKey(fileRequest: FileRequest): string {
-    return `${fileRequest.requestorUserName} ${fileRequest.fileId} ${fileRequest.fileName}`;
+    return `${fileRequest.requestorUserName} ${fileRequest.fileName}`;
 }
 

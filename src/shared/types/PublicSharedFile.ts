@@ -1,6 +1,6 @@
 export interface PublicSharedFile {
     fileName: string;
-    hash: string;
+    //hash: string;
     size: number;
     contentType: string;
 }
