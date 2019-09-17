@@ -13,7 +13,7 @@ import mime from 'mime-types'
 import { blinq } from 'blinq';
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
-import { maximumFileSize } from '../../shared/system/maximumFileSize';
+//import { maximumFileSize } from '../../shared/system/maximumFileSize';
 //import { hashFile } from '../../shared/system/hashing/hashFile';
 import { getType } from 'typesafe-actions';
 interface SimpleFileWatchEvent {

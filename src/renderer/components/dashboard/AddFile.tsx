@@ -6,7 +6,7 @@ import { Text } from "../ui-elements/Text";
 import Container from "../ui-elements/Container";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 import { Dropzone, DropzoneError } from "../ui-elements/Dropzone";
-import { maximumFileSize } from "../../../shared/system/maximumFileSize";
+//import { maximumFileSize } from "../../../shared/system/maximumFileSize";
 
 
 
