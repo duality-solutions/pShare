@@ -7,46 +7,61 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { MainRootState } from "../reducers";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
-import { entries } from "../../shared/system/entries";
+import { entries, keys } from "../../shared/system/entries";
 import { blinq } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
 import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
 import { tuple } from "../../shared/system/tuple";
 
-interface BdapOperation { action: any, successAction: any, failureAction: any }
+type Frequency = "repeated" | "once"
+interface BdapOperation { action: any, successAction: any, failureAction: any, frequency: Frequency }
 const operations: Record<string, BdapOperation> = {
     users: {
         action: () => BdapActions.getUsers(),
         successAction: BdapActions.getUsersSuccess,
         failureAction: BdapActions.getUsersFailed,
+        frequency: "repeated"
     },
     completeLinks: {
         action: () => BdapActions.getCompleteLinks(),
         successAction: BdapActions.getCompleteLinksSuccess,
         failureAction: BdapActions.getCompleteLinksFailed,
+        frequency: "repeated"
     },
     pendingAcceptLinks: {
         action: () => BdapActions.getPendingAcceptLinks(),
         successAction: BdapActions.getPendingRequestLinksSuccess,
         failureAction: BdapActions.getPendingRequestLinksFailed,
+        frequency: "repeated"
     },
     pendingRequestLinks: {
         action: () => BdapActions.getPendingRequestLinks(),
         successAction: BdapActions.getPendingAcceptLinksSuccess,
         failureAction: BdapActions.getPendingAcceptLinksFailed,
+        frequency: "repeated"
     },
     deniedLinks: {
         action: () => BdapActions.getDeniedLinks(),
         successAction: BdapActions.getDeniedLinksSuccess,
         failureAction: BdapActions.getDeniedLinksFailed,
+        frequency: "repeated"
     },
     balance: {
         action: () => BdapActions.getBalance(),
         successAction: BdapActions.getBalanceSuccess,
         failureAction: BdapActions.getBalanceFailed,
+        frequency: "repeated"
+    },
+    topUpAddress: {
+        action: () => BdapActions.getTopUpAddress(),
+        successAction: BdapActions.getTopUpAddressSuccess,
+        failureAction: BdapActions.getTopUpAddressFailed,
+        frequency: "once"
     }
 }
+
+type OperationCounts = Record<keyof typeof operations, number>
 
 export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getUsers), function* () {
@@ -84,6 +99,22 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
             return;
         }
         yield put(BdapActions.getBalanceSuccess(balance))
+    })
+    yield takeEvery(getType(BdapActions.getTopUpAddress), function* () {
+        let topUpAddress: string | undefined;
+        try {
+            topUpAddress = yield unlockedCommandEffect(rpcClient, async client => {
+                const data: Record<string, number> = await client.command("listaddressbalances");
+                return keys(data).first()
+
+            });
+        }
+        catch (err) {
+            yield put(BdapActions.getTopUpAddressFailed(err.message))
+            return;
+        }
+        
+        yield put(BdapActions.getTopUpAddressSuccess(topUpAddress!))
     })
     yield takeEvery(getType(BdapActions.getPendingAcceptLinks), function* () {
 
@@ -143,12 +174,21 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
 
     yield takeEvery(getType(BdapActions.initialize), function* () {
 
-
+        let operationCounts: OperationCounts =
+            entries(operations)
+                .select(([k, v]) => tuple(k, 0))
+                .aggregate({}, (p, [k, v]) => ({ ...p, [k]: v }))
 
         //let allSourcesRetrievedAtLeastOnce = false
 
         for (; ;) {
-            let remainingEntries = entries(operations);
+            let remainingEntries = entries(operations)
+                .join(entries(operationCounts), ([k]) => k, ([k]) => k, ([k, vo], [, vc]) => tuple(k, vo, vc))
+                .where(([, vo, vc]) => vo.frequency === "repeated" || (vo.frequency === "once" && vc === 0))
+                .select(([k, vo]) => tuple(k, vo));
+
+            console.log("remaining entries", remainingEntries.select(([k]) => k).toArray())
+
             for (let attempts = 0; remainingEntries.any(); attempts++) {
                 if (attempts >= 3) {
                     throw Error(`Could not retrieve ${[...remainingEntries.select(([k]) => k)].join(", ")} lists from dynamicd`)
@@ -175,6 +215,13 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                     .join(resultEntries, ([k]) => k, ([k]) => k, ([k, vo], [, vr]) => ({ key: k, operation: vo, result: vr }))
 
                 const failedEntries = entriesWithResults.where(({ result: { failure } }) => failure)
+                const successEntries = entriesWithResults.where(({ result: { success } }) => success)
+
+                operationCounts = entries(operationCounts)
+                    .leftOuterJoin(successEntries, ([k]) => k, e => e.key, (oe, se) => se ? tuple(oe[0], oe[1] + 1) : oe)
+                    .aggregate({}, (p, [k, v]) => ({ ...p, [k]: v }))
+
+
 
 
                 remainingEntries = failedEntries.select(e => tuple(e.key, e.operation))
@@ -187,7 +234,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
                 const msg = `some user/link data was not successfully retrieved [${[...remainingEntries.select(([k]) => k)].join(", ")}]`
                 yield put(BdapActions.bdapDataFetchFailed(msg))
             }
-
+            console.log("operation counts", operationCounts)
             yield delay(60000)
         }
     })

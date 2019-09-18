@@ -16,7 +16,8 @@ export interface BdapState {
     completeLinks: Link[]
     deniedLinks: DeniedLink[]
     currentUser?: GetUserInfo,
-    balance: number
+    balance: number,
+    topUpAddress?: string
 }
 const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [], balance: 0 };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
@@ -53,6 +54,8 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions | AppA
             return { ...state, deniedLinks }
         case getType(BdapActions.getBalanceSuccess):
             return { ...state, balance: action.payload }
+        case getType(BdapActions.getTopUpAddressSuccess):
+            return { ...state, topUpAddress: action.payload }
         case getType(AppActions.initializeApp):
             return {
                 ...deleteOptionalProperty(state, "currentUser"),

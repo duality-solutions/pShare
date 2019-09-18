@@ -15,6 +15,7 @@ import Button from "../ui-elements/Button";
 import Input from "../ui-elements/Input";
 import { SearchActions } from "../../../shared/actions/search";
 import { BulkImportActions } from "../../../shared/actions/bulkImport";
+import BalanceIndicator from "../../containers/dashboard/BalanceIndicator";
 
 type SearchStatus = "NO_SEARCH" | "SEARCH_RESULT"
 export interface AddLinksStateProps {
@@ -99,7 +100,8 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                             this.setState({ requestModal: false })
                         }}
                     />}
-                <div style={{ width: "100%", display: 'block' }}>
+                <div style={{ width: "100%", display: 'block', position:"relative" }}>
+                    <BalanceIndicator />
                     <div style={{ float: 'right', margin: '40px 0 0 0' }}>
                         <CloseIcon margin="0 40px 0 0" onClick={() => push('/Dashboard/MyLinks')} />
                         <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>

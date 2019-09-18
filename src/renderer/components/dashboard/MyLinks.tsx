@@ -8,7 +8,7 @@ import Container from "../ui-elements/Container";
 import { BdapUser } from "../../system/BdapUser";
 import { LinkDisplayName } from "./LinkDisplayName";
 import Input from "../ui-elements/Input";
-
+import BalanceIndicator from "../../containers/dashboard/BalanceIndicator"
 export interface MyLinksStateProps {
     users: BdapUser[],
     allUsers: BdapUser[],
@@ -22,12 +22,14 @@ export interface MyLinksDispatchProps {
     myLinksQueryTextChanged: (value: string) => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers, balance }: MyLinksProps) =>
-    <>
-        <div style={{ width: "100%", display: 'block', position:"relative" }}>
-            <div style={{ padding: '6px', display: "block", position: "absolute", top: 0, left: 0 }}>Balance : {balance} credits</div>
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers, balance }: MyLinksProps) => {
+
+
+    return <>
+        <div style={{ width: "100%", display: 'block', position: "relative" }}>
+            <BalanceIndicator />
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
-            <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
+        <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>
@@ -40,17 +42,17 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                                 padding="0 20px"
                             />
                             {/* 
-                        
-                                NOTE
+                    
+                            NOTE
 
-                                adding and removing the element below with a ternary statement
-                                causes measurable performance issues 
+                            adding and removing the element below with a ternary statement
+                            causes measurable performance issues 
+                            
+                            toggling css visibility below is an optimization that doesn't
+                            cause document reflow
                                 
-                                toggling css visibility below is an optimization that doesn't
-                                cause document reflow
-                                    
-                                    
-                            */}
+                                
+                        */}
                             <CloseIcon style={{
                                 visibility: queryText.length > 0 ? "visible" : "hidden",
                                 margin: '30px 0 0 0'
@@ -90,3 +92,4 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
             </Container>
         </div>
     </>
+}

@@ -41,6 +41,10 @@ export const BdapActions = {
     getBalanceSuccess: createStandardAction('bdap/GET_BALANCE_SUCCESS')<number>(),
     getBalanceFailed: createStandardAction('bdap/GET_BALANCE_FAILED')<string>(),
 
+    getTopUpAddress: createStandardAction('bdap/GET_TOP_UP_ADDRESS')<void>(),
+    getTopUpAddressSuccess: createStandardAction('bdap/GET_TOP_UP_ADDRESS_SUCCESS')<string>(),
+    getTopUpAddressFailed: createStandardAction('bdap/GET_TOP_UP_ADDRESS_FAILED')<string>(),
+
 
     bdapDataFetchSuccess: createStandardAction('bdap/BDAP_DATA_FETCH_SUCCESS')<void>(),
     bdapDataFetchFailed: createStandardAction('bdap/BDAP_DATA_FETCH_FAILED')<string>(),
