@@ -5,6 +5,9 @@ import { Text } from "../ui-elements/Text";
 import { useOutsideAlerter } from "../../system/useOutsideAlerter";
 import copyIcon from "../../assets/svgs/copy-32.svg"
 
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { delay } from "../../../shared/system/delay";
+
 export interface BalanceIndicatorStateProps {
     balance: number
     walletAddress: string
@@ -15,6 +18,7 @@ export interface BalanceIndicatorDispatchProps {
 export type BalanceIndicatorProps = BalanceIndicatorStateProps & BalanceIndicatorStateProps
 export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ balance, walletAddress }) => {
     const [visible, setVisible] = useState(false)
+    const [copied, setCopied] = useState(false);
     const borderStyle = visible ? "solid 2px #ccc" : "none";
     const elemRef = useRef(null);
 
@@ -60,9 +64,18 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
                         value={walletAddress}
                         size={150} />
                 </div>
-                <div style={{ textAlign: "center", color: "#4a4a4a", marginLeft:"10px",marginRight:"10px" }}>
-                    {walletAddress} <img src={copyIcon}/>
-                    
+                <div style={{fontFamily: '"Courier New", Courier, monospace', textAlign: "center", color: "#4a4a4a", margin: "10px", position: "relative" }}>
+                    {copied && <div style={{ textAlign: "center", position: "absolute", left: 0, top: 0, width: "100%", height: "100%", backgroundColor: "#fff", color:"#f88", fontWeight:"bold" }}>COPIED TO CLIPBOARD</div>}
+                    <span>{walletAddress} </span>
+                    <CopyToClipboard text={walletAddress}
+                        onCopy={async () => {
+                            setCopied(true)
+                            await delay(2000)
+                            setCopied(false)
+                        }}>
+                        <img src={copyIcon} style={{ cursor: "pointer", verticalAlign: "middle" }} />
+                    </CopyToClipboard>
+
                 </div>
             </>}
         </div>

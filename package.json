@@ -47,6 +47,7 @@
     "pify": "^4.0.1",
     "qrcode-generator": "^1.4.3",
     "react": "^16.8.6",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.0.0",
     "react-redux": "^5.1.1",
