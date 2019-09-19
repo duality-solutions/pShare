@@ -17,7 +17,8 @@ export interface BdapState {
     deniedLinks: DeniedLink[]
     currentUser?: GetUserInfo,
     balance: number,
-    topUpAddress?: string
+    topUpAddress?: string,
+    insufficientFundsErrorMessage?: string
 }
 const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [], balance: 0 };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
@@ -56,6 +57,10 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions | AppA
             return { ...state, balance: action.payload }
         case getType(BdapActions.getTopUpAddressSuccess):
             return { ...state, topUpAddress: action.payload }
+        case getType(BdapActions.insufficientFunds):
+            return { ...state, insufficientFundsErrorMessage: "Your account does not have enough credit to " + action.payload }
+        case getType(BdapActions.fundsDialogDismissed):
+            return deleteOptionalProperty(state, "insufficientFundsErrorMessage")
         case getType(AppActions.initializeApp):
             return {
                 ...deleteOptionalProperty(state, "currentUser"),

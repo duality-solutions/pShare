@@ -45,11 +45,16 @@ export function* linkDeclineSaga(rpcClient: RpcClient) {
             try {
                 response =
                     yield unlockedCommandEffect(rpcClient, client => client.command("link", "deny", recipient, requestor));
+                console.log(response)
             } catch (err) {
-                //debugger
+                if (/^Insufficient funds/.test(err.message)) {
+                    yield put(BdapActions.insufficientFunds("deny a link from " + requestor))
+                    return
+
+                }
                 throw err
             }
-            console.log(response)
+
         }
 
 

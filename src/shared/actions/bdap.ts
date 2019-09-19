@@ -65,7 +65,10 @@ export const BdapActions = {
 
 
     sendLinkMessage: createStandardAction('bdap/SEND_LINK_MESSAGE')<LinkRouteEnvelope<LinkMessageEnvelope<any>>>(),
-    linkMessageReceived:createStandardAction('bdap/LINK_MESSAGE_RECEIVED')<{message:LinkMessageEnvelope<any>,rawMessage:LinkMessage}>(),
+    linkMessageReceived: createStandardAction('bdap/LINK_MESSAGE_RECEIVED')<{ message: LinkMessageEnvelope<any>, rawMessage: LinkMessage }>(),
+
+    insufficientFunds: createStandardAction('bdap/INSUFFICIENT_FUNDS')<string>(),
+    fundsDialogDismissed: createStandardAction('bdap/FUNDS_DIALOG_DISMISSED')<void>(),
 
 }
 

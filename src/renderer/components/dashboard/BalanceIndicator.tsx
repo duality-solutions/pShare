@@ -7,29 +7,34 @@ import copyIcon from "../../assets/svgs/copy-32.svg"
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { delay } from "../../../shared/system/delay";
+import { PickedDispatchProps } from "../../../renderer/system/PickedDispatchProps";
+import { BdapActions } from "../../../shared/actions/bdap";
 
 export interface BalanceIndicatorStateProps {
     balance: number
     walletAddress: string
+    errorMessage?: string
 }
-export interface BalanceIndicatorDispatchProps {
-
-}
-export type BalanceIndicatorProps = BalanceIndicatorStateProps & BalanceIndicatorStateProps
-export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ balance, walletAddress }) => {
+export type BalanceIndicatorDispatchProps = PickedDispatchProps<typeof BdapActions, "fundsDialogDismissed">
+export type BalanceIndicatorProps = BalanceIndicatorStateProps & BalanceIndicatorDispatchProps
+export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ balance, walletAddress, errorMessage, fundsDialogDismissed }) => {
     const [visible, setVisible] = useState(false)
     const [copied, setCopied] = useState(false);
-    const borderStyle = visible ? "solid 2px #ccc" : "none";
     const elemRef = useRef(null);
 
+    const isVisible = visible || errorMessage;
+
     const cb = useCallback((ev: MouseEvent) => {
-        if (visible) {
+        if (isVisible) {
             setVisible(false)
             ev.preventDefault()
             ev.stopPropagation()
+            fundsDialogDismissed()
         }
-    }, [visible])
+    }, [isVisible])
     useOutsideAlerter(elemRef, cb);
+    const borderStyle = isVisible ? "solid 2px #ccc" : "none";
+
     const outerStyle: CSSProperties = {
         padding: '6px',
         display: "block",
@@ -38,7 +43,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
         left: 0,
         borderBottom: borderStyle,
         borderRight: borderStyle,
-        backgroundColor: visible ? "#ffffff" : "none",
+        backgroundColor: isVisible ? "#ffffff" : "none",
         borderBottomRightRadius: "8px"
     }
     return <>
@@ -47,12 +52,17 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
                 <span onClick={e => {
                     e.preventDefault();
                     console.log("balanceIndicator clicked");
-                    setVisible(!visible)
+                    const show = !isVisible;
+                    setVisible(show)
+                    if (!show) {
+                        fundsDialogDismissed()
+                    }
                 }}
                     style={{ cursor: 'pointer', color: '#2e77d0' }}
                 >Balance : {balance} credits</span>
             </Text>
-            {visible && <>
+            {isVisible && <>
+                {errorMessage && <div style={{ textAlign: "center", color: "#f44", margin: "10px auto", width: "300px" }}>{errorMessage}</div>}
                 <div style={{ textAlign: "center", color: "#4a4a4a" }}>
                     <QRCode
                         bgColor="#00000000"
@@ -64,8 +74,8 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
                         value={walletAddress}
                         size={150} />
                 </div>
-                <div style={{fontFamily: '"Courier New", Courier, monospace', textAlign: "center", color: "#4a4a4a", margin: "10px", position: "relative" }}>
-                    {copied && <div style={{ textAlign: "center", position: "absolute", left: 0, top: 0, width: "100%", height: "100%", backgroundColor: "#fff", color:"#f88", fontWeight:"bold" }}>COPIED TO CLIPBOARD</div>}
+                <div style={{ fontFamily: '"Courier New", Courier, monospace', textAlign: "center", color: "#4a4a4a", margin: "10px", position: "relative" }}>
+                    {copied && <div style={{ textAlign: "center", position: "absolute", left: 0, top: 0, width: "100%", height: "100%", backgroundColor: "#fff", color: "#f88", fontWeight: "bold" }}>COPIED TO CLIPBOARD</div>}
                     <span>{walletAddress} </span>
                     <CopyToClipboard text={walletAddress}
                         onCopy={async () => {
