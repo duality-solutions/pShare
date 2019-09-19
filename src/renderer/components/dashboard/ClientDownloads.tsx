@@ -10,6 +10,7 @@ import man from "../../assets/man.svg";
 import { LinkDisplayName } from "./LinkDisplayName";
 import { prettySize } from "../../../shared/system/prettySize";
 import CircularProgress from "../ui-elements/CircularProgress";
+import BalanceIndicator from "../../containers/dashboard/BalanceIndicator"
 
 export interface ClientDownloadsDispatchProps {
 
@@ -19,7 +20,8 @@ export interface ClientDownloadsStateProps {
 }
 export type ClientDownloadsProps = ClientDownloadsDispatchProps & ClientDownloadsStateProps
 export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ currentSessions }) => <>
-    <div style={{ width: "100%", display: 'block' }}>
+    <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <BalanceIndicator hideLinkWhenMinimized={true} />
         <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
             <Text color="#4a4a4a" fontSize="1.8em" fontWeight="600">
                 <OutboxIcon width="40px" height="35px" margin="0 10px 0 0" />
@@ -37,14 +39,14 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                         const sessionEntries = entries(currentSessions);
                         if (!sessionEntries.any()) {
                             return (<><p>Nobody is downloading data from you</p>
-                                    </>)
+                            </>)
                         }
                         else {
                             return sessionEntries
                                 .select(([key, downloadState]) => {
                                     return (
                                         <Box key={key} width="100%" margin="30px 0 0 0" >
-                                            <div style={{ display: 'flex', marginBottom: '5px'}}>
+                                            <div style={{ display: 'flex', marginBottom: '5px' }}>
                                                 <UserListAvatar src={man} />
                                                 <LinkDisplayName displayName={downloadState.requestorUserName} />
                                             </div>
@@ -65,11 +67,11 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                                                     margin: '0',
                                                     width: '0.4px'
                                                 }} />
-                                                <div style={{display:'flex'}}>
-                                                <Text color="#4a4a4a" margin="0 5px" fontSize="0.8em">
-                                                    {`${downloadState.progressPct}%`}
-                                                </Text>
-                                                <CircularProgress progress={downloadState.progressPct} size={20} />
+                                                <div style={{ display: 'flex' }}>
+                                                    <Text color="#4a4a4a" margin="0 5px" fontSize="0.8em">
+                                                        {`${downloadState.progressPct}%`}
+                                                    </Text>
+                                                    <CircularProgress progress={downloadState.progressPct} size={20} />
                                                 </div>
                                             </FilesListItem>
                                             <div style={{

@@ -14,10 +14,11 @@ export interface BalanceIndicatorStateProps {
     balance: number
     walletAddress: string
     errorMessage?: string
+    hideLinkWhenMinimized?: boolean
 }
 export type BalanceIndicatorDispatchProps = PickedDispatchProps<typeof BdapActions, "fundsDialogDismissed">
 export type BalanceIndicatorProps = BalanceIndicatorStateProps & BalanceIndicatorDispatchProps
-export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ balance, walletAddress, errorMessage, fundsDialogDismissed }) => {
+export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ balance, walletAddress, errorMessage, fundsDialogDismissed, hideLinkWhenMinimized }) => {
     const [visible, setVisible] = useState(false)
     const [copied, setCopied] = useState(false);
     const elemRef = useRef(null);
@@ -47,7 +48,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
         borderBottomRightRadius: "8px"
     }
     return <>
-        <div ref={elemRef} style={outerStyle}>
+        {((!hideLinkWhenMinimized) || isVisible) && <div ref={elemRef} style={outerStyle}>
             <Text margin="0">
                 <span onClick={e => {
                     e.preventDefault();
@@ -88,7 +89,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
 
                 </div>
             </>}
-        </div>
+        </div>}
 
     </>
 }
