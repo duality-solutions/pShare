@@ -6,6 +6,7 @@ import { Text } from "../ui-elements/Text";
 import Container from "../ui-elements/Container";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 import { Dropzone, DropzoneError } from "../ui-elements/Dropzone";
+import BalanceIndicator from "../../../renderer/containers/dashboard/BalanceIndicator";
 //import { maximumFileSize } from "../../../shared/system/maximumFileSize";
 
 
@@ -39,8 +40,9 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
         // }
         filesSelected(files)
     }
-    return <>
-        <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+    return <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <BalanceIndicator hideLinkWhenMinimized={true} />
+        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
             <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                 <Box margin="0" padding="10px" borderRadius="11px" height="56px" background="#efefef" width="auto">
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
@@ -63,7 +65,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                 <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
             </Container>
         </Box>
-    </>;
+    </div>;
 }
 
 
