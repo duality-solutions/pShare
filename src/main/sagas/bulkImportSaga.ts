@@ -139,6 +139,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
                 continue;
             }
+            yield put(BdapActions.getBalance())
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
