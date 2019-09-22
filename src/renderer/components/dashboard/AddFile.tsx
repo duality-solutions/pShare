@@ -6,7 +6,8 @@ import { Text } from "../ui-elements/Text";
 import Container from "../ui-elements/Container";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 import { Dropzone, DropzoneError } from "../ui-elements/Dropzone";
-import { maximumFileSize } from "../../../shared/system/maximumFileSize";
+import BalanceIndicator from "../../../renderer/containers/dashboard/BalanceIndicator";
+//import { maximumFileSize } from "../../../shared/system/maximumFileSize";
 
 
 
@@ -25,19 +26,23 @@ export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
     // react hooks FTW!!!!
-    const [error, setError] = useState<DropzoneError | undefined>(undefined)
+    const [
+        error,
+        //setError
+    ] = useState<DropzoneError | undefined>(undefined)
     const userNameParts = linkedUserCommonName.split(' ')
     const lastName = (userNameParts.length > 1) ? userNameParts[userNameParts.length - 1] : ""
     const firstName = userNameParts.length > 1 ? userNameParts.slice(0, -1).join(' ') : userNameParts[0]
     const filesSelectedHandler = (files: FilePathInfo[]) => {
-        if (files.some(f => f.size > maximumFileSize)) {
-            setError({ title: "File too large!", message: "please select or drag a file that is no larger than 3gb" })
-            return
-        }
+        // if (files.some(f => f.size > maximumFileSize)) {
+        //     setError({ title: "File too large!", message: "please select or drag a file that is no larger than 3gb" })
+        //     return
+        // }
         filesSelected(files)
     }
-    return <>
-        <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+    return <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <BalanceIndicator hideLinkWhenMinimized={true} />
+        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
             <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                 <Box margin="0" padding="10px" borderRadius="11px" height="56px" background="#efefef" width="auto">
                     <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
@@ -60,7 +65,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                 <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
             </Container>
         </Box>
-    </>;
+    </div>;
 }
 
 

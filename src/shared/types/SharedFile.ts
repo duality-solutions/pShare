@@ -5,5 +5,5 @@ export interface SharedFile {
     size?: number;
     contentType?: string;
     direction: "in" | "out";
-    hash?:string
+    //hash?:string
 }

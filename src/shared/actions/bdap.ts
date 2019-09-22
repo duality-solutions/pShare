@@ -37,6 +37,14 @@ export const BdapActions = {
     getPendingAcceptLinksSuccess: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_SUCCESS')<PendingLink[]>(),
     getPendingAcceptLinksFailed: createStandardAction('bdap/GET_PENDING_ACCEPT_LINKS_FAILED')<string>(),
 
+    getBalance: createStandardAction('bdap/GET_BALANCE')<void>(),
+    getBalanceSuccess: createStandardAction('bdap/GET_BALANCE_SUCCESS')<number>(),
+    getBalanceFailed: createStandardAction('bdap/GET_BALANCE_FAILED')<string>(),
+
+    getTopUpAddress: createStandardAction('bdap/GET_TOP_UP_ADDRESS')<void>(),
+    getTopUpAddressSuccess: createStandardAction('bdap/GET_TOP_UP_ADDRESS_SUCCESS')<string>(),
+    getTopUpAddressFailed: createStandardAction('bdap/GET_TOP_UP_ADDRESS_FAILED')<string>(),
+
 
     bdapDataFetchSuccess: createStandardAction('bdap/BDAP_DATA_FETCH_SUCCESS')<void>(),
     bdapDataFetchFailed: createStandardAction('bdap/BDAP_DATA_FETCH_FAILED')<string>(),
@@ -57,7 +65,10 @@ export const BdapActions = {
 
 
     sendLinkMessage: createStandardAction('bdap/SEND_LINK_MESSAGE')<LinkRouteEnvelope<LinkMessageEnvelope<any>>>(),
-    linkMessageReceived:createStandardAction('bdap/LINK_MESSAGE_RECEIVED')<{message:LinkMessageEnvelope<any>,rawMessage:LinkMessage}>(),
+    linkMessageReceived: createStandardAction('bdap/LINK_MESSAGE_RECEIVED')<{ message: LinkMessageEnvelope<any>, rawMessage: LinkMessage }>(),
+
+    insufficientFunds: createStandardAction('bdap/INSUFFICIENT_FUNDS')<string>(),
+    fundsDialogDismissed: createStandardAction('bdap/FUNDS_DIALOG_DISMISSED')<void>(),
 
 }
 

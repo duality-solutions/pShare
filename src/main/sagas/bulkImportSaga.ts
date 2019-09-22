@@ -84,7 +84,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
         const usersToExclusions = usersThatExist
             .leftOuterJoin(exclusions, u => u.object_full_path, e => e, (user, excludedUserFqdn) => ({ user, excludedUserFqdn }));
-        const excludedUserFqdns = usersToExclusions.where(x=>x.excludedUserFqdn!=null).select(x=>x.user.object_full_path);
+        const excludedUserFqdns = usersToExclusions.where(x => x.excludedUserFqdn != null).select(x => x.user.object_full_path);
         for (const userFqdn of excludedUserFqdns) {
             failCount++;
             yield put(BulkImportActions.bulkImportProgress({
@@ -119,18 +119,27 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
             } catch (err) {
                 failCount++;
-                yield put(BulkImportActions.bulkImportProgress({
-                    totalItems: totalListItems,
-                    failed: failCount,
-                    successful: successCount,
-                    currentItem: {
-                        linkFqdn: user.object_full_path,
-                        success: false,
-                        err: err.message
-                    }
-                }))
+                if (/^Insufficient funds/.test(err.message)) {
+                    yield put(BulkImportActions.bulkImportFailed())
+                    yield put(BdapActions.insufficientFunds("request a link to " + user.object_id + " or any more users in the bulk import list"))
+                    yield put(BdapActions.getPendingRequestLinks());
+                    return;
+                } else {
+                    yield put(BulkImportActions.bulkImportProgress({
+                        totalItems: totalListItems,
+                        failed: failCount,
+                        successful: successCount,
+                        currentItem: {
+                            linkFqdn: user.object_full_path,
+                            success: false,
+                            err: err.message
+                        }
+                    }))
+                }
+
                 continue;
             }
+            yield put(BdapActions.getBalance())
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,

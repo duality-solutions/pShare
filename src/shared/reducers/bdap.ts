@@ -15,9 +15,12 @@ export interface BdapState {
     pendingRequestLinks: PendingLink[]
     completeLinks: Link[]
     deniedLinks: DeniedLink[]
-    currentUser?: GetUserInfo
+    currentUser?: GetUserInfo,
+    balance: number,
+    topUpAddress?: string,
+    insufficientFundsErrorMessage?: string
 }
-const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [] };
+const defaultState: BdapState = { users: [], pendingAcceptLinks: [], pendingRequestLinks: [], completeLinks: [], deniedLinks: [], balance: 0 };
 // type BdapUserState = "normal" | "pending" | "linked" //mock states fttb
 // export interface BdapUser {
 //     userName: string
@@ -50,6 +53,14 @@ export const bdap = (state: BdapState = defaultState, action: BdapActions | AppA
         case getType(BdapActions.getDeniedLinksSuccess):
             const deniedLinks = action.payload
             return { ...state, deniedLinks }
+        case getType(BdapActions.getBalanceSuccess):
+            return { ...state, balance: action.payload }
+        case getType(BdapActions.getTopUpAddressSuccess):
+            return { ...state, topUpAddress: action.payload }
+        case getType(BdapActions.insufficientFunds):
+            return { ...state, insufficientFundsErrorMessage: "Your account does not have enough credit to " + action.payload }
+        case getType(BdapActions.fundsDialogDismissed):
+            return deleteOptionalProperty(state, "insufficientFundsErrorMessage")
         case getType(AppActions.initializeApp):
             return {
                 ...deleteOptionalProperty(state, "currentUser"),

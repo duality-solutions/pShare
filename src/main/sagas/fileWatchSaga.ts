@@ -1,6 +1,7 @@
 import { watch } from 'chokidar'
 import { eventChannel, END } from 'redux-saga';
 import { app } from 'electron';
+import os from 'os'
 import * as path from 'path'
 import * as fs from 'fs'
 import * as util from 'util'
@@ -12,8 +13,8 @@ import mime from 'mime-types'
 import { blinq } from 'blinq';
 import { FileWatchActions } from "../../shared/actions/fileWatch";
 import { SharedFile } from '../../shared/types/SharedFile';
-import { maximumFileSize } from '../../shared/system/maximumFileSize';
-import { hashFile } from '../../shared/system/hashing/hashFile';
+//import { maximumFileSize } from '../../shared/system/maximumFileSize';
+//import { hashFile } from '../../shared/system/hashing/hashFile';
 import { getType } from 'typesafe-actions';
 interface SimpleFileWatchEvent {
     type: "add" | "change" | "unlink" | "ready"
@@ -76,9 +77,9 @@ export function* fileWatchSaga() {
                     {
                         const files: SharedFile[] = yield* getSharedFileInfo([ev.path], true);
                         for (const f of files) {
-                            if (f.size === undefined || f.size > maximumFileSize) {
-                                continue
-                            }
+                            // if (f.size === undefined || f.size > maximumFileSize) {
+                            //     continue
+                            // }
 
                             yield put(FileWatchActions.fileAdded(f))
                         }
@@ -138,21 +139,21 @@ function* getSharedFileInfo(allFiles: Iterable<string>, gatherMetaData: boolean)
             .select(async (fi): Promise<SharedFile> => {
                 let stats: fs.Stats | undefined;
                 let contentType: string | undefined
-                let hash: string | undefined
+                //let hash: string | undefined
 
                 if (gatherMetaData) {
                     stats = await fsStatAsync(fi.filePath);
                     contentType = mime.lookup(fi.filePath) || 'application/octet-stream'
-                    hash = await hashFile(fi.filePath)
+                    //hash = await hashFile(fi.filePath)
                 };
                 return ({
                     path: fi.filePath,
                     contentType,
-                    relativePath: fi.inOutRelPath,
+                    relativePath: normalizeSlashes(fi.inOutRelPath),
                     direction: fi.direction,
                     size: stats ? stats.size : undefined,
                     sharedWith: fi.userDirName,
-                    hash
+                    //hash
                 });
             });
     const files: SharedFile[] = [];
@@ -163,3 +164,4 @@ function* getSharedFileInfo(allFiles: Iterable<string>, gatherMetaData: boolean)
     return files;
 }
 
+const normalizeSlashes = (p: string) => os.platform() === "win32" ? p.replace(/\\/g, "/") : p;
