@@ -1,5 +1,5 @@
 import { takeEvery, put, call } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
+import { getType, ActionType } from "typesafe-actions";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
 import { AddFileActions } from "../../shared/actions/addFile";
 import { app, BrowserWindow, dialog } from "electron";
@@ -8,19 +8,20 @@ import * as path from 'path'
 import { promisify } from 'util'
 
 export function* fileDialogSaga(browserWindowProvider: BrowserWindowProvider) {
-    yield takeEvery(getType(AddFileActions.showFileSelectDialog), function* () {
+    yield takeEvery(getType(AddFileActions.showFileSelectDialog), function* (action: ActionType<typeof AddFileActions.showFileSelectDialog>) {
+        const dialogType = action.payload
         const browserWindow = browserWindowProvider();
         if (!browserWindow) {
             return;
         }
-        const filePaths: string[] = yield call(() => getFilePathSync(browserWindow));
+        const filePaths: string[] = yield call(() => getFilePath(browserWindow, dialogType));
         if (!filePaths) {
             return;
         }
         const allFilePaths: string[] = yield call(() => getAllFilePaths(filePaths))
         console.log(allFilePaths)
     })
-    yield put(AddFileActions.showFileSelectDialog())
+    false && (yield put(AddFileActions.showFileSelectDialog("openDirectory")))
 }
 const exists = promisify(fs.exists)
 
@@ -51,27 +52,30 @@ async function getAllFilePaths(filePaths: string[], visited: Set<string> | undef
             files.push(...dPaths)
         }
     }
-
-    //const subDirFiles = await getAllFilePaths(directories, visitedSet);
     return files
 }
-async function getFilePathSync(window: BrowserWindow): Promise<string[] | null> {
+async function getFilePath(window: BrowserWindow, dialogType: "openFile" | "openDirectory"): Promise<string[] | null> {
     const homeDir = app.getPath("documents");
-    const result = await dialog.showOpenDialog(window, {
-        // filters: [
-        //     {
-        //         name: "p-share wallet key backup",
-        //         extensions: ["psh.json"]
-        //     }
-        // ],
-        defaultPath: homeDir,
-        title: "Select files and/or directories for import",
-        properties: ['openFile', 'openDirectory', "multiSelections"]
+    const result = await new Promise<string[]>((resolve) => {
+        dialog.showOpenDialog(
+            window,
+            {
+                // filters: [
+                //     {
+                //         name: "p-share wallet key backup",
+                //         extensions: ["psh.json"]
+                //     }
+                // ],
+                defaultPath: homeDir,
+                title: "Select files and/or directories for import",
+                properties: [dialogType, "multiSelections"] //['openFile', 'openDirectory', "multiSelections"]
 
-    });
-    const path = result.filePaths
-    if (path == null) {
-        return null;
+            },
+            (filePaths) => resolve(filePaths));
+    })
+    //const path = result.filePaths
+    if (result == null) {
+        return [];
     }
-    return path
+    return result
 }

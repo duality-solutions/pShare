@@ -22,6 +22,7 @@ import { requestFileSaveDialogSaga } from "./fileRequestSaveDialogSaga";
 import { newLinkSaga } from "./newLinkSaga";
 import { restoreFromMnemonicSaga } from "./restoreFromMnemonicSaga";
 import { removeFileSaga } from "./removeFileSaga";
+import { fileDialogSaga } from "./fileDialogSaga"
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
@@ -46,6 +47,7 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => sendLinkMessageSaga(rpcClient),
     () => requestFileSaveDialogSaga(browserWindowProvider),
     () => newLinkSaga(),
-    () => restoreFromMnemonicSaga(rpcClient)
+    () => restoreFromMnemonicSaga(rpcClient),
+    () => fileDialogSaga(browserWindowProvider)
 ]
 
