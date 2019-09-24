@@ -1,8 +1,10 @@
 import { createStandardAction, ActionType } from "typesafe-actions";
+import { FilePathInfo } from "../types/FilePathInfo";
 
 export const BulkImportActions = {
-
-    beginBulkImport: createStandardAction('bulkImport/BEGIN_BULK_IMPORT')<void>(),
+    previewBulkImport: createStandardAction('bulkImport/PREVIEW_BULK_IMPORT')<FilePathInfo>(),
+    previewData: createStandardAction('bulkImport/PREVIEW_DATA')<string>(),
+    beginBulkImport: createStandardAction('bulkImport/BEGIN_BULK_IMPORT')<string>(),
     bulkImportAborted: createStandardAction('bulkImport/BULK_IMPORT_ABORTED')<void>(),
     bulkImportProgress: createStandardAction('bulkImport/BULK_IMPORT_PROGRESS')<BulkImportProgress>(),
     bulkImportFailed: createStandardAction('bulkImport/BULK_IMPORT_FAILED')<void>(),

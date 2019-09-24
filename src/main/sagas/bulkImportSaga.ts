@@ -1,10 +1,10 @@
 import { takeEvery, call, select, put } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
+import { getType, ActionType } from "typesafe-actions";
 
 import { RpcClient } from "../RpcClient";
 import { BdapActions } from "../../shared/actions/bdap";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
-import { app, BrowserWindow, dialog } from "electron";
+// import { app, BrowserWindow, dialog } from "electron";
 import * as fs from 'fs';
 import { blinq } from "blinq";
 import { MainRootState } from "../reducers";
@@ -16,18 +16,24 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
 import { BulkImportActions } from "../../shared/actions/bulkImport";
 
-export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
-    yield takeEvery(getType(BulkImportActions.beginBulkImport), function* () {
-        const browserWindow = browserWindowProvider();
-        if (!browserWindow) {
-            return;
-        }
-        const filePath = getFilePathSync(browserWindow);
+export function* previewBulkImportSaga() {
+    yield takeEvery(getType(BulkImportActions.previewBulkImport), function*(action: ActionType<typeof BulkImportActions.previewBulkImport>) {
+        const filePath = action.payload;
+        // console.log(filePath)
         if (filePath == null) {
             yield put(BulkImportActions.bulkImportAborted());
             return;
         }
-        const data = yield call(() => readFile(filePath))
+        const data = yield call (() => readFile(filePath.path))
+        yield put(BulkImportActions.previewData(data))
+    })
+}
+
+export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
+    yield takeEvery(getType(BulkImportActions.beginBulkImport), function* (action: ActionType<typeof BulkImportActions.beginBulkImport>) {
+
+        const data = action.payload;
+
         const userFqdnsFromFile = [...blinq(splitLines(data))];
 
         const allUsers: GetUserInfo[] = yield select((s: MainRootState) => s.bdap.users);
@@ -168,28 +174,28 @@ function* splitLines(data: string) {
     }
 }
 
-function getFilePathSync(window: BrowserWindow) {
-    const homeDir = app.getPath("documents");
-    const path = dialog.showOpenDialog(window, {
-        // filters: [
-        //     {
-        //         name: "p-share wallet key backup",
-        //         extensions: ["psh.json"]
-        //     }
-        // ],
-        defaultPath: homeDir,
-        title: "Bulk import file",
-        properties: ["multiSelections", "openFile"]
+// function getFilePathSync(window: BrowserWindow) {
+//     const homeDir = app.getPath("documents");
+//     const path = dialog.showOpenDialog(window, {
+//         // filters: [
+//         //     {
+//         //         name: "p-share wallet key backup",
+//         //         extensions: ["psh.json"]
+//         //     }
+//         // ],
+//         defaultPath: homeDir,
+//         title: "Bulk import file",
+//         properties: ["multiSelections", "openFile"]
 
-    });
-    if (path == null) {
-        return undefined;
-    }
-    if (Array.isArray(path) && path.length > 0) {
-        return path[0];
-    }
-    return undefined;
-}
+//     });
+//     if (path == null) {
+//         return undefined;
+//     }
+//     if (Array.isArray(path) && path.length > 0) {
+//         return path[0];
+//     }
+//     return undefined;
+// }
 
 function* readFile(path: string) {
     const buf: Buffer = yield call(() => fs.promises.readFile(path))
