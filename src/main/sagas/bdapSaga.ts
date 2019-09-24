@@ -7,12 +7,14 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { MainRootState } from "../reducers";
 import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { Link } from "../../dynamicdInterfaces/links/Link";
-import { entries, keys } from "../../shared/system/entries";
+import { entries } from "../../shared/system/entries";
 import { blinq } from "blinq";
 import { delay } from "redux-saga";
 import { LinkDeniedResponse } from "../../dynamicdInterfaces/LinkDeniedResponse";
 import { CompleteLink } from "../../dynamicdInterfaces/links/CompleteLink";
 import { tuple } from "../../shared/system/tuple";
+import { getFirstBdapAccount } from "./helpers/getFirstBdapAccount";
+import { BdapAccount } from "../../dynamicdInterfaces/BdapAccount";
 
 type Frequency = "repeated" | "once"
 interface BdapOperation { action: any, successAction: any, failureAction: any, frequency: Frequency }
@@ -103,17 +105,14 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
     yield takeEvery(getType(BdapActions.getTopUpAddress), function* () {
         let topUpAddress: string | undefined;
         try {
-            topUpAddress = yield unlockedCommandEffect(rpcClient, async client => {
-                const data: Record<string, number> = await client.command("listaddressbalances");
-                return keys(data).first()
-
-            });
+            const bdapAcct: BdapAccount = yield getFirstBdapAccount(rpcClient);
+            topUpAddress = bdapAcct.wallet_address
         }
         catch (err) {
             yield put(BdapActions.getTopUpAddressFailed(err.message))
             return;
         }
-        
+
         yield put(BdapActions.getTopUpAddressSuccess(topUpAddress!))
     })
     yield takeEvery(getType(BdapActions.getPendingAcceptLinks), function* () {
