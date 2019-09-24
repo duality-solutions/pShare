@@ -111,7 +111,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
                 .select(x => x.user);
 
 
-
+        // const requestedLinks:  = [];
         const userName = getUserNameFromFqdn(currentUserFqdn);
         const inviteMessage = `${userName} wants to link with you`;
         //const failedUsers: GetUserInfo[] = [];

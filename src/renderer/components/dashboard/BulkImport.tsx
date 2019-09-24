@@ -12,6 +12,7 @@ import Button from "../ui-elements/Button";
 
 export interface BulkImportStateProps {
     data: string,
+    // bulkImportSuccess: boolean
 }
 
 export interface BulkImportsDispatchProps {
@@ -43,9 +44,18 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
         const file = files[0];
         previewBulkImport(file)
     }
-    return <div style={{ width: "100%", display: 'block', position: "relative" }}>
+
+    // if(bulkImportSuccess === true) return <div style={{ width: "100%", display: 'block', position: "relative" }}>
+    //     <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+    //     <Container height="50vh" margin="10% 0 0 0">
+    //         asdf
+    //     </Container>            
+    //     </Box>
+    // </div>
+
+     return <div style={{ width: "100%", display: 'block', position: "relative" }}>
         <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
-            { !preview ?
+            { (!preview) ?
                 <>
                 <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                     <div />
@@ -75,7 +85,10 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                             <Button onClick={() => setPreview(false)} width="100px" margin="0 1em 0 0">
                                 Cancel
                             </Button>
-                            <Button onClick={() => beginBulkImport(data)} primary width="100px">
+                            <Button onClick={() => {
+                                    beginBulkImport(data);
+                                    push('/Dashboard/AddLinks');
+                                }} primary width="100px">
                                 Send Link Requests
                             </Button>
                             </Box>
@@ -83,7 +96,6 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                     </Box>
                 </Container>
             }
-            
         </Box>
     </div>;
 }
