@@ -1,5 +1,6 @@
 import { createStandardAction, ActionType } from "typesafe-actions";
 import { FilePathInfo } from "../types/FilePathInfo";
+import { RequestStatus } from "../../main/sagas/bulkImportSaga";
 
 export const BulkImportActions = {
     previewBulkImport: createStandardAction('bulkImport/PREVIEW_BULK_IMPORT')<FilePathInfo>(),
@@ -8,7 +9,7 @@ export const BulkImportActions = {
     bulkImportAborted: createStandardAction('bulkImport/BULK_IMPORT_ABORTED')<void>(),
     bulkImportProgress: createStandardAction('bulkImport/BULK_IMPORT_PROGRESS')<BulkImportProgress>(),
     bulkImportFailed: createStandardAction('bulkImport/BULK_IMPORT_FAILED')<void>(),
-    bulkImportSuccess: createStandardAction('bulkImport/BULK_IMPORT_SUCCESS')<void>(),
+    bulkImportSuccess: createStandardAction('bulkImport/BULK_IMPORT_SUCCESS')<RequestStatus[]>(),
 }
 
 export type BulkImportActions = ActionType<typeof BulkImportActions>;

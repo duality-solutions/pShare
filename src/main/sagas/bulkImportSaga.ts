@@ -29,6 +29,11 @@ export function* previewBulkImportSaga() {
     })
 }
 
+export interface RequestStatus {
+    link: string,
+    status: string,
+}
+
 export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
     yield takeEvery(getType(BulkImportActions.beginBulkImport), function* (action: ActionType<typeof BulkImportActions.beginBulkImport>) {
 
@@ -43,18 +48,32 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
         const currentUserFqdn: string = yield select((s: MainRootState) => typeof s.bdap.currentUser !== 'undefined' ? s.bdap.currentUser.object_full_path : undefined)
         const pendingAcceptLinks: PendingLink[] = yield select((s: MainRootState) => s.bdap.pendingAcceptLinks);
 
+        const fqdnRequestStatus: RequestStatus[] = [];
 
         const completeFqdns =
             blinq(completeLinks)
                 .select(l => blinq([l.recipient_fqdn, l.requestor_fqdn]).first(n => n !== currentUserFqdn));
+
+        // for( const fqdn in completeFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'completed'})
+        // }
+
         const deniedFqdns =
             blinq(deniedRequestLinks)
                 .select(l => l.requestor_fqdn);
+
+        // for ( const fqdn in deniedFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'denied' }) 
+        // }
 
         const pendingLinkFqdns =
             blinq(pendingAcceptLinks)
                 .concat(pendingRequestLinks)
                 .select(l => blinq([l.recipient_fqdn, l.requestor_fqdn]).first(n => n !== currentUserFqdn));
+
+        // for ( const fqdn in pendingLinkFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'pending' }) 
+        // }
 
         const exclusions =
             completeFqdns
@@ -76,6 +95,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
         for (const userFqdn of listFqdnsThatDontExist) {
             failCount++;
+            fqdnRequestStatus.push({ status: 'user does not exit', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -93,6 +113,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
         const excludedUserFqdns = usersToExclusions.where(x => x.excludedUserFqdn != null).select(x => x.user.object_full_path);
         for (const userFqdn of excludedUserFqdns) {
             failCount++;
+            fqdnRequestStatus.push({ status: 'already tried to connect', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -121,7 +142,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
             try {
                 yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
                 successCount++;
-
+                fqdnRequestStatus.push({ status: 'success', link: user.link_address})
 
             } catch (err) {
                 failCount++;
@@ -158,7 +179,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
 
         }
-        yield put(BulkImportActions.bulkImportSuccess());
+        yield put(BulkImportActions.bulkImportSuccess(fqdnRequestStatus));
         //console.log("failed users", failedUsers);
         yield put(BdapActions.getPendingRequestLinks());
 

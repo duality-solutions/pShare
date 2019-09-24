@@ -11,7 +11,7 @@ import { push } from "connected-react-router";
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): BulkImportStateProps => {
     return {
         data: state.bulkImport.previewData,
-        // bulkImportSuccess: state.bulkImport.bulkImportSuccess 
+        fqdnData: state.bulkImport.fqdnData
     };
 };
 

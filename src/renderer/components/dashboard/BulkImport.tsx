@@ -7,12 +7,14 @@ import Container from "../ui-elements/Container";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
 import { Dropzone, DropzoneError } from "../ui-elements/Dropzone";
 import Button from "../ui-elements/Button";
+import { UserList, UserListItem } from "../ui-elements/Dashboard";
+import { RequestStatus } from "../../../main/sagas/bulkImportSaga";
 
 
 
 export interface BulkImportStateProps {
     data: string,
-    // bulkImportSuccess: boolean
+    fqdnData: RequestStatus[]
 }
 
 export interface BulkImportsDispatchProps {
@@ -23,7 +25,7 @@ export interface BulkImportsDispatchProps {
 
 export type BulkImportProps = BulkImportStateProps & BulkImportsDispatchProps
 
-export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, previewBulkImport, beginBulkImport }) => {
+export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, previewBulkImport, beginBulkImport, fqdnData }) => {
     // react hooks FTW!!!!
     const [
         error,
@@ -31,8 +33,8 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
     ] = useState<DropzoneError | undefined>(undefined)
 
     const [
-        preview, setPreview
-    ] = useState<boolean>(false)
+        status, setStatus
+    ] = useState<string>('dropzone') // default dropzone;
 
 
     // currently select only one file
@@ -40,23 +42,15 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
         if(error) {
             return;
         }
-        setPreview(true);
+        setStatus('preview');
         const file = files[0];
         previewBulkImport(file)
     }
 
-    // if(bulkImportSuccess === true) return <div style={{ width: "100%", display: 'block', position: "relative" }}>
-    //     <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
-    //     <Container height="50vh" margin="10% 0 0 0">
-    //         asdf
-    //     </Container>            
-    //     </Box>
-    // </div>
-
-     return <div style={{ width: "100%", display: 'block', position: "relative" }}>
-        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
-            { (!preview) ?
-                <>
+    const renderBody = (status: string, fqdnData: RequestStatus[]) => {
+        switch(status) {
+            case "dropzone": 
+                return (<>
                 <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                     <div />
                     <Text margin="0" fontSize="0.9em">close <CloseIcon margin="0" onClick={() => push("/Dashboard/AddLinks")} /> </Text>
@@ -71,7 +65,9 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                         </Box>
                     </Box>
                 </Container>
-                </> : 
+                </>);
+            case "preview": 
+                return (<>
                 <Container height="50vh" margin="10% 0 0 0">
                     <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
@@ -82,20 +78,54 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                                 {data}
                             </Text>
                             <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 0 0">
-                            <Button onClick={() => setPreview(false)} width="100px" margin="0 1em 0 0">
+                            <Button onClick={() => setStatus('dropzone')} width="100px" margin="0 1em 0 0">
                                 Cancel
                             </Button>
                             <Button onClick={() => {
                                     beginBulkImport(data);
-                                    push('/Dashboard/AddLinks');
+                                    setStatus('result')
                                 }} primary width="100px">
                                 Send Link Requests
                             </Button>
                             </Box>
                         </Box>
                     </Box>
+                </Container>                
+                </>); 
+            case "result":
+                return (<>
+                <Container height="50vh" margin="10% 0 0 0">
+                <Box direction="column" align="center" width="100%">
+                <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
+                    <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="900">
+                        Bulk Import Result
+                    </Text>
+                    <UserList>
+                        <UserListItem>
+                            <div>FQDN</div>
+                            <div>Status</div>
+                        </UserListItem>
+                    {fqdnData.map(item => 
+                        <UserListItem>
+                            <div>{item.link}</div>
+                            <div>{item.status}</div>
+                        </UserListItem>
+                    )}
+                    </UserList>
+                    <Button primary onClick={() => push('/Dashboard/MyLinks')} margin="1em 0 0 0">
+                        Go Back to MyLinks...
+                    </Button>
+                </Box>
+                </Box>
                 </Container>
-            }
+                </>);
+            default: return;
+        }
+    } 
+    
+     return <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+            {renderBody(status, fqdnData)}
         </Box>
     </div>;
 }
