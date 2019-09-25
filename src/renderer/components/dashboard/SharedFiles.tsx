@@ -218,7 +218,7 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                     </div>
                 </Box>
                 <Box margin="0">
-                    {currentSharedFilesPath.length > 0 ? <div style={{ fontWeight: "bold", border:"solid 1px #aaa", padding:"10px" }}>Current path: {currentSharedFilesPath}/</div> : <></>}
+                    <div style={{ fontWeight: "bold", border: "solid 1px #aaa", padding: "10px" }}>Current path: {currentSharedFilesPath.length > 0 ? "/" : ""}{currentSharedFilesPath}/</div>
                     <FilesList>
                         {
                             currentSharedFilesPath.length > 0

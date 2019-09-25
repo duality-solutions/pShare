@@ -98,9 +98,10 @@ const FilesListItem = styled('li')`
     direction: row;
     justify-content: space-between;
     padding: 0.5em 0.25em;
+    border: solid 2px #e7e7e700;
     &:hover {
         border-radius: 7px;
-        border: solid 2px #e7e7e7;
+        border: solid 2px #e7e7e7ff;
     };
     &:hover ${Hovered} {
         visibility: visible;

@@ -14,7 +14,11 @@ export function* addFileSaga() {
         if (!linkedUserName) {
             return
         }
-        const targetDirectory = path.join(pathToShareDirectory, linkedUserName, "out")
+        const baseDirectory = path.join(pathToShareDirectory, linkedUserName, "out");
+        const currentPath = yield select((s: MainRootState) => s.fileNavigation.sharedFilesViewPath.join("/"))
+
+        const targetDirectory = path.join(baseDirectory, currentPath)
+
         yield call(() => fsExtra.ensureDir(targetDirectory))
         const filePathInfos = action.payload;
 
