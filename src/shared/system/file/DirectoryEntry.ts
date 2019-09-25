@@ -1,6 +1,8 @@
 import { FileEntry } from "./FileEntry";
-export interface DirectoryEntry {
+import { DownloadableFile } from "../../types/DownloadableFile";
+import { SharedFile } from "../../types/SharedFile";
+export interface DirectoryEntry<T extends DownloadableFile|SharedFile> {
     type: "directory";
-    entries: (FileEntry | DirectoryEntry)[];
+    entries: (FileEntry<T> | DirectoryEntry<T>)[];
     name?: string;
 }

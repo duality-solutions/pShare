@@ -1,21 +1,23 @@
 import { blinq } from "blinq";
 import { FileEntry } from "./FileEntry";
 import { DirectoryEntry } from "./DirectoryEntry";
-export function getDirectoryListing(path: string, rootDirectory: DirectoryEntry): (FileEntry | DirectoryEntry)[] {
+import { SharedFile } from "../../types/SharedFile";
+import { DownloadableFile } from "../../types/DownloadableFile";
+export function getDirectoryListing<T extends SharedFile | DownloadableFile>(path: string, rootDirectory: DirectoryEntry<T>): (FileEntry<T> | DirectoryEntry<T>)[] {
 
     var matchArr = path.match(/^(.*?)\/*$/)
     const correctedPath = matchArr == null ? path : matchArr[1];
     const pathSegments = correctedPath.split("/");
     return getDirectoryListingFromPathSegments(pathSegments, rootDirectory);
 }
-function getDirectoryListingFromPathSegments(pathSegments: string[], rootDirectory: DirectoryEntry): (FileEntry | DirectoryEntry)[] {
+function getDirectoryListingFromPathSegments<T extends SharedFile | DownloadableFile>(pathSegments: string[], rootDirectory: DirectoryEntry<T>): (FileEntry<T> | DirectoryEntry<T>)[] {
     let directoryNames = pathSegments.map(p => `${p}/`);
-    let currentDirectory: DirectoryEntry | undefined = rootDirectory;
+    let currentDirectory: DirectoryEntry<T> | undefined = rootDirectory;
     while (directoryNames.length > 0 && currentDirectory != null) {
         const [dName, ...rest] = directoryNames;
         directoryNames = rest;
-        const entry: DirectoryEntry | undefined = currentDirectory
-            ? blinq(currentDirectory.entries).firstOrDefault(e => e.type === "directory" && e.name === dName) as DirectoryEntry
+        const entry: DirectoryEntry<T> | undefined = currentDirectory
+            ? blinq(currentDirectory.entries).firstOrDefault(e => e.type === "directory" && e.name === dName) as DirectoryEntry<T>
             : undefined;
         currentDirectory = entry;
     }

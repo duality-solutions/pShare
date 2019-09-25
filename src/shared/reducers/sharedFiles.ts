@@ -7,21 +7,9 @@ import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
 import { RtcActions } from "../actions/rtc";
 import { blinq } from "blinq";
 import { FileSharingActions } from "../actions/fileSharing";
-
-export type SharedFilesFetchState = "initial" | "downloading" | "success" | "failed"
-export interface SharedFilesState {
-    linkedUserName?: string,
-    linkedCommonName?: string,
-    downloadableFiles?: DownloadableFile[],
-    state: SharedFilesFetchState
-}
-export type DownloadState = "ready" | "starting" | "downloading" | "downloaded" | "failed"
-export interface DownloadableFile {
-    file: PublicSharedFile
-    state: DownloadState
-    progressPct: number
-    progressStatus?: string
-}
+import { DownloadableFile } from "../types/DownloadableFile";
+import { DownloadState } from "../types/DownloadState";
+import { SharedFilesState } from "../types/SharedFilesState";
 
 const defaultState: SharedFilesState = {
     state: "initial"

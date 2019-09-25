@@ -11,7 +11,8 @@ import { FilesList, FilesListItem, FilesListFile, Hovered } from "../ui-elements
 import { SharedFile } from "../../../shared/types/SharedFile";
 import { blinq } from "blinq";
 import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
-import { DownloadableFile, SharedFilesFetchState } from "../../../shared/reducers/sharedFiles";
+import { SharedFilesFetchState } from "../../../shared/types/SharedFilesFetchState";
+import { DownloadableFile } from "../../../shared/types/DownloadableFile";
 import { InlineSpinner } from "../ui-elements/LoadingSpinner";
 import { prettySize } from "../../../shared/system/prettySize";
 import CircularProgress from "../ui-elements/CircularProgress";
