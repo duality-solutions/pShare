@@ -9,6 +9,7 @@ import { RemoveFileActions } from "../../../shared/actions/removeFile";
 import { createSelector } from 'reselect'
 import { fileListToTree } from "../../../shared/system/file/fileListToTree";
 import { getDirectoryListing } from "../../../shared/system/file/getDirectoryListing";
+import { FileNavigationActions } from "../../../shared/actions/fileNavigation";
 
 const userNameSelector = (state: RendererRootState) => state.sharedFiles.linkedUserName
 const fileWatchUsersSelector = (state: RendererRootState) => state.fileWatch.users;
@@ -68,8 +69,10 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
     const downloadableFiles = downloadableFilesSelector(state);
     const outFilesView = outFilesCurrentDirectorySelector(state)
     if (false) { const downloadableFilesView = downloadableFilesCurrentDirectorySelector(state); console.log(downloadableFilesView) }
+    const currentSharedFilesPath=sharedFilesPathSelector(state);
     return {
         outFilesView,
+        currentSharedFilesPath,
         linkedUserCommonName: state.sharedFiles.linkedCommonName,
         linkedUserName: state.sharedFiles.linkedUserName,
         userName: state.user.userName!,
@@ -78,6 +81,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
     }
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...SharedFilesActions, ...FileSharingActions, ...RemoveFileActions };
+const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = {...FileNavigationActions, ...SharedFilesActions, ...FileSharingActions, ...RemoveFileActions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SharedFiles)

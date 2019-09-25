@@ -2,10 +2,10 @@ import { ActionType, createStandardAction } from 'typesafe-actions';
 // import { PublicSharedFile } from '../types/PublicSharedFile';
 // import { FileListMessage } from '../types/FileListMessage';
 
-interface BaseNavigationCommand {
+export interface BaseNavigationCommand {
     type: "sharedFiles" | "downloadableFiles",
 }
-interface NavigationCommand extends BaseNavigationCommand {
+export interface NavigationCommand extends BaseNavigationCommand {
     location: string
 }
 

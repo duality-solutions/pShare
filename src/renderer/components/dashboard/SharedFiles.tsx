@@ -19,10 +19,12 @@ import CircularProgress from "../ui-elements/CircularProgress";
 import BalanceIndicator from "../../containers/dashboard/BalanceIndicator";
 import { DirectoryEntry } from "../../../shared/system/file/DirectoryEntry";
 import { FileEntry } from "../../../shared/system/file/FileEntry";
+import { NavigationCommand, BaseNavigationCommand } from "../../../shared/actions/fileNavigation";
 
 
 export interface SharedFilesStateProps {
     outFilesView: (DirectoryEntry<SharedFile> | FileEntry<SharedFile>)[]
+    currentSharedFilesPath: string
     linkedUserCommonName?: string
     linkedUserName?: string
     downloadableFiles: DownloadableFile[]
@@ -34,9 +36,12 @@ export interface SharedFilesDispatchProps {
     shareNewFile: () => void
     requestFile: (req: FileRequest) => void
     removeSharedFile: (filePath: string) => void
+    openDirectory: (navCommand: NavigationCommand) => void
+    upDirectory: (navCommand: BaseNavigationCommand) => void
+    goRoot: (navCommand: NavigationCommand) => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, requestFile, removeSharedFile, shareNewFile, outFilesView, linkedUserName, userName, linkedUserCommonName, downloadableFiles, sharedFilesFetchState }) => {
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ currentSharedFilesPath, openDirectory, upDirectory, goRoot, close, requestFile, removeSharedFile, shareNewFile, outFilesView, linkedUserName, userName, linkedUserCommonName, downloadableFiles, sharedFilesFetchState }) => {
     const [currentView, setCurrentView] = useState<"shared" | "downloads">("shared")
     const [promptModal, setPromptModal] = useState<true | false>(false)
     const [filePath, setFilePath] = useState<string | undefined>(undefined)
@@ -57,10 +62,22 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, reques
             <Divider width="100%" height="1px" />
             {
                 currentView === "downloads"
-                    ? <DownloadView downloadableFiles={downloadableFiles} requestFile={requestFile} ownerUserName={linkedUserName!} userName={userName} sharedFilesFetchState={sharedFilesFetchState} />
-                    : <ShareView  outFilesView={outFilesView} shareNewFile={shareNewFile}
+                    ? <DownloadView
+                        downloadableFiles={downloadableFiles}
+                        requestFile={requestFile}
+                        ownerUserName={linkedUserName!}
+                        userName={userName}
+                        sharedFilesFetchState={sharedFilesFetchState}
+                    />
+                    : <ShareView
+                        outFilesView={outFilesView}
+                        shareNewFile={shareNewFile}
                         toggleDeleteModal={() => setPromptModal(!promptModal)}
                         setFilePath={setFilePath}
+                        openDirectory={openDirectory}
+                        upDirectory={upDirectory}
+                        goRoot={goRoot}
+                        currentSharedFilesPath={currentSharedFilesPath}
                     />
             }
         </Box>
@@ -182,8 +199,13 @@ interface ShareViewProps {
     outFilesView: (DirectoryEntry<SharedFile> | FileEntry<SharedFile>)[]
     toggleDeleteModal: (filePath: string) => void,
     setFilePath: (filePath: string) => void
+    openDirectory: (navCommand: NavigationCommand) => void
+    upDirectory: (navCommand: BaseNavigationCommand) => void
+    goRoot: (navCommand: NavigationCommand) => void
+    currentSharedFilesPath: string
+
 }
-const ShareView: FunctionComponent<ShareViewProps> = ({  outFilesView, shareNewFile, toggleDeleteModal, setFilePath }) => {
+const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, outFilesView, shareNewFile, toggleDeleteModal, setFilePath, openDirectory, upDirectory }) => {
     return (
         <div style={{ width: "100%", display: 'block', position: "relative" }}>
             <BalanceIndicator hideLinkWhenMinimized={true} />
@@ -196,24 +218,45 @@ const ShareView: FunctionComponent<ShareViewProps> = ({  outFilesView, shareNewF
                     </div>
                 </Box>
                 <Box margin="0">
+                    {currentSharedFilesPath.length > 0 ? <div style={{ fontWeight: "bold" }}>Current path: {currentSharedFilesPath}/</div> : <></>}
                     <FilesList>
+                        {
+                            currentSharedFilesPath.length > 0
+                                ?
+                                <FilesListItem key={"[[[go_up]]]"} onClick={() => upDirectory({ type: "sharedFiles" })}>
+                                    ../
+                            </FilesListItem>
+                                :
+                                <></>
+                        }
                         {outFilesView
                             ? blinq(outFilesView)
-                            .where(x=>x.type==="file")
-                            .select(x=>(x as FileEntry<SharedFile>).fileInfo)
-                            .select(f => <FilesListItem key={f.relativePath}>
-                                <FilesListFile>
-                                    <DocumentSvg margin="0 1em 0 0" width="30px" />
-                                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
-                                </FilesListFile>
-                                <Hovered>
-                                    <DeleteIcon onClick={() => {
-                                        toggleDeleteModal(f.path);
-                                        setFilePath(f.path)
-                                    }}
-                                        width="35px" height="20px" margin="5px 10px" />
-                                </Hovered>
-                            </FilesListItem>)
+                                .select(entry => {
+                                    if (entry.type === "file") {
+                                        const fileEntry = (entry as FileEntry<SharedFile>);
+                                        const f = fileEntry.fileInfo;
+                                        return <FilesListItem key={f.relativePath}>
+                                            <FilesListFile>
+                                                <DocumentSvg margin="0 1em 0 0" width="30px" />
+                                                <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
+                                            </FilesListFile>
+                                            <Hovered>
+                                                <DeleteIcon onClick={() => {
+                                                    toggleDeleteModal(f.path);
+                                                    setFilePath(f.path);
+                                                }} width="35px" height="20px" margin="5px 10px" />
+                                            </Hovered>
+                                        </FilesListItem>;
+                                    }
+                                    if (entry.type === "directory") {
+                                        const directoryEntry = (entry as DirectoryEntry<SharedFile>);
+                                        return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
+                                            {directoryEntry.name}/
+                                        </FilesListItem>
+                                    }
+                                    throw Error("unexpected entry type")
+
+                                })
                             : []}
                     </FilesList>
                 </Box>
