@@ -64,12 +64,12 @@ const downloadableFilesCurrentDirectorySelector = createSelector(
     (tree, path) => getDirectoryListing(path, tree))
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesStateProps => {
-    const outFiles = outFilesSelector(state);
+    //const outFiles = outFilesSelector(state);
     const downloadableFiles = downloadableFilesSelector(state);
-    console.log("shared path: " + sharedFilesPathSelector(state), outFilesCurrentDirectorySelector(state), outFilesTreeSelector(state))
-    console.log("download path : " + downloadableFilesPathSelector(state), downloadableFilesCurrentDirectorySelector(state), downloadableFilesTreeSelector(state))
+    const outFilesView = outFilesCurrentDirectorySelector(state)
+    if (false) { const downloadableFilesView = downloadableFilesCurrentDirectorySelector(state); console.log(downloadableFilesView) }
     return {
-        outFiles,
+        outFilesView,
         linkedUserCommonName: state.sharedFiles.linkedCommonName,
         linkedUserName: state.sharedFiles.linkedUserName,
         userName: state.user.userName!,

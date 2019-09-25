@@ -17,10 +17,12 @@ import { InlineSpinner } from "../ui-elements/LoadingSpinner";
 import { prettySize } from "../../../shared/system/prettySize";
 import CircularProgress from "../ui-elements/CircularProgress";
 import BalanceIndicator from "../../containers/dashboard/BalanceIndicator";
+import { DirectoryEntry } from "../../../shared/system/file/DirectoryEntry";
+import { FileEntry } from "../../../shared/system/file/FileEntry";
 
 
 export interface SharedFilesStateProps {
-    outFiles: SharedFile[],
+    outFilesView: (DirectoryEntry<SharedFile> | FileEntry<SharedFile>)[]
     linkedUserCommonName?: string
     linkedUserName?: string
     downloadableFiles: DownloadableFile[]
@@ -34,7 +36,7 @@ export interface SharedFilesDispatchProps {
     removeSharedFile: (filePath: string) => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, requestFile, removeSharedFile, shareNewFile, outFiles, linkedUserName, userName, linkedUserCommonName, downloadableFiles, sharedFilesFetchState }) => {
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, requestFile, removeSharedFile, shareNewFile, outFilesView, linkedUserName, userName, linkedUserCommonName, downloadableFiles, sharedFilesFetchState }) => {
     const [currentView, setCurrentView] = useState<"shared" | "downloads">("shared")
     const [promptModal, setPromptModal] = useState<true | false>(false)
     const [filePath, setFilePath] = useState<string | undefined>(undefined)
@@ -56,7 +58,7 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ close, reques
             {
                 currentView === "downloads"
                     ? <DownloadView downloadableFiles={downloadableFiles} requestFile={requestFile} ownerUserName={linkedUserName!} userName={userName} sharedFilesFetchState={sharedFilesFetchState} />
-                    : <ShareView outFiles={outFiles} shareNewFile={shareNewFile}
+                    : <ShareView  outFilesView={outFilesView} shareNewFile={shareNewFile}
                         toggleDeleteModal={() => setPromptModal(!promptModal)}
                         setFilePath={setFilePath}
                     />
@@ -177,11 +179,11 @@ const DeletePrompt: FunctionComponent<{
 
 interface ShareViewProps {
     shareNewFile: () => void
-    outFiles: SharedFile[]
+    outFilesView: (DirectoryEntry<SharedFile> | FileEntry<SharedFile>)[]
     toggleDeleteModal: (filePath: string) => void,
     setFilePath: (filePath: string) => void
 }
-const ShareView: FunctionComponent<ShareViewProps> = ({ outFiles, shareNewFile, toggleDeleteModal, setFilePath }) => {
+const ShareView: FunctionComponent<ShareViewProps> = ({  outFilesView, shareNewFile, toggleDeleteModal, setFilePath }) => {
     return (
         <div style={{ width: "100%", display: 'block', position: "relative" }}>
             <BalanceIndicator hideLinkWhenMinimized={true} />
@@ -195,8 +197,11 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ outFiles, shareNewFile, 
                 </Box>
                 <Box margin="0">
                     <FilesList>
-                        {outFiles
-                            ? blinq(outFiles).select(f => <FilesListItem key={f.relativePath}>
+                        {outFilesView
+                            ? blinq(outFilesView)
+                            .where(x=>x.type==="file")
+                            .select(x=>(x as FileEntry<SharedFile>).fileInfo)
+                            .select(f => <FilesListItem key={f.relativePath}>
                                 <FilesListFile>
                                     <DocumentSvg margin="0 1em 0 0" width="30px" />
                                     <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
