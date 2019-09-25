@@ -5,13 +5,17 @@ import { SharedFile } from "../../types/SharedFile";
 import { DownloadableFile } from "../../types/DownloadableFile";
 export function getDirectoryListing<T extends SharedFile | DownloadableFile>(path: string, rootDirectory: DirectoryEntry<T>): (FileEntry<T> | DirectoryEntry<T>)[] {
 
-    var matchArr = path.match(/^(.*?)\/*$/)
-    const correctedPath = matchArr == null ? path : matchArr[1];
-    const pathSegments = correctedPath.split("/");
+    if(path.startsWith("/")){
+        throw Error("paths should not start with '/'")
+    }
+    const pathSegments = path.split("/");
+    if (pathSegments.length === 1 && pathSegments[0] === "") {
+        return rootDirectory.entries
+    }
     return getDirectoryListingFromPathSegments(pathSegments, rootDirectory);
 }
 function getDirectoryListingFromPathSegments<T extends SharedFile | DownloadableFile>(pathSegments: string[], rootDirectory: DirectoryEntry<T>): (FileEntry<T> | DirectoryEntry<T>)[] {
-    let directoryNames = pathSegments.map(p => `${p}/`);
+    let directoryNames = pathSegments;
     let currentDirectory: DirectoryEntry<T> | undefined = rootDirectory;
     while (directoryNames.length > 0 && currentDirectory != null) {
         const [dName, ...rest] = directoryNames;

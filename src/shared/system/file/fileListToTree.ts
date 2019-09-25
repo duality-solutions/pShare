@@ -19,15 +19,22 @@ interface RawFileEntry<T extends SharedFile | DownloadableFile> {
 
 /// takes a list of filepaths and turns them into an object hierarchy representing directories and files
 export function fileListToTree<T extends SharedFile | DownloadableFile>(list: T[]): DirectoryEntry<T> {
-    const fileSegmentsList = blinq(list)
+    const bList = blinq(list);
+    const fileSegmentsList = bList
         .select(file => {
             if (isSharedFile(file)) {
+                if(file.relativePath.startsWith("/")){
+                    throw Error("paths should not start with '/'")
+                }
                 const v: RawFileEntry<T> = {
                     pathSegments: file.relativePath.split("/"),
                     file
                 };
                 return v
             } else if (isDownloadableFile(file)) {
+                if(file.file.fileName.startsWith("/")){
+                    throw Error("paths should not start with '/'")
+                }
                 const v: RawFileEntry<T> = {
                     pathSegments: file.file.fileName.split("/"),
                     file
@@ -64,7 +71,7 @@ function fileSegmentsListToTree<T extends SharedFile | DownloadableFile>(
 
     return name != null
         ? {
-            name: `${name}/`,
+            name,
             type: "directory",
             entries
         }
