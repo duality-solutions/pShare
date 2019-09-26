@@ -26,7 +26,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
 
 
     return <>
-        <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <div style={{ width: "100%", display: 'block', position: "relative", overflow:'hidden' }}>
             <BalanceIndicator />
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
         <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
@@ -64,7 +64,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                         </div>
                         {
                             users.length > 0
-                                ? <UserList>
+                                ? <UserList style={{overflowY:'scroll'}}>
 
                                     {users.map(u =>
                                         <UserListItem key={u.userName} >

@@ -77,7 +77,7 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                             <Text style={{ whiteSpace:'pre-wrap'}}>
                                 {data}
                             </Text>
-                            <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 0 0">
+                            <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 1em 0">
                             <Button onClick={() => setStatus('dropzone')} width="100px" margin="0 1em 0 0">
                                 Cancel
                             </Button>
@@ -123,8 +123,9 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
         }
     } 
     
-     return <div style={{ width: "100%", display: 'block', position: "relative" }}>
-        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+     return <div style={{ width: "100%", display: 'block', position: "relative",  height: '100%', overflow:'hidden' }}>
+        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px"
+            border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em" style={{overflowY:'scroll'}}>
             {renderBody(status, fqdnData)}
         </Box>
     </div>;
