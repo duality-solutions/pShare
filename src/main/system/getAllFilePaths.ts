@@ -9,7 +9,7 @@ export async function getAllFilePaths(filePaths: string[], visited: Set<string> 
     const visitedSet = visited || new Set<string>();
     const files: string[] = [];
     for (const pth of filePaths) {
-        const normalizedPath = await fs.promises.realpath(path.normalize(pth));
+        const normalizedPath = path.normalize(pth)
         if (visitedSet.has(normalizedPath)) {
             continue;
         }
@@ -18,7 +18,7 @@ export async function getAllFilePaths(filePaths: string[], visited: Set<string> 
         if (!pathExists) {
             continue;
         }
-        const stat: fs.Stats = await fs.promises.lstat(normalizedPath);
+        const stat: fs.Stats = await fs.promises.stat(normalizedPath);
         if (stat.isFile()) {
             files.push(normalizedPath);
         }
