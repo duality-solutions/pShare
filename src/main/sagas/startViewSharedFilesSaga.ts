@@ -15,6 +15,7 @@ import { PublicSharedFile } from '../../shared/types/PublicSharedFile';
 import { BdapActions } from '../../shared/actions/bdap';
 import { LinkMessageEnvelope } from '../../shared/actions/payloadTypes/LinkMessageEnvelope';
 import { delay } from 'redux-saga';
+import { FileNavigationActions } from '../../shared/actions/fileNavigation';
 
 export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
     yield fork(function* () {
@@ -63,7 +64,8 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
 
     })
     yield takeEvery(getType(DashboardActions.startViewSharedFiles), function* (action: ActionType<typeof DashboardActions.startViewSharedFiles>) {
-        
+        yield put(FileNavigationActions.goRoot({ type: "downloadableFiles" }))
+        yield put(FileNavigationActions.goRoot({ type: "sharedFiles" }))
         const linkedUserName = action.payload
         const linkedUserInfo: GetUserInfo = yield call(() => rpcClient.command("getuserinfo", linkedUserName))
         yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
@@ -77,7 +79,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
             fileListMessage = yield call(() => getSharedFileListForLink(linkedUserName))
         } catch (err) {
             yield put(FileListActions.fileListFetchFailed())
-            
+
             return
         }
         if (yield* checkClosed()) {

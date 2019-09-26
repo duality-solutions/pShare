@@ -68,11 +68,14 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
     //const outFiles = outFilesSelector(state);
     const downloadableFiles = downloadableFilesSelector(state);
     const outFilesView = outFilesCurrentDirectorySelector(state)
-    if (false) { const downloadableFilesView = downloadableFilesCurrentDirectorySelector(state); console.log(downloadableFilesView) }
-    const currentSharedFilesPath=sharedFilesPathSelector(state);
+    const downloadableFilesView = downloadableFilesCurrentDirectorySelector(state);
+    const currentSharedFilesPath = sharedFilesPathSelector(state);
+    const currentDownloadableFilesPath = downloadableFilesPathSelector(state);
     return {
         outFilesView,
+        downloadableFilesView,
         currentSharedFilesPath,
+        currentDownloadableFilesPath,
         linkedUserCommonName: state.sharedFiles.linkedCommonName,
         linkedUserName: state.sharedFiles.linkedUserName,
         userName: state.user.userName!,
@@ -81,6 +84,6 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesSt
     }
 };
 
-const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = {...FileNavigationActions, ...SharedFilesActions, ...FileSharingActions, ...RemoveFileActions };
+const mapDispatchToProps: MapPropsToDispatchObj<SharedFilesDispatchProps> = { ...FileNavigationActions, ...SharedFilesActions, ...FileSharingActions, ...RemoveFileActions };
 
 export default connect(mapStateToProps, mapDispatchToProps)(SharedFiles)

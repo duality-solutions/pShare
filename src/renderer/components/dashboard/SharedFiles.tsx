@@ -24,7 +24,9 @@ import { NavigationCommand, BaseNavigationCommand } from "../../../shared/action
 
 export interface SharedFilesStateProps {
     outFilesView: (DirectoryEntry<SharedFile> | FileEntry<SharedFile>)[]
+    downloadableFilesView: (DirectoryEntry<DownloadableFile> | FileEntry<DownloadableFile>)[]
     currentSharedFilesPath: string
+    currentDownloadableFilesPath: string
     linkedUserCommonName?: string
     linkedUserName?: string
     downloadableFiles: DownloadableFile[]
@@ -41,7 +43,7 @@ export interface SharedFilesDispatchProps {
     goRoot: (navCommand: NavigationCommand) => void
 }
 export type SharedFilesProps = SharedFilesStateProps & SharedFilesDispatchProps
-export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ currentSharedFilesPath, openDirectory, upDirectory, goRoot, close, requestFile, removeSharedFile, shareNewFile, outFilesView, linkedUserName, userName, linkedUserCommonName, downloadableFiles, sharedFilesFetchState }) => {
+export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ downloadableFilesView, currentSharedFilesPath, currentDownloadableFilesPath, openDirectory, upDirectory, goRoot, close, requestFile, removeSharedFile, shareNewFile, outFilesView, linkedUserName, userName, linkedUserCommonName, sharedFilesFetchState }) => {
     const [currentView, setCurrentView] = useState<"shared" | "downloads">("shared")
     const [promptModal, setPromptModal] = useState<true | false>(false)
     const [filePath, setFilePath] = useState<string | undefined>(undefined)
@@ -63,11 +65,16 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ currentShared
             {
                 currentView === "downloads"
                     ? <DownloadView
-                        downloadableFiles={downloadableFiles}
+                        downloadableFilesView={downloadableFilesView}
+                        currentDownloadableFilesPath={currentDownloadableFilesPath}
                         requestFile={requestFile}
                         ownerUserName={linkedUserName!}
                         userName={userName}
                         sharedFilesFetchState={sharedFilesFetchState}
+                        openDirectory={openDirectory}
+                        upDirectory={upDirectory}
+                        goRoot={goRoot}
+
                     />
                     : <ShareView
                         outFilesView={outFilesView}
@@ -86,14 +93,19 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ currentShared
 
 
 interface DownloadViewState {
-    downloadableFiles: DownloadableFile[]
+    downloadableFilesView: (DirectoryEntry<DownloadableFile> | FileEntry<DownloadableFile>)[]
+    currentDownloadableFilesPath: string
     requestFile: (req: FileRequest) => void
     userName: string
     ownerUserName: string
     sharedFilesFetchState: SharedFilesFetchState
+    openDirectory: (navCommand: NavigationCommand) => void
+    upDirectory: (navCommand: BaseNavigationCommand) => void
+    goRoot: (navCommand: NavigationCommand) => void
+
 }
 
-const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles, requestFile, userName, ownerUserName, sharedFilesFetchState }) => {
+const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upDirectory, downloadableFilesView, currentDownloadableFilesPath, requestFile, userName, ownerUserName, sharedFilesFetchState }) => {
     switch (sharedFilesFetchState) {
         case "success":
             return <Box height="50vh" margin="0 auto" direction="column">
@@ -101,48 +113,77 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ downloadableFiles,
                     <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Files shared with you</Text>
                 </Box>
                 <Box margin="0">
+                    <div style={{ fontWeight: "bold", border: "solid 1px #aaa", padding: "10px" }}>Current path: {currentDownloadableFilesPath.length > 0 ? "/" : ""}{currentDownloadableFilesPath}/</div>
                     <FilesList>
-                        {blinq(downloadableFiles).select(f =>
-                            <FilesListItem key={f.file.fileName}>
-                                <FilesListFile>
-                                    <DocumentSvg margin="0 1em 0 0" width="30px" />
-                                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
-                                </FilesListFile>
-                                <div>
-                                    {
-                                        (() => {
-                                            switch (f.state) {
-                                                case "downloading": //download progress bars
-                                                    return <div style={{ display: 'flex' }}>
-                                                        <Text fontSize="0.6em" margin="8px 4px 0 0" color="#4a4a4a">
-                                                            downloading
+                        {
+                            currentDownloadableFilesPath.length > 0
+                                ?
+                                <FilesListItem key={"[[[go_up]]]"} onClick={() => upDirectory({ type: "downloadableFiles" })}>
+                                    ../
+                            </FilesListItem>
+                                :
+                                <></>
+                        }
+                        {
+                            downloadableFilesView
+                                ?
+                                blinq(downloadableFilesView)
+                                    .select(entry => {
+                                        if (entry.type === "file") {
+                                            const fileEntry = (entry as FileEntry<DownloadableFile>)
+                                            const f = fileEntry.fileInfo;
+                                            return <FilesListItem key={f.file.fileName}>
+                                                <FilesListFile>
+                                                    <DocumentSvg margin="0 1em 0 0" width="30px" />
+                                                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
+                                                </FilesListFile>
+                                                <div>
+                                                    {(() => {
+                                                        switch (f.state) {
+                                                            case "downloading": //download progress bars
+                                                                return <div style={{ display: 'flex' }}>
+                                                                    <Text fontSize="0.6em" margin="8px 4px 0 0" color="#4a4a4a">
+                                                                        downloading
                                                                 </Text>
-                                                        <CircularProgress size={30} progress={f.progressPct} />
-                                                    </div>
-                                                case "ready":
-                                                    return (<Hovered>
-                                                        <div style={{ display: 'flex' }}>
-                                                            <Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">{prettySize(f.file.size)}</Text>
-                                                            <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} />
-                                                        </div>
-                                                    </Hovered>)
-                                                case "failed":  // try again cancel buttons 
-                                                    return <>
-                                                        <ErrorIcon />
-                                                    </>
-                                                case "downloaded":
-                                                    return <DoneIcon margin="0" />
-                                                case "starting":
-                                                    return (<Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">
-                                                        Starting
-                                                           </Text>)
-                                                default:
-                                                    return <></>
-                                            }
-                                        })()
-                                    }
-                                </div>
-                            </FilesListItem>)}
+                                                                    <CircularProgress size={30} progress={f.progressPct} />
+                                                                </div>;
+                                                            case "ready":
+                                                                return (<Hovered>
+                                                                    <div style={{ display: 'flex' }}>
+                                                                        <Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">{prettySize(f.file.size)}</Text>
+                                                                        <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} />
+                                                                    </div>
+                                                                </Hovered>);
+                                                            case "failed": // try again cancel buttons 
+                                                                return <>
+                                                                    <ErrorIcon />
+                                                                </>;
+                                                            case "downloaded":
+                                                                return <DoneIcon margin="0" />;
+                                                            case "starting":
+                                                                return (<Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">
+                                                                    Starting
+                                                            </Text>);
+                                                            default:
+                                                                return <></>;
+                                                        }
+                                                    })()}
+                                                </div>
+                                            </FilesListItem>;
+                                        }
+                                        if (entry.type === "directory") {
+                                            const directoryEntry = (entry as DirectoryEntry<DownloadableFile>);
+                                            return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "downloadableFiles", location: directoryEntry.name! })}>
+                                                {directoryEntry.name}/
+                                        </FilesListItem>
+                                        }
+                                        throw Error("unexpected entry type")
+
+                                    })
+
+                                : []
+                        }
+
                     </FilesList>
                 </Box>
             </Box>;
