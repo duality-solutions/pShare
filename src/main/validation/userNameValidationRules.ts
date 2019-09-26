@@ -3,7 +3,7 @@ import { GetUserInfo } from "../../dynamicdInterfaces/GetUserInfo";
 import { RpcClient } from "../RpcClient";
 
 const isLongEnough = (client: RpcClient, value: string) => value.length >= 3;
-const isValidCharacters = (client: RpcClient, value: string) => /^[a-z]+$/.test(value);
+const isValidCharacters = (client: RpcClient, value: string) => /^[a-z0-9]+$/.test(value);
 const userNameDoesNotExist = async (client: RpcClient, value: string) => {
 
     let userInfo: GetUserInfo;
@@ -34,7 +34,7 @@ export const userNameValidationRules: ValidationTest<string>[] = [
         testsOnSuccess: [
             {
                 test: isValidCharacters,
-                message: "User name may only contain smaller case letters",
+                message: "User name may only contain smaller case alphanumeric",
                 testsOnSuccess: [{
                     test: userNameDoesNotExist,
                     message: "User name is already taken"
