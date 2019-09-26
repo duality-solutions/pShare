@@ -59,7 +59,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                     <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                         <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
                             <AddLinksIcon width="40px" height="30px" margin="0" /> Add file</Text>
-                        <Dropzone error={error} filesSelected={filesSelectedHandler} directoriesSelected={directoriesSelectedHander} ></Dropzone>
+                        <Dropzone error={error} filesSelected={filesSelectedHandler} directoriesSelected={directoriesSelectedHander} multiple={true} ></Dropzone>
                     </Box>
                 </Box>
                 <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
