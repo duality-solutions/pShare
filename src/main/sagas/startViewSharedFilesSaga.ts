@@ -78,6 +78,9 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
         try {
             fileListMessage = yield call(() => getSharedFileListForLink(linkedUserName))
         } catch (err) {
+            if (yield* checkClosed()) {
+                return
+            }
             yield put(FileListActions.fileListFetchFailed())
 
             return
@@ -98,6 +101,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
 
 
 function* getSharedFileListForLink(linkedUserName: string) {
+    
     const msgId = uuid()
     yield put(BdapActions.sendLinkMessage({ recipient: linkedUserName, payload: { id: msgId, timestamp: Math.trunc((new Date()).getTime()), type: "pshare-filelist-request", payload: { id: msgId } } }))
 
@@ -110,13 +114,18 @@ function* getSharedFileListForLink(linkedUserName: string) {
                 return false;
         }
     }
-    const { action, timeout }: { action: ActionType<typeof BdapActions.linkMessageReceived>, timeout: unknown } = yield race({
+    const { action, timeout, abort }: { action: ActionType<typeof BdapActions.linkMessageReceived>, timeout: unknown, abort: unknown } = yield race({
         timeout: delay(20000),
+        abort: take(getType(DashboardActions.startViewSharedFiles)),
         action: take(pred)
     })
 
     if (timeout) {
         throw Error("timeout")
+    }
+    if (abort) {
+        console.log("file-list-fetch aborted")
+        return;
     }
 
 
