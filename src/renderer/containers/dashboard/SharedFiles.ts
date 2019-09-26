@@ -5,11 +5,12 @@ import { SharedFiles, SharedFilesStateProps, SharedFilesDispatchProps } from "..
 import { SharedFilesActions } from "../../../shared/actions/sharedFiles";
 import { FileSharingActions } from "../../../shared/actions/fileSharing";
 import { RemoveFileActions } from "../../../shared/actions/removeFile";
-
+import * as path from "path"
 import { createSelector } from 'reselect'
 import { fileListToTree } from "../../../shared/system/file/fileListToTree";
 import { getDirectoryListing } from "../../../shared/system/file/getDirectoryListing";
 import { FileNavigationActions } from "../../../shared/actions/fileNavigation";
+import { blinq } from "blinq";
 
 const userNameSelector = (state: RendererRootState) => state.sharedFiles.linkedUserName
 const fileWatchUsersSelector = (state: RendererRootState) => state.fileWatch.users;
@@ -55,14 +56,14 @@ const outFilesCurrentDirectorySelector = createSelector(
         outFilesTreeSelector,
         sharedFilesPathSelector
     ],
-    (tree, path) => getDirectoryListing(path, tree))
+    (tree, filePath) => blinq(getDirectoryListing(filePath, tree)).orderBy(x => x.type === "directory" ? 0 : 1).thenBy(x => path.basename(x.name!)).toArray())
 
 const downloadableFilesCurrentDirectorySelector = createSelector(
     [
         downloadableFilesTreeSelector,
         downloadableFilesPathSelector
     ],
-    (tree, path) => getDirectoryListing(path, tree))
+    (tree, filePath) => blinq(getDirectoryListing(filePath, tree)).orderBy(x => x.type === "directory" ? 0 : 1).thenBy(x => path.basename(x.name!)).toArray())
 
 const mapStateToProps = (state: RendererRootState /*, ownProps*/): SharedFilesStateProps => {
     //const outFiles = outFilesSelector(state);

@@ -20,6 +20,7 @@ import BalanceIndicator from "../../containers/dashboard/BalanceIndicator";
 import { DirectoryEntry } from "../../../shared/system/file/DirectoryEntry";
 import { FileEntry } from "../../../shared/system/file/FileEntry";
 import { NavigationCommand, BaseNavigationCommand } from "../../../shared/actions/fileNavigation";
+import * as path from "path"
 
 
 export interface SharedFilesStateProps {
@@ -135,7 +136,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                             return <FilesListItem key={f.file.fileName}>
                                                 <FilesListFile>
                                                     <DocumentSvg margin="0 1em 0 0" width="30px" />
-                                                    <Text margin="5px 0 0 0" color="#4f4f4f">{f.file.fileName}</Text>
+                                                    <Text margin="5px 0 0 0" color="#4f4f4f">{path.basename(f.file.fileName)}</Text>
                                                 </FilesListFile>
                                                 <div>
                                                     {(() => {
@@ -174,7 +175,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                         if (entry.type === "directory") {
                                             const directoryEntry = (entry as DirectoryEntry<DownloadableFile>);
                                             return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "downloadableFiles", location: directoryEntry.name! })}>
-                                                {directoryEntry.name}/
+                                                {path.basename(directoryEntry.name!)}/
                                         </FilesListItem>
                                         }
                                         throw Error("unexpected entry type")
@@ -279,7 +280,7 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                                         return <FilesListItem key={f.relativePath}>
                                             <FilesListFile>
                                                 <DocumentSvg margin="0 1em 0 0" width="30px" />
-                                                <Text margin="5px 0 0 0" color="#4f4f4f">{f.relativePath}</Text>
+                                                <Text margin="5px 0 0 0" color="#4f4f4f">{path.basename(f.relativePath)}</Text>
                                             </FilesListFile>
                                             <Hovered>
                                                 <DeleteIcon onClick={() => {
@@ -292,7 +293,7 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                                     if (entry.type === "directory") {
                                         const directoryEntry = (entry as DirectoryEntry<SharedFile>);
                                         return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
-                                            {directoryEntry.name}/
+                                            {path.basename(directoryEntry.name!)}/
                                         </FilesListItem>
                                     }
                                     throw Error("unexpected entry type")
