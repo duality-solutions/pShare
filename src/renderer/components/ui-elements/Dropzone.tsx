@@ -1,10 +1,17 @@
-import React from "react";
+import React, { useRef, useEffect, MutableRefObject } from "react";
 import { FunctionComponent } from "react";
 import { Text } from "./Text";
 import { Card } from "./Card";
 import Button from "./Button";
 import { FilePathInfo } from "../../../shared/types/FilePathInfo";
-export const Dropzone: FunctionComponent<DropzoneProps> = ({ error, filesSelected, multiple, accept }) => {
+export const Dropzone: FunctionComponent<DropzoneProps> = ({ error, filesSelected, directoriesSelected, multiple, accept }) => {
+    const dirFileInputRef: MutableRefObject<HTMLInputElement | null> = useRef(null);
+    useEffect(() => {
+        const elem = dirFileInputRef.current;
+        if (elem) {
+            elem.setAttribute("webkitdirectory", "") //annoyingly, we don't seem to be able to set this as an attr with JSX :(
+        }
+    })
     return <Card background="white" border={error ? "dashed 2px #ea4964" : "dashed 2px #b0b0b0"} minHeight="266px" padding="75px 0" onDragOver={e => {
         e.preventDefault();
         e.dataTransfer.dropEffect = "move";
@@ -36,10 +43,29 @@ export const Dropzone: FunctionComponent<DropzoneProps> = ({ error, filesSelecte
                 Select file
             </label>
         </Button>
+        {
+            directoriesSelected
+            &&
+            <>
+                <input ref={dirFileInputRef} type="file" id="dirElem" multiple={multiple} accept={accept || "*/*"} onChange={e => {
+                    e.preventDefault();
+                    if (!e.currentTarget.files) {
+                        return;
+                    }
+                    const files = [...e.currentTarget.files];
+                    directoriesSelected(files.map(f => ({ path: f.path, type: "", size: 0 })))
+                }} style={({ display: "none" })} />
+                <Button color="#0055c4" width="175px" type="button">
+                    <label style={{ width: "100%", height: "100%", display: "block", cursor: "pointer" }} className="button" htmlFor="dirElem">
+                        Select directory
+                    </label>
+                </Button>
+            </>}
     </Card>;
 };
 interface DropzoneDispatchProps {
     filesSelected: (files: FilePathInfo[]) => void;
+    directoriesSelected?: (directories: FilePathInfo[]) => void;
 }
 interface DropzoneStateProps {
     error?: DropzoneError;

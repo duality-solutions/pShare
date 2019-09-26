@@ -17,12 +17,10 @@ import { addFileSaga } from "./addFileSaga";
 import { startViewSharedFilesSaga } from "./startViewSharedFilesSaga";
 import { scanForLinkMessagesSaga } from "./scanForLinkMessagesSaga";
 import { sendLinkMessageSaga } from "./sendLinkMessageSaga";
-//import { fileShareSaga } from "./fileShareSaga";
 import { requestFileSaveDialogSaga } from "./fileRequestSaveDialogSaga";
 import { newLinkSaga } from "./newLinkSaga";
 import { restoreFromMnemonicSaga } from "./restoreFromMnemonicSaga";
 import { removeFileSaga } from "./removeFileSaga";
-import { fileDialogSaga } from "./fileDialogSaga"
 
 
 export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: BrowserWindowProvider) => [
@@ -30,7 +28,6 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => addFileSaga(),
     () => removeFileSaga(),
     () => fileWatchSaga(),
-    //() => fileShareSaga(rpcClient),
     () => linkRequestSaga(rpcClient),
     () => linkAcceptSaga(rpcClient),
     () => linkDeclineSaga(rpcClient),
@@ -48,6 +45,5 @@ export const getRootSaga = (rpcClient: RpcClientWrapper, browserWindowProvider: 
     () => requestFileSaveDialogSaga(browserWindowProvider),
     () => newLinkSaga(),
     () => restoreFromMnemonicSaga(rpcClient),
-    () => fileDialogSaga(browserWindowProvider)
 ]
 

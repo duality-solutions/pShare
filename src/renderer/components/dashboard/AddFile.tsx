@@ -18,13 +18,14 @@ export interface AddFileStateProps {
 export interface AddFilesDispatchProps {
     close: () => void
     filesSelected: (files: FilePathInfo[]) => void
+    //directoriesSelected: (directories: string[]) => void
 }
 
 export type AddFileProps = AddFileStateProps & AddFilesDispatchProps
 
 
 
-export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected, linkedUserCommonName }) => {
+export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,  linkedUserCommonName }) => {
     // react hooks FTW!!!!
     const [
         error,
@@ -34,11 +35,10 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
     const lastName = (userNameParts.length > 1) ? userNameParts[userNameParts.length - 1] : ""
     const firstName = userNameParts.length > 1 ? userNameParts.slice(0, -1).join(' ') : userNameParts[0]
     const filesSelectedHandler = (files: FilePathInfo[]) => {
-        // if (files.some(f => f.size > maximumFileSize)) {
-        //     setError({ title: "File too large!", message: "please select or drag a file that is no larger than 3gb" })
-        //     return
-        // }
         filesSelected(files)
+    }
+    const directoriesSelectedHander = (directories: FilePathInfo[]) => {
+        filesSelected(directories)
     }
     return <div style={{ width: "100%", display: 'block', position: "relative" }}>
         <BalanceIndicator hideLinkWhenMinimized={true} />
@@ -59,7 +59,7 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                     <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                         <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
                             <AddLinksIcon width="40px" height="30px" margin="0" /> Add file</Text>
-                        <Dropzone error={error} filesSelected={filesSelectedHandler} ></Dropzone>
+                        <Dropzone error={error} filesSelected={filesSelectedHandler} directoriesSelected={directoriesSelectedHander} ></Dropzone>
                     </Box>
                 </Box>
                 <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
