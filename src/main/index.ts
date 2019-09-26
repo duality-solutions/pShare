@@ -19,6 +19,7 @@ import { AppActions } from '../shared/actions/app';
 import { divertConsoleToLogger } from './system/divertConsoleToLogger';
 
 
+
 declare module 'electron' {
   interface BrowserWindow {
     inspectElement(x: number, y: number): void
@@ -56,7 +57,7 @@ if (!hasLock) {
   const persistencePaths = ['user.syncAgreed', 'user.userName', 'user.accountCreationTxId', 'user.accountCreated', 'rtcConfig'];
   let mainWindow: BrowserWindow | null
   let rtcWindow: BrowserWindow | null
-
+  // let aboutPanelWindow: BrowserWindow | null
 
   const store = configureStore(() => mainWindow, persistencePaths)
   store.getState();
@@ -96,7 +97,9 @@ if (!hasLock) {
   function createMainWindow() {
     const window = new BrowserWindow({ width: 1024, height: 768 })
 
-
+  // function createAboutPanelWindow() {
+  //   const window = new BrowserWindow({ width: 320, height: 240});
+  // }
 
 
 
@@ -112,6 +115,10 @@ if (!hasLock) {
         console.log("closing rtc window")
         rtcWindow.close()
       }
+      // if (aboutPanelWindow) {
+      //   console.log("closing about panel window")
+      //   aboutPanelWindow.close()
+      // }
     })
 
     window.webContents.on('devtools-opened', () => {
@@ -212,6 +219,14 @@ if (!hasLock) {
     }
   })
 
+  app.setAboutPanelOptions({
+    applicationName: 'pShare',  
+    applicationVersion: require('../../getVersion').version,
+    version: '',
+    credits: `https://duality.solutions/pShare`,
+
+    // website: 'https://duality.solutions/pShare'
+  })
 
 
   function setAppMenu(mainWindow: BrowserWindow) {
@@ -231,6 +246,21 @@ if (!hasLock) {
         ]
       },
       {
+        role: 'Help',
+        submenu: [
+          {
+            label: 'Support',
+            click() { shell.openExternal('https://discord.gg/87be63e')}
+          },
+          {
+            label: 'About pShare',
+            role: 'about'
+          }
+        ]
+      }
+    ];
+    if (isDevelopment) {
+      template.push(<any>{
         label: 'View',
         submenu: [
           { role: 'reload' },
@@ -238,14 +268,12 @@ if (!hasLock) {
           {
             label: 'Reset redux store',
             async click() {
-
               mainWindow && await mainWindow.webContents.executeJavaScript("window.resetStore && window.resetStore()")
             }
           },
           {
             label: 'Toggle RTC window devtools',
             click() {
-
               rtcWindow && rtcWindow.webContents.openDevTools({ mode: "detach" });
             }
           },
@@ -257,27 +285,12 @@ if (!hasLock) {
           { type: 'separator' },
           { role: 'togglefullscreen' }
         ]
-      },
-      {
-        role: 'window',
-        submenu: [
-          { role: 'minimize' },
-          { role: 'close' }
-        ]
-      },
-      {
-        role: 'help',
-        submenu: [
-          {
-            label: 'Learn More',
-            click() { shell.openExternal('https://electronjs.org'); }
-          }
-        ]
-      }
-    ];
+      })
+    }
+
     if (process.platform === 'darwin') {
       template.unshift(<any>{
-        label: app.getName(),
+        label: 'pShare',
         submenu: [
           { role: 'about' },
           { type: 'separator' },
@@ -302,13 +315,13 @@ if (!hasLock) {
       //   }
       // )
       // Window menu
-      template[3].submenu = [
-        { role: 'close' },
-        { role: 'minimize' },
-        { role: 'zoom' },
-        { type: 'separator' },
-        { role: 'front' }
-      ];
+      // template[3].submenu = [
+        // { role: 'close' },
+        // { role: 'minimize' },
+        // { role: 'zoom' },
+        // { type: 'separator' },
+        // { role: 'front' }
+      // ];
     }
     const menu = Menu.buildFromTemplate(<any>template);
     Menu.setApplicationMenu(menu);
