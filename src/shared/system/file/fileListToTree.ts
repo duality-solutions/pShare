@@ -1,9 +1,10 @@
-import { blinq, empty } from "blinq";
+import { blinq, empty, range } from "blinq";
 import { Enumerable } from "blinq/dist/types/src/Enumerable";
 import { FileEntry } from "./FileEntry";
 import { DirectoryEntry } from "./DirectoryEntry";
 import { SharedFile } from "../../types/SharedFile";
 import { DownloadableFile } from "../../types/DownloadableFile";
+import * as path from "path"
 
 function isSharedFile(item: SharedFile | DownloadableFile): item is SharedFile {
     return !!(item as SharedFile).direction
@@ -20,10 +21,16 @@ interface RawFileEntry<T extends SharedFile | DownloadableFile> {
 /// takes a list of filepaths and turns them into an object hierarchy representing directories and files
 export function fileListToTree<T extends SharedFile | DownloadableFile>(list: T[]): DirectoryEntry<T> {
     const bList = blinq(list);
+    const v = bList.firstOrDefault()
+    if (!v) {
+        //throw {}
+        return { entries: [], type: "directory" }
+    }
+
     const fileSegmentsList = bList
         .select(file => {
             if (isSharedFile(file)) {
-                if(file.relativePath.startsWith("/")){
+                if (file.relativePath.startsWith("/")) {
                     throw Error("paths should not start with '/'")
                 }
                 const v: RawFileEntry<T> = {
@@ -32,7 +39,7 @@ export function fileListToTree<T extends SharedFile | DownloadableFile>(list: T[
                 };
                 return v
             } else if (isDownloadableFile(file)) {
-                if(file.file.fileName.startsWith("/")){
+                if (file.file.fileName.startsWith("/")) {
                     throw Error("paths should not start with '/'")
                 }
                 const v: RawFileEntry<T> = {
@@ -43,13 +50,20 @@ export function fileListToTree<T extends SharedFile | DownloadableFile>(list: T[
             }
             throw Error("unexpected")
         });
-
-    return fileSegmentsListToTree(undefined, fileSegmentsList);
+    let baseDir: string | undefined
+    if (isSharedFile(v)) {
+        const depth = v.relativePath.split("/").length
+        const backPaths = range(0, depth).select(x => "..").toArray().join("/")
+        baseDir = path.normalize(path.join(v.path, backPaths))
+        console.log("basedir is ", baseDir)
+    }
+    return fileSegmentsListToTree(undefined, fileSegmentsList, baseDir);
 }
 
 function fileSegmentsListToTree<T extends SharedFile | DownloadableFile>(
     name: string | undefined,
-    list: Enumerable<RawFileEntry<T>>
+    list: Enumerable<RawFileEntry<T>>,
+    baseDir: string | undefined
 ): DirectoryEntry<T> {
     const lookup = list.toLookup(file => file.pathSegments.length > 1);
     const files = lookup.get(false) || empty<RawFileEntry<T>>();
@@ -61,7 +75,7 @@ function fileSegmentsListToTree<T extends SharedFile | DownloadableFile>(
     const dirEntries: Enumerable<DirectoryEntry<T>> = dirs
         .groupBy(d => d.pathSegments[0])
         .select(g =>
-            fileSegmentsListToTree(g.key, g.select(({ pathSegments: [, ...pathSegments], ...remaining }) => ({ ...remaining, pathSegments })))
+            fileSegmentsListToTree(g.key, g.select(({ pathSegments: [, ...pathSegments], ...remaining }) => ({ ...remaining, pathSegments })), baseDir ? path.join(baseDir, g.key) : undefined)
         );
     const entries = empty<FileEntry<T> | DirectoryEntry<T>>()
         .concat(dirEntries)
@@ -73,11 +87,13 @@ function fileSegmentsListToTree<T extends SharedFile | DownloadableFile>(
         ? {
             name,
             type: "directory",
-            entries
+            entries,
+            fullPath: baseDir
         }
         : {
             type: "directory",
-            entries
+            entries,
+            fullPath: baseDir
         };
 }
 

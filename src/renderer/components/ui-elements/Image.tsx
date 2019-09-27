@@ -30,7 +30,7 @@ interface ImageProps {
     height?: string,
     margin?: string,
     white?: boolean,
-    onClick?: () => void,
+    onClick?: (e:React.MouseEvent) => void,
     cursor?: string,
     float?: string,
 

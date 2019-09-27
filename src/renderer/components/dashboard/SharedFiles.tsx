@@ -292,9 +292,24 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                                     }
                                     if (entry.type === "directory") {
                                         const directoryEntry = (entry as DirectoryEntry<SharedFile>);
-                                        return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
-                                            {path.basename(directoryEntry.name!)}/
-                                        </FilesListItem>
+                                        return (
+                                            <FilesListItem
+                                                key={directoryEntry.name}
+                                                onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}
+                                            >
+                                                <FilesListFile>
+                                                    <Text margin="5px 0 0 0" color="#4f4f4f">{path.basename(directoryEntry.name!)}/</Text>
+
+                                                </FilesListFile>
+                                                <Hovered>
+                                                    <DeleteIcon onClick={e => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        toggleDeleteModal(directoryEntry.fullPath!);
+                                                        setFilePath(directoryEntry.fullPath!);
+                                                    }} width="35px" height="20px" margin="5px 10px" />
+                                                </Hovered>
+                                            </FilesListItem>)
                                     }
                                     throw Error("unexpected entry type")
 
