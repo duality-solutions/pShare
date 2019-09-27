@@ -4,12 +4,14 @@ import { RequestStatus } from '../../main/sagas/bulkImportSaga';
 
 export interface BulkImportPreviewState {
     previewData: string,
+    err: boolean,
     fqdnData: RequestStatus[]
 }
 
 const initialState: BulkImportPreviewState = {
     previewData: '',
-    fqdnData: []
+    fqdnData: [],
+    err: false
 }
 
 export const bulkImport = (state = initialState, action: BulkImportActions): BulkImportPreviewState => {
@@ -19,7 +21,7 @@ export const bulkImport = (state = initialState, action: BulkImportActions): Bul
         case getType(BulkImportActions.bulkImportSuccess):
             return {...state, fqdnData: [...action.payload] }
             case getType(BulkImportActions.bulkImportFailed):
-                return {...state, fqdnData: [...action.payload] }
+                return {...state, fqdnData: [...action.payload], err: true }
             default:
             return state
     }

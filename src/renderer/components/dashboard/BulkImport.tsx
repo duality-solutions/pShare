@@ -14,7 +14,8 @@ import { RequestStatus } from "../../../main/sagas/bulkImportSaga";
 
 export interface BulkImportStateProps {
     data: string,
-    fqdnData: RequestStatus[]
+    fqdnData: RequestStatus[], 
+    err: boolean
 }
 
 export interface BulkImportsDispatchProps {
@@ -25,7 +26,7 @@ export interface BulkImportsDispatchProps {
 
 export type BulkImportProps = BulkImportStateProps & BulkImportsDispatchProps
 
-export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, previewBulkImport, beginBulkImport, fqdnData }) => {
+export const BulkImport: FunctionComponent<BulkImportProps> = ({ err, data, push, previewBulkImport, beginBulkImport, fqdnData }) => {
     // react hooks FTW!!!!
     const [
         error,
@@ -70,18 +71,11 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                 return (<>
                 <Container height="50vh" margin="10% 0 0 0">
                     <Box direction="column" align="center" width="100%">
-                        <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
+                        <Box direction="column" width="500px" align="center" margin="0 auto 1em auto">
                             <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
                                 Bulk Import Links Preview
                             </Text>
-                            <UserList>
-                            {data.split('\n').map(item => item.length > 0 ?
-                            <UserListItem >
-                                {item}
-                            </UserListItem>  : ''                      
-                            )}
-                            </UserList>
-                            <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 1em 0">
+                            <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 0 0">
                             <Button onClick={() => setStatus('dropzone')} width="100px" margin="0 1em 0 0">
                                 Cancel
                             </Button>
@@ -92,6 +86,13 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                                 Send Link Requests
                             </Button>
                             </Box>
+                            <UserList style={{margin: '0'}}>
+                            {data.split('\n').map((item, idx) => item.length > 0 ?
+                            <UserListItem key={idx}>
+                                {item}
+                            </UserListItem>  : ''                      
+                            )}
+                            </UserList>
                         </Box>
                     </Box>
                 </Container>                
@@ -100,32 +101,31 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                 return (<>
                 <Container height="50vh" margin="10% 0 0 0">
                 <Box direction="column" align="center" width="100%">
-                <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
+                <Box direction="column" width="500px" align="center" margin="0 auto 1em auto">
                     <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="900">
                         Bulk Import Result
                     </Text>
+                    <Button primary onClick={() => push('/Dashboard/MyLinks')} margin="1em 0 0 0">
+                        Go Back to MyLinks
+                    </Button>
                     <UserList>
-                        <UserListItem>
-                            <div>Link</div>
-                            <div>Status</div>
-                        </UserListItem>
-                    {fqdnData.map(item => 
-                        <>
-                        <UserListItem>
-                            <div>{item.link}</div>
-                            <div>{item.status}</div>
-                        </UserListItem>
-                        {item.status === 'Insufficient funds' ? 
+                        {err ? 
                         <UserListItem style={{ background: 'red', color: 'white', padding: '10px'}}>
                             You have run out of funds. All further link requests are aborted.
                         </UserListItem>
                          : ''}
-                        </>
+                        <UserListItem>
+                            <div>Link</div>
+                            <div>Status</div>
+                        </UserListItem>
+
+                    {fqdnData.map((item,idx) => 
+                        <UserListItem key={idx}>
+                            <div>{item.link}</div>
+                            <div>{item.status}</div>
+                        </UserListItem>
                     )}
                     </UserList>
-                    <Button primary onClick={() => push('/Dashboard/MyLinks')} margin="1em 0">
-                        Go Back to MyLinks
-                    </Button>
                 </Box>
                 </Box>
                 </Container>
