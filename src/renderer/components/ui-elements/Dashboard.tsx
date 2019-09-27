@@ -87,10 +87,10 @@ const FilesList = styled('ul')`
 `;
 
 const Hovered = styled('div')`
-    visibility:hidden;
+    opacity:0;
 `;
 const Unhovered = styled('div')`
-    visibility: visible;
+    opacity:1;
 `;
 
 const FilesListItem = styled('li')`
@@ -98,16 +98,20 @@ const FilesListItem = styled('li')`
     direction: row;
     justify-content: space-between;
     padding: 0.5em 0.25em;
-    border: solid 2px #e7e7e700;
+    border: 2px solid #e7e7e700;
+    transition : border-color 200ms ease-out;
+    ${Hovered},${Unhovered} {
+        transition : opacity 200ms ease-out
+    }
     &:hover {
         border-radius: 7px;
-        border: solid 2px #e7e7e7ff;
+        border-color: #e7e7e7ff;
     };
     &:hover ${Hovered} {
-        visibility: visible;
+        opacity:1;
     }
     &:hover ${Unhovered} {
-        visibility: hidden;
+        opacity:0;
     }
 
 `;
@@ -119,8 +123,11 @@ const FilesListFile = styled('span')`
     justify-content: flex-start;
     padding: 0;
     margin: 0;
+    ${Hovered} {
+        transition : opacity 200ms ease-out
+    }
     &:hover ${Hovered} {
-        visibility: visible;
+        opacity:1;
     }
 
 `;
