@@ -95,7 +95,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
         for (const userFqdn of listFqdnsThatDontExist) {
             failCount++;
-            fqdnRequestStatus.push({ status: 'user does not exit', link: userFqdn })
+            fqdnRequestStatus.push({ status: 'User does not exist', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -113,7 +113,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
         const excludedUserFqdns = usersToExclusions.where(x => x.excludedUserFqdn != null).select(x => x.user.object_full_path);
         for (const userFqdn of excludedUserFqdns) {
             failCount++;
-            fqdnRequestStatus.push({ status: 'already tried to connect', link: userFqdn })
+            fqdnRequestStatus.push({ status: 'Link already requested/complete/denied', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -142,16 +142,18 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
             try {
                 yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
                 successCount++;
-                fqdnRequestStatus.push({ status: 'success', link: user.link_address})
+                fqdnRequestStatus.push({ status: 'success', link: user.object_full_path})
 
             } catch (err) {
                 failCount++;
                 if (/^Insufficient funds/.test(err.message)) {
-                    yield put(BulkImportActions.bulkImportFailed())
+                    fqdnRequestStatus.push({ status: 'Insufficient funds', link: user.object_full_path })
+                    yield put(BulkImportActions.bulkImportFailed(fqdnRequestStatus))
                     yield put(BdapActions.insufficientFunds("request a link to " + user.object_id + " or any more users in the bulk import list"))
                     yield put(BdapActions.getPendingRequestLinks());
                     return;
                 } else {
+                    fqdnRequestStatus.push({ status: 'Failed', link: user.object_full_path })
                     yield put(BulkImportActions.bulkImportProgress({
                         totalItems: totalListItems,
                         failed: failCount,

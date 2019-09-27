@@ -59,7 +59,7 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                     <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                             <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
-                                Bulk Import FQDN file
+                                Bulk Import File
                             </Text>
                             <Dropzone error={error} filesSelected={filesSelectedHandler} ></Dropzone>
                         </Box>
@@ -72,11 +72,15 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                     <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="500px" align="center" margin="0 auto 0 auto">
                             <Text margin="0" color="#4a4a4a" fontSize="1.4em" fontWeight="600">
-                                Preview
+                                Bulk Import Links Preview
                             </Text>
-                            <Text style={{ whiteSpace:'pre-wrap'}}>
-                                {data}
-                            </Text>
+                            <UserList>
+                            {data.split('\n').map(item => item.length > 0 ?
+                            <UserListItem >
+                                {item}
+                            </UserListItem>  : ''                      
+                            )}
+                            </UserList>
                             <Box display="flex" direction="row" width="100%" justifyContent="flex-start" margin="1em 0 1em 0">
                             <Button onClick={() => setStatus('dropzone')} width="100px" margin="0 1em 0 0">
                                 Cancel
@@ -102,18 +106,25 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
                     </Text>
                     <UserList>
                         <UserListItem>
-                            <div>FQDN</div>
+                            <div>Link</div>
                             <div>Status</div>
                         </UserListItem>
                     {fqdnData.map(item => 
+                        <>
                         <UserListItem>
                             <div>{item.link}</div>
                             <div>{item.status}</div>
                         </UserListItem>
+                        {item.status === 'Insufficient funds' ? 
+                        <UserListItem style={{ background: 'red', color: 'white', padding: '10px'}}>
+                            You have run out of funds. All further link requests are aborted.
+                        </UserListItem>
+                         : ''}
+                        </>
                     )}
                     </UserList>
-                    <Button primary onClick={() => push('/Dashboard/MyLinks')} margin="1em 0 0 0">
-                        Go Back to MyLinks...
+                    <Button primary onClick={() => push('/Dashboard/MyLinks')} margin="1em 0">
+                        Go Back to MyLinks
                     </Button>
                 </Box>
                 </Box>
@@ -124,7 +135,7 @@ export const BulkImport: FunctionComponent<BulkImportProps> = ({ data, push, pre
     } 
     
      return <div style={{ width: "100%", display: 'block', position: "relative",  height: '100%', overflow:'hidden' }}>
-        <Box background="#fafafa" minHeight="90vh" width="auto" margin="18px"
+        <Box background="#fafafa" minHeight="95vh" width="auto" margin="18px"
             border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em" style={{overflowY:'scroll'}}>
             {renderBody(status, fqdnData)}
         </Box>

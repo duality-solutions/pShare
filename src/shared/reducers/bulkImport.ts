@@ -18,7 +18,9 @@ export const bulkImport = (state = initialState, action: BulkImportActions): Bul
             return { ...state, previewData: action.payload }
         case getType(BulkImportActions.bulkImportSuccess):
             return {...state, fqdnData: [...action.payload] }
-        default:
+            case getType(BulkImportActions.bulkImportFailed):
+                return {...state, fqdnData: [...action.payload] }
+            default:
             return state
     }
 };

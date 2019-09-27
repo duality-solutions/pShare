@@ -8,7 +8,7 @@ export const BulkImportActions = {
     beginBulkImport: createStandardAction('bulkImport/BEGIN_BULK_IMPORT')<string>(),
     bulkImportAborted: createStandardAction('bulkImport/BULK_IMPORT_ABORTED')<void>(),
     bulkImportProgress: createStandardAction('bulkImport/BULK_IMPORT_PROGRESS')<BulkImportProgress>(),
-    bulkImportFailed: createStandardAction('bulkImport/BULK_IMPORT_FAILED')<void>(),
+    bulkImportFailed: createStandardAction('bulkImport/BULK_IMPORT_FAILED')<RequestStatus[]>(),
     bulkImportSuccess: createStandardAction('bulkImport/BULK_IMPORT_SUCCESS')<RequestStatus[]>(),
 }
 
