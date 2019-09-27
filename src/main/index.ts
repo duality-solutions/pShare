@@ -108,6 +108,8 @@ if (!hasLock) {
             <meta charset="UTF-8">
             <style>
              body {
+              @import url('https://fonts.googleapis.com/css?family=Open+Sans');
+              font-family: 'Open Sans', sans-serif;
                text-align: center;
                overflow:hidden;
                width: 100vw;
@@ -117,30 +119,30 @@ if (!hasLock) {
                padding: 20px 0;
                justify-content: space-around;
                align-items: center;
-               background: #242729;
+               background: white;
              }
              #link {
               cursor: pointer;
-              color: #4b97e2;
+              color: #2e77d0;
             }
             #title {
-              // color : #4a4a4a;
-              color: white;
+              color : #4a4a4a;
+              // color: white;
               font-size: 24px;
               font-weight: 800;
               line-height: 24px;
               margin: 0;
             }
             #version {
-              // color : #4a4a4a;
-              color: white;
-              font-size: 18px;
-              font-weight: 600;
+              color : #4a4a4a;
+              // color: white;
+              font-size: 14px;
+              font-weight: 400;
               margin:0;
             }
             svg {
-              height: 80px;
-              width: 80px;
+              height: 100px;
+              width: 100px;
             }
          </style>
           </head>
