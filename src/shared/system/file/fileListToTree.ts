@@ -20,12 +20,13 @@ interface RawFileEntry<T extends SharedFile | DownloadableFile> {
 
 /// takes a list of filepaths and turns them into an object hierarchy representing directories and files
 export function fileListToTree<T extends SharedFile | DownloadableFile>(list: T[]): DirectoryEntry<T> {
-    const bList = blinq(list);
-    const v = bList.firstOrDefault()
-    if (!v) {
+    if (list.length === 0) {
         //throw {}
         return { entries: [], type: "directory" }
     }
+    const bList = blinq(list);
+    const v = bList.first()
+
 
     const fileSegmentsList = bList
         .select(file => {

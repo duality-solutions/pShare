@@ -219,7 +219,7 @@ const DeletePrompt: FunctionComponent<{
         }}>
             <Box background="#fafafa" margin="35vh auto 0 20vw" borderRadius="5px" padding="1em 0.5em" minWidth="200px">
                 <Text fontSize="1em" fontWeight="400" margin="0 0 10px 0" color="#4a4a4a" align="center">
-                    Are you sure you wanna delete <strong>{filePath ? filePath.split('/').pop() : ''}</strong> ?
+                    Are you sure you want to remove <strong>{filePath ? path.basename(filePath) : ''}</strong> ?
             </Text>
                 <Box display="flex" width="100%" margin="0" justifyContent="space-between">
                     <CustomButton background="palevioletred" color="white" width="49%" onClick={() => cancel()}>Cancel</CustomButton>
