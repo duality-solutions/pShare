@@ -90,7 +90,7 @@ const Hovered = styled('div')`
     opacity:0;
 `;
 const Unhovered = styled('div')`
-    opacity:1;
+    visibility: visible;
 `;
 
 const FilesListItem = styled('li')`
@@ -100,7 +100,7 @@ const FilesListItem = styled('li')`
     padding: 0.5em 0.25em;
     border: 2px solid #e7e7e700;
     transition : border-color 200ms ease-out;
-    ${Hovered},${Unhovered} {
+    ${Hovered} {
         transition : opacity 200ms ease-out
     }
     &:hover {
@@ -111,7 +111,7 @@ const FilesListItem = styled('li')`
         opacity:1;
     }
     &:hover ${Unhovered} {
-        opacity:0;
+        visibility: hidden;
     }
 
 `;
