@@ -15,8 +15,8 @@ import { installExtensionsAsync } from './installExtensionsAsync';
 import { configureStore } from './store';
 import { install as installDevtron } from 'devtron'
 import { AppActions } from '../shared/actions/app';
-
 import { divertConsoleToLogger } from './system/divertConsoleToLogger';
+import { version } from '../../getVersion';
 
 
 declare module 'electron' {
@@ -56,7 +56,7 @@ if (!hasLock) {
   const persistencePaths = ['user.syncAgreed', 'user.userName', 'user.accountCreationTxId', 'user.accountCreated', 'rtcConfig'];
   let mainWindow: BrowserWindow | null
   let rtcWindow: BrowserWindow | null
-
+  let aboutPanelWindow: BrowserWindow | null
 
   const store = configureStore(() => mainWindow, persistencePaths)
   store.getState();
@@ -93,13 +93,98 @@ if (!hasLock) {
     return window
   }
 
+  function createAboutPanelWindow() {
+    const window = new BrowserWindow({ width: 420, height: 300, resizable:false});
+    window.on('closed', () => {
+      aboutPanelWindow = null
+    })
+    const loadView = ( props: { title: string, version: string, }) => {
+
+      return (`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${props.title}</title>
+            <meta charset="UTF-8">
+            <style>
+             body {
+               text-align: center;
+               overflow:hidden;
+               width: 100vw;
+               height: 80vh;
+               display: flex;
+               flex-direction: column;
+               padding: 20px 0;
+               justify-content: space-around;
+               align-items: center;
+               background: #242729;
+             }
+             #link {
+              cursor: pointer;
+              color: #4b97e2;
+            }
+            #title {
+              // color : #4a4a4a;
+              color: white;
+              font-size: 24px;
+              font-weight: 800;
+              line-height: 24px;
+              margin: 0;
+            }
+            #version {
+              // color : #4a4a4a;
+              color: white;
+              font-size: 18px;
+              font-weight: 600;
+              margin:0;
+            }
+            svg {
+              height: 80px;
+              width: 80px;
+            }
+         </style>
+          </head>
+          <body>
+            <p id="title">pShare</p>
+              
+            <svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 500 500">
+                    <defs>
+                      <style>.cls-1{fill:#fff;}.cls-2{fill:#2e77d0;}.cls-3{opacity:0.1;}.cls-4{opacity:0.05;}</style>
+                    </defs>
+                    <title>p-share-logo-svgs</title>
+                    <polygon class="cls-1" points="289.712 249.111 289.712 203.256 250 180.329 210.288 203.256 210.288 249.111 250 272.039 289.712 249.111"/>
+                    <path class="cls-2" d="M250,129.71487l-83.366,48.13141V370.28513l43.65448-25.40119V299.313L250,322.24045,333.366,274.109V177.84628Zm39.71155,119.19025L250,271.83255l-39.71155-22.92743V203.0502L250,180.12277l39.71149,22.92743Z"/><polygon class="cls-3" points="333.366 274.109 250 322.24 250.347 226.184 333.366 177.846 333.366 274.109"/>
+                    <polygon class="cls-4" points="250.347 226.184 166.634 177.846 250 129.715 333.366 177.846 250.347 226.184"/>
+              </svg>
+
+             <a id="link" onClick="handleClick()">
+                https://duality.solutions/pshare
+              </a>
+             <p id="version">Version: ${props.version}</p>
+            <script type="text/javascript">
+              const shell = require("electron").shell;
+              function handleClick () {
+                shell.openExternal('https://duality.solutions/pshare')
+                return false;
+              }
+            </script>
+             </body>
+        </html>
+      `)
+    }
+
+    const content = 'data:text/html;charset=UTF-8,' + encodeURIComponent(loadView({
+      title: "About pShare",
+      version: version || "Not found",
+    }));
+    window.loadURL(content);
+
+    return window;
+  }
+
   function createMainWindow() {
     const window = new BrowserWindow({ width: 1024, height: 768 })
-
-
-
-
-
 
     console.log(`loading templateUrl : ${templateUrl}`)
     window.loadURL(`${templateUrl}?role=renderer`)
@@ -181,6 +266,7 @@ if (!hasLock) {
     }
     mainWindow = createMainWindow()
     rtcWindow = createRtcWindow()
+
     setAppMenu(mainWindow);
 
     if (isDevelopment) {
@@ -213,7 +299,6 @@ if (!hasLock) {
   })
 
 
-
   function setAppMenu(mainWindow: BrowserWindow) {
     const template = [
       {
@@ -231,6 +316,24 @@ if (!hasLock) {
         ]
       },
       {
+        role: 'Help',
+        submenu: [
+          {
+            label: 'Support',
+            click() { shell.openExternal('https://discord.gg/87be63e')}
+          },
+          {
+            label: 'About pShare',
+            click() {
+              if(aboutPanelWindow) return;
+              aboutPanelWindow = createAboutPanelWindow()
+            }
+          }
+        ]
+      }
+    ];
+    if (isDevelopment) {
+      template.push(<any>{
         label: 'View',
         submenu: [
           { role: 'reload' },
@@ -238,14 +341,12 @@ if (!hasLock) {
           {
             label: 'Reset redux store',
             async click() {
-
               mainWindow && await mainWindow.webContents.executeJavaScript("window.resetStore && window.resetStore()")
             }
           },
           {
             label: 'Toggle RTC window devtools',
             click() {
-
               rtcWindow && rtcWindow.webContents.openDevTools({ mode: "detach" });
             }
           },
@@ -257,29 +358,20 @@ if (!hasLock) {
           { type: 'separator' },
           { role: 'togglefullscreen' }
         ]
-      },
-      {
-        role: 'window',
-        submenu: [
-          { role: 'minimize' },
-          { role: 'close' }
-        ]
-      },
-      {
-        role: 'help',
-        submenu: [
-          {
-            label: 'Learn More',
-            click() { shell.openExternal('https://electronjs.org'); }
-          }
-        ]
-      }
-    ];
+      })
+    }
+
     if (process.platform === 'darwin') {
       template.unshift(<any>{
-        label: app.getName(),
+        label: 'pShare',
         submenu: [
-          { role: 'about' },
+          { 
+            label: 'About pShare',
+            click() {
+              if(aboutPanelWindow) return;
+              aboutPanelWindow = createAboutPanelWindow()
+            }
+          },
           { type: 'separator' },
           { role: 'services', submenu: [] },
           { type: 'separator' },
@@ -302,13 +394,13 @@ if (!hasLock) {
       //   }
       // )
       // Window menu
-      template[3].submenu = [
-        { role: 'close' },
-        { role: 'minimize' },
-        { role: 'zoom' },
-        { type: 'separator' },
-        { role: 'front' }
-      ];
+      // template[3].submenu = [
+        // { role: 'close' },
+        // { role: 'minimize' },
+        // { role: 'zoom' },
+        // { type: 'separator' },
+        // { role: 'front' }
+      // ];
     }
     const menu = Menu.buildFromTemplate(<any>template);
     Menu.setApplicationMenu(menu);
