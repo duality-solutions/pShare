@@ -220,7 +220,7 @@ const DeletePrompt: FunctionComponent<{
         }}>
             <Box background="#fafafa" margin="35vh auto 0 20vw" borderRadius="5px" padding="1em 0.5em" minWidth="200px">
                 <Text fontSize="1em" fontWeight="400" margin="0 0 10px 0" color="#4a4a4a" align="center">
-                    Are you sure you wanna delete <strong>{filePath ? filePath.split('/').pop() : ''}</strong> ?
+                    Are you sure you want to remove <strong>{filePath ? path.basename(filePath) : ''}</strong> ?
             </Text>
                 <Box display="flex" width="100%" margin="0" justifyContent="space-between">
                     <CustomButton background="#f5f5f5" color="#4a4a4a" width="49%" onClick={() => cancel()}>
@@ -321,13 +321,24 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                                     }
                                     if (entry.type === "directory") {
                                         const directoryEntry = (entry as DirectoryEntry<SharedFile>);
-                                        return <FilesListItem key={directoryEntry.name} style={{cursor:'pointer'}} onClick={() => 
-                                                    openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
+                                        return (
+                                            <FilesListItem
+                                                key={directoryEntry.name}
+                                                onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}
+                                            >
                                                 <FilesListFile>
                                                     <FolderIcon margin="0 1em 0 0" width="25px" height="25px" />
-                                                    <Text color="#4a4a4a" margin="5px 0 0 0">  {path.basename(directoryEntry.name!)} </Text>
+                                                    <Text margin="3px 0 0 0" color="#4f4f4f">{path.basename(directoryEntry.name!)}</Text>
                                                 </FilesListFile>
-                                        </FilesListItem>
+                                                <Hovered>
+                                                    <DeleteIcon onClick={e => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        toggleDeleteModal(directoryEntry.fullPath!);
+                                                        setFilePath(directoryEntry.fullPath!);
+                                                    }} width="35px" height="20px" margin="5px 10px" />
+                                                </Hovered>
+                                            </FilesListItem>)
                                     }
                                     throw Error("unexpected entry type")
 

@@ -3,6 +3,6 @@ import { FilePathInfo } from '../types/FilePathInfo';
 export const AddFileActions = {
     close: createStandardAction('add_files/CLOSE')<void>(),
     filesSelected: createStandardAction('add_files/FILES_SELECTED')<FilePathInfo[]>(),
-    //directoriesSelected: createStandardAction('add_files/DIRECTORIES_SELECTED')<string[]>(),
+    failed: createStandardAction('add_files/FAILED')<string>(),
 };
 export type AddFileActions = ActionType<typeof AddFileActions>;

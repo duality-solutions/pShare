@@ -31,8 +31,12 @@ export function* addFileSaga() {
         const targetDirectory = path.join(baseDirectory, currentPath)
         yield call(() => fsExtra.ensureDir(targetDirectory))
 
-        yield* addDroppedFiles(files, targetDirectory)
-        yield* addDroppedDirectories(directories, targetDirectory)
+        try {
+            yield* addDroppedFiles(files, targetDirectory)
+            yield* addDroppedDirectories(directories, targetDirectory)
+        } catch (err) {
+            yield put(AddFileActions.failed(err && typeof err.message === "string" ? err.message : "something went wrong"))
+        }
         yield put(AddFileActions.close())
     })
 }
@@ -47,11 +51,11 @@ function* addDroppedDirectories(filePathInfos: FilePathInfo[], targetDirectory: 
     for (const folderInfo of filePathInfos) {
         const allFilePaths: string[] = yield call(() => getAllFilePaths([folderInfo.path]))
         const dirName = path.basename(folderInfo.path)
-        const newDirectoryPath = path.join(targetDirectory, dirName)
-        const exists: boolean = yield call(() => pathExists(newDirectoryPath))
-        if (exists) {
-            throw Error("pathExists")
-        }
+        // const newDirectoryPath = path.join(targetDirectory, dirName)
+        // const exists: boolean = yield call(() => pathExists(newDirectoryPath))
+        // if (exists) {
+        //     throw Error("pathExists")
+        // }
         const relativePaths = allFilePaths.map(p => ({ absolutePath: p, relativePath: path.join(dirName, path.relative(folderInfo.path, p)) }))
         const ops = relativePaths.map(({ absolutePath, relativePath }) => ({ src: absolutePath, dest: path.join(targetDirectory, relativePath) }))
         operations.push(...ops)
@@ -68,14 +72,14 @@ function* addDroppedDirectories(filePathInfos: FilePathInfo[], targetDirectory: 
 
 
 }
-async function pathExists(path: string): Promise<boolean> {
-    try {
-        await fs.promises.access(path)
-    } catch{
-        return false
-    }
-    return true
-}
+// async function pathExists(path: string): Promise<boolean> {
+//     try {
+//         await fs.promises.access(path)
+//     } catch{
+//         return false
+//     }
+//     return true
+// }
 function* addDroppedFiles(filePathInfos: FilePathInfo[], targetDirectory: string) {
     for (const fpi of filePathInfos) {
         console.log("filePathInfo : " + fpi.path)
