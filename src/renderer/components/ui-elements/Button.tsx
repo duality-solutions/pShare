@@ -93,6 +93,18 @@ const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick,
       {label} <span style={{float:"right"}}>&#8594;</span>
   </StyledButton>
 )
+//2e77d0
+const BreadcrumbButton = styled('div')<{ type?: string, active?: boolean }>`
+  display: inline-block;
+   min-width: 50px;
+   padding: 4px 2px 4px 2px;
+   margin: 10px 0 10px 0;
+   border: solid 0.1px white;
+   background: ${(props) => props.active ? '#2e77d0': '#4a4a4a' };
+   border-radius: 0px;
+   clip-path: ${(props) => props.active ? 'polygon(75% 0%, 88% 50%, 75% 100%, 0% 100%, 0% 54%, 0% 0%) ': ''}; 
+ cursor: pointer;
+`;
 
 const StyledSharedButton = styled('div')<{ white?: boolean , margin?: string}>`
   width: 132px;
@@ -130,6 +142,6 @@ const DownloadButton:React.FunctionComponent<{ onClick: () => void, white?: bool
 )
 export default StyledButton
 
-export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton, BackButton, CustomButton };
+export { ArrowButton, BackArrowButton, LightButton, SharedButton, DownloadButton, BackButton, CustomButton, BreadcrumbButton };
 
 

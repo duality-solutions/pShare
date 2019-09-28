@@ -3,9 +3,9 @@ import React from "react";
 import man from "../../assets/man.svg";
 import { Box } from "../ui-elements/Box";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon, ErrorIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon, ErrorIcon, FolderIcon, GoBackIcon } from "../ui-elements/Image";
 import { Text } from "../ui-elements/Text";
-import Button, { SharedButton, DownloadButton, CustomButton } from "../ui-elements/Button";
+import { SharedButton, DownloadButton, CustomButton, BreadcrumbButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
 import { FilesList, FilesListItem, FilesListFile, Hovered } from "../ui-elements/Dashboard";
 import { SharedFile } from "../../../shared/types/SharedFile";
@@ -51,7 +51,8 @@ export const SharedFiles: FunctionComponent<SharedFilesProps> = ({ downloadableF
 
     return <>
         {promptModal && <DeletePrompt filePath={filePath || undefined} removeSharedFile={removeSharedFile} cancel={() => setPromptModal(false)} />}
-        <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em">
+        <Box background="#fafafa" minHeight="90vh" width="100%" margin="18px" 
+             border="solid 1px #e9e9e9" borderRadius="23px" padding="1.5em 1em" style={{ overflow: 'hidden'}}>
             <Box display="flex" direction="row" width="100%" justifyContent="space-between" margin="0 0 1em 0">
                 <div style={{ display: 'flex' }}><UserListAvatar src={man} />
                     <LinkDisplayName displayName={linkedUserCommonName || ""} />
@@ -222,13 +223,14 @@ const DeletePrompt: FunctionComponent<{
                     Are you sure you wanna delete <strong>{filePath ? filePath.split('/').pop() : ''}</strong> ?
             </Text>
                 <Box display="flex" width="100%" margin="0" justifyContent="space-between">
-                    <CustomButton background="palevioletred" color="white" width="49%" onClick={() => cancel()}>Cancel</CustomButton>
-                    <Button width="49%" primary onClick={() => {
+                    <CustomButton background="#f5f5f5" color="#4a4a4a" width="49%" onClick={() => cancel()}>
+                        Cancel</CustomButton>
+                    <CustomButton width="49%" background="red" color="white" onClick={() => {
                         if (filePath) {
                             removeSharedFile(filePath);
                             cancel()
                         }
-                    }}> Proceed</Button>
+                    }}> Delete</CustomButton>
                 </Box>
             </Box>
         </div>
@@ -249,9 +251,9 @@ interface ShareViewProps {
 }
 const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, outFilesView, shareNewFile, toggleDeleteModal, setFilePath, openDirectory, upDirectory }) => {
     return (
-        <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <div style={{ width: "100%", display: 'block', position: "relative", overflowY: 'scroll'}}>
             <BalanceIndicator hideLinkWhenMinimized={true} />
-            <Box height="50vh" margin="0 auto" direction="column">
+            <Box height="90vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">
                     <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Your shared files</Text>
                     <div style={{ display: 'flex' }}>
@@ -259,10 +261,37 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                         <BtnAddLinksIcon margin="2.6em 0 0 0" onClick={() => shareNewFile()} />
                     </div>
                 </Box>
-                <Box margin="0">
-                    <div style={{ fontWeight: "bold", border: "solid 1px #aaa", padding: "10px" }}>Current path: {currentSharedFilesPath.length > 0 ? "/" : ""}{currentSharedFilesPath}/</div>
-                    <FilesList>
-                        {
+
+                <Box width="100%" display="flex" justifyContent="flex-end">
+                    {   currentSharedFilesPath.length > 0 ?
+                       <GoBackIcon height="30px" width="30px" onClick={() => upDirectory({ type: "sharedFiles" })}/>
+                        : <GoBackIcon height="30px" width="30px" style={{ opacity: 0.2}}/>
+                    }
+                </Box>
+                <Box margin="0" >
+
+                        <div style={{ marginLeft: '0'}} >
+                           <BreadcrumbButton type="starting" active={currentSharedFilesPath.length === 0}>
+                           <Text margin="0" style={{ padding: '0 15px 0 10px'}} fontSize="12px" color={currentSharedFilesPath.length === 0 ? "white" : 'white'}>
+                               pShare
+                           </Text>
+                           </BreadcrumbButton>  
+                            {currentSharedFilesPath.length>0 ? currentSharedFilesPath.split('/').map((item,idx) => 
+                                <>
+                                    <BreadcrumbButton type="trailing" active={idx+1 === currentSharedFilesPath.split('/').length}>
+                                        <Text margin="0" fontSize="12px" 
+                                        style={{ padding: idx+1 === currentSharedFilesPath.split('/').length ? '0 40px 0 10px' : '0 10px'}}
+                                            color={idx+1 === currentSharedFilesPath.split('/').length ? 'white' : 'white'}
+                                        >
+                                            {item}
+                                        </Text>
+                                    </BreadcrumbButton>
+                                </>
+                            ) : ''}
+                        </div>
+
+                    <FilesList >
+                        {/* {
                             currentSharedFilesPath.length > 0
                                 ?
                                 <FilesListItem key={"[[[go_up]]]"} onClick={() => upDirectory({ type: "sharedFiles" })}>
@@ -270,7 +299,7 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                             </FilesListItem>
                                 :
                                 <></>
-                        }
+                        } */}
                         {outFilesView
                             ? blinq(outFilesView)
                                 .select(entry => {
@@ -292,8 +321,12 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                                     }
                                     if (entry.type === "directory") {
                                         const directoryEntry = (entry as DirectoryEntry<SharedFile>);
-                                        return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
-                                            {path.basename(directoryEntry.name!)}/
+                                        return <FilesListItem key={directoryEntry.name} style={{cursor:'pointer'}} onClick={() => 
+                                                    openDirectory({ type: "sharedFiles", location: directoryEntry.name! })}>
+                                                <FilesListFile>
+                                                    <FolderIcon margin="0 1em 0 0" width="25px" height="25px" />
+                                                    <Text color="#4a4a4a" margin="5px 0 0 0">  {path.basename(directoryEntry.name!)} </Text>
+                                                </FilesListFile>
                                         </FilesListItem>
                                     }
                                     throw Error("unexpected entry type")
