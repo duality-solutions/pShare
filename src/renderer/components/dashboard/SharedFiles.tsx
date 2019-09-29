@@ -3,7 +3,7 @@ import React from "react";
 import man from "../../assets/man.svg";
 import { Box } from "../ui-elements/Box";
 import { LinkDisplayName } from "./LinkDisplayName";
-import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon, ErrorIcon, FolderIcon, GoBackIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, DocumentSvg, DeleteIcon, DownloadIcon, DoneIcon, ErrorIcon, FolderIcon, GoBackIcon, RightChevronIcon } from "../ui-elements/Image";
 import { Text } from "../ui-elements/Text";
 import { SharedButton, DownloadButton, CustomButton, BreadcrumbButton } from "../ui-elements/Button";
 import { Divider } from "../ui-elements/Divider";
@@ -250,6 +250,12 @@ interface ShareViewProps {
 
 }
 const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, outFilesView, shareNewFile, toggleDeleteModal, setFilePath, openDirectory, upDirectory }) => {
+    const callUpDirectoryMultiple = (number: number) => {
+        Array.from(Array(number)).forEach((x, i) => {
+            upDirectory({ type: 'sharedFiles'});
+          })
+    }
+    
     return (
         <div style={{ width: "100%", display: 'block', position: "relative", overflowY: 'scroll'}}>
             <BalanceIndicator hideLinkWhenMinimized={true} />
@@ -262,26 +268,36 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                     </div>
                 </Box>
 
-                <Box width="100%" display="flex" justifyContent="flex-end">
+                <Box width="100%" display="flex" justifyContent="flex-start">
                     {   currentSharedFilesPath.length > 0 ?
-                       <GoBackIcon height="30px" width="30px" onClick={() => upDirectory({ type: "sharedFiles" })}/>
-                        : <GoBackIcon height="30px" width="30px" style={{ opacity: 0.2}}/>
+                       <Box display="flex" onClick={() => upDirectory({ type: "sharedFiles" })} style={{cursor: 'pointer'}} width="20%">
+                       <GoBackIcon height="25px" width="25px" margin="0 5px 0 0" />
+                        <Text margin="5px 0 0 0" fontSize="12px" color="#4a4a4a"> Go Back </Text>
+                        </Box>
+                        : 
+                        <Box display="flex" style={{ opacity: 0.2 }} width="20%">
+                        <GoBackIcon height="25px" width="25px" margin="0 5px 0 0" />
+                         <Text margin="5px 0 0 0" fontSize="12px" color="#4a4a4a"> Go Back </Text>
+                        </Box>
                     }
                 </Box>
                 <Box margin="0" >
 
-                        <div style={{ marginLeft: '0'}} >
-                           <BreadcrumbButton type="starting" active={currentSharedFilesPath.length === 0}>
-                           <Text margin="0" style={{ padding: '0 15px 0 10px'}} fontSize="12px" color={currentSharedFilesPath.length === 0 ? "white" : 'white'}>
-                               pShare
+                        <div style={{ margin: '1em 0', padding: '0 1em', border: 'solid 1px #4a4a4a', borderRadius: '4px'}} >
+                           <BreadcrumbButton type="starting" active={currentSharedFilesPath.length === 0} 
+                                onClick={ () => callUpDirectoryMultiple(currentSharedFilesPath.split('/').length)}>
+                           <Text margin="0" style={{ padding: '0 10px 0 10px'}} fontSize="12px" 
+                                color={currentSharedFilesPath.length === 0 ? "white" : '#4a4a4a'}>
+                                pShare
                            </Text>
-                           </BreadcrumbButton>  
+                           </BreadcrumbButton> 
                             {currentSharedFilesPath.length>0 ? currentSharedFilesPath.split('/').map((item,idx) => 
-                                <>
-                                    <BreadcrumbButton type="trailing" active={idx+1 === currentSharedFilesPath.split('/').length}>
+                                <> <RightChevronIcon margin="0" height="25px" width="25px"/>
+                                    <BreadcrumbButton type="trailing" active={idx+1 === currentSharedFilesPath.split('/').length}
+                                        onClick={ () => callUpDirectoryMultiple(currentSharedFilesPath.split('/').length - (idx+1)) }>
                                         <Text margin="0" fontSize="12px" 
-                                        style={{ padding: idx+1 === currentSharedFilesPath.split('/').length ? '0 40px 0 10px' : '0 10px'}}
-                                            color={idx+1 === currentSharedFilesPath.split('/').length ? 'white' : 'white'}
+                                            style={{ padding: idx+1 === currentSharedFilesPath.split('/').length ? '0 10px 0 10px' : '0 10px'}}
+                                            color={idx+1 === currentSharedFilesPath.split('/').length ? 'white' : '#4a4a4a'}
                                         >
                                             {item}
                                         </Text>
@@ -291,15 +307,6 @@ const ShareView: FunctionComponent<ShareViewProps> = ({ currentSharedFilesPath, 
                         </div>
 
                     <FilesList >
-                        {/* {
-                            currentSharedFilesPath.length > 0
-                                ?
-                                <FilesListItem key={"[[[go_up]]]"} onClick={() => upDirectory({ type: "sharedFiles" })}>
-                                    ../
-                            </FilesListItem>
-                                :
-                                <></>
-                        } */}
                         {outFilesView
                             ? blinq(outFilesView)
                                 .select(entry => {

@@ -93,17 +93,18 @@ const ArrowButton:React.FunctionComponent<ArrowButtonProps> = ({ label, onClick,
       {label} <span style={{float:"right"}}>&#8594;</span>
   </StyledButton>
 )
-//2e77d0
+
 const BreadcrumbButton = styled('div')<{ type?: string, active?: boolean }>`
-  display: inline-block;
+   display: inline-block;
    min-width: 50px;
-   padding: 4px 2px 4px 2px;
+   padding: 4px;
    margin: 10px 0 10px 0;
-   border: solid 0.1px white;
-   background: ${(props) => props.active ? '#2e77d0': '#4a4a4a' };
-   border-radius: 0px;
-   clip-path: ${(props) => props.active ? 'polygon(75% 0%, 88% 50%, 75% 100%, 0% 100%, 0% 54%, 0% 0%) ': ''}; 
- cursor: pointer;
+  //  border: solid 1px ${(props) => props.active ? '#4a4a4a': '#4a4a4a' };
+   background: ${(props) => props.active ? '#4a4a4a': 'white' };
+   border-radius: 4px;
+  box-shadow: 0 0 14px 0 rgba(0, 0, 0, 0.1);
+  //  clip-path: ${(props) => props.active ? 'polygon(75% 0%, 88% 50%, 75% 100%, 0% 100%, 0% 54%, 0% 0%) ': ''}; 
+   cursor: pointer;
 `;
 
 const StyledSharedButton = styled('div')<{ white?: boolean , margin?: string}>`
@@ -125,7 +126,7 @@ const SharedButton:React.FunctionComponent<{ onClick: () => void, white?: boolea
   <StyledSharedButton onClick={onClick} white={white} margin={margin || "0 8px 0 0"}>
     <OutboxIcon white={!white} margin="8px 0 0 0" width="35px" height="25px"/> 
     <Divider margin="0 5px 0 0" height="42px" background={white? "#e9e9e9": "white"} opacity="0.1"/> 
-    <Text fontWeight="bold" margin="12px 0 0 16px" fontSize="0.7em" color={white?  "#4a4a4a": "white"}>
+    <Text fontWeight="bold" margin="12px 0 0 10px" fontSize="0.7em" color={white?  "#4a4a4a": "white"}>
         YOUR FILES
     </Text>
   </StyledSharedButton>
