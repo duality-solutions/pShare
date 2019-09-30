@@ -106,7 +106,7 @@ export function* bdapSaga(rpcClient: RpcClient, mock: boolean = false) {
         let topUpAddress: string | undefined;
         try {
             const bdapAcct: BdapAccount = yield getFirstBdapAccount(rpcClient);
-            topUpAddress = bdapAcct.wallet_address
+            topUpAddress = bdapAcct.link_address
         }
         catch (err) {
             yield put(BdapActions.getTopUpAddressFailed(err.message))

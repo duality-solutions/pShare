@@ -40,6 +40,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
         padding: '6px',
         display: "block",
         position: "absolute",
+        zIndex: 10000,
         top: 0,
         left: 0,
         borderBottom: borderStyle,
@@ -68,16 +69,16 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
                     <QRCode
                         bgColor="#00000000"
                         fgColor="#4a4a4aff"
-                        ecLevel="H"
-                        minPadding={5}
-                        minimumCellSize={2}
+                        ecLevel="M"
+                        minPadding={30}
+                        minimumCellSize={4}
                         qrStyle="dots"
                         value={walletAddress}
                         size={150} />
                 </div>
-                <div style={{ fontFamily: '"Courier New", Courier, monospace', textAlign: "center", color: "#4a4a4a", margin: "10px", position: "relative" }}>
+                <div style={{wordBreak: "break-all", maxWidth:"300px", fontFamily: '"Courier New", Courier, monospace', textAlign: "center", color: "#4a4a4a", margin: "0 10px 10px", position: "relative" }}>
                     {copied && <div style={{ textAlign: "center", position: "absolute", left: 0, top: 0, width: "100%", height: "100%", backgroundColor: "#fff", color: "#f88", fontWeight: "bold" }}>COPIED TO CLIPBOARD</div>}
-                    <span>{walletAddress} </span>
+                    <span >{walletAddress} </span>
                     <CopyToClipboard text={walletAddress}
                         onCopy={async () => {
                             setCopied(true)
