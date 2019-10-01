@@ -8,15 +8,28 @@ function isArrayBuffer(value: unknown): value is ArrayBuffer {
     return hasArrayBuffer && (value instanceof ArrayBuffer || toString.call(value) === '[object ArrayBuffer]');
 }
 class RTCPeerReadStream<T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView> extends stream.Readable {
-    constructor(private peer: RTCPeer<T, TData>, opts?: stream.ReadableOptions) {
+    private remaining: number
+    private isReading: boolean
+    constructor(private peer: RTCPeer<T, TData>, length: number, opts?: stream.ReadableOptions) {
         super(opts)
+        this.remaining = length
+        this.isReading = false;
     }
     _read(size: number): void {
-        const messagePromise = this.peer.incomingMessageQueue.receive();
-        const timeoutPromise = delay(120000);
-
+        if (this.isReading) {
+            return;
+        }
+        this.isReading = true;
         (async () => {
+
             for (; ;) {
+                if (this.remaining === 0) {
+                    this.push(null)
+                    break;
+                }
+                const messagePromise = this.peer.incomingMessageQueue.receive();
+                const timeoutPromise = delay(120000);
+
                 const [p] = await Promise.race([messagePromise, timeoutPromise].map(p => p.then(() => [p])))
                 if (p === timeoutPromise) {
                     throw Error("timeout")
@@ -26,11 +39,12 @@ class RTCPeerReadStream<T extends string, TData extends string | Blob | ArrayBuf
                     throw Error("unsupported")
                 }
                 const pushResult = this.push(toBuffer(data, 0, data.byteLength))
+                this.remaining -= data.byteLength
                 if (!pushResult) {
                     break;
                 }
             }
-
+            this.isReading = false;
         })();
 
     }
@@ -38,4 +52,4 @@ class RTCPeerReadStream<T extends string, TData extends string | Blob | ArrayBuf
 
 export const createRTCPeerReadStream =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
-        (peer: RTCPeer<T, TData>, opts?: stream.ReadableOptions) => new RTCPeerReadStream<T, TData>(peer, opts)
+        (peer: RTCPeer<T, TData>, length: number, opts?: stream.ReadableOptions) => new RTCPeerReadStream<T, TData>(peer, length, opts)
