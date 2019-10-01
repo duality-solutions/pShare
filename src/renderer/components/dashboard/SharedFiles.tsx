@@ -108,24 +108,59 @@ interface DownloadViewState {
 }
 
 const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upDirectory, downloadableFilesView, currentDownloadableFilesPath, requestFile, userName, ownerUserName, sharedFilesFetchState }) => {
+
+    const callUpDirectoryMultiple = (number: number) => {
+        Array.from(Array(number)).forEach((x, i) => {
+            upDirectory({ type: 'downloadableFiles'});
+          })
+    }
+
     switch (sharedFilesFetchState) {
         case "success":
             return <Box height="50vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">
                     <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Files shared with you</Text>
                 </Box>
+                <Box width="100%" display="flex" justifyContent="flex-start">
+                    {   currentDownloadableFilesPath.length > 0 ?
+                       <Box display="flex" onClick={() => upDirectory({ type: "downloadableFiles" })} style={{cursor: 'pointer'}} width="20%">
+                       <GoBackIcon height="25px" width="25px" margin="0 5px 0 0" />
+                        <Text margin="5px 0 0 0" fontSize="12px" color="#4a4a4a"> Go Back </Text>
+                        </Box>
+                        : 
+                        <Box display="flex" style={{ opacity: 0.2 }} width="20%">
+                        <GoBackIcon height="25px" width="25px" margin="0 5px 0 0" />
+                         <Text margin="5px 0 0 0" fontSize="12px" color="#4a4a4a"> Go Back </Text>
+                        </Box>
+                    }
+                </Box>
                 <Box margin="0">
-                    <div style={{ fontWeight: "bold", border: "solid 1px #aaa", padding: "10px" }}>Current path: {currentDownloadableFilesPath.length > 0 ? "/" : ""}{currentDownloadableFilesPath}/</div>
+                    
+                    <div style={{ margin: '1em 0', padding: '0 1em', border: 'solid 1px #4a4a4a', borderRadius: '4px'}} >
+                           <BreadcrumbButton type="starting" active={currentDownloadableFilesPath.length === 0} 
+                                onClick={ () => callUpDirectoryMultiple(currentDownloadableFilesPath.split('/').length)}>
+                           <Text margin="0" style={{ padding: '0 10px 0 10px'}} fontSize="12px" 
+                                color={currentDownloadableFilesPath.length === 0 ? "white" : '#4a4a4a'}>
+                                pShare
+                           </Text>
+                           </BreadcrumbButton> 
+                            {currentDownloadableFilesPath.length>0 ? currentDownloadableFilesPath.split('/').map((item,idx) => 
+                                <> <RightChevronIcon margin="0" height="25px" width="25px"/>
+                                    <BreadcrumbButton type="trailing" active={idx+1 === currentDownloadableFilesPath.split('/').length}
+                                        onClick={ () => callUpDirectoryMultiple(currentDownloadableFilesPath.split('/').length - (idx+1)) }>
+                                        <Text margin="0" fontSize="12px" 
+                                            style={{ padding: idx+1 === currentDownloadableFilesPath.split('/').length ? '0 10px 0 10px' : '0 10px'}}
+                                            color={idx+1 === currentDownloadableFilesPath.split('/').length ? 'white' : '#4a4a4a'}
+                                        >
+                                            {item}
+                                        </Text>
+                                    </BreadcrumbButton>
+                                </>
+                            ) : ''}
+                        </div>
+
+                    
                     <FilesList>
-                        {
-                            currentDownloadableFilesPath.length > 0
-                                ?
-                                <FilesListItem key={"[[[go_up]]]"} onClick={() => upDirectory({ type: "downloadableFiles" })}>
-                                    ../
-                            </FilesListItem>
-                                :
-                                <></>
-                        }
                         {
                             downloadableFilesView
                                 ?
@@ -138,6 +173,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                                 <FilesListFile>
                                                     <DocumentSvg margin="0 1em 0 0" width="30px" />
                                                     <Text margin="5px 0 0 0" color="#4f4f4f">{path.basename(f.file.fileName)}</Text>
+                                               
                                                 </FilesListFile>
                                                 <div>
                                                     {(() => {
@@ -176,7 +212,18 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                         if (entry.type === "directory") {
                                             const directoryEntry = (entry as DirectoryEntry<DownloadableFile>);
                                             return <FilesListItem key={directoryEntry.name} onClick={() => openDirectory({ type: "downloadableFiles", location: directoryEntry.name! })}>
-                                                {path.basename(directoryEntry.name!)}/
+                                                <FilesListFile>
+                                                    <FolderIcon margin="0 1em 0 0" width="25px" height="25px" />
+                                                    <Text margin="3px 0 0 0" color="#4f4f4f">{path.basename(directoryEntry.name!)}</Text>
+                                                </FilesListFile>
+                                                {/* <Hovered>
+                                                    <DeleteIcon onClick={e => {
+                                                        e.preventDefault()
+                                                        e.stopPropagation()
+                                                        toggleDeleteModal(directoryEntry.fullPath!);
+                                                        setFilePath(directoryEntry.fullPath!);
+                                                    }} width="35px" height="20px" margin="5px 10px" />
+                                                </Hovered> */}
                                         </FilesListItem>
                                         }
                                         throw Error("unexpected entry type")
