@@ -1,105 +1,75 @@
-import { call, race } from "redux-saga/effects";
-import { toArrayBuffer } from "../../../shared/system/bufferConversion";
+import { call, race, take } from "redux-saga/effects";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
-import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
-import { delay } from "redux-saga";
-import * as util from 'util'
+import { eventChannel, END } from "redux-saga";
 import * as fs from 'fs'
+import { createRTCDataChannelWriteStream } from "./createRTCDataChannelWriteStream";
+import progressStream from "progress-stream"
+import { Progress } from "progress-stream"
 
-const fileReadBufferSize = 65536; // 64KiB
-const maxSendBuffered = 2097152; // 2MiB
 const sendBufferedAmountLowThreshold = 262144; // 256KiB
 
-const fsReadAsync = util.promisify(fs.read);
-const fsCloseAsync = util.promisify(fs.close);
-const fsOpenAsync = util.promisify(fs.open);
 
 export const copyFileToRTCPeer =
     <T extends string, TData extends string | Blob | ArrayBuffer | ArrayBufferView>
         (filePath: string, peer: RTCPeer<T, TData>, progressHandler?: ((progress: number, downloadedBytes: number, size: number) => any)) => call(function* () {
-            const dataChannel = peer.dataChannel;
-            dataChannel.bufferedAmountLowThreshold = sendBufferedAmountLowThreshold;
-            let totalRead = 0;
-            let totalSent = 0;
-            const { size: fileSize }: fs.Stats = yield call(() => fs.promises.stat(filePath))
-            var buffer = new Buffer(fileReadBufferSize);
-            const fileDescriptor: number = yield call(() => fsOpenAsync(filePath, "r"));
-            let currentProgressPct = -1
-            for (; ;) {
-                console.log("reading chunk");
-                const amtToRead = Math.min(fileSize - totalRead, fileReadBufferSize);
-                const { bytesRead }: {
-                    bytesRead: number;
-                } = yield call(() => fsReadAsync(fileDescriptor, buffer, 0, amtToRead, totalRead));
-                console.log("chunk read");
-                if (bytesRead === 0) {
-                    if (totalSent !== fileSize || totalSent !== totalRead) {
-                        throw Error("transfer length mismatch");
-                    }
-                    break;
-                }
-                totalRead += bytesRead;
-                if (dataChannel.bufferedAmount > maxSendBuffered) {
-                    console.log("buffer high");
-                    const pr = createPromiseResolver<boolean>();
-                    dataChannel.onbufferedamountlow = () => pr.resolve(true);
+            const cleanupOperations: (() => void)[] = [];
+            try {
+                const dataChannel = peer.dataChannel;
+                dataChannel.bufferedAmountLowThreshold = sendBufferedAmountLowThreshold;
+                const { size: fileSize }: fs.Stats = yield call(() => fs.promises.stat(filePath))
+                const readStream = fs.createReadStream(filePath)
+                cleanupOperations.push(() => readStream.close())
 
-                    const { success } = yield race({
-                        timeout: call(function* () {
-                            let currBufAmt = dataChannel.bufferedAmount
-                            let now = performance.now()
-                            let moved = false
-                            for (; ;) {
-                                yield delay(250)
-                                moved = moved || dataChannel.bufferedAmount !== currBufAmt
-                                currBufAmt = dataChannel.bufferedAmount
-                                if (moved) {
-                                    now = performance.now()
-                                    moved = false
-                                } else {
-                                    if ((performance.now() - now) > 120000) {
-                                        break
-                                    }
-                                }
+                const progStream = progressStream({ length: fileSize, time: 500 })
+                const progressChannel = eventChannel<Progress>(emitter => {
+                    const handler = (progress: Progress) => {
+                        emitter(progress)
+                        if (progress.remaining === 0) {
+                            emitter(END)
+                        }
+                    };
+                    progStream.on("progress", handler)
+                    return () => progStream.off("progress", handler)
+                })
+                cleanupOperations.push(() => progressChannel.close())
+                const writeStream = createRTCDataChannelWriteStream(dataChannel)
+                const pipe = readStream.pipe(progStream).pipe(writeStream)
+                const errorChannel = eventChannel<Error>(emitter => {
+                    const handler = (err: Error) => emitter(err)
+                    pipe.on("error", handler)
+                    return () => pipe.off("error", handler)
+                })
+                cleanupOperations.push(() => errorChannel.close())
+                let currentProgressPct = 0;
+                if (progressHandler) {
+                    yield progressHandler(0, 0, fileSize)
+                }
+                for (; ;) {
+                    const progTake = take(progressChannel)
+                    const errTake = take(errorChannel)
+                    const result = yield race({ progress: progTake, error: errTake })
+                    if (result.err) {
+                        throw result.err
+                    }
+                    if (result.progress) {
+                        const p: Progress = result.progress;
+                        if (progressHandler) {
+                            const newPct = Math.trunc(p.percentage)
+                            if (newPct !== currentProgressPct) {
+                                currentProgressPct = newPct
+                                yield progressHandler(currentProgressPct, p.transferred, p.length)
                             }
-                        }),
-                        success: call(() => pr.promise)
-                    })
-                    if (!success) {
-                        throw Error("timeout")
-                    }
-
-
-                    console.log("buffer emptied");
-                }
-                dataChannel.send(toArrayBuffer(buffer, 0, bytesRead));
-                totalSent += bytesRead;
-
-                const progressPct = Math.trunc((totalSent / fileSize) * 100)
-                if (progressPct != currentProgressPct) {
-                    currentProgressPct = progressPct
-                    if (progressHandler) {
-                        yield progressHandler(currentProgressPct, totalSent, fileSize)
+                        }
+                        if (p.remaining === 0) {
+                            break;
+                        }
                     }
                 }
-                yield delay(0);
+            } finally {
+                cleanupOperations.forEach(op => {
+                    op();
+                })
             }
-            yield call(() => fsCloseAsync(fileDescriptor));
-            let bufferedAmt = dataChannel.bufferedAmount
-            let now = performance.now()
-            let moved = false
-            while (bufferedAmt > 0) {
-                yield delay(250);
-                moved = moved || dataChannel.bufferedAmount !== bufferedAmt
-                bufferedAmt = dataChannel.bufferedAmount
-                if (moved) {
-                    now = performance.now()
-                    moved = false
-                } else {
-                    if ((performance.now() - now) > 120000) {
-                        throw Error("timeout")
-                    }
-                }
-            }
+
         });
 

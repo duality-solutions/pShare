@@ -22,7 +22,7 @@ export function* requestFileSaveDialogSaga(browserWindowProvider: BrowserWindowP
             }
             throw err
         }
-        yield put(FileSharingActions.requestFileWithSavePath({ ...fileRequest, savePath }))
+        yield put(FileSharingActions.requestFileWithSavePath({ ...fileRequest, savePath, type: "file" }))
     })
 }
 

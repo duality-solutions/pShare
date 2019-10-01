@@ -189,7 +189,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                                                 return (<Hovered>
                                                                     <div style={{ display: 'flex' }}>
                                                                         <Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">{prettySize(f.file.size)}</Text>
-                                                                        <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} />
+                                                            <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName, type: "file" })} />
                                                                     </div>
                                                                 </Hovered>);
                                                             case "failed": // try again cancel buttons 
