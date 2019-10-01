@@ -1,10 +1,10 @@
 import { takeEvery, call, select, put } from "redux-saga/effects";
-import { getType } from "typesafe-actions";
+import { getType, ActionType } from "typesafe-actions";
 
 import { RpcClient } from "../RpcClient";
 import { BdapActions } from "../../shared/actions/bdap";
 import { BrowserWindowProvider } from "../../shared/system/BrowserWindowProvider";
-import { app, BrowserWindow, dialog } from "electron";
+// import { app, BrowserWindow, dialog } from "electron";
 import * as fs from 'fs';
 import { blinq } from "blinq";
 import { MainRootState } from "../reducers";
@@ -16,18 +16,29 @@ import { unlockedCommandEffect } from "./effects/unlockedCommandEffect";
 import { getUserNameFromFqdn } from "../../shared/system/getUserNameFromFqdn";
 import { BulkImportActions } from "../../shared/actions/bulkImport";
 
-export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
-    yield takeEvery(getType(BulkImportActions.beginBulkImport), function* () {
-        const browserWindow = browserWindowProvider();
-        if (!browserWindow) {
-            return;
-        }
-        const filePath = getFilePathSync(browserWindow);
+export function* previewBulkImportSaga() {
+    yield takeEvery(getType(BulkImportActions.previewBulkImport), function*(action: ActionType<typeof BulkImportActions.previewBulkImport>) {
+        const filePath = action.payload;
+        // console.log(filePath)
         if (filePath == null) {
             yield put(BulkImportActions.bulkImportAborted());
             return;
         }
-        const data = yield call(() => readFile(filePath))
+        const data = yield call (() => readFile(filePath.path))
+        yield put(BulkImportActions.previewData(data))
+    })
+}
+
+export interface RequestStatus {
+    link: string,
+    status: string,
+}
+
+export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: BrowserWindowProvider) {
+    yield takeEvery(getType(BulkImportActions.beginBulkImport), function* (action: ActionType<typeof BulkImportActions.beginBulkImport>) {
+
+        const data = action.payload;
+
         const userFqdnsFromFile = [...blinq(splitLines(data))];
 
         const allUsers: GetUserInfo[] = yield select((s: MainRootState) => s.bdap.users);
@@ -37,18 +48,32 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
         const currentUserFqdn: string = yield select((s: MainRootState) => typeof s.bdap.currentUser !== 'undefined' ? s.bdap.currentUser.object_full_path : undefined)
         const pendingAcceptLinks: PendingLink[] = yield select((s: MainRootState) => s.bdap.pendingAcceptLinks);
 
+        const fqdnRequestStatus: RequestStatus[] = [];
 
         const completeFqdns =
             blinq(completeLinks)
                 .select(l => blinq([l.recipient_fqdn, l.requestor_fqdn]).first(n => n !== currentUserFqdn));
+
+        // for( const fqdn in completeFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'completed'})
+        // }
+
         const deniedFqdns =
             blinq(deniedRequestLinks)
                 .select(l => l.requestor_fqdn);
+
+        // for ( const fqdn in deniedFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'denied' }) 
+        // }
 
         const pendingLinkFqdns =
             blinq(pendingAcceptLinks)
                 .concat(pendingRequestLinks)
                 .select(l => blinq([l.recipient_fqdn, l.requestor_fqdn]).first(n => n !== currentUserFqdn));
+
+        // for ( const fqdn in pendingLinkFqdns ) {
+        //     fqdnRequestStatus.push({ link: fqdn, status: 'pending' }) 
+        // }
 
         const exclusions =
             completeFqdns
@@ -70,6 +95,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
         for (const userFqdn of listFqdnsThatDontExist) {
             failCount++;
+            fqdnRequestStatus.push({ status: 'User does not exist', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -87,6 +113,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
         const excludedUserFqdns = usersToExclusions.where(x => x.excludedUserFqdn != null).select(x => x.user.object_full_path);
         for (const userFqdn of excludedUserFqdns) {
             failCount++;
+            fqdnRequestStatus.push({ status: 'Link already requested/complete/denied', link: userFqdn })
             yield put(BulkImportActions.bulkImportProgress({
                 totalItems: totalListItems,
                 failed: failCount,
@@ -105,7 +132,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
                 .select(x => x.user);
 
 
-
+        // const requestedLinks:  = [];
         const userName = getUserNameFromFqdn(currentUserFqdn);
         const inviteMessage = `${userName} wants to link with you`;
         //const failedUsers: GetUserInfo[] = [];
@@ -115,16 +142,18 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
             try {
                 yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", userName, user.object_id, inviteMessage))
                 successCount++;
-
+                fqdnRequestStatus.push({ status: 'success', link: user.object_full_path})
 
             } catch (err) {
                 failCount++;
                 if (/^Insufficient funds/.test(err.message)) {
-                    yield put(BulkImportActions.bulkImportFailed())
+                    fqdnRequestStatus.push({ status: 'Insufficient funds', link: user.object_full_path })
+                    yield put(BulkImportActions.bulkImportFailed(fqdnRequestStatus))
                     yield put(BdapActions.insufficientFunds("request a link to " + user.object_id + " or any more users in the bulk import list"))
                     yield put(BdapActions.getPendingRequestLinks());
                     return;
                 } else {
+                    fqdnRequestStatus.push({ status: 'Failed', link: user.object_full_path })
                     yield put(BulkImportActions.bulkImportProgress({
                         totalItems: totalListItems,
                         failed: failCount,
@@ -152,7 +181,7 @@ export function* bulkImportSaga(rpcClient: RpcClient, browserWindowProvider: Bro
 
 
         }
-        yield put(BulkImportActions.bulkImportSuccess());
+        yield put(BulkImportActions.bulkImportSuccess(fqdnRequestStatus));
         //console.log("failed users", failedUsers);
         yield put(BdapActions.getPendingRequestLinks());
 
@@ -168,28 +197,28 @@ function* splitLines(data: string) {
     }
 }
 
-function getFilePathSync(window: BrowserWindow) {
-    const homeDir = app.getPath("documents");
-    const path = dialog.showOpenDialog(window, {
-        // filters: [
-        //     {
-        //         name: "p-share wallet key backup",
-        //         extensions: ["psh.json"]
-        //     }
-        // ],
-        defaultPath: homeDir,
-        title: "Bulk import file",
-        properties: ["multiSelections", "openFile"]
+// function getFilePathSync(window: BrowserWindow) {
+//     const homeDir = app.getPath("documents");
+//     const path = dialog.showOpenDialog(window, {
+//         // filters: [
+//         //     {
+//         //         name: "p-share wallet key backup",
+//         //         extensions: ["psh.json"]
+//         //     }
+//         // ],
+//         defaultPath: homeDir,
+//         title: "Bulk import file",
+//         properties: ["multiSelections", "openFile"]
 
-    });
-    if (path == null) {
-        return undefined;
-    }
-    if (Array.isArray(path) && path.length > 0) {
-        return path[0];
-    }
-    return undefined;
-}
+//     });
+//     if (path == null) {
+//         return undefined;
+//     }
+//     if (Array.isArray(path) && path.length > 0) {
+//         return path[0];
+//     }
+//     return undefined;
+// }
 
 function* readFile(path: string) {
     const buf: Buffer = yield call(() => fs.promises.readFile(path))
