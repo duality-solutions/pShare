@@ -19,7 +19,7 @@ export const receiveFileFromRTCPeer =
         (savePath: string, peer: RTCPeer<T, TData>, fileNameInfo: FileInfo, fileRequest: FileRequest) => call(function* () {
             
             try {
-                const shasum = crypto.createHash('sha256');
+                //const shasum = crypto.createHash('sha256');
                 const fileDescriptor: number = yield call(() => fsOpenAsync(savePath, "w"));
                 try {
                     let total = 0;
@@ -36,7 +36,7 @@ export const receiveFileFromRTCPeer =
                         //console.log(`answerpeer received : ${total}`);
 
                         const buffer = toBuffer(msg, 0, msg.byteLength)
-                        shasum.update(buffer)
+                        //shasum.update(buffer)
                         yield call(() => fsWriteAsync(fileDescriptor, buffer));
 
                         if (total > fileNameInfo.size) {
