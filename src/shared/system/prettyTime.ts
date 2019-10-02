@@ -12,7 +12,7 @@ export const prettyTime = (() => {
         { label: "m", interval: 60 },
         { label: "h", interval: 24 },
         { label: "d", interval: 7 },
-        { label: "wk", interval: null }
+        { label: "wk", interval: null },
     ];
     const bIntervals = blinq(intervals);
 

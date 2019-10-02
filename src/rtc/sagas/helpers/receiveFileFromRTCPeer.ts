@@ -88,7 +88,7 @@ function* copyStream(
                 totalBytes: len,
                 downloadedBytes: 0,
                 downloadedPct: 0,
-                speed: 0
+                speed: 0,
             })
         );
 
@@ -99,7 +99,7 @@ function* copyStream(
             const result = yield race({
                 progress: progTake,
                 error: errTake,
-                end: endTake
+                end: endTake,
             });
             if (result.err) {
                 throw result.err;
@@ -119,7 +119,7 @@ function* copyStream(
                             downloadedBytes: p.transferred,
                             downloadedPct: currentProgressPct,
                             speed: p.speed,
-                            eta: p.eta
+                            eta: p.eta,
                         })
                     );
                 }
@@ -133,7 +133,7 @@ function* copyStream(
                             downloadedBytes: p.transferred,
                             downloadedPct: 100,
                             speed: 0,
-                            eta: 0
+                            eta: 0,
                         })
                     );
                     break;
