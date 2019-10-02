@@ -26,7 +26,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
 
 
     return <>
-        <div style={{ width: "100%", display: 'block', position: "relative", overflow:'hidden' }}>
+        <div style={{ width: "100%", display: 'block', position: "relative" }}>
             <BalanceIndicator />
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
         <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
@@ -37,6 +37,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                     <>
                         <div style={{ display: 'flex' }}>
                             <Input id="myLinksInput" value={queryText}
+                                placeholder="Search your links"
                                 onChange={e => myLinksQueryTextChanged(e.target.value)}
                                 margin="20px 0 20px 0"
                                 padding="0 20px"
@@ -67,14 +68,20 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                                 ? <UserList style={{overflowY:'scroll'}}>
 
                                     {users.map(u =>
-                                        <UserListItem key={u.userName} >
+                                        <UserListItem key={u.userName} style={{ cursor: `${u.state === 'linked' || u.state === 'pending-invite' ? 'pointer': ''}`}}
+                                        onClick={u.state === 'pending' 
+                                                ? () => {} : u.state === 'pending-invite' 
+                                                ? () => push('/Dashboard/Invites') 
+                                                : () => startViewSharedFiles(u.userName)} >
                                             <div style={{ display: 'flex' }}>
                                                 <UserListAvatar src={man} />
                                                 <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
                                             </div>
-                                            {u.state === 'pending'
-                                                ? <div style={{ fontSize: "0.8em" }}> Pending <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                                                : <div style={{ fontSize: "0.8em" }}> View <ViewBtnIcon onClick={() => startViewSharedFiles(u.userName)} width="30px" height="30px" margin="0 0 0 1em" /></div>}
+                                            {u.state === 'pending' 
+                                                ? <div style={{ fontSize: "0.8em" }}> Pending-Request <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                                                : u.state === 'pending-invite' 
+                                                ? <div style={{ fontSize: "0.8em" }}> Pending-Invite <PendingIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
+                                                : <div style={{ fontSize: "0.8em" }}> View <ViewBtnIcon  width="30px" height="30px" margin="0 0 0 1em" /></div>}
                                             {/* <Button onClick={() => requestFile({ fileId: "foo", ownerUserName: u.userName, requestorUserName: userName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Request Test </Button></> */}
                                         </UserListItem>
                                     )}
