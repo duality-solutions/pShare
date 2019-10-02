@@ -26,7 +26,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
 
 
     return <>
-        <div style={{ width: "100%", display: 'block', position: "relative" }}>
+        <div style={{ width: "100%", display: 'block', position: 'relative'}}>
             <BalanceIndicator />
             <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
         <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
@@ -65,7 +65,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                         </div>
                         {
                             users.length > 0
-                                ? <UserList style={{overflowY:'scroll'}}>
+                                ? <div><UserList >
 
                                     {users.map(u =>
                                         <UserListItem key={u.userName} style={{ cursor: `${u.state === 'linked' || u.state === 'pending-invite' ? 'pointer': ''}`}}
@@ -85,7 +85,7 @@ export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startVie
                                             {/* <Button onClick={() => requestFile({ fileId: "foo", ownerUserName: u.userName, requestorUserName: userName })} primary width="102px" minHeight="30px" fontSize="0.8em" > Request Test </Button></> */}
                                         </UserListItem>
                                     )}
-                                </UserList>
+                                </UserList></div>
 
                                 : <Text color="#4a4a4a" margin="100px 5px 0 5px" fontSize="1.2em" fontWeight="400" align="center">No results. </Text>
                         }
