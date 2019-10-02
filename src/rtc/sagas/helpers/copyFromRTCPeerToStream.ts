@@ -1,56 +1,39 @@
-import { call, put, race, take } from "redux-saga/effects";
+import { call, race, take } from "redux-saga/effects";
 import { RTCPeer } from "../../system/webRtc/RTCPeer";
-import * as util from "util";
-import * as fs from "fs";
-import { FileInfo } from "../../../shared/actions/payloadTypes/FileInfo";
-import { FileRequest } from "../../../shared/actions/payloadTypes/FileRequest";
-import { RtcActions } from "../../../shared/actions/rtc";
+//import * as util from "util";
+//import * as fs from "fs";
 import { eventChannel, END } from "redux-saga";
 import { createRTCPeerReadStream } from "./createRTCPeerReadStream";
 import progressStream from "progress-stream";
 import { Progress } from "progress-stream";
 import * as stream from "stream";
+import { ProgressHandler } from "./ProgressHandler";
 
-const fsUnlinkAsync = util.promisify(fs.unlink);
+//const fsUnlinkAsync = util.promisify(fs.unlink);
 
-export const receiveFileFromRTCPeer = <
+export const copyFromRTCPeerToStream = <
     T extends string,
     TData extends string | Blob | ArrayBuffer | ArrayBufferView
 >(
-    savePath: string,
+    stream: stream.Writable,
+    size: number,
     peer: RTCPeer<T, TData>,
-    fileNameInfo: FileInfo,
-    fileRequest: FileRequest
+    progressHandler?: ProgressHandler
 ) =>
     call(function*() {
-        const cleanupOperations: (() => void)[] = [];
+        const len = size;
+        //const writeStream = fs.createWriteStream(savePath);
+        const readStream = createRTCPeerReadStream(peer, len);
 
-        try {
-            try {
-                const len = fileNameInfo.size;
-                const writeStream = fs.createWriteStream(savePath);
-                const readStream = createRTCPeerReadStream(peer, len);
-
-                cleanupOperations.push(() => writeStream.close());
-                yield* copyStream(readStream, writeStream, len, fileRequest);
-            } finally {
-                cleanupOperations.forEach(op => op());
-            }
-        } catch (err) {
-            try {
-                yield call(() => fsUnlinkAsync(savePath));
-            } catch {}
-            throw err;
-        } finally {
-            peer.close();
-        }
+        //cleanupOperations.push(() => writeStream.close());
+        yield* copyStream(readStream, stream, len, progressHandler);
     });
 
 function* copyStream(
     readStream: stream.Readable,
     writeStream: stream.Writable,
     len: number,
-    fileRequest: FileRequest
+    progressHandler?: ProgressHandler
 ) {
     const cleanupOperations: (() => void)[] = [];
     try {
@@ -82,15 +65,20 @@ function* copyStream(
         });
         cleanupOperations.push(() => endChannel.close());
         let currentProgressPct = 0;
-        yield put(
-            RtcActions.fileReceiveProgress({
-                fileRequest,
-                totalBytes: len,
-                downloadedBytes: 0,
-                downloadedPct: 0,
-                speed: 0,
-            })
-        );
+
+        if (progressHandler) {
+            yield progressHandler(0, 0, undefined, 0, len);
+        }
+
+        // yield put(
+        //     RtcActions.fileReceiveProgress({
+        //         fileRequest,
+        //         totalBytes: len,
+        //         downloadedBytes: 0,
+        //         downloadedPct: 0,
+        //         speed: 0,
+        //     })
+        // );
 
         for (;;) {
             const progTake = take(progressChannel);
@@ -112,30 +100,42 @@ function* copyStream(
                 const newPct = Math.trunc(p.percentage);
                 if (newPct !== currentProgressPct) {
                     currentProgressPct = newPct;
-                    yield put(
-                        RtcActions.fileReceiveProgress({
-                            fileRequest,
-                            totalBytes: len,
-                            downloadedBytes: p.transferred,
-                            downloadedPct: currentProgressPct,
-                            speed: p.speed,
-                            eta: p.eta,
-                        })
-                    );
+                    if (progressHandler) {
+                        yield progressHandler(
+                            currentProgressPct,
+                            p.speed,
+                            p.eta,
+                            p.transferred,
+                            len
+                        );
+                    }
+                    // yield put(
+                    //     RtcActions.fileReceiveProgress({
+                    //         fileRequest,
+                    //         totalBytes: len,
+                    //         downloadedBytes: p.transferred,
+                    //         downloadedPct: currentProgressPct,
+                    //         speed: p.speed,
+                    //         eta: p.eta,
+                    //     })
+                    // );
                 }
 
                 if (p.remaining === 0) {
                     yield take(endChannel);
-                    yield put(
-                        RtcActions.fileReceiveProgress({
-                            fileRequest,
-                            totalBytes: len,
-                            downloadedBytes: p.transferred,
-                            downloadedPct: 100,
-                            speed: 0,
-                            eta: 0,
-                        })
-                    );
+                    if (progressHandler) {
+                        yield progressHandler(100, 0, 0, p.transferred, len);
+                    }
+                    // yield put(
+                    //     RtcActions.fileReceiveProgress({
+                    //         fileRequest,
+                    //         totalBytes: len,
+                    //         downloadedBytes: p.transferred,
+                    //         downloadedPct: 100,
+                    //         speed: 0,
+                    //         eta: 0,
+                    //     })
+                    // );
                     break;
                 }
             }

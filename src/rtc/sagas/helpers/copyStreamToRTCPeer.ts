@@ -5,16 +5,9 @@ import { createRTCDataChannelWriteStream } from "./createRTCDataChannelWriteStre
 import progressStream from "progress-stream";
 import { Progress } from "progress-stream";
 import * as stream from "stream";
+import { ProgressHandler } from "./ProgressHandler";
 
 const sendBufferedAmountLowThreshold = 262144; // 256KiB
-type ProgressHandler = (
-    progress: number,
-    speed: number,
-    eta: number | undefined,
-    downloadedBytes: number,
-    size: number
-) => any;
-
 export const copyStreamToRTCPeer = <
     T extends string,
     TData extends string | Blob | ArrayBuffer | ArrayBufferView
@@ -54,6 +47,12 @@ function* copyStream(
         });
         cleanupOperations.push(() => progressChannel.close());
         const pipe = readStream.pipe(progStream).pipe(writeStream);
+        const endChannel = eventChannel<{}>(emitter => {
+            const handler = () => emitter({});
+            pipe.on("finish", handler);
+            return () => pipe.off("finish", handler);
+        });
+        cleanupOperations.push(() => endChannel.close());
         const errorChannel = eventChannel<Error>(emitter => {
             const handler = (err: Error) => emitter(err);
             pipe.on("error", handler);
@@ -91,6 +90,7 @@ function* copyStream(
                 }
             }
         }
+        yield take(endChannel);
     } finally {
         cleanupOperations.forEach(op => op());
     }

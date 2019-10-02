@@ -16,6 +16,8 @@ import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 import { ClientDownloadActions } from "../../shared/actions/clientDownload";
 import * as fs from "fs";
+import { resourceScope } from "../../shared/system/resourceScope";
+import { delay } from "../../shared/system/delay";
 
 export function* processIncomingOfferSaga() {
     const pred = (action: BdapActions) => {
@@ -56,82 +58,104 @@ export function* processIncomingOfferSaga() {
             answerPeer = yield call(() => getAnswerPeer(rtcConfig));
         }
 
-        yield put(
-            ClientDownloadActions.clientDownloadStarted({
-                fileRequest,
-                fileInfo,
-            })
-        );
-        let answer: RTCSessionDescription | undefined;
-        try {
-            if (answerPeer) {
-                console.log(fileRequest);
-                const offerSessionDescription = new RTCSessionDescription(
-                    offerSdp
-                );
-                answer = yield call(() =>
-                    answerPeer!.getAnswer(offerSessionDescription)
-                );
-            }
+        const scope = resourceScope(answerPeer, peer => peer && peer.close());
+        yield* scope.use(function*(answerPeer) {
+            yield put(
+                ClientDownloadActions.clientDownloadStarted({
+                    fileRequest,
+                    fileInfo,
+                })
+            );
+            let answer: RTCSessionDescription | undefined;
+            try {
+                if (answerPeer) {
+                    console.log(fileRequest);
+                    const offerSessionDescription = new RTCSessionDescription(
+                        offerSdp
+                    );
+                    answer = yield call(() =>
+                        answerPeer!.getAnswer(offerSessionDescription)
+                    );
+                }
 
-            const answerEnvelope: LinkMessageEnvelope<
-                SessionDescriptionEnvelope<FileInfo>
-            > = {
-                id: transactionId,
-                timestamp: Math.trunc(new Date().getTime()),
-                type: "pshare-answer",
-                payload: {
-                    sessionDescription: answer ? answer.toJSON() : undefined,
-                    payload: fileInfo,
-                },
-            };
-            const routeEnvelope: LinkRouteEnvelope<
-                LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>
-            > = {
-                recipient: fileRequest.requestorUserName,
-                payload: answerEnvelope,
-            };
-            yield put(BdapActions.sendLinkMessage(routeEnvelope));
-            if (answerPeer) {
-                yield call(() => answerPeer!.waitForDataChannelOpen());
-                const { size: fileSize }: fs.Stats = yield call(() =>
-                    fs.promises.stat(localPath)
-                );
-                const readStream = fs.createReadStream(localPath);
-                try {
-                    yield copyStreamToRTCPeer(
-                        readStream,
-                        fileSize,
-                        answerPeer,
-                        (progressPct, speed, eta, downloadedBytes, size) =>
-                            put(
-                                ClientDownloadActions.clientDownloadProgress({
-                                    fileRequest,
+                const answerEnvelope: LinkMessageEnvelope<
+                    SessionDescriptionEnvelope<FileInfo>
+                > = {
+                    id: transactionId,
+                    timestamp: Math.trunc(new Date().getTime()),
+                    type: "pshare-answer",
+                    payload: {
+                        sessionDescription: answer
+                            ? answer.toJSON()
+                            : undefined,
+                        payload: fileInfo,
+                    },
+                };
+                const routeEnvelope: LinkRouteEnvelope<
+                    LinkMessageEnvelope<SessionDescriptionEnvelope<FileInfo>>
+                > = {
+                    recipient: fileRequest.requestorUserName,
+                    payload: answerEnvelope,
+                };
+                yield put(BdapActions.sendLinkMessage(routeEnvelope));
+                if (answerPeer) {
+                    yield call(() => answerPeer!.waitForDataChannelOpen());
+                    const { size: fileSize }: fs.Stats = yield call(() =>
+                        fs.promises.stat(localPath)
+                    );
+                    const scope = resourceScope(
+                        fs.createReadStream(localPath),
+                        s => s.close()
+                    );
+                    yield* scope.use(function*(readStream) {
+                        try {
+                            yield copyStreamToRTCPeer(
+                                readStream,
+                                fileSize,
+                                answerPeer!,
+                                (
                                     progressPct,
-                                    downloadedBytes,
-                                    size,
                                     speed,
                                     eta,
-                                })
-                            )
-                    );
-                } catch (err) {
-                    yield put(
-                        RtcActions.fileSendFailed(
-                            prepareErrorForSerialization(err)
-                        )
-                    );
-                    return;
-                } finally {
-                    readStream.close();
-                    answerPeer.dataChannel.close();
+                                    downloadedBytes,
+                                    size
+                                ) =>
+                                    put(
+                                        ClientDownloadActions.clientDownloadProgress(
+                                            {
+                                                fileRequest,
+                                                progressPct,
+                                                downloadedBytes,
+                                                size,
+                                                speed,
+                                                eta,
+                                            }
+                                        )
+                                    )
+                            );
+                        } catch (err) {
+                            yield put(
+                                RtcActions.fileSendFailed(
+                                    prepareErrorForSerialization(err)
+                                )
+                            );
+                            return;
+                        }
+                        while (
+                            answerPeer &&
+                            answerPeer.dataChannel &&
+                            answerPeer.dataChannel.bufferedAmount > 0
+                        ) {
+                            yield call(() => delay(250));
+                        }
+                    });
                 }
+            } finally {
+                yield put(
+                    ClientDownloadActions.clientDownloadComplete(fileRequest)
+                );
             }
-        } finally {
-            yield put(
-                ClientDownloadActions.clientDownloadComplete(fileRequest)
-            );
-        }
+        });
     });
 }
 interface InternalFileInfo {
