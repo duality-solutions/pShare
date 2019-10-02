@@ -4,7 +4,7 @@ export const prettyTime = (secs: number) => {
     s = (s / 60) | 0;
     const minutes = s % 60;
     s = (s / 60) | 0;
-    const hours = s % 60;
+    const hours = s;
     const segs = [
         hours > 0 ? `${hours}h` : null,
         minutes > 0 ? `${minutes}m` : null,
