@@ -99,7 +99,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                             this.setState({ requestModal: false })
                         }}
                     />}
-                <div style={{ width: "100%", display: 'block', position:"relative", overflow:'hidden' }}>
+                <div style={{ width: "100%", display: 'block', position:'relative' }}>
                     <BalanceIndicator />
                     <div style={{ float: 'right', margin: '40px 0 0 0' }}>
                         <CloseIcon margin="0 40px 0 0" onClick={() => push('/Dashboard/MyLinks')} />
