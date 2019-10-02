@@ -1,4 +1,4 @@
-const prettyTime = (secs: number) => {
+export const prettyTime = (secs: number) => {
   let s = secs | 0;
   const seconds = s % 60;
   s = (s / 60) | 0;
