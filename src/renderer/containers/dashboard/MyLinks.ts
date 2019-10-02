@@ -41,7 +41,7 @@ const getUserListBase = createSelector(
                 (u) => ({
                     userName: u.object_id,
                     commonName: u.common_name,
-                    state: "pending"
+                    state: "pending-invite"
                 } as BdapUser))
         const pendingRequestUsers = blinq(users)
             .join(

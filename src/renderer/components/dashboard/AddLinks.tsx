@@ -1,7 +1,7 @@
 import { Component } from "react";
 import React from "react";
 import { H1, Text } from "../ui-elements/Text";
-import { AddLinksIcon, UserListAvatar, CloseIcon, BtnAddLinksIcon, RequestSentIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, RequestSentIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
@@ -99,16 +99,19 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                             this.setState({ requestModal: false })
                         }}
                     />}
-                <div style={{ width: "100%", display: 'block', position:"relative" }}>
+                <div style={{ width: "100%", display: 'block', position:"relative", overflow:'hidden' }}>
                     <BalanceIndicator />
                     <div style={{ float: 'right', margin: '40px 0 0 0' }}>
                         <CloseIcon margin="0 40px 0 0" onClick={() => push('/Dashboard/MyLinks')} />
                         <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
-                        <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0 0 0 0" /> Add Links</H1>
+                        <H1 color="#4a4a4a">
+                            {/* <AddLinksIcon width="40px" height="40px" margin="0 0 0 0" /> */}
+                         Add Links</H1>
                         <div style={{ display: 'flex' }}>
                             <Input id="addLinksInput" value={queryText}
+                                placeholder="Search new links to add"
                                 onChange={e => addLinksQueryTextChanged(e.target.value)}
                                 margin="20px 0 20px 0"
                                 padding="0 20px"
@@ -157,7 +160,6 @@ const renderResults = (queryText: string, status: string, users: BdapUser[], set
                     <Text>
                         <span onClick={(event) => {
                             event.preventDefault();
-                            // console.log("bulk invite");
                             push("/Dashboard/BulkImport")
                         }}
                             style={{ cursor: 'pointer', color: '#2e77d0' }}
@@ -166,15 +168,16 @@ const renderResults = (queryText: string, status: string, users: BdapUser[], set
                 : <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some more characters to find other users...</Text>
         case "SEARCH_RESULT":
             return users.length > 0
-                ? <UserList>
-                    {users.map(u => <UserListItem key={u.userName}>
-                        <div style={{ display: 'flex' }}>
+                ? <UserList >
+                    {users.map(u => <UserListItem key={u.userName} style={{ cursor: u.state === 'pending' ? '' : 'pointer'}}
+                            onClick={u.state === 'pending' ? undefined : () => setState({ requestModal: true, recipent: u.userName }) }>
+                        <div style={{ display: 'flex' }} >
                             <UserListAvatar src={man} />
                             <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
                         </div>
                         {u.state === 'pending' ?
                             <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                            : <div style={{ fontSize: "0.7em" }} onClick={() => setState({ requestModal: true, recipent: u.userName })}>
+                            : <div style={{ fontSize: "0.7em" }} >
                                 Request
                                 <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" />
                             </div>}
