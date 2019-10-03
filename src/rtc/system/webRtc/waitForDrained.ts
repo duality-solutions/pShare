@@ -1,10 +1,13 @@
-import { RTCAnswerPeer } from "./RTCAnswerPeer";
 import { delay } from "../../../shared/system/delay";
+import { OfferPeerEvents } from "./OfferPeerEvents";
+import { AnswerPeerEvents } from "./AnswerPeerEvents";
+import { RTCPeer } from "./RTCPeer";
 
-export const waitForBufferFlushed = async <
+export const waitForDrained = async <
+    TEvents extends AnswerPeerEvents | OfferPeerEvents,
     T extends string | Blob | ArrayBuffer | ArrayBufferView
 >(
-    peer: RTCAnswerPeer<T>
+    peer: RTCPeer<TEvents, T>
 ) => {
     const bufferWaitTimeout = delay(120000);
     while (peer && peer.dataChannel && peer.dataChannel.bufferedAmount > 0) {

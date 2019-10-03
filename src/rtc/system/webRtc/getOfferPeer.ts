@@ -3,6 +3,7 @@ import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 import { createPromiseResolver } from "../../../shared/system/createPromiseResolver";
 import { RTCOfferPeer } from "./RTCOfferPeer";
 import { OfferPeerEvents } from "./OfferPeerEvents";
+import { waitForDrained } from "./waitForDrained";
 
 export async function getOfferPeer<
     T extends string | Blob | ArrayBuffer | ArrayBufferView
@@ -35,7 +36,7 @@ export async function getOfferPeer<
     dataChannel.onmessage = e => queue.post(e.data);
     dataChannel.onopen = e => eventDispatcher.dispatchEvent("open", e);
 
-    return {
+    const rtcPeer = {
         createOffer: async () => {
             const pr = createPromiseResolver<RTCSessionDescription>();
             eventDispatcher.once(
@@ -75,8 +76,10 @@ export async function getOfferPeer<
         },
         send: (data: T) => dataChannel.send(data as any),
         close: async () => {
+            await waitForDrained(rtcPeer);
             dataChannel && dataChannel.close();
             peer.close();
         },
     };
+    return rtcPeer;
 }

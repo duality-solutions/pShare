@@ -3,7 +3,7 @@ import { createPromiseResolver } from "../../../shared/system/createPromiseResol
 import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 import { AnswerPeerEvents } from "./AnswerPeerEvents";
 import { RTCAnswerPeer } from "./RTCAnswerPeer";
-import { waitForBufferFlushed } from "./waitForBufferFlushed";
+import { waitForDrained } from "./waitForDrained";
 
 export async function getAnswerPeer<
     T extends string | Blob | ArrayBuffer | ArrayBufferView
@@ -102,7 +102,7 @@ export async function getAnswerPeer<
             }
         },
         close: async () => {
-            await waitForBufferFlushed(rtcPeer);
+            await waitForDrained(rtcPeer);
             dataChannel && dataChannel.close();
             peer.close();
         },
