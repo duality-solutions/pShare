@@ -31,7 +31,11 @@ export const resourceScope = <T>(
             } finally {
                 const pp = cleanup(item);
                 if (pp) {
-                    yield call(() => pp);
+                    if (isPromise(pp)) {
+                        yield call(() => pp);
+                    } else if ((pp as any)[Symbol.iterator]) {
+                        yield* pp as IterableIterator<any>;
+                    }
                 }
             }
         },

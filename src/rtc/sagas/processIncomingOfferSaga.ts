@@ -17,7 +17,6 @@ import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/Se
 import { ClientDownloadActions } from "../../shared/actions/clientDownload";
 import * as fs from "fs";
 import { resourceScope } from "../../shared/system/resourceScope";
-import { delay } from "../../shared/system/delay";
 
 export function* processIncomingOfferSaga() {
     const pred = (action: BdapActions) => {
@@ -58,7 +57,11 @@ export function* processIncomingOfferSaga() {
             answerPeer = yield call(() => getAnswerPeer(rtcConfig));
         }
 
-        const scope = resourceScope(answerPeer, peer => peer && peer.close());
+        const scope = resourceScope(answerPeer, async peer => {
+            if (peer) {
+                await peer.close();
+            }
+        });
         yield* scope.use(function*(answerPeer) {
             yield put(
                 ClientDownloadActions.clientDownloadStarted({
@@ -141,13 +144,6 @@ export function* processIncomingOfferSaga() {
                             );
                             return;
                         }
-                        while (
-                            answerPeer &&
-                            answerPeer.dataChannel &&
-                            answerPeer.dataChannel.bufferedAmount > 0
-                        ) {
-                            yield call(() => delay(250));
-                        }
                     });
                 }
             } finally {
@@ -158,6 +154,7 @@ export function* processIncomingOfferSaga() {
         });
     });
 }
+
 interface InternalFileInfo {
     localPath: string;
     type: string;
