@@ -17,13 +17,14 @@ import {
 } from "./helpers/getOrCreateShareDirectoriesForUser";
 import { delay } from "redux-saga";
 import * as fs from "fs";
-import { FileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
 import { RtcRootState } from "../reducers";
 import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 import { FileInfo } from "../../shared/actions/payloadTypes/FileInfo";
 import { resourceScope } from "../../shared/system/resourceScope";
 import * as util from "util";
+import { deleteProperty } from "../../shared/system/deleteProperty";
+
 const fsUnlinkAsync = util.promisify(fs.unlink);
 
 //this runs in rtc
@@ -42,9 +43,14 @@ export function* requestFileSaga() {
             const peer: PromiseType<
                 ReturnType<typeof getOfferPeer>
             > = yield call(() => getOfferPeer(rtcConfig));
+
             const scope = resourceScope(peer, peer => peer.close());
             yield* scope.use(function*(peer) {
-                const fileRequest: FileRequestWithSavePath = action.payload;
+                const fileRequestWithSavePath = action.payload;
+                const fileRequest: FileRequest = deleteProperty(
+                    fileRequestWithSavePath,
+                    "savePath"
+                );
                 yield put(
                     RtcActions.fileReceiveProgress({
                         fileRequest,
@@ -221,7 +227,7 @@ export function* requestFileSaga() {
                 }
 
                 yield call(() =>
-                    fs.promises.rename(tempPath, fileRequest.savePath)
+                    fs.promises.rename(tempPath, action.payload.savePath)
                 );
                 yield put(RtcActions.fileReceiveSuccess(fileRequest));
                 yield delay(10000);
