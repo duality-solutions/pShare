@@ -4,6 +4,7 @@ import { createPromiseResolver } from "../../../shared/system/createPromiseResol
 import { RTCOfferPeer } from "./RTCOfferPeer";
 import { OfferPeerEvents } from "./OfferPeerEvents";
 import { waitForDrained } from "./waitForDrained";
+import { delay } from "redux-saga";
 
 export async function getOfferPeer<
     T extends string | Blob | ArrayBuffer | ArrayBufferView
@@ -77,6 +78,7 @@ export async function getOfferPeer<
         send: (data: T) => dataChannel.send(data as any),
         close: async () => {
             await waitForDrained(rtcPeer);
+            await delay(20000);
             dataChannel && dataChannel.close();
             peer.close();
         },

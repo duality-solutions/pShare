@@ -60,6 +60,7 @@ class RTCPeerReadStream<
                     if (!isArrayBuffer(data)) {
                         throw Error("unsupported");
                     }
+                    console.log("pushing " + data.byteLength);
                     const pushResult = this.push(
                         toBuffer(data, 0, data.byteLength)
                     );

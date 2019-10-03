@@ -72,7 +72,7 @@ export const sharedFiles = (
       const { linkedUserName, ...rest } = { ...state };
       return { ...rest, state: "initial" };
 
-    case getType(FileSharingActions.requestFileWithSavePath): {
+    case getType(FileSharingActions.startRequestFile): {
       const fileRequest = action.payload;
       const mappedDownloadableFiles: DownloadableFile[] = (
         state.downloadableFiles || []

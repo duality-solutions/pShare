@@ -4,6 +4,7 @@ import { createAsyncQueue } from "../../../shared/system/createAsyncQueue";
 import { AnswerPeerEvents } from "./AnswerPeerEvents";
 import { RTCAnswerPeer } from "./RTCAnswerPeer";
 import { waitForDrained } from "./waitForDrained";
+import { delay } from "../../../shared/system/delay";
 
 export async function getAnswerPeer<
     T extends string | Blob | ArrayBuffer | ArrayBufferView
@@ -103,6 +104,7 @@ export async function getAnswerPeer<
         },
         close: async () => {
             await waitForDrained(rtcPeer);
+            await delay(20000);
             dataChannel && dataChannel.close();
             peer.close();
         },
