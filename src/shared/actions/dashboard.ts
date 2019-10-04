@@ -7,6 +7,7 @@ export const DashboardActions = {
     viewSharedFiles: createStandardAction('dashboard/myLinks/VIEW_SHARED_FILES')<GetUserInfo>(),
     viewMyLinks: createStandardAction('dashboard/myLinks/VIEW_MY_LINKS')<void>(),
     toggleSpinner: createStandardAction('dashboard/TOGGLE_SPINNER')<void>(),
+    exportMyLinks: createStandardAction('dashboard/EXPORT_MY_LINKS')<void>(),
 
 }
 

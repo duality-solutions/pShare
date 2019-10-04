@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import React from "react";
 import { H1, Text } from "../ui-elements/Text";
-import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon, CloseIcon } from "../ui-elements/Image";
+import { MyLinksIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, ViewBtnIcon, CloseIcon, ExportIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
@@ -20,16 +20,22 @@ export interface MyLinksDispatchProps {
     push: (pathname: string) => void,
     startViewSharedFiles: (userName: string) => void
     myLinksQueryTextChanged: (value: string) => void
+    exportMyLinks: () => void
 }
 export type MyLinksProps = MyLinksStateProps & MyLinksDispatchProps
-export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers, balance }: MyLinksProps) => {
+export const MyLinks: FunctionComponent<MyLinksProps> = ({ users, push, startViewSharedFiles, userName, myLinksQueryTextChanged, queryText, allUsers, balance, exportMyLinks }: MyLinksProps) => {
 
 
     return <>
         <div style={{ width: "100%", display: 'block', position: 'relative'}}>
             <BalanceIndicator />
-            <div style={{ float: 'right', margin: '40px 20px 0 0' }}>Add Links
-        <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
+            <div style={{ float: 'right', margin: '40px 20px 0 0' }}>
+                    Add Links
+                <BtnAddLinksIcon onClick={() => push('/Dashboard/AddLinks')} />
+                <div style={{ margin: '10px 0 0 -14px', display:'flex'}}>
+                   <Text margin="3px 6px 0 0"> Export Links </Text>
+                <ExportIcon width="25px" height="25px" onClick={() => exportMyLinks()}/>
+                </div>
             </div>
             <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
                 <H1 color="#4a4a4a"><MyLinksIcon width="60px" height="60px" margin="0" /> My Links ({userName})</H1>

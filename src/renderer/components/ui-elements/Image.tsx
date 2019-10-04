@@ -26,6 +26,7 @@ import erroricon from "../../assets/svgs/error.svg";
 import foldericon from "../../assets/svgs/folder-blue.svg";
 import goback from "../../assets/svgs/goback.svg";
 import rightchevron from "../../assets/svgs/right-chevron.svg";
+import exporticon from "../../assets/svgs/export.svg";
 
 interface ImageProps {
     src?: string,
@@ -119,9 +120,13 @@ const GoBackIcon: React.FunctionComponent<ImageProps & Styleable> =
 const RightChevronIcon: React.FunctionComponent<ImageProps & Styleable> =
     ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ ...style }} src={rightchevron} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
 
+const ExportIcon: React.FunctionComponent<ImageProps & Styleable> = 
+    ({ width, height, margin, onClick, style }) => <SvgIcon onClick={onClick} style={{ cursor: 'pointer', ...style }} src={exporticon} width={width || '50px'} height={height || "30px"} margin={margin || "0 10px"} />
+
+
 export {
     SvgIcon as AppLogo, PlainAppLogo, MyLinksIcon, InboxIcon, OutboxIcon, RequestSentIcon, ViewBtnIcon,
     InvitesIcon, UserListAvatar, PendingIcon, BtnAddLinksIcon, AddLinksIcon, CloseIcon, DocumentSvg,
     ProgressSpinner, DeleteIcon, CheckIcon, CancelIcon, DownloadIcon, DoneIcon, ErrorIcon, FolderIcon,
-    GoBackIcon, RightChevronIcon
+    GoBackIcon, RightChevronIcon, ExportIcon
 }
