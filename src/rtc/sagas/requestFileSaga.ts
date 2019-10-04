@@ -27,6 +27,8 @@ import { deleteProperty } from "../../shared/system/deleteProperty";
 import { WritableStreamBuffer } from "stream-buffers";
 import * as stream from "stream";
 import { isFileRequestWithSavePath } from "../../shared/actions/payloadTypes/FileRequestWithSavePath";
+import { isFileListRequest } from "../../shared/actions/payloadTypes/FileListRequest";
+import { FileListResponse } from "../../shared/actions/payloadTypes/FileListResponse";
 
 const fsUnlinkAsync = util.promisify(fs.unlink);
 
@@ -209,7 +211,22 @@ export function* requestFileSaga() {
                         if (!isFileRequestWithSavePath(incomingFileRequest)) {
                             const streamBuffer = s as WritableStreamBuffer;
                             const message = streamBuffer.getContentsAsString();
-                            console.log(`MESSAGE: ${message}`);
+
+                            if (isFileListRequest(incomingFileRequest)) {
+                                console.log(`MESSAGE: ${message}`);
+                            } else {
+                                throw Error("unexpected fileRequest type");
+                            }
+                            if (message) {
+                                const response: FileListResponse = JSON.parse(
+                                    message
+                                );
+                                yield put(
+                                    FileSharingActions.fileListResponse(
+                                        response
+                                    )
+                                ); // dispatch response to app
+                            }
                         }
                     });
                 } catch (err) {

@@ -16,7 +16,19 @@ import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 import { ClientDownloadActions } from "../../shared/actions/clientDownload";
 import * as fs from "fs";
-import { resourceScope } from "../../shared/system/resourceScope";
+import {
+    resourceScope,
+    ResourceScope,
+} from "../../shared/system/resourceScope";
+import { isFileListRequest } from "../../shared/actions/payloadTypes/FileListRequest";
+import { MainRootState } from "../../main/reducers";
+import { PublicSharedFile } from "../../shared/types/PublicSharedFile";
+import { entries } from "../../shared/system/entries";
+import { ReadableStreamBuffer } from "stream-buffers";
+import * as stream from "stream";
+//import { tuple } from "../../shared/system/tuple";
+//import { sharedFiles } from "src/shared/reducers";
+import { FileListResponse } from "../../shared/actions/payloadTypes/FileListResponse";
 
 export function* processIncomingOfferSaga() {
     const pred = (action: BdapActions) => {
@@ -37,7 +49,8 @@ export function* processIncomingOfferSaga() {
             id: transactionId,
             payload: { sessionDescription: offerSdp, payload: fileRequest },
         } = offerEnvelope;
-        const internalFileInfo: InternalFileInfo | null = yield getFileInfo(
+
+        const internalFileInfo: MessageInfo | null = yield getFileInfo(
             fileRequest
         );
         if (!internalFileInfo) {
@@ -45,12 +58,11 @@ export function* processIncomingOfferSaga() {
 
             return;
         }
-        const { localPath, ...fileInfo } = internalFileInfo;
 
         let answerPeer:
             | PromiseType<ReturnType<typeof getAnswerPeer>>
             | undefined;
-        if (fileInfo.size > 0) {
+        if (internalFileInfo.size > 0) {
             const rtcConfig: RTCConfiguration = yield select(
                 (s: RtcRootState) => s.rtcConfig
             );
@@ -63,12 +75,36 @@ export function* processIncomingOfferSaga() {
             }
         });
         yield* scope.use(function*(answerPeer) {
-            yield put(
-                ClientDownloadActions.clientDownloadStarted({
-                    fileRequest,
-                    fileInfo,
-                })
-            );
+            const { localPath, fileInfo, alternativeStream } = (() => {
+                if (isInternalFileInfo(internalFileInfo)) {
+                    const {
+                        localPath,
+                        ...fileInfo
+                    }: InternalFileInfo = internalFileInfo;
+                    return { localPath, fileInfo, alternativeStream: null };
+                } else if (isInternalDirectoryInfo(internalFileInfo)) {
+                    const { size, type, payload } = internalFileInfo;
+                    return {
+                        localPath: null,
+                        fileInfo: { path: "", size, type },
+                        alternativeStream: payload,
+                    };
+                } else {
+                    throw Error("unexpected internalFileInfo type");
+                }
+            })();
+
+            if (fileInfo != null) {
+                //const { localPath, ...fileInfo } = internalFileInfo;
+
+                yield put(
+                    ClientDownloadActions.clientDownloadStarted({
+                        fileRequest,
+                        fileInfo,
+                    })
+                );
+            }
+
             let answer: RTCSessionDescription | undefined;
             try {
                 if (answerPeer) {
@@ -103,13 +139,23 @@ export function* processIncomingOfferSaga() {
                 yield put(BdapActions.sendLinkMessage(routeEnvelope));
                 if (answerPeer) {
                     yield call(() => answerPeer!.waitForDataChannelOpen());
-                    const { size: fileSize }: fs.Stats = yield call(() =>
-                        fs.promises.stat(localPath)
-                    );
-                    const scope = resourceScope(
-                        fs.createReadStream(localPath),
-                        s => s.close()
-                    );
+                    let fileSize: number;
+                    let scope: ResourceScope<stream.Readable>;
+                    if (localPath) {
+                        const stats: fs.Stats = yield call(() =>
+                            fs.promises.stat(localPath)
+                        );
+                        fileSize = stats.size;
+                        const stream = fs.createReadStream(localPath);
+                        scope = resourceScope(stream, () => stream.close());
+                    } else if (alternativeStream) {
+                        fileSize = fileInfo.size;
+                        scope = resourceScope(alternativeStream, () => {});
+                    } else {
+                        throw Error("no localpath or alternativeStream");
+                    }
+
+                    //const scope = resourceScope(stream, s => s.close());
                     yield* scope.use(function*(readStream) {
                         try {
                             yield copyStreamToRTCPeer(
@@ -155,15 +201,68 @@ export function* processIncomingOfferSaga() {
     });
 }
 
-interface InternalFileInfo {
-    localPath: string;
+interface MessageInfo {
     type: string;
     size: number;
+}
+interface InternalFileInfo extends MessageInfo {
+    localPath: string;
     path: string;
+}
+
+function isInternalFileInfo(item: MessageInfo): item is InternalFileInfo {
+    const x = item as InternalFileInfo;
+    return x.hasOwnProperty("localPath") && x.hasOwnProperty("path");
+}
+interface InternalDirectoryInfo extends MessageInfo {
+    requestId: string;
+    payload: stream.Readable;
+}
+function isInternalDirectoryInfo(
+    item: MessageInfo
+): item is InternalDirectoryInfo {
+    const x = item as InternalDirectoryInfo;
+    return x.hasOwnProperty("requestId") && x.hasOwnProperty("payload");
 }
 
 function getFileInfo(fileRequest: FileRequest) {
     return call(function*() {
+        if (isFileListRequest(fileRequest)) {
+            const filesRecord: Record<string, SharedFile> = yield select(
+                (s: MainRootState) => {
+                    if (s.fileWatch.users[fileRequest.requestorUserName]) {
+                        return s.fileWatch.users[fileRequest.requestorUserName]
+                            .out;
+                    } else {
+                        return {};
+                    }
+                }
+            );
+            const sharedFiles: PublicSharedFile[] = entries(filesRecord)
+                .select(([fileName, v]) => ({
+                    fileName,
+                    //hash: v.hash!,
+                    size: v.size!,
+                    contentType: v.contentType!,
+                }))
+                .toArray();
+
+            const memStream = new ReadableStreamBuffer();
+
+            const response: FileListResponse = {
+                requestId: fileRequest.requestId,
+                sharedFiles,
+            };
+            memStream.put(JSON.stringify(response));
+
+            const di: InternalDirectoryInfo = {
+                requestId: fileRequest.requestId,
+                payload: memStream,
+                size: memStream.size(),
+                type: "application/json",
+            };
+            return di;
+        }
         const sharedFiles: SharedFile[] = yield select(
             (s: RtcRootState) =>
                 (s.fileWatch.users[fileRequest.requestorUserName] &&

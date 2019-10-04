@@ -4,7 +4,7 @@ import { call } from "redux-saga/effects";
 export const resourceScope = <T>(
     factory: (() => T | Promise<T>) | T,
     cleanup: (item: T) => void | Promise<void> | IterableIterator<any>
-) => {
+): ResourceScope<T> => {
     return {
         *use(
             action: (item: T) => IterableIterator<any> | Promise<void> | void
@@ -28,6 +28,9 @@ export const resourceScope = <T>(
                 } else if ((actionResult as any)[Symbol.iterator]) {
                     yield* actionResult as IterableIterator<any>;
                 }
+            } catch (ex) {
+                console.log("Use threw :", ex);
+                throw ex;
             } finally {
                 const pp = cleanup(item);
                 if (pp) {
@@ -41,3 +44,8 @@ export const resourceScope = <T>(
         },
     };
 };
+export interface ResourceScope<T> {
+    use(
+        action: (item: T) => IterableIterator<any> | Promise<void> | void
+    ): IterableIterator<any>;
+}
