@@ -117,7 +117,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
 
     switch (sharedFilesFetchState) {
         case "success":
-            return <Box height="50vh" margin="0 auto" direction="column">
+            return <div style={{ width: "100%", display: 'block', position: "relative", overflowY: 'scroll'}}>
+                <Box height="50vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">
                     <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Files shared with you</Text>
                 </Box>
@@ -235,7 +236,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
 
                     </FilesList>
                 </Box>
-            </Box>;
+            </Box>
+            </div>;
         case "failed":
             return <Box height="50vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">
