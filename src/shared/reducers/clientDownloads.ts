@@ -2,6 +2,7 @@ import { ClientDownloadActions } from "../actions/clientDownload";
 import { getType } from "typesafe-actions";
 import { FileRequest } from "../actions/payloadTypes/FileRequest";
 import { deleteOptionalProperty } from "../system/deleteOptionalProperty";
+import { isFileListRequest } from "../actions/payloadTypes/FileListRequest";
 interface ClientDownloadsState {
   currentSessions: Record<string, FileRequestDownloadState>;
 }
@@ -83,5 +84,9 @@ export const clientDownloads = (
   return state;
 };
 function createKey(fileRequest: FileRequest): string {
-  return `${fileRequest.requestorUserName} ${fileRequest.fileName}`;
+  if(isFileListRequest(fileRequest)){
+    return `file-list-for ${fileRequest.requestorUserName} ${fileRequest.requestId}`
+
+  }
+  return `file-for ${fileRequest.requestorUserName} ${fileRequest.fileName}`;
 }

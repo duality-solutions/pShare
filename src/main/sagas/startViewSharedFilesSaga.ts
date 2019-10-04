@@ -132,7 +132,7 @@ function* getSharedFileListForLink(linkedUserName: string) {
     );
 
     const req: FileListRequest = {
-        fileName: "",
+        fileName: "file-list",
         ownerUserName: linkedUserName,
         requestorUserName: myUserName,
         requestId: msgId,

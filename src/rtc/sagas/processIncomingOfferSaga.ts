@@ -86,7 +86,7 @@ export function* processIncomingOfferSaga() {
                     const { size, type, payload } = internalFileInfo;
                     return {
                         localPath: null,
-                        fileInfo: { path: "", size, type },
+                        fileInfo: { path: "file-list", size, type },
                         alternativeStream: payload,
                     };
                 } else {
@@ -254,6 +254,7 @@ function getFileInfo(fileRequest: FileRequest) {
                 sharedFiles,
             };
             memStream.put(JSON.stringify(response));
+            memStream.stop();
 
             const di: InternalDirectoryInfo = {
                 requestId: fileRequest.requestId,
