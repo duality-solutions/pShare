@@ -26,7 +26,11 @@ import { BdapActions } from "../../shared/actions/bdap";
 import { delay } from "redux-saga";
 import { FileNavigationActions } from "../../shared/actions/fileNavigation";
 import { FileSharingActions } from "../../shared/actions/fileSharing";
-import { FileListRequest } from "../../shared/actions/payloadTypes/FileListRequest";
+import {
+    FileListRequest,
+    isFileListRequest,
+} from "../../shared/actions/payloadTypes/FileListRequest";
+import { RtcActions } from "../../shared/actions/rtc";
 
 export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
     yield fork(function*() {
@@ -118,7 +122,7 @@ export function* startViewSharedFilesSaga(rpcClient: RpcClient) {
         if (yield* checkClosed()) {
             return;
         }
-       
+
         yield put(FileListActions.fileListFetchSuccess(fileListMessage));
 
         //yield put(DashboardActions.viewSharedFiles(linkedUserInfo))
@@ -152,7 +156,7 @@ function* getSharedFileListForLink(linkedUserName: string) {
     //     })
     // );
 
-    const pred = (action: FileSharingActions) => {
+    const successPredicate = (action: FileSharingActions) => {
         switch (action.type) {
             case getType(FileSharingActions.fileListResponse):
                 return action.payload.requestId === msgId;
@@ -160,18 +164,32 @@ function* getSharedFileListForLink(linkedUserName: string) {
                 return false;
         }
     };
+    const failurePredicate = (action: RtcActions) => {
+        switch (action.type) {
+            case getType(RtcActions.fileReceiveFailed):
+                return (
+                    isFileListRequest(action.payload.fileRequest) &&
+                    action.payload.fileRequest.requestId === msgId
+                );
+            default:
+                return false;
+        }
+    };
     const {
-        action,
+        successAction,
+        failureAction,
         timeout,
         abort,
     }: {
-        action: ActionType<typeof FileSharingActions.fileListResponse>;
+        successAction: ActionType<typeof FileSharingActions.fileListResponse>;
+        failureAction: ActionType<typeof RtcActions.fileReceiveFailed>;
         timeout: unknown;
         abort: unknown;
     } = yield race({
         timeout: delay(1200000),
         abort: take(getType(DashboardActions.startViewSharedFiles)),
-        action: take(pred as any),
+        successAction: take(successPredicate as any),
+        failureAction: take(failurePredicate as any),
     });
 
     if (timeout) {
@@ -181,8 +199,11 @@ function* getSharedFileListForLink(linkedUserName: string) {
         console.log("file-list-fetch aborted");
         return;
     }
+    if (failureAction) {
+        throw failureAction.payload.error;
+    }
 
     //const action: ActionType<typeof BdapActions.linkMessageReceived> = yield take(pred)
-    console.log("got shared files", action);
-    return action.payload.sharedFiles;
+    console.log("got shared files", successAction);
+    return successAction.payload.sharedFiles;
 }
