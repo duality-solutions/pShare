@@ -1,4 +1,4 @@
-import { isPromise } from "./isPromise";
+import { isPromise } from "../isPromise";
 import { call } from "redux-saga/effects";
 
 export const resourceScope = <T>(

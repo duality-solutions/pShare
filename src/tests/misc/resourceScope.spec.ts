@@ -1,4 +1,4 @@
-import { resourceScope } from "../../shared/system/resourceScope";
+import { resourceScope } from "../../shared/system/redux-saga/resourceScope";
 
 test("resourceScope", () => {
     var scope = resourceScope(

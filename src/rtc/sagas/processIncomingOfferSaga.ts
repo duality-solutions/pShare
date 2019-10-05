@@ -19,7 +19,7 @@ import * as fs from "fs";
 import {
     resourceScope,
     ResourceScope,
-} from "../../shared/system/resourceScope";
+} from "../../shared/system/redux-saga/resourceScope";
 import { isFileListRequest } from "../../shared/actions/payloadTypes/FileListRequest";
 import { MainRootState } from "../../main/reducers";
 import { PublicSharedFile } from "../../shared/types/PublicSharedFile";

@@ -21,7 +21,7 @@ import { RtcRootState } from "../reducers";
 import { BdapActions } from "../../shared/actions/bdap";
 import { SessionDescriptionEnvelope } from "../../shared/actions/payloadTypes/SessionDescriptionEnvelope";
 import { FileInfo } from "../../shared/actions/payloadTypes/FileInfo";
-import { resourceScope } from "../../shared/system/resourceScope";
+import { resourceScope } from "../../shared/system/redux-saga/resourceScope";
 import * as util from "util";
 import { deleteProperty } from "../../shared/system/deleteProperty";
 import { WritableStreamBuffer } from "stream-buffers";
