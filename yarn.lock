@@ -1103,6 +1103,13 @@
   resolved "https://registry.yarnpkg.com/@types/pify/-/pify-3.0.2.tgz"
   integrity sha512-a5AKF1/9pCU3HGMkesgY6LsBdXHUY3WU+I2qgpU0J+I8XuJA1aFr59eS84/HP0+dxsyBSNbt+4yGI2adUpHwSg==
 
+"@types/progress-stream@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/progress-stream/-/progress-stream-2.0.0.tgz#68ec37db90be412a4aab73f4366f5de00fc0a9ee"
+  integrity sha512-KKboL4BvIezEvnd2bdbIfIIkr3Th1p0AJOBaPdKMWm69uMoisOGd4mynzfB/iia2z0k3nwAJCmixESHfVjsrgw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/prop-types@*":
   version "15.5.6"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.5.6.tgz"
@@ -1163,6 +1170,13 @@
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-1.0.1.tgz#0a851d3bd96498fa25c33ab7278ed3bd65f06c3e"
   integrity sha512-l42BggppR6zLmpfU6fq9HEa2oGPEI8yrSPL3GITjfRInppYFahObbIQOQK3UGxEnyQpltZLaPe75046NOZQikw==
+
+"@types/stream-buffers@^3.0.3":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/stream-buffers/-/stream-buffers-3.0.3.tgz#34e565bf64e3e4bdeee23fd4aa58d4636014a02b"
+  integrity sha512-NeFeX7YfFZDYsCfbuaOmFQ0OjSmHreKBpp7MQ4alWQBHeh2USLsj7qyMyn9t82kjqIX516CR/5SRHnARduRtbQ==
+  dependencies:
+    "@types/node" "*"
 
 "@types/styled-components@^4.1.6":
   version "4.1.6"
@@ -7392,6 +7406,14 @@ progress-stream@^1.1.0:
     speedometer "~0.1.2"
     through2 "~0.2.3"
 
+progress-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/progress-stream/-/progress-stream-2.0.0.tgz#fac63a0b3d11deacbb0969abcc93b214bce19ed5"
+  integrity sha1-+sY6Cz0R3qy7CWmrzJOyFLzhntU=
+  dependencies:
+    speedometer "~1.0.0"
+    through2 "~2.0.3"
+
 promise-inflight@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/promise-inflight/-/promise-inflight-1.0.1.tgz"
@@ -8586,6 +8608,11 @@ speedometer@~0.1.2:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/speedometer/-/speedometer-0.1.4.tgz"
 
+speedometer@~1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/speedometer/-/speedometer-1.0.0.tgz#cd671cb06752c22bca3370e2f334440be4fc62e2"
+  integrity sha1-zWccsGdSwivKM3Di8zREC+T8YuI=
+
 split-string@^3.0.1, split-string@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/split-string/-/split-string-3.1.0.tgz"
@@ -8670,6 +8697,11 @@ stream-browserify@^2.0.1:
   dependencies:
     inherits "~2.0.1"
     readable-stream "^2.0.2"
+
+stream-buffers@^3.0.2:
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/stream-buffers/-/stream-buffers-3.0.2.tgz#5249005a8d5c2d00b3a32e6e0a6ea209dc4f3521"
+  integrity sha512-DQi1h8VEBA/lURbSwFtEHnSTb9s2/pwLEaFuNhXwy1Dx3Sa0lOuYT2yNUr4/j2fs8oCAMANtrZ5OrPZtyVs3MQ==
 
 stream-each@^1.1.0:
   version "1.2.3"
@@ -8999,7 +9031,7 @@ throttleit@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/throttleit/-/throttleit-0.0.2.tgz"
 
-through2@^2.0.0:
+through2@^2.0.0, through2@~2.0.3:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/through2/-/through2-2.0.5.tgz"
   integrity sha512-/mrRod8xqpA+IHSLyGCQ2s8SPHiCDEeQJSep1jqLYeEUClOFG2Qsh+4FU6G9VeqpZnGW/Su8LQGc4YKni5rYSQ==

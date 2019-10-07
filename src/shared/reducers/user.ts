@@ -1,7 +1,8 @@
 import { UserActions } from '../actions/user'
 import { getType } from 'typesafe-actions';
 import { OnboardingActions } from '../actions/onboarding';
-import { deleteOptionalProperty, deleteOptionalProperties } from '../system/deleteOptionalProperty';
+import { deleteOptionalProperty } from '../system/deleteOptionalProperty';
+import { deleteOptionalProperties } from "../system/deleteOptionalProperties";
 import { AppActions } from '../actions/app';
 
 export interface UserState {

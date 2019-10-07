@@ -22,10 +22,8 @@ test("createLocalAction", () => {
     expect(getType(createStandardAction("foo")<void>())).toBe("foo")
 
     const ac1Type = getType(ac1);
-    console.log(ac1Type)
     expect(ac1Type).toBe("actionname")
     const ac2Type = getType(ac2);
-    console.log(ac2Type)
     expect(ac2Type).toBe("actionname2")
 
 })

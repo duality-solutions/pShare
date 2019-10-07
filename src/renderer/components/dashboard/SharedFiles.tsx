@@ -21,6 +21,7 @@ import { DirectoryEntry } from "../../../shared/system/file/DirectoryEntry";
 import { FileEntry } from "../../../shared/system/file/FileEntry";
 import { NavigationCommand, BaseNavigationCommand } from "../../../shared/actions/fileNavigation";
 import * as path from "path"
+import { prettyTime } from "../../../shared/system/prettyTime";
 
 
 export interface SharedFilesStateProps {
@@ -117,7 +118,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
 
     switch (sharedFilesFetchState) {
         case "success":
-            return <Box height="50vh" margin="0 auto" direction="column">
+            return <div style={{ width: "100%", display: 'block', position: "relative", overflowY: 'scroll'}}>
+                <Box height="90vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">
                     <Text fontSize="1.6em" fontWeight="600" color="#4a4a4a" lineHeight="2.67">Files shared with you</Text>
                 </Box>
@@ -181,7 +183,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                                             case "downloading": //download progress bars
                                                                 return <div style={{ display: 'flex' }}>
                                                                     <Text fontSize="0.6em" margin="8px 4px 0 0" color="#4a4a4a">
-                                                                        downloading
+                                                                        downloading{f.eta!=null&&<> {prettySize(f.speed)}/s ({prettyTime(f.eta!)})</>}
                                                                 </Text>
                                                                     <CircularProgress size={30} progress={f.progressPct} />
                                                                 </div>;
@@ -189,7 +191,7 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
                                                                 return (<Hovered>
                                                                     <div style={{ display: 'flex' }}>
                                                                         <Text fontSize="0.6em" margin="8px 0 0 0" color="#4a4a4a">{prettySize(f.file.size)}</Text>
-                                                                        <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName })} />
+                                                            <DownloadIcon margin="0" onClick={() => requestFile({ ownerUserName, requestorUserName: userName, fileName: f.file.fileName, type: "file" })} />
                                                                     </div>
                                                                 </Hovered>);
                                                             case "failed": // try again cancel buttons 
@@ -235,7 +237,8 @@ const DownloadView: FunctionComponent<DownloadViewState> = ({ openDirectory, upD
 
                     </FilesList>
                 </Box>
-            </Box>;
+            </Box>
+            </div>;
         case "failed":
             return <Box height="50vh" margin="0 auto" direction="column">
                 <Box display="flex" direction="row" justifyContent="space-between" width="500px">

@@ -11,6 +11,7 @@ import { LinkDisplayName } from "./LinkDisplayName";
 import { prettySize } from "../../../shared/system/prettySize";
 import CircularProgress from "../ui-elements/CircularProgress";
 import BalanceIndicator from "../../containers/dashboard/BalanceIndicator"
+import { prettyTime } from "../../../shared/system/prettyTime";
 
 export interface ClientDownloadsDispatchProps {
 
@@ -69,7 +70,7 @@ export const ClientDownloads: FunctionComponent<ClientDownloadsProps> = ({ curre
                                                 }} />
                                                 <div style={{ display: 'flex' }}>
                                                     <Text color="#4a4a4a" margin="0 5px" fontSize="0.8em">
-                                                        {`${downloadState.progressPct}%`}
+                                                        {`${downloadState.progressPct}%`}{downloadState.eta!=null&&<> {prettySize(downloadState.speed)}/s ({prettyTime(downloadState.eta!)})</>}
                                                     </Text>
                                                     <CircularProgress progress={downloadState.progressPct} size={20} />
                                                 </div>

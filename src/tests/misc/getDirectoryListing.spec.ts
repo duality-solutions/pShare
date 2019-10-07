@@ -15,187 +15,219 @@ const mappedTestData: SharedFile[] = testData.map<SharedFile>(path => ({
     path,
     size: 123,
     contentType: "string",
-    direction: "out"
-}))
+    direction: "out",
+}));
 
-const expectedEntries = [{
-    "type": "file",
-    "name": "HID-001.odt",
-    "fileInfo": {
-        "sharedWith": "string",
-        "relativePath": "home/user1/Documents/invoices/HID-001.odt",
-        "path": "home/user1/Documents/invoices/HID-001.odt",
-        "size": 123,
-        "contentType": "string",
-        "direction": "out"
-    }
-}]
-const expectedEntries1 = [{
-    "type": "file",
-    "name": "HID-001.odt",
-    "fileInfo": {
-        "sharedWith": "string",
-        "relativePath": "magic/home/user1/Documents/invoices/HID-001.odt",
-        "path": "magic/home/user1/Documents/invoices/HID-001.odt",
-        "size": 123,
-        "contentType": "string",
-        "direction": "out"
-    }
-}]
+const expectedEntries = [
+    {
+        type: "file",
+        name: "HID-001.odt",
+        fileInfo: {
+            sharedWith: "string",
+            relativePath: "home/user1/Documents/invoices/HID-001.odt",
+            path: "home/user1/Documents/invoices/HID-001.odt",
+            size: 123,
+            contentType: "string",
+            direction: "out",
+        },
+    },
+];
+const expectedEntries1 = [
+    {
+        type: "file",
+        name: "HID-001.odt",
+        fileInfo: {
+            sharedWith: "string",
+            relativePath: "magic/home/user1/Documents/invoices/HID-001.odt",
+            path: "magic/home/user1/Documents/invoices/HID-001.odt",
+            size: 123,
+            contentType: "string",
+            direction: "out",
+        },
+    },
+];
 
 const expectedEntries2 = [
     {
-        "type": "file",
-        "name": "bandwidths.ods",
-        "fileInfo": {
-            "sharedWith": "string",
-            "relativePath": "home/user1/Documents/bandwidths.ods",
-            "path": "home/user1/Documents/bandwidths.ods",
-            "size": 123,
-            "contentType": "string",
-            "direction": "out"
-        }
+        type: "file",
+        name: "bandwidths.ods",
+        fileInfo: {
+            sharedWith: "string",
+            relativePath: "home/user1/Documents/bandwidths.ods",
+            path: "home/user1/Documents/bandwidths.ods",
+            size: 123,
+            contentType: "string",
+            direction: "out",
+        },
     },
     {
-        "name": "invoices",
-        "type": "directory",
-        "entries": [
+        name: "invoices",
+        type: "directory",
+        entries: [
             {
-                "type": "file",
-                "name": "HID-001.odt",
-                "fileInfo": {
-                    "sharedWith": "string",
-                    "relativePath": "home/user1/Documents/invoices/HID-001.odt",
-                    "path": "home/user1/Documents/invoices/HID-001.odt",
-                    "size": 123,
-                    "contentType": "string",
-                    "direction": "out"
-                }
-            }
-        ]
-    }
-]
+                type: "file",
+                name: "HID-001.odt",
+                fileInfo: {
+                    sharedWith: "string",
+                    relativePath: "home/user1/Documents/invoices/HID-001.odt",
+                    path: "home/user1/Documents/invoices/HID-001.odt",
+                    size: 123,
+                    contentType: "string",
+                    direction: "out",
+                },
+            },
+        ],
+        fullPath: "home/user1/Documents/invoices",
+    },
+];
 
 const rootEntry = [
     {
-        "name": "home",
-        "type": "directory",
-        "entries": [
+        name: "home",
+        type: "directory",
+        fullPath: "home",
+        entries: [
             {
-                "name": "user1",
-                "type": "directory",
-                "entries": [
+                name: "user1",
+                type: "directory",
+                fullPath: "home/user1",
+                entries: [
                     {
-                        "name": "Documents",
-                        "type": "directory",
-                        "entries": [
+                        name: "Documents",
+                        type: "directory",
+                        fullPath: "home/user1/Documents",
+                        entries: [
                             {
-                                "type": "file",
-                                "name": "bandwidths.ods",
-                                "fileInfo": {
-                                    "sharedWith": "string",
-                                    "relativePath": "home/user1/Documents/bandwidths.ods",
-                                    "path": "home/user1/Documents/bandwidths.ods",
-                                    "size": 123,
-                                    "contentType": "string",
-                                    "direction": "out"
-                                }
+                                type: "file",
+                                name: "bandwidths.ods",
+                                fileInfo: {
+                                    sharedWith: "string",
+                                    relativePath:
+                                        "home/user1/Documents/bandwidths.ods",
+                                    path: "home/user1/Documents/bandwidths.ods",
+                                    size: 123,
+                                    contentType: "string",
+                                    direction: "out",
+                                },
                             },
                             {
-                                "name": "invoices",
-                                "type": "directory",
-                                "entries": [
+                                name: "invoices",
+                                type: "directory",
+                                fullPath: "home/user1/Documents/invoices",
+                                entries: [
                                     {
-                                        "type": "file",
-                                        "name": "HID-001.odt",
-                                        "fileInfo": {
-                                            "sharedWith": "string",
-                                            "relativePath": "home/user1/Documents/invoices/HID-001.odt",
-                                            "path": "home/user1/Documents/invoices/HID-001.odt",
-                                            "size": 123,
-                                            "contentType": "string",
-                                            "direction": "out"
-                                        }
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+                                        type: "file",
+                                        name: "HID-001.odt",
+                                        fileInfo: {
+                                            sharedWith: "string",
+                                            relativePath:
+                                                "home/user1/Documents/invoices/HID-001.odt",
+                                            path:
+                                                "home/user1/Documents/invoices/HID-001.odt",
+                                            size: 123,
+                                            contentType: "string",
+                                            direction: "out",
+                                        },
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
     },
     {
-        "name": "magic",
-        "type": "directory",
-        "entries": [
+        name: "magic",
+        type: "directory",
+        fullPath: "magic",
+        entries: [
             {
-                "name": "home",
-                "type": "directory",
-                "entries": [
+                name: "home",
+                type: "directory",
+                fullPath: "magic/home",
+
+                entries: [
                     {
-                        "name": "user1",
-                        "type": "directory",
-                        "entries": [
+                        name: "user1",
+                        type: "directory",
+                        fullPath: "magic/home/user1",
+
+                        entries: [
                             {
-                                "name": "Documents",
-                                "type": "directory",
-                                "entries": [
+                                name: "Documents",
+                                type: "directory",
+                                fullPath: "magic/home/user1/Documents",
+
+                                entries: [
                                     {
-                                        "name": "invoices",
-                                        "type": "directory",
-                                        "entries": [
+                                        name: "invoices",
+                                        type: "directory",
+                                        fullPath:
+                                            "magic/home/user1/Documents/invoices",
+
+                                        entries: [
                                             {
-                                                "type": "file",
-                                                "name": "HID-001.odt",
-                                                "fileInfo": {
-                                                    "sharedWith": "string",
-                                                    "relativePath": "magic/home/user1/Documents/invoices/HID-001.odt",
-                                                    "path": "magic/home/user1/Documents/invoices/HID-001.odt",
-                                                    "size": 123,
-                                                    "contentType": "string",
-                                                    "direction": "out"
-                                                }
-                                            }
-                                        ]
-                                    }
-                                ]
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    }
-]
+                                                type: "file",
+                                                name: "HID-001.odt",
+                                                fileInfo: {
+                                                    sharedWith: "string",
+                                                    relativePath:
+                                                        "magic/home/user1/Documents/invoices/HID-001.odt",
+                                                    path:
+                                                        "magic/home/user1/Documents/invoices/HID-001.odt",
+                                                    size: 123,
+                                                    contentType: "string",
+                                                    direction: "out",
+                                                },
+                                            },
+                                        ],
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+];
 
 test("getDirectoryListing", () => {
-    const root = fileListToTree(mappedTestData)
+    const root = fileListToTree(mappedTestData);
     //console.log(JSON.stringify(root,null,2))
     {
-        const directoryListing = getDirectoryListing("home/user1/Documents/invoices", root)
-        expect(directoryListing).toEqual(expectedEntries)
+        const directoryListing = getDirectoryListing(
+            "home/user1/Documents/invoices",
+            root
+        );
+        expect(directoryListing).toEqual(expectedEntries);
         // const directoryListing2 = getDirectoryListing("/home/user1/Documents/invoices/", root)
         // expect(directoryListing2).toEqual(expectedEntries)
     }
     {
-        const directoryListing = getDirectoryListing("magic/home/user1/Documents/invoices", root)
-        expect(directoryListing).toEqual(expectedEntries1)
+        const directoryListing = getDirectoryListing(
+            "magic/home/user1/Documents/invoices",
+            root
+        );
+        expect(directoryListing).toEqual(expectedEntries1);
         // const directoryListing2 = getDirectoryListing("magic/home/user1/Documents/invoices/", root)
         // expect(directoryListing2).toEqual(expectedEntries1)
     }
     {
-        const directoryListing = getDirectoryListing("home/user1/Documents", root)
-        expect(directoryListing).toEqual(expectedEntries2)
+        const directoryListing = getDirectoryListing(
+            "home/user1/Documents",
+            root
+        );
+        expect(directoryListing).toEqual(expectedEntries2);
         // const directoryListing2 = getDirectoryListing("/home/user1/Documents/", root)
         // expect(directoryListing2).toEqual(expectedEntries2)
     }
     {
-        const directoryListing = getDirectoryListing("", root)
-        expect(directoryListing).toEqual(rootEntry)
+        const directoryListing = getDirectoryListing("", root);
+        expect(directoryListing).toEqual(rootEntry);
         // const directoryListing2 = getDirectoryListing("/home/user1/Documents/", root)
         // expect(directoryListing2).toEqual(expectedEntries2)
     }
     //console.log(JSON.stringify(getDirectoryListing("home", root), null, 2))
-    
-})
+});

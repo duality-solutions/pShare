@@ -1,4 +1,5 @@
-import { deleteOptionalProperty, deleteOptionalProperties } from "../../shared/system/deleteOptionalProperty";
+import { deleteOptionalProperty } from "../../shared/system/deleteOptionalProperty";
+import { deleteOptionalProperties } from "../../shared/system/deleteOptionalProperties";
 
 interface A {
     one: string
