@@ -48,12 +48,12 @@ export const takeBatch = <T>(
                 (maxSize != null && receivedEvts.length >= maxSize) ||
                 maxTimeout
             ) {
-                console.log(`sending batch`, {
-                    evt: !!evt,
-                    nextMessageTimeout: !!nextMessageTimeout,
-                    maxtTimeout: !!maxTimeout,
-                    numMessages: receivedEvts.length,
-                });
+                // console.log(`sending batch`, {
+                //     evt: !!evt,
+                //     nextMessageTimeout: !!nextMessageTimeout,
+                //     maxtTimeout: !!maxTimeout,
+                //     numMessages: receivedEvts.length,
+                // });
                 break;
             }
         }
