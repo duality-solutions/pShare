@@ -1,5 +1,6 @@
-import { delay, Channel } from "redux-saga";
+import { Channel } from "redux-saga";
 import { call, take, race, Pattern } from "redux-saga/effects";
+import { delay } from "../delay";
 interface TakeBatchOptions {
     minDurationMs: number;
     maxDurationMs?: number;
@@ -38,8 +39,9 @@ export const takeBatch = <T>(
             }: RaceResult = yield race({
                 evt: takeFx,
                 nextMessageTimeout: delay(minDurationMs),
-                maxTimeout: batchMaxDelay,
+                maxTimeout: call(() => batchMaxDelay),
             });
+
             if (evt) {
                 receivedEvts.push(evt);
             }
