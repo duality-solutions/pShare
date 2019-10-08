@@ -272,11 +272,21 @@ if (!hasLock) {
     setAppMenu(mainWindow);
 
     if (isDevelopment) {
-      // mainWindow.webContents.openDevTools({ mode: "detach" });
-      // rtcWindow.webContents.openDevTools({ mode: "detach" });
       // add inspect element on right click menu
       mainWindow.webContents.on('context-menu', (e, props) => {
         mainWindow && Menu.buildFromTemplate([
+          {
+            label: 'Cut',
+            role: 'cut'
+          },
+          {
+            label: 'Copy',
+            role: 'copy'
+          },
+          {
+            label: 'Paste',
+            role: 'paste'
+          },
           {
             label: 'Inspect element',
             click() {
