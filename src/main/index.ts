@@ -271,22 +271,25 @@ if (!hasLock) {
 
     setAppMenu(mainWindow);
 
-    if (isDevelopment) {
+    const contextMenu = [   
+      {
+        label: 'Cut',
+        role: 'cut'
+      },
+      {
+        label: 'Copy',
+        role: 'copy'
+      },
+      {
+        label: 'Paste',
+        role: 'paste'
+      }
+    ]
+   if (isDevelopment) {
       // add inspect element on right click menu
       mainWindow.webContents.on('context-menu', (e, props) => {
         mainWindow && Menu.buildFromTemplate([
-          {
-            label: 'Cut',
-            role: 'cut'
-          },
-          {
-            label: 'Copy',
-            role: 'copy'
-          },
-          {
-            label: 'Paste',
-            role: 'paste'
-          },
+          ...contextMenu,
           {
             label: 'Inspect element',
             click() {
@@ -308,6 +311,11 @@ if (!hasLock) {
         ]).popup(mainWindow);
       });
     }
+    else {
+          mainWindow.webContents.on('context-menu', () => {
+            mainWindow && Menu.buildFromTemplate(contextMenu).popup(mainWindow);
+          })
+        }
   })
 
 
