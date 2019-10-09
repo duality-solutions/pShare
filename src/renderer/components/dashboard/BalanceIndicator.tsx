@@ -48,6 +48,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
         backgroundColor: isVisible ? "#ffffff" : "none",
         borderBottomRightRadius: "8px"
     }
+
     return <>
         {((!hideLinkWhenMinimized) || isVisible) && <div ref={elemRef} style={outerStyle}>
             <Text margin="0">
@@ -60,7 +61,7 @@ export const BalanceIndicator: FunctionComponent<BalanceIndicatorProps> = ({ bal
                         fundsDialogDismissed()
                     }
                 }}
-                    style={{ cursor: 'pointer', color: '#2e77d0' }}
+                    style={{ cursor: 'pointer', color: (balance > 60) ? '#2e77d0' : 'red' }}
                 >Balance : {balance} credits</span>
             </Text>
             {isVisible && <>
