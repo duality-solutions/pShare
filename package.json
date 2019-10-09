@@ -9,6 +9,10 @@
     "email": "info@hiddenfield.com",
     "url": "https://duality.solutions/pshare"
   },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/duality-solutions/pShare.git"
+  },
   "build": {
     "appId": "solutions.duality.pshare",
     "productName": "pShare",
