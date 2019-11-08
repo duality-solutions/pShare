@@ -159,11 +159,12 @@ if (!hasLock) {
                     <path class="cls-2" d="M250,129.71487l-83.366,48.13141V370.28513l43.65448-25.40119V299.313L250,322.24045,333.366,274.109V177.84628Zm39.71155,119.19025L250,271.83255l-39.71155-22.92743V203.0502L250,180.12277l39.71149,22.92743Z"/><polygon class="cls-3" points="333.366 274.109 250 322.24 250.347 226.184 333.366 177.846 333.366 274.109"/>
                     <polygon class="cls-4" points="250.347 226.184 166.634 177.846 250 129.715 333.366 177.846 250.347 226.184"/>
               </svg>
-
-             <a id="link" onClick="handleClick()">
+            <p id="trademark">Powered by Duality®</p>
+            <p id="trademark"><i>Think Inside The Block®</i></p>
+            <a id="link" onClick="handleClick()">
                 https://duality.solutions/pshare
-              </a>
-             <p id="version">Version: ${props.version}</p>
+            </a>
+            <p id="version">Version: ${props.version}</p>
             <script type="text/javascript">
               const shell = require("electron").shell;
               function handleClick () {
