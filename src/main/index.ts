@@ -95,6 +95,7 @@ if (!hasLock) {
 
   function createAboutPanelWindow() {
     const window = new BrowserWindow({ width: 420, height: 300, resizable:false});
+    window.setMenuBarVisibility(false);
     window.on('closed', () => {
       aboutPanelWindow = null
     })
