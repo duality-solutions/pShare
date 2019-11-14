@@ -47,6 +47,7 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
         try {
             response =
                 yield unlockedCommandEffect(rpcClient, client => client.command("link", "request", requestor, recipient, inviteMessage))
+            console.log(response)
 
         } catch (err) {
             if (/^BDAP_SEND_LINK_RPC_ERROR\: ERRCODE\: 4001/.test(err.message)) {
@@ -54,12 +55,18 @@ export function* linkRequestSaga(rpcClient: RpcClient) {
                 yield put(BdapActions.createLinkRequestFailed("Link request or accept already exists for these accounts"))
                 return
             }
-            //debugger
+
+            if (/^Insufficient funds/.test(err.message)) {
+                yield put(BdapActions.insufficientFunds("request a link to " + recipient))
+                return
+
+            }
             throw err
         }
 
-        console.log(response)
+
         yield put(BdapActions.getPendingRequestLinks())
+        yield put(BdapActions.getBalance())
 
     })
 

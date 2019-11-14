@@ -1,13 +1,17 @@
 {
   "name": "pshare",
-  "version": "0.5.8",
+  "version": "1.0.0",
   "description": "Secure and private peer to peer file sharing",
   "homepage": "https://duality.solutions/pshare",
-  "license": "UNLICENSED",
+  "license": "SEE LICENSE IN LICENSE.md",
   "author": {
     "name": "HiddenField",
     "email": "info@hiddenfield.com",
     "url": "https://duality.solutions/pshare"
+  },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/duality-solutions/pShare.git"
   },
   "build": {
     "appId": "solutions.duality.pshare",
@@ -17,9 +21,7 @@
     },
     "linux": {
       "target": [
-        "AppImage",
-        "deb",
-        "tar.gz"
+        "deb"
       ]
     }
   },
@@ -47,7 +49,10 @@
     "is-in-subnet": "^1.9.0",
     "mime-types": "^2.1.22",
     "pify": "^4.0.1",
+    "progress-stream": "^2.0.0",
+    "qrcode-generator": "^1.4.3",
     "react": "^16.8.6",
+    "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",
     "react-dropzone": "^10.0.0",
     "react-redux": "^5.1.1",
@@ -65,6 +70,7 @@
     "seedrandom": "^2.4.4",
     "sjcl-git": "https://github.com/bitwiseshiftleft/sjcl.git#1.0.8",
     "source-map-support": "^0.5.9",
+    "stream-buffers": "^3.0.2",
     "styled-components": "^4.2.0",
     "symbol-observable": "^1.2.0",
     "ts-deep-equal": "^1.1.1",
@@ -86,6 +92,7 @@
     "@types/jest": "^23.3.10",
     "@types/mime-types": "^2.1.0",
     "@types/pify": "^3.0.2",
+    "@types/progress-stream": "^2.0.0",
     "@types/react": "^16.7.9",
     "@types/react-dom": "^16.0.11",
     "@types/react-redux": "^6.0.10",
@@ -93,6 +100,7 @@
     "@types/react-router-dom": "^4.3.1",
     "@types/react-transition-group": "1.1.5",
     "@types/seedrandom": "^2.4.27",
+    "@types/stream-buffers": "^3.0.3",
     "@types/styled-components": "^4.1.6",
     "@types/uuid": "^3.4.4",
     "@types/webdriverio": "^4.13.0",
@@ -100,10 +108,10 @@
     "electron-builder": "^20.36.2",
     "electron-webpack": "^2.6.1",
     "electron-webpack-ts": "^3.1.0",
-    "jest": "^23.6.0",
+    "jest": "^24.9.0",
     "redux-saga-test-plan": "^3.7.0",
     "spectron": "^5.0.0",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.2",
     "tslint": "^5.11.0",
     "webdriverio": "^4.14.1",
     "webpack": "^4.26.0",

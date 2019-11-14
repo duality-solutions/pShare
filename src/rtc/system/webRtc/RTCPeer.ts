@@ -5,5 +5,5 @@ export interface RTCPeer<T extends string, TData extends string | Blob | ArrayBu
     readonly incomingMessageQueue: AsyncQueue<TData>;
     readonly dataChannel: RTCDataChannel;
     send: (data: TData) => void;
-    close: () => void;
+    close: () => Promise<void>;
 }

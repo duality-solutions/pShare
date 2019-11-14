@@ -12,9 +12,9 @@ import { FileSharingActions } from "../../../shared/actions/fileSharing";
 import { SearchActions } from "../../../shared/actions/search";
 
 const getUserName = createSelector([(state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_id : undefined], (user) => user)
-const getUserList = createSelector(
+const getBalance = createSelector([(state: RendererRootState) => state.bdap.balance], (b) => b)
+const getUserListBase = createSelector(
     [
-        (state: RendererRootState) => state.myLinksSearch.query,
         (state: RendererRootState) => state.bdap.users,
         (state: RendererRootState) => state.bdap.completeLinks,
         (state: RendererRootState) => state.bdap.pendingAcceptLinks,
@@ -22,7 +22,7 @@ const getUserList = createSelector(
         (state: RendererRootState) => state.bdap.deniedLinks,
         (state: RendererRootState) => typeof state.bdap.currentUser !== 'undefined' ? state.bdap.currentUser.object_full_path : undefined
     ],
-    (query, users, completeLinks, pendingAcceptLinks, pendingRequestLinks, deniedLinks, currentUserFqdn) => {
+    (users, completeLinks, pendingAcceptLinks, pendingRequestLinks, deniedLinks, currentUserFqdn) => {
         const linkedUsers = blinq(users)
             .join(
                 completeLinks,
@@ -41,7 +41,7 @@ const getUserList = createSelector(
                 (u) => ({
                     userName: u.object_id,
                     commonName: u.common_name,
-                    state: "pending"
+                    state: "pending-invite"
                 } as BdapUser))
         const pendingRequestUsers = blinq(users)
             .join(
@@ -56,6 +56,15 @@ const getUserList = createSelector(
         const baseQuery = linkedUsers
             .concat(pendingAcceptUsers)
             .concat(pendingRequestUsers);
+        return baseQuery
+    });
+const getUserList = createSelector(
+    [
+        (state: RendererRootState) => state.myLinksSearch.query,
+        getUserListBase
+    ],
+    (query, baseQuery) => {
+
         return query.length > 0
             ? baseQuery
                 .select(bdapUser => ({ bdapUser, commonNameQueryPosition: bdapUser.commonName.indexOf(query), userNameQueryPosition: bdapUser.userName.indexOf(query) }))
@@ -76,7 +85,9 @@ const mapStateToProps = (state: RendererRootState /*, ownProps*/): MyLinksStateP
     return {
         users: getUserList(state),
         userName: getUserName(state)!,
-        queryText: state.myLinksSearch.queryText
+        queryText: state.myLinksSearch.queryText,
+        allUsers: getUserListBase(state).toArray(),
+        balance: getBalance(state)
     };
 };
 

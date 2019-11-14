@@ -69,7 +69,7 @@ const tabs: TabInfo[] = [
                 margin="0 0 0 1em" />,
         text: "My Links",
         isSelected: (pathname: string) => pathname === '/Dashboard/MyLinks' || pathname === '/Dashboard/AddLinks'
-            || pathname === '/Dashboard/SharedFiles' || pathname === '/Dashboard/AddFile'
+            || pathname === '/Dashboard/SharedFiles' || pathname === '/Dashboard/AddFile' || pathname === '/Dashboard/BulkImport'
     },
     {
         location: '/Dashboard/Inbox',

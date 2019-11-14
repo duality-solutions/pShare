@@ -1,7 +1,7 @@
 import { Component } from "react";
 import React from "react";
 import { H1, Text } from "../ui-elements/Text";
-import { AddLinksIcon, UserListAvatar, CloseIcon, BtnAddLinksIcon, RequestSentIcon } from "../ui-elements/Image";
+import { UserListAvatar, CloseIcon, BtnAddLinksIcon, RequestSentIcon } from "../ui-elements/Image";
 import { UserList, UserListItem } from "../ui-elements/Dashboard";
 import man from "../../assets/man.svg";
 import Container from "../ui-elements/Container";
@@ -14,6 +14,8 @@ import Modal from "../ui-elements/Modal";
 import Button from "../ui-elements/Button";
 import Input from "../ui-elements/Input";
 import { SearchActions } from "../../../shared/actions/search";
+// import { BulkImportActions } from "../../../shared/actions/bulkImport";
+import BalanceIndicator from "../../containers/dashboard/BalanceIndicator";
 
 type SearchStatus = "NO_SEARCH" | "SEARCH_RESULT"
 export interface AddLinksStateProps {
@@ -23,7 +25,11 @@ export interface AddLinksStateProps {
     status: SearchStatus
 
 }
-export type AddLinksDispatchProps = PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged"> & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest"> & { push: (pathname: string) => void }
+export type AddLinksDispatchProps =
+    PickedDispatchProps<typeof SearchActions, "addLinksQueryTextChanged">
+    // & PickedDispatchProps<typeof BulkImportActions, "beginBulkImport">
+    & PickedDispatchProps<typeof BdapActions, "beginCreateLinkRequest">
+    & { push: (pathname: string) => void }
 export type AddLinksProps = AddLinksStateProps & AddLinksDispatchProps
 
 interface AddLinksComponentStateProps {
@@ -33,7 +39,6 @@ interface AddLinksComponentStateProps {
 interface CustomRequestMessageProps {
     close: () => void,
     send: (msg: string) => void,
-
 }
 interface CustomRequestMessageComponentState {
     msg: string
@@ -94,27 +99,32 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                             this.setState({ requestModal: false })
                         }}
                     />}
-                <div style={{ width: "100%", display: 'block' }}>
+                <div style={{ width: "100%", display: 'block', position:'relative' }}>
+                    <BalanceIndicator />
                     <div style={{ float: 'right', margin: '40px 0 0 0' }}>
                         <CloseIcon margin="0 40px 0 0" onClick={() => push('/Dashboard/MyLinks')} />
                         <Text margin="5px 0 0 5px" fontSize="0.8em">finish</Text>
                     </div>
                     <Container margin="7em 20% 5em 25%" height="100%" minWidth="50%">
-                        <H1 color="#4a4a4a"><AddLinksIcon width="40px" height="40px" margin="0 0 0 0" /> Add Links</H1>
-                        <div style={{display:'flex'}}>
-                            <Input id="addLinksInput" value={queryText} 
-                                    onChange={e => addLinksQueryTextChanged(e.target.value)} 
-                                    margin="20px 0 20px 0" 
-                                    padding="0 20px"
-                    />
-                            <CloseIcon style={{ 
-                                                visibility: queryText.length > 0 ? "visible" : "hidden",
-                                                margin:'30px 0 0 0'
-                                            }} 
+                        <H1 color="#4a4a4a">
+                            {/* <AddLinksIcon width="40px" height="40px" margin="0 0 0 0" /> */}
+                         Add Links</H1>
+                        <div style={{ display: 'flex' }}>
+                            <Input id="addLinksInput" value={queryText}
+                                placeholder="Search new links to add"
+                                onChange={e => addLinksQueryTextChanged(e.target.value)}
+                                margin="20px 0 20px 0"
+                                padding="0 20px"
+                                autoFocus={true}
+                            />
+                            <CloseIcon style={{
+                                visibility: queryText.length > 0 ? "visible" : "hidden",
+                                margin: '30px 0 0 0'
+                            }}
                                 onClick={() => {
                                     addLinksQueryTextChanged("");
                                     document.getElementById("addLinksInput")!.focus()
-                            }} />                            
+                                }} />
                         </div>
                         {/* 
                         
@@ -129,7 +139,7 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
                         
                         */}
                         {
-                            renderResults(queryText, status, users, x => this.setState(x))
+                            renderResults(queryText, status, users, x => this.setState(x), push)
                         }
                         <div style={{ padding: "2.5em" }} />
                     </Container>
@@ -140,24 +150,34 @@ export class AddLinks extends Component<AddLinksProps, AddLinksComponentStatePro
 
 }
 
-const renderResults = (queryText: string, status: string, users: BdapUser[], setState: (x: AddLinksComponentStateProps) => void) => {
+const renderResults = (queryText: string, status: string, users: BdapUser[], setState: (x: AddLinksComponentStateProps) => void, push: (pathname: string) => void) => {
     switch (status) {
         case "NO_SEARCH":
 
             return queryText.length === 0
-                ? <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some characters to find other users...</Text>
+                ? <>
+                    <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some characters to find other users...</Text>
+                    <Text>
+                        <span onClick={(event) => {
+                            event.preventDefault();
+                            push("/Dashboard/BulkImport")
+                        }}
+                            style={{ cursor: 'pointer', color: '#2e77d0' }}
+                        >Bulk invite from file...</span></Text>
+                </>
                 : <Text color="#4a4a4a" fontWeight="400" fontSize="1.2em">Type some more characters to find other users...</Text>
         case "SEARCH_RESULT":
             return users.length > 0
-                ? <UserList>
-                    {users.map(u => <UserListItem key={u.userName}>
-                        <div style={{ display: 'flex' }}>
+                ? <UserList >
+                    {users.map(u => <UserListItem key={u.userName} style={{ cursor: u.state === 'pending' ? '' : 'pointer'}}
+                            onClick={u.state === 'pending' ? undefined : () => setState({ requestModal: true, recipent: u.userName }) }>
+                        <div style={{ display: 'flex' }} >
                             <UserListAvatar src={man} />
                             <LinkDisplayName disabled={u.state === 'pending'} displayName={u.commonName} />
                         </div>
                         {u.state === 'pending' ?
                             <div style={{ fontSize: "0.8em" }}> Request sent <RequestSentIcon width="30px" height="30px" margin="0 0 0 1em" /></div>
-                            : <div style={{ fontSize: "0.7em" }} onClick={() => setState({ requestModal: true, recipent: u.userName })}>
+                            : <div style={{ fontSize: "0.7em" }} >
                                 Request
                                 <BtnAddLinksIcon width="30px" height="30px" margin="0 0 0 1em" />
                             </div>}

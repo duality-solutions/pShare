@@ -15,11 +15,19 @@ import { AppActions } from "../../../shared/actions/app";
 export function* navSaga() {
     console.log("nav saga started")
     yield* waitForInitialized();
+    const syncIsComplete: boolean = yield select((s: RendererRootState) => s.sync.isComplete)
+    if (!syncIsComplete) {
+        yield* waitForSync();
 
-    yield* waitForSync();
-
+    }
+    
 
     const currentState: RendererRootState = yield select()
+    if(currentState.router.location.pathname.startsWith("/Dashboard/")){
+        yield* dashboardNav()
+
+        return;
+    }
     if (currentState.user.isOnboarded) {
         console.log("nav saga: user is onboarded, navigating to /Main")
         yield put(pushRoute(appRoutes.dashboard))
@@ -48,7 +56,7 @@ export function* navSaga() {
                 yield bdapAccountConfigNavMap.runNav();
                 yield* waitForWalletCredentials();
             }
-            else{
+            else {
                 console.log("nav saga: navigating to Onboarding -- /CreateAccount")
                 yield put(pushRoute(appRoutes.createAccount))
                 console.log("nav saga navigating to /CreateAccount")
@@ -57,9 +65,9 @@ export function* navSaga() {
                         createAccount: take(getType(RootActions.createAccount)),
                         restoreAccount: take(getType(RootActions.restoreAccount))
                     })
-    
+
                     let returnedToCreateAccount = false
-    
+
                     if (createAccount) {
                         yield put(pushRoute(appRoutes.enterUserName))
                         const bdapAccountConfigNavMap = getNavMap();
@@ -77,8 +85,8 @@ export function* navSaga() {
                         yield* waitForWalletCredentials();
                     } else {
                         yield put(pushRoute(appRoutes.restoreAccount))
-    
-    
+
+
                         for (; ;) {
                             let returnedToRestoreAccount = false
                             const { passphrase, mnemonicFile, cancelled } = yield race({
@@ -86,7 +94,7 @@ export function* navSaga() {
                                 mnemonicFile: take(getType(RootActions.restoreWithMnemonicFile)),
                                 cancelled: take(getType(RootActions.restoreCancelled))
                             })
-    
+
                             if (cancelled) {
                                 yield put(pushRoute(appRoutes.createAccount))
                                 returnedToCreateAccount = true
@@ -99,7 +107,7 @@ export function* navSaga() {
                                 restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
                                 restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithPassphrase)
                                 restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
-    
+
                                 yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
                             }
                             else if (mnemonicFile) {
@@ -111,26 +119,26 @@ export function* navSaga() {
                                 restoreNavMap.registerNavAction(RootActions.restoreSync, appRoutes.restoreSyncProgress)
                                 restoreNavMap.registerNavAction(RootActions.restoreFailed, appRoutes.restoreWithMnemonicFile)
                                 restoreNavMap.registerNavAction(RootActions.restoreSuccess, appRoutes.passwordCreateOrLogin, true) //true parameter indicates stopping condition
-    
+
                                 yield restoreNavMap.runNav(); //note: this hangs until we hit a navAction with "stopOnThisAction" parameter `true`
                             }
-    
-    
+
+
                             if (returnedToRestoreAccount) continue;
                             if (returnedToCreateAccount) break
                             yield* waitForWalletCredentials();
                             break;
-    
+
                         }
                     }
                     if (!returnedToCreateAccount) {
                         break;
                     }
                 }
-    
+
             }
-            }
-            
+        }
+
 
 
     }

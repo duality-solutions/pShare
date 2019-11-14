@@ -49,15 +49,22 @@ export function* linkAcceptSaga(rpcClient: RpcClient) {
                         typeof registrationDays === 'undefined'
                             ? client.command("link", "accept", recipient, requestor)
                             : client.command("link", "accept", recipient, requestor, registrationDays.toString()));
+                console.log(response)
             } catch (err) {
-                //debugger
-                throw err
+                if (/^Insufficient funds/.test(err.message)) {
+                    yield put(BdapActions.insufficientFunds("accept a link from " + requestor))
+
+                } else {
+                    throw err
+                }
             }
-            console.log(response)
+
         }
 
 
         yield put(BdapActions.getCompleteLinks())
         yield put(BdapActions.getPendingAcceptLinks())
+        yield put(BdapActions.getBalance())
+
     });
 }

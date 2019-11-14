@@ -40,7 +40,7 @@ async function createRpcClient(cancellationToken: CancellationToken): Promise<{ 
 
     const client = await createJsonRpcClient({
         host: "localhost",
-        port: "33650",
+        port: "33350",
         username: processInfo.rpcUser,
         password: processInfo.rpcPassword,
         timeout: 20000,
