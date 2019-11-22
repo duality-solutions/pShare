@@ -201,6 +201,10 @@ if (!hasLock) {
         console.log("closing rtc window")
         rtcWindow.close()
       }
+      if (aboutPanelWindow) {
+        console.log("closing about window");
+        aboutPanelWindow.close();
+      }
     })
 
     window.webContents.on('devtools-opened', () => {
