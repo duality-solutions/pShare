@@ -168,7 +168,7 @@ export async function httpRequestResponseAsync(options: RequestOpts | string, ca
             opts.body.pipe(request, { end: true });
         }
         else if (isWriteable(opts.body)) {
-            request.write(opts.body, undefined, () => request.end());
+            request.write(opts.body, "", () => request.end());
         }
         else {
             request.end();
