@@ -1527,7 +1527,7 @@ app-builder-lib@20.36.2, app-builder-lib@~20.36.0:
     hosted-git-info "^2.7.1"
     is-ci "^1.2.1"
     isbinaryfile "^3.0.3"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.1"
     lazy-val "^1.0.3"
     minimatch "^3.0.4"
     normalize-package-data "^2.4.0"
@@ -2144,7 +2144,7 @@ builder-util@9.3.0, builder-util@~9.3.0:
     debug "^4.1.0"
     fs-extra-p "^7.0.0"
     is-ci "^1.2.1"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.1"
     source-map-support "^0.5.9"
     stat-mode "^0.2.2"
     temp-file "^3.2.0"
@@ -3310,7 +3310,7 @@ dmg-builder@6.4.0:
     builder-util "~9.3.0"
     fs-extra-p "^7.0.0"
     iconv-lite "^0.4.24"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.1"
     parse-color "^1.0.0"
     sanitize-filename "^1.6.1"
 
@@ -5668,7 +5668,7 @@ js-tokens@^3.0.2:
   version "3.0.2"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-3.0.2.tgz"
 
-js-yaml@^3.12.0, js-yaml@^3.7.0:
+js-yaml@^3.13.1, js-yaml@^3.7.0:
   version "3.13.1"
   resolved "https://registry.npmjs.org/js-yaml/-/js-yaml-3.13.1.tgz"
   integrity sha512-YfbcO7jXDdyj0DGxYVSlSeQNHbD7XPWvrVWeVUujrQEoZzWJIRrCPoyk6kL6IAjAG2IolMK4T0hNUe0HOUs5Jw==
@@ -7717,7 +7717,7 @@ read-config-file@3.2.0, read-config-file@^3.2.0:
     dotenv "^6.1.0"
     dotenv-expand "^4.2.0"
     fs-extra-p "^7.0.0"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.1"
     json5 "^2.1.0"
     lazy-val "^1.0.3"
 
@@ -8921,7 +8921,7 @@ svgo@^1.0.5:
     css-tree "1.0.0-alpha.28"
     css-url-regex "^1.1.0"
     csso "^3.5.0"
-    js-yaml "^3.12.0"
+    js-yaml "^3.13.1"
     mkdirp "~0.5.1"
     object.values "^1.0.4"
     sax "~1.2.4"
