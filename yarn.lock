@@ -7525,10 +7525,10 @@ q@^1.1.2, q@~1.5.0:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz"
 
-qrcode-generator@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/qrcode-generator/-/qrcode-generator-1.4.3.tgz#4876e8f280e65b6c94615f4c19c484f6b964b199"
-  integrity sha512-++rVRvMRq5BlHfmAafl8a4ppUntzUxCCUTT2t0siUgqKwdnqRzY8IH6f6WSX5dZUhD2Ul5/MIKuTJddflwrGzw==
+qrcode-generator@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/qrcode-generator/-/qrcode-generator-1.4.4.tgz#63f771224854759329a99048806a53ed278740e7"
+  integrity sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==
 
 qs@6.7.0:
   version "6.7.0"
