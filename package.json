@@ -50,7 +50,7 @@
     "mime-types": "^2.1.22",
     "pify": "^4.0.1",
     "progress-stream": "^2.0.0",
-    "qrcode-generator": "^1.4.3",
+    "qrcode-generator": "^1.4.4",
     "react": "^16.8.6",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.8.6",
