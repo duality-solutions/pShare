@@ -62,7 +62,6 @@ export const AddFile: FunctionComponent<AddFileProps> = ({ close, filesSelected,
                         <Dropzone error={error} filesSelected={filesSelectedHandler} directoriesSelected={directoriesSelectedHander} multiple={true} ></Dropzone>
                     </Box>
                 </Box>
-                <Text align="center" fontSize="0.8em" margin="5em" color="#4a4a4a"> File size limit: 3gb</Text>
             </Container>
         </Box>
     </div>;
