@@ -1,4 +1,5 @@
 ## pShare
+[![Known Vulnerabilities](https://snyk.io/test/github/duality-solutions/pShare/badge.svg?targetFile=package.json)](https://snyk.io/test/github/duality-solutions/pShare?targetFile=package.json) ![Build Status](https://travis-ci.org/duality-solutions/pShare.svg?branch=master)
 
 ### Software Objectives:
 - Privately and securely share data with friends, family, and business associates.
