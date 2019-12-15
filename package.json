@@ -105,7 +105,7 @@
     "@types/uuid": "^3.4.4",
     "@types/webdriverio": "^4.13.0",
     "electron": "3.0.10",
-    "electron-builder": "^20.36.2",
+    "electron-builder": "^21.2.0",
     "electron-webpack": "^2.6.1",
     "electron-webpack-ts": "^3.1.0",
     "jest": "^24.9.0",
