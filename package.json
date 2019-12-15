@@ -106,7 +106,7 @@
     "@types/webdriverio": "^4.13.0",
     "electron": "3.0.10",
     "electron-builder": "^20.36.2",
-    "electron-webpack": "^2.6.1",
+    "electron-webpack": "^2.6.2",
     "electron-webpack-ts": "^3.1.0",
     "jest": "^24.9.0",
     "redux-saga-test-plan": "^3.7.0",
