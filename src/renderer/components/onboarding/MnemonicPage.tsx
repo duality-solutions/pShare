@@ -48,7 +48,7 @@ export const MnemonicPage: FunctionComponent<MnemonicPageProps> = props => {
                     <Box direction="column" align="center" width="100%">
                         <Box direction="column" width="700px" align="start" margin="0 auto 0 auto">
                             <Card width="100%" align="center" minHeight="225px" padding="2em 4em 2em 4em">
-                                <H3>Your Mnemonic Pass Phrase</H3>
+                                <H3>Your Mnemonic Passphrase</H3>
                                 <Card width="100%" align="center" padding="1em" border="solid 1px grey" background="#fafafa">
                                     <Text color="grey" align="center" margin="0" notUserSelectable>{props.mnemonic}</Text>
                                 </Card>
