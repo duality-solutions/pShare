@@ -83,7 +83,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
-    "@babel/preset-react": "^7.0.0",
+    "@babel/preset-react": "^7.9.1",
     "@types/electron-devtools-installer": "^2.2.0",
     "@types/electron-json-storage": "^4.0.0",
     "@types/es6-promise": "^3.3.0",
