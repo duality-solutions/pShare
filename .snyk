@@ -1,0 +1,22 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.14.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - electron-json-storage > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - electron-json-storage > async > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - electron-redux > flux-standard-action > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - electron-redux > redux > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - styled-components > babel-plugin-styled-components > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - winston > async > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - styled-components > @babel/helper-module-imports > @babel/types > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
+    - styled-components > babel-plugin-styled-components > @babel/helper-annotate-as-pure > @babel/types > lodash:
+        patched: '2020-05-01T08:48:00.167Z'
