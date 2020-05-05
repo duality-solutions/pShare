@@ -43,7 +43,7 @@ export const CreateAccount: React.FunctionComponent<CreateAccountProps> =
                             <SCard onClick={() => restoreAccount()}>
                                 <img src={restoreIcon} height="80px" width="80px" />
                                 <H3 align="center" color="white">Restore Account</H3>
-                                <Text color="white" align="center">You have a backed up mnemonic or file you would like to restore from</Text>
+                                <Text color="white" align="center">You have a backed up mnemonic phrase or secure file to restore from</Text>
                             </SCard>
                         </Box>
                     </Box>
