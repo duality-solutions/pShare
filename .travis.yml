@@ -21,16 +21,12 @@ jobs:
       - stage: build
         name: 'pShare Ubuntu Package'
         script:
-          - yarn dist --linux
+          - ./build.linux.sh
       # Windows
       - stage: build
         name: 'pShare Windows Installer'
         install:
           - sudo dpkg --add-architecture i386
-          - wget -nc https://dl.winehq.org/wine-builds/winehq.key
-          - sudo apt-key add winehq.key
-          - sudo apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ bionic main'
-          - sudo apt-get update
-          - sudo apt-get install --install-recommends winehq-stable
+          - sudo apt install wine64
         script:
-          - yarn dist --win
+          - ./build.win.sh
