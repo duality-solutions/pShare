@@ -7,6 +7,7 @@ Change History (v1.0.2):
 - Bump @babel/preset-react from 7.0.0 to 7.9.4
 - Bump pShare version to 1.0.2
 - Add release notes file
+- Bump electron-builder from 20.36.2 to 22.6.0
 
 Change History (v1.0.1):
 - Remove file size limit warning in UI
