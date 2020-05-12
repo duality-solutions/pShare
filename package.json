@@ -1,6 +1,6 @@
 {
   "name": "pshare",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Secure and private peer to peer file sharing",
   "homepage": "https://duality.solutions/pshare",
   "license": "SEE LICENSE IN LICENSE.md",
