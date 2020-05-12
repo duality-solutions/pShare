@@ -9180,17 +9180,17 @@ truncate-utf8-bytes@^1.0.0:
   dependencies:
     utf8-byte-length "^1.0.1"
 
-ts-deep-equal@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/ts-deep-equal/-/ts-deep-equal-1.1.1.tgz"
-  integrity sha512-x8lWnFl/TigvevxjFMvQ8Gq+SbzBg2AgkRJB+ggGosqwIqL92FwIKyn0bMPMqPyFOZiwBPBJMSqMiMU7blgPng==
+ts-deep-equal@^1.1.5:
+  version "1.1.5"
+  resolved "https://registry.yarnpkg.com/ts-deep-equal/-/ts-deep-equal-1.1.5.tgz#09e519a301c7894200a00c5dc83dc93d545ae5cd"
+  integrity sha512-ESlR6PUBiQ/qe+Mgy5zIxBYqmSwBEQbtSJZipUSf0p87V5+Qgrq7P16mySdKbB7TcW/wKjI6/I7xe+Lmppjxqg==
   dependencies:
-    ts-entries "^1.1.0"
+    ts-entries "^1.1.2"
 
-ts-entries@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/ts-entries/-/ts-entries-1.1.0.tgz"
-  integrity sha512-IOrmt/2+Yfd12GVybSyj7RvsrpD8kpCfTxzk/W9YDBkU9DRtTzKeQh9AqwN4KmNCBUT4L5Vbuo7wRL2ckAzklg==
+ts-entries@^1.1.2:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/ts-entries/-/ts-entries-1.2.0.tgz#b849182972bcde498adea257f48cc220b1098ea9"
+  integrity sha512-2Y/hvpwD3mB1on8414Dn4pORaReUVUoWWIDB7KoZ3fRQ4iUI4xSJFr+xxYeEvrvmoHW0lxPjkMt73fL/93VUHA==
 
 ts-jest@^24.0.2:
   version "24.0.2"
