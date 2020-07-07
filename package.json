@@ -71,7 +71,7 @@
     "sjcl-git": "https://github.com/bitwiseshiftleft/sjcl.git#1.0.8",
     "source-map-support": "^0.5.9",
     "stream-buffers": "^3.0.2",
-    "styled-components": "^4.2.0",
+    "styled-components": "^5.1.1",
     "symbol-observable": "^1.2.0",
     "ts-deep-equal": "^1.1.1",
     "tslib": "^1.9.3",
