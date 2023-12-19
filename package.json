@@ -37,7 +37,7 @@
   "dependencies": {
     "@types/got": "^9.4.4",
     "blinq": "^2.0.2",
-    "chokidar": "^2.1.2",
+    "chokidar": "^3.0.0",
     "connected-react-router": "^5.0.1",
     "devtron": "^1.4.0",
     "electron-devtools-installer": "^2.2.4",
